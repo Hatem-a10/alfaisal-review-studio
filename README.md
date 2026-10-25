@@ -1,35 +1,54 @@
-# Review Studio
+# Study Command Center
 
-For Alfaisal M1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
+Alfaisal M1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
 
-## Use
-Open the published website in a regular browser. Set the planning day at the top. The overview prioritizes the MOL midterm on Thursday October 29, 2026 (50 MCQs, MOL 1–13). Daily schedule combines review due dates with separately labeled course events. All lectures provides course, status and due-date filters plus search.
+## Use the website
+Sign in to the published site with the same ChatGPT account on each device. Existing review progress uses the same browser storage key and is retained. Look for “Cloud saved” before switching devices. While offline, changes stay on the device and sync when the connection returns. If two devices changed the same cloud version, saving pauses and asks which copy to keep; export a backup before choosing if you need both copies.
 
-Each lecture has independent first, second and third review checkboxes. Check a box after completing the pass; the app records the current completion timestamp in Riyadh time. Uncheck to clear that completion. Planned dates do not complete tasks. Nothing starts completed.
+On Overview, set the planning day, available study minutes and your personal study window. The daily plan avoids the documented timetable slots, includes five-minute breaks and prioritizes weak MCQ results, difficulty, confidence, overdue reviews and exams. MOL 1–13 gets priority through the October 29 midterm, with CVP time reserved when both fit. The planner schedules one review pass per lecture per day. Completed-review time estimates or logged timer minutes, whichever is greater, consume the daily budget. Estimates are 35/25/15 minutes for passes 1/2/3. These are adjustable personal planning assumptions, not official teaching durations. The selected study window defaults to 17:00–23:00 and can be changed.
 
-Use Edit to change the title, due dates, confidence or notes. Original preset dates are shown in the dialog and can be restored. Weak areas includes notes and confidence ratings 1–2. Course progress bars count completed review passes.
+Class times are reserved using the exact printed slots only. Merged lecture/lab/exam durations are not inferred; use Moodle to verify longer or changed sessions and adjust your study window. A capacity check highlights midterm passes that will not fit before the exam.
 
-Progress is stored in local storage for this browser and website address. Use Export backup regularly. Import replaces progress after validation and confirmation. Data does not automatically move between devices, browser profiles, local files and the hosted website. Some embedded previews may not retain browser storage across reloads; use a regular browser and keep backups.
+## Spaced repetition and MCQs
+Check a review only when you finish. All passes are independent and save completion timestamps. After completing a first pass, normal suggestions are +2 and +6 days; difficult topics use +1 and +3. After a second pass, third-pass spacing is +4 days normally or +2 days for difficulty. Difficulty means your difficult flag, confidence 1–2, or recent MCQ accuracy below 60%. Dates are capped before the upcoming exam where a spaced sequence fits; impossible spacing is flagged for manual planning. Suggestions never silently overwrite dates. Click Apply suggestion or use Edit. Original CVP dates remain available and can be restored.
 
-## Run locally
-No installation or build step is required. Open dist/index.html in a browser, keeping the other dist files beside it. Alternatively, run the following from this folder, then open http://localhost:8080:
+Log MCQ results from a lecture or Practice & MCQs. Enter attempted and correct counts and a practice date. The last five sets per lecture determine recent accuracy. Below 70% appears in weak topics; below 60% shortens spacing. MCQ entry never checks a review pass. You can remove mistaken results from practice history.
 
-    python3 -m http.server 8080 --directory dist
+## Other tools
+- Readiness estimates: equal weight per lecture, using 40% completed passes, 20% confidence and 40% recent MCQ accuracy. Missing inputs contribute no evidence. Scores show evidence coverage and are study heuristics, not predicted exam grades or an official blueprint. MOL uses midterm scope through October 29 and all numbered items afterward.
+- Confidence: 1–2 struggling (red), 3 needs review (yellow), 4–5 mastered (green), unassessed gray.
+- Catch-up: seven-day projection spreads unfinished passes within the budget and class slots. It assumes daily completion. Applying it changes personal dates only; it never completes checkboxes. Any reviews still beyond capacity remain visible.
+- Timer: start per lecture, finish to save actual study time; completion is separate. Running timers stay on that device. Sessions over eight hours must be discarded.
+- Materials: Edit accepts up to 30 http/https links for slides, recordings or question banks.
+- Heatmap: last seven days of completed passes, MCQ sets and timed-study days, using Riyadh dates.
+- Practice exam mode: import your own verified JSON question set, answer questions, then save results by lecture. The question bank stays on the device; recorded results sync. Template example text must be replaced before use.
+- Export/import: backup format 2 includes all progress, MCQ results, saved sessions, links and planner settings. Old version 1 backups still import. Import validates before replacing progress and syncing it.
 
-The separate review-studio.html deliverable is a self-contained alternative. Its fonts use Google Fonts when available and fall back to system fonts offline. Browser storage behavior for local file URLs varies; a local server or hosted website is preferable.
+## Sources
+All five original documents remain represented in public/data.js. CVP preserves all 51 scheduled items and 153 exact original review dates, plus the closing mixed-MCQ/recall plan through November 18. MOL retains the guide's 28 numbered entries, lecture date ranges, TBL groups, assessment coverage and syllabus objectives. Every MOL review due date is a suggested editable plan. No new official event, attendance time, completion history or MCQ result is seeded.
 
-## Source handling
-All five supplied documents were extracted. CVP: 51 items (28 physiology and 23 anatomy/histology/embryology), with 153 exact planned review dates. Review passes run Oct 25–Nov 14; the PDF's mixed-MCQ/brief-recall schedule is retained through Nov 18. CVP syllabus objectives and assessment weights are available under Sources & coverage.
+## Code and local development
+This upgrade adds the supplied Sites Vinext framework for authenticated cloud progress. Source assets live in public/, not generated dist/.
 
-MOL: all 28 numbered guide entries, including two review sessions, with documented lecture dates and TBL grouping. MOL 1–13 are tagged as midterm coverage. Every MOL review due date is explicitly a suggested editable plan. Final and TBL coverage comes from the guide. Lab objectives and final lab coverage are documented; no unprovided lab review dates are invented.
+    npm ci
+    npm run db:generate   # only after schema changes
+    npm run build
 
-Timetable: Sheet1 Male-I lecture columns and M1-A labs, including explicitly assigned groups 1.4–1.6. Shared horizontal merged cells are resolved. Printed slot labels and source cell addresses are shown; merged event durations are not inferred. Group-specific lab entries not matching 1.6 are excluded. Confirm timetable changes on Moodle.
+For a local database, apply the generated migration once:
 
-## Files
-- dist/index.html: page structure
-- dist/style.css: responsive visual design
-- dist/app.js: application and local storage, backup validation
-- dist/data.js: extracted source data and immutable preset dates
+    node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_huge_gladiator.sql
+    npm run dev -- --port 5173 --hostname 127.0.0.1
 
-## Verification
-JavaScript syntax and application checks pass: item/pass counts, zero initial completions, independent checkboxes, completion timestamps, persistence with a storage adapter across application reload, edits preserving presets, filters, six views, valid backup round trip and rejection of malformed backups. Mobile-width browser preview confirmed the layout and checkbox/editor behavior. The embedded preview did not retain its saved checkbox across a reload; regular-browser local storage is recommended.
+Open http://127.0.0.1:5173/signin-with-chatgpt?return_to=/index.html to use the supplied preview identity. Local and production databases are separate. Hosted migration and publication use the Sites workflow.
+
+The separate review-studio.html download works without a server, using device storage and JSON backup transfer. Account synchronization requires the published site. Do not open the downloaded file expecting it to share the hosted site's browser storage.
+
+## Architecture
+- public/engine.js: pure spacing, readiness, prioritization, timetable-slot allocation and catch-up calculations.
+- public/app.js: UI, migration-compatible local storage, MCQs, timer, question import and cloud conflict handling.
+- public/data.js: original extracted course data and immutable preset dates.
+- app/api/progress/route.ts: authenticated per-user snapshots with validation, same-origin checks, and optimistic revision checks.
+- db/schema.ts and drizzle/: cloud database schema and migration.
+
+## Validation
+Application checks cover zero seeded completions; 237 independent passes; all eight views; legacy/new backups; reload; MCQ-driven ranking; deadline-aware spacing; immutable presets; budget/breaks; class-slot avoidance; one pass per lecture per day; time already studied; catch-up non-mutation and application; readiness; question import; cloud adoption and conflicting-device protection. API checks cover authentication, per-user isolation, same-origin enforcement, create/read/update, revision conflicts and malformed input. Framework build and TypeScript checks pass. Browser preview confirmed MCQ results affect priorities, completion generates spacing, and preview-account cloud saving survives reload. Preview test data is separate from production and is not seeded into the website.
