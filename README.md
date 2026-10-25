@@ -4,11 +4,15 @@ Alfaisal M 1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
 
 ## Start studying
 
-Open https://alfaisal-review-studio.quickchub 6.chatgpt.site/ and use Learn & master. MOL 1–13 now has 136 detailed teaching sections, objectives, mechanisms, worked examples, exam traps, original lecture visuals and a complete slide atlas. Each topic has source page or slide links and is displayed separately, with a topic selector and Previous/Next controls. Mark sections studied as you finish. Studying an entire guide also records its core cards as read. Concept cards offer a shorter retrieval-focused review.
+Open https://alfaisal-review-studio.quickchub6.chatgpt.site/ and choose Learn & master. Pick a lecture and follow a single guided sequence: learn one topic, press Quiz me on this, answer its short question set, then check your answers. There are no required switches between teaching, practice and progress tabs.
 
-Recall lab contains 65 fill-in-the-blank exercises and 13 matching sets. Accepted answers and explanations appear after checking. These activities save completion independently of MCQ scores and review passes. They use explicit accepted terms, not a conversational AI judge.
+All 136 MOL 1–13 teaching topics have two specifically matched questions. 229 question placements reuse reviewed bank questions; 43 authored formative checks cover gaps in the bank. These placements are not 272 additional past-paper questions. Topic questions only test material explained in that teaching section, including mechanisms, worked examples and figures.
 
-Concept practice shows all explained questions in a concept together, with shuffled options. Submit the set to see the correct answer and why every option fits or fails. Incorrect concepts return during later practice. The checkpoint requires all listed core concepts read, two correct recalls per concept separated by at least two questions on other concepts, and at least 80% recent accuracy. A batch of same-concept answers cannot alone count as spaced recalls. This is a transparent core-concept practice rule, not a guarantee of exam performance. Reading never automatically marks a first/second/third review pass done.
+If an answer is wrong, the tutor repeats the key idea, explains each choice and retries only missed questions. It stays on that topic until its questions are answered correctly. Once the topic check passes, feedback remains visible and the next teaching topic opens automatically after 10 seconds. Stay on explanations pauses this transition, and opening detailed option explanations or leaving the page also pauses it. Next topic now advances immediately. The last topic ends with a lecture-complete screen and a button to start the next lecture.
+
+Passed-topic markers save with existing learning progress and private account sync. Reopening a lecture resumes at its first unpassed topic. Passing a topic check does not mark any independent 1st/2nd/3rd review pass complete and does not replace the stricter spaced-retrieval checkpoint. The flow is a formative study check, not a guarantee of exam performance.
+
+Optional resources live under Extra practice & resources: 65 fill-in-the-blank exercises, 13 matching sets, full concept MCQ sets, detailed checkpoint progress and source material. Practice & MCQs retains the full bank and timed mocks. Existing notes, review dates, timestamps and old learning evidence are retained.
 
 ## Question bank and repairs
 
@@ -66,6 +70,8 @@ Open the printed local URL and /signin-with-chatgpt?return_to=/index.html for th
 - learning-data.js contains source text, references, stable concepts and explained question bank.
 - teaching-data.js contains complete teaching guides and retrieval exercises.
 - learn-engine.js provides transparent core-concept checkpoints.
+- topic-checks.js maps every teaching topic to its two reviewed/authored formative checks.
+- guided-flow.js provides the default teach/check/reteach/automatic-next sequence and saved topic passes.
 - learning-ui.js provides full guides, figures, recall activities and adaptive concept sets.
 - exam-engine.js/exam-tools.js provide selection, shuffled keys, saved absolute deadlines, grading, first-attempt evidence and profile tools.
 - app.js maintains migration-compatible storage, reviews, undo, timers, notes and cloud conflicts.
