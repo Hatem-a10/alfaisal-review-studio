@@ -2,3 +2,5 @@
 @media(max-width:760px){.guide-toc ol{columns:1}.complete-guide{font-size:14px;line-height:1.8}.complete-guide>h2{font-size:24px}.guide-section h2{font-size:21px}.guide-key,.worked-example,.guide-pitfalls{padding:14px}.atlas-grid{grid-template-columns:1fr}.matching-row{grid-template-columns:1fr;gap:8px}.concept-question h3{font-size:16px}.concept-batch-header .section-head{flex-wrap:wrap;gap:10px}.batch-score{flex-wrap:wrap}.guide-section .section-head{align-items:center;gap:8px}}
 /* Reset the original inset shorthand so the lesson list stays beside long guides. */
 @media(min-width:851px){.lesson-catalog{top:16px}}
+
+.lesson-figure img{height:auto}
