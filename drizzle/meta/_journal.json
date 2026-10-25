@@ -8,6 +8,13 @@
       "when": 1792941442060,
       "tag": "0000_huge_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792944379770,
+      "tag": "0001_purple_norman_osborn",
+      "breakpoints": true
     }
   ]
 }
