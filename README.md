@@ -4,7 +4,7 @@ Alfaisal M 1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
 
 ## Start studying
 
-Open https://alfaisal-review-studio.quickchub 6.chatgpt.site/ and use Learn & master. MOL 1–13 now has 136 detailed teaching sections, objectives, mechanisms, worked examples, exam traps, original lecture visuals and a complete slide atlas. Each section has source page or slide links. Mark sections studied as you finish. Studying an entire guide also records its core cards as read. Concept cards offer a shorter retrieval-focused review.
+Open https://alfaisal-review-studio.quickchub 6.chatgpt.site/ and use Learn & master. MOL 1–13 now has 136 detailed teaching sections, objectives, mechanisms, worked examples, exam traps, original lecture visuals and a complete slide atlas. Each topic has source page or slide links and is displayed separately, with a topic selector and Previous/Next controls. Mark sections studied as you finish. Studying an entire guide also records its core cards as read. Concept cards offer a shorter retrieval-focused review.
 
 Recall lab contains 65 fill-in-the-blank exercises and 13 matching sets. Accepted answers and explanations appear after checking. These activities save completion independently of MCQ scores and review passes. They use explicit accepted terms, not a conversational AI judge.
 

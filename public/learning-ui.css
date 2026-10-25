@@ -4,3 +4,5 @@
 @media(min-width:851px){.lesson-catalog{top:16px}}
 
 .lesson-figure img{height:auto}
+
+.topic-controls{display:grid;gap:12px;margin:22px 0}.topic-controls label{display:grid;gap:8px;font-size:12px;font-weight:600}.topic-controls select{width:100%}.topic-navigation{display:flex;justify-content:space-between;gap:12px}.topic-overview{font-size:13px;line-height:1.8;margin:20px 0}.topic-overview summary,.guide-summary summary{cursor:pointer;font-weight:600}.topic-footer{border-top:1px solid var(--line);padding-top:20px}.topic-navigation button{min-height:40px}.topic-controls button:disabled{opacity:.45;cursor:default}@media(max-width:550px){.topic-navigation button{font-size:11px;padding:9px}}
