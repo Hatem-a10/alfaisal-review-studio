@@ -4,15 +4,13 @@ Alfaisal M 1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
 
 ## Start studying
 
-Open https://alfaisal-review-studio.quickchub6.chatgpt.site/ and choose Learn & master. Pick a lecture and follow a single guided sequence: learn one topic, press Quiz me on this, answer its short question set, then check your answers. There are no required switches between teaching, practice and progress tabs.
+Open Learn & master and choose your lecture. The familiar lesson catalog, topic selector, progress tools and complete question bank are retained. Each teaching topic is displayed separately, with its relevant questions directly underneath it on the same page. There is no automatic advancement or required switch to a separate quiz tab.
 
-All 136 MOL 1–13 teaching topics have two specifically matched questions. 229 question placements reuse reviewed bank questions; 43 authored formative checks cover gaps in the bank. These placements are not 272 additional past-paper questions. Topic questions only test material explained in that teaching section, including mechanisms, worked examples and figures.
+The complete original 1,156-question bank is retained. Existing reviewed and authored questions are distributed across the corresponding lesson topics, with 43 additional formative checks retained where they fill a teaching gap. There is no two-question cap. Every original question remains available; some relevant questions appear under more than one closely related topic. Lecture and topic counts show what is available.
 
-If an answer is wrong, the tutor repeats the key idea, explains each choice and retries only missed questions. It stays on that topic until its questions are answered correctly. Once the topic check passes, feedback remains visible and the next teaching topic opens automatically after 10 seconds. Stay on explanations pauses this transition, and opening detailed option explanations or leaving the page also pauses it. Next topic now advances immediately. The last topic ends with a lecture-complete screen and a button to start the next lecture.
+Answer any number of questions and press Check my answers. Only newly answered questions are checked; unanswered questions remain open. Each checked item shows its explanation and reasons for every choice. Retry topic questions clears missed answers first, while previous performance evidence remains saved. The first distinct attempt per question per day controls MCQ evidence, so repeated revealed answers do not inflate results. Independent review checkboxes are never completed by a quiz.
 
-Passed-topic markers save with existing learning progress and private account sync. Reopening a lecture resumes at its first unpassed topic. Passing a topic check does not mark any independent 1st/2nd/3rd review pass complete and does not replace the stricter spaced-retrieval checkpoint. The flow is a formative study check, not a guarantee of exam performance.
-
-Optional resources live under Extra practice & resources: 65 fill-in-the-blank exercises, 13 matching sets, full concept MCQ sets, detailed checkpoint progress and source material. Practice & MCQs retains the full bank and timed mocks. Existing notes, review dates, timestamps and old learning evidence are retained.
+Use the topic selector or Previous/Next to move when you are ready. Full concept practice, detailed progress, 65 fill-in-the-blank exercises, 13 matching sets, source material, timed mocks, notes and confidence tools remain available. The Undo and AMOLED timer-contrast fixes are preserved.
 
 ## Question bank and repairs
 
@@ -70,8 +68,6 @@ Open the printed local URL and /signin-with-chatgpt?return_to=/index.html for th
 - learning-data.js contains source text, references, stable concepts and explained question bank.
 - teaching-data.js contains complete teaching guides and retrieval exercises.
 - learn-engine.js provides transparent core-concept checkpoints.
-- topic-checks.js maps every teaching topic to its two reviewed/authored formative checks.
-- guided-flow.js provides the default teach/check/reteach/automatic-next sequence and saved topic passes.
 - learning-ui.js provides full guides, figures, recall activities and adaptive concept sets.
 - exam-engine.js/exam-tools.js provide selection, shuffled keys, saved absolute deadlines, grading, first-attempt evidence and profile tools.
 - app.js maintains migration-compatible storage, reviews, undo, timers, notes and cloud conflicts.
