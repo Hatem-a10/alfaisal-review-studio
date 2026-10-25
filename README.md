@@ -1,87 +1,74 @@
-# Study Command Center
+# Hatem Alabrach · Study Command Center
 
-Alfaisal M1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
+Alfaisal M 1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
 
-## Use the website
-Sign in to the published site with the same ChatGPT account on each device. Existing review progress uses the same browser storage key and is retained. Look for “Cloud saved” before switching devices. While offline, changes stay on the device and sync when the connection returns. If two devices changed the same cloud version, saving pauses and asks which copy to keep; export a backup before choosing if you need both copies.
+## Start studying
 
-On Overview, set the planning day, available study minutes and your personal study window. The daily plan avoids the documented timetable slots, includes five-minute breaks and prioritizes weak MCQ results, difficulty, confidence, overdue reviews and exams. MOL 1–13 gets priority through the October 29 midterm, with CVP time reserved when both fit. The planner schedules one review pass per lecture per day. Completed-review time estimates or logged timer minutes, whichever is greater, consume the daily budget. Estimates are 35/25/15 minutes for passes 1/2/3. These are adjustable personal planning assumptions, not official teaching durations. The selected study window defaults to 17:00–23:00 and can be changed.
+Open https://alfaisal-review-studio.quickchub 6.chatgpt.site/ and use Learn & master. MOL 1–13 now has 136 detailed teaching sections, objectives, mechanisms, worked examples, exam traps, original lecture visuals and a complete slide atlas. Each section has source page or slide links. Mark sections studied as you finish. Studying an entire guide also records its core cards as read. Concept cards offer a shorter retrieval-focused review.
 
-Class times are reserved using the exact printed slots only. Merged lecture/lab/exam durations are not inferred; use Moodle to verify longer or changed sessions and adjust your study window. A capacity check highlights midterm passes that will not fit before the exam.
+Recall lab contains 65 fill-in-the-blank exercises and 13 matching sets. Accepted answers and explanations appear after checking. These activities save completion independently of MCQ scores and review passes. They use explicit accepted terms, not a conversational AI judge.
 
-## Spaced repetition and MCQs
-Check a review only when you finish. All passes are independent and save completion timestamps. After completing a first pass, normal suggestions are +2 and +6 days; difficult topics use +1 and +3. After a second pass, third-pass spacing is +4 days normally or +2 days for difficulty. Difficulty means your difficult flag, confidence 1–2, or recent MCQ accuracy below 60%. Dates are capped before the upcoming exam where a spaced sequence fits; impossible spacing is flagged for manual planning. Suggestions never silently overwrite dates. Click Apply suggestion or use Edit. Original CVP dates remain available and can be restored.
+Concept practice shows all explained questions in a concept together, with shuffled options. Submit the set to see the correct answer and why every option fits or fails. Incorrect concepts return during later practice. The checkpoint requires all listed core concepts read, two correct recalls per concept separated by at least two questions on other concepts, and at least 80% recent accuracy. A batch of same-concept answers cannot alone count as spaced recalls. This is a transparent core-concept practice rule, not a guarantee of exam performance. Reading never automatically marks a first/second/third review pass done.
 
-Log MCQ results from a lecture or Practice & MCQs. Enter attempted and correct counts and a practice date. The last five sets per lecture determine recent accuracy. Below 70% appears in weak topics; below 60% shortens spacing. MCQ entry never checks a review pass. You can remove mistaken results from practice history.
+## Question bank and repairs
 
-## Other tools
-- Readiness estimates: equal weight per lecture, using 40% completed passes, 20% confidence and 40% recent MCQ accuracy. Missing inputs contribute no evidence. Scores show evidence coverage and are study heuristics, not predicted exam grades or an official blueprint. MOL uses midterm scope through October 29 and all numbered items afterward.
-- Confidence: 1–2 struggling (red), 3 needs review (yellow), 4–5 mastered (green), unassessed gray.
-- Catch-up: seven-day projection spreads unfinished passes within the budget and class slots. It assumes daily completion. Applying it changes personal dates only; it never completes checkboxes. Any reviews still beyond capacity remain visible.
-- Timer: start per lecture, finish to save actual study time; completion is separate. Running timers stay on that device. Sessions over eight hours must be discarded.
-- Materials: Edit accepts up to 30 http/https links for slides, recordings or question banks.
-- Heatmap: last seven days of completed passes, MCQ sets and timed-study days, using Riyadh dates.
-- Practice exam mode: import your own verified JSON question set, answer questions, then save results by lecture. The question bank stays on the device; recorded results sync. Template example text must be replaced before use.
-- Export/import: backup format 2 includes all progress, MCQ results, saved sessions, links and planner settings. Old version 1 backups still import. Import validates before replacing progress and syncing it.
+The bank contains 1156 explained quiz items: 424 reviewed/adapted past-paper questions, 136 lecture application questions, and 596 concept-check variants. These counts do not represent independently reviewed official exam questions. Repeated source stems can share a canonical practice version. Original source text, PDFs and the source-question index remain available. Adapted questions retain original wording and a repair note explaining missing choices, clarified stems, reconstructed figure information or corrected keys. Repair details are shown after submission so they do not reveal answers early.
 
-## Sources
-All five original documents remain represented in public/data.js. CVP preserves all 51 scheduled items and 153 exact original review dates, plus the closing mixed-MCQ/recall plan through November 18. MOL retains the guide's 28 numbered entries, lecture date ranges, TBL groups, assessment coverage and syllabus objectives. Every MOL review due date is a suggested editable plan. No new official event, attendance time, completion history or MCQ result is seeded.
+All supplied MOL midterm presentations are represented, including the shared 28-slide MOL 10–11 deck, MOL 12 and MOL 13. There are 346 visual slides across the presentations. The original 359-page transcript compilation and the separate 37-page MOL 4 transcription are linked to the corresponding lessons. The new three exam PDFs are included. The supplied dist/client/materials/mol-midterm.pdf is identical to the already included 57-page midterm booklet, so it was not duplicated. Original PPTX files remain untouched in Downloads; the site serves full visual previews and slide PDFs rather than the large original PPTX binaries. Search includes slide text, speaker notes, transcription text and exam pages. OCR-derived text is marked.
 
-## Code and local development
-This upgrade adds the supplied Sites Vinext framework for authenticated cloud progress. Source assets live in public/, not generated dist/.
+Some supplied source statements and printed keys are scientifically inconsistent. Source notes flag them, including HFE/beta-2 microglobulin, cytosolic versus secretory targeting, malformed glucose units/HbA1c targets, the insulin-solubility wording, and several recalled exam keys. The teaching material uses the corrected mechanism and does not prescribe clinical targets from those slides. Questions from older papers that belong to later MOL lectures remain outside the MOL 1–13 mock-exam scope.
+
+## Practice sets and timed mocks
+
+Practice & MCQs offers a course/lecture/concept selector and complete concept sets. Timed mock exam generates 1–200 distinct questions within the selected scope. Default scope is MOL 1–13, with 50 questions and an editable practice timer. Neither the timer setting nor the random question mix claims to be an official exam duration or blueprint. The official midterm is Thursday October 29,2026:50 MCQs on MOL 1–13.
+
+A mock shuffles questions and options, displays all questions together, offers flags and a navigator, saves answers on this device, and uses an absolute deadline. Leaving/reloading does not pause the timer. Expiry automatically submits saved answers. Unanswered questions count as incorrect. Results include per-lecture accuracy and explanations for every choice. Export results for a separate copy. Active mocks and mock history stay on the device. A discarded unfinished mock does not record scores.
+
+Only the first attempt on each distinct past-paper/application/uploaded question per Riyadh day contributes new MCQ evidence. Repeating a revealed answer does not inflate the tracker. A mock still reports its complete grade even when some questions were already seen; it separately reports newly logged evidence. Full submitted sets are grouped when calculating the last five practice sessions per lecture. Low performance feeds weak topics and earlier spacing suggestions. Importing an explained JSON question set also practices the whole set together.
+
+## Your profile and saving
+
+Change photo beside your name accepts browser-readable images and creates a small raster thumbnail. The profile photo syncs with settings and is included in export/import backups. Remove photo restores initials. AMOLED mode and accent colors remain configurable.
+
+Review checkboxes are independent and save individual completion timestamps. An 8-second Undo button appears in the completion toast. It restores only that pass and retains later notes or other completed passes. No review, confidence rating or test result is pre-completed.
+
+Sign in using the same ChatGPT account on each device for private per-user progress sync. The website's existing audience is preserved. Look for Cloud saved before switching devices. Offline changes stay on the device. Conflicting device copies require an explicit choice before overwriting. Export a JSON backup for an additional copy; version 1 and version 2 progress remain supported. Uploaded personal materials use per-user D1 metadata and R2 storage. Static course sources are part of the published website.
+
+## Reviews and the daily plan
+
+CVP preserves 51 scheduled items and 153 exact preset review dates, with its closing plan through November 18. There are 237 independent review passes across all 79 numbered course items. MOL review dates remain suggested and editable. Official events/attendance times are not invented.
+
+Set the planning day, daily budget and study window. The planner uses documented Group 1.6 slots, estimates 35/25/15 minutes for passes 1/2/3, includes five-minute breaks and prioritizes weak performance, difficulty, confidence, overdue reviews and exam dates. MOL 1–13 takes priority through October 29 while retaining CVP when both fit. It plans one pass per lecture per day. Logged study time or completed-review estimates, whichever is larger, consume the budget. Capacity warnings identify work that will not fit. Catch-up mode projects a seven-day redistribution and applies only personal dates.
+
+After Review 1, ordinary spacing suggestions are+2/+6 days; difficult topics use+1/+3. After Review 2, the third pass is suggested at+4 days, or+2 when difficult. Difficulty includes a user flag, confidence 1–2, recent MCQ accuracy below 60% or weak learning evidence. Suggestions are capped before the upcoming exam when possible. They do not silently overwrite dates. Apply them explicitly or edit dates, and restore original presets any time.
+
+Readiness is a study heuristic:40% completed reviews,20% confidence and 40% recent MCQ accuracy, weighted equally per lecture. Missing evidence contributes zero. MOL uses midterm scope through October 29 and the full course afterward. Confidence, notes, lecture links, study timers, statistics and the weekly activity heatmap remain available.
+
+## Local development
+
+Source assets live in public/, not generated dist/.
 
     npm ci
-    npm run db:generate   # only after schema changes
     npm run build
 
-For a local database, apply the generated migration once:
+For a fresh local database, apply both checked-in migrations using the supplied Sites environment:
 
-    node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_huge_gladiator.sql
-    npm run dev -- --port 5173 --hostname 127.0.0.1
+    node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d 1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_huge_gladiator.sql
+    node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d 1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0001_purple_norman_osborn.sql
+    npm run dev -- --host 127.0.0.1
 
-Open http://127.0.0.1:5173/signin-with-chatgpt?return_to=/index.html to use the supplied preview identity. Local and production databases are separate. Hosted migration and publication use the Sites workflow.
+Open the printed local URL and /signin-with-chatgpt?return_to=/index.html for the preview identity. Local and production databases are separate. Hosted publication uses the Sites build/source/deployment workflow and existing D1/R2 bindings. The separate review-studio.html is a device-local standalone copy; synchronization/uploads and protected source URLs require the published site.
 
-The separate review-studio.html download works without a server, using device storage and JSON backup transfer. Account synchronization requires the published site. Do not open the downloaded file expecting it to share the hosted site's browser storage.
+## Architecture and validation
 
-## Architecture
-- public/engine.js: pure spacing, readiness, prioritization, timetable-slot allocation and catch-up calculations.
-- public/app.js: UI, migration-compatible local storage, MCQs, timer, question import and cloud conflict handling.
-- public/data.js: original extracted course data and immutable preset dates.
-- app/api/progress/route.ts: authenticated per-user snapshots with validation, same-origin checks, and optimistic revision checks.
-- db/schema.ts and drizzle/: cloud database schema and migration.
+- data.js retains original course items, events, source objectives and immutable review presets.
+- engine.js contains pure spacing, readiness, session aggregation and planner rules.
+- learning-data.js contains source text, references, stable concepts and explained question bank.
+- teaching-data.js contains complete teaching guides and retrieval exercises.
+- learn-engine.js provides transparent core-concept checkpoints.
+- learning-ui.js provides full guides, figures, recall activities and adaptive concept sets.
+- exam-engine.js/exam-tools.js provide selection, shuffled keys, saved absolute deadlines, grading, first-attempt evidence and profile tools.
+- app.js maintains migration-compatible storage, reviews, undo, timers, notes and cloud conflicts.
+- app/api/progress and app/api/materials enforce authenticated user isolation and same-origin/revision checks.
 
-## Validation
-Application checks cover zero seeded completions; 237 independent passes; all eight views; legacy/new backups; reload; MCQ-driven ranking; deadline-aware spacing; immutable presets; budget/breaks; class-slot avoidance; one pass per lecture per day; time already studied; catch-up non-mutation and application; readiness; question import; cloud adoption and conflicting-device protection. API checks cover authentication, per-user isolation, same-origin enforcement, create/read/update, revision conflicts and malformed input. Framework build and TypeScript checks pass. Browser preview confirmed MCQ results affect priorities, completion generates spacing, and preview-account cloud saving survives reload. Preview test data is separate from production and is not seeded into the website.
-
-
-## Teaching and learning upgrade
-
-Open Learn & master for 79 guided core-topic lessons with 244 concept explanations. The 518 graded items comprise 488 authored concept-check variants plus 30 selected past-paper questions with reviewed explanations. These are not 518 independently reviewed past-paper questions. Every graded item explains the correct answer and each distractor. The complete four new PDFs remain available as original files, with 964 extracted pages and an index of 1,370 deduplicated source questions. Questions lacking reviewed explanations, complete options, reliable keys or necessary figures stay in the source-reading index rather than affecting checkpoint grades. Examples of detected source errors are labeled. Booklet anatomy numbers are matched by topic to the current syllabus, and source page links use physical PDF pages rather than the booklets’ inconsistent table-of-contents numbering.
-
-The guided learning loop teaches a concept, asks for active recall, presents an answerable MCQ, explains all options, and revisits weak concepts after other questions. A checkpoint requires all lesson cards read, every core concept answered correctly twice with at least two intervening questions, and at least 80% accuracy over the recent two-times-concept-count attempts (minimum six). A wrong answer resets that concept’s streak. The learner may explicitly move on without passing; the checkpoint stays incomplete. Later recall is prompted on the next day. These are transparent practice criteria, not a claim of genuine comprehension or validated exam mastery. Two differently phrased concept-check variants test the same underlying concept and do not count as separate concepts.
-
-Only first attempts on distinct reviewed past-paper or user-uploaded explained-pack questions per day add MCQ results. Repeating a revealed answer does not inflate that score. Core concept-check mistakes also influence planner difficulty. Reading and learning checkpoints never automatically tick the independent review checkboxes. Learning attempts, card-reading progress, theme, accent and recorded results are included in the existing version-2 backup and private progress synchronization.
-
-Use the AMOLED button in the header for a true-black canvas. The color picker changes the accent. Preferences sync with the account. Colors for confidence and wrong/correct answers retain their semantic meaning.
-
-## Adding more material
-
-Material library → Add material accepts PDF, TXT, Markdown, or explained question-pack JSON (25 MB maximum). Assign a lecture. PDF text is extracted in the browser; the original and extracted text are stored privately with per-user D1 metadata and R2 objects. Other users cannot list or read them. Definitions in explicit term:definition form can become source-based study cards when at least three usable definitions exist. A fully explained question-pack can be practiced inside the tutor, using its supplied key and per-option reasons. Question-pack keys are user supplied, not independently reviewed. New documents become searchable and attach to the chosen lecture; they do not automatically rewrite the curated core guides. Scanned or figure-only pages are flagged and remain available in their original form; automatic OCR and a general conversational AI model are not included. Continued uploads in this chat can be reviewed into the permanent bank.
-
-Question packs require a `questions` array; each record has lectureId, question, options, zero-based answer, explanation, and a reasons array matching the option count. Reading materials and imported text are treated as data, not operational instructions. Do not put API secrets or instructions into a question pack.
-
-The document library has a second migration: drizzle/0001_purple_norman_osborn.sql. Apply it to local previews after the first migration. Hosted publication applies pending schema migrations. R2 binding is BUCKET; D1 remains DB. Existing progress data and the original migration are retained.
-
-Checks additionally cover all lesson/question/reference counts, per-choice explanations, conservative checkpoint rules, immediate-retry exclusion, wrong-answer resets, later recall, no automatic review completion, appearance and learning persistence, backwards-compatible backups, source-definition extraction, remediation rendering, material-upload validation, authenticated ownership, cross-user read rejection, and private text retrieval. Mobile browser preview confirmed AMOLED appearance and per-choice feedback after an incorrect answer. No preview test data is seeded into the published website.
-
-## MOL lecture material integration
-
-The nine supplied PowerPoint decks are now represented by 270 numbered visual slide previews, searchable slide text and speaker notes, and PDF previews. Original PowerPoint files in Downloads were left unchanged. Hidden slides are included so slide numbering remains consistent. The image-heavy MOL 1 and MOL 8 slides received local text recognition; formulas and labels should still be checked against the visible slide. Individual slides can be enlarged. Search and lesson citations distinguish slide numbers from physical transcript page numbers.
-
-MOL Lecture Transcriptions.pdf contains 359 pages. Its bookmarks explicitly identify MOL 1 (pp 2–21), 2 (22–53), 3 (54–98), 5 (99–129), 6 (130–164), 7 (165–204), 8 (205–226), 9 (227–248), 10 (249–265), 11 (266–298), 12 (299–329), and 13 (330–359). There is no lecture 4 transcription. The file is served in chapter sections with a mapping back to original physical page numbers; all pages and selectable text are retained; embedded images are compressed for delivery. The first section includes the cover. The website coverage panel marks slides 1–9 received, slides 10–13 awaiting supply, and lecture 4 transcription missing.
-
-MOL 1–9 gained 54 detailed concept explanations, 108 associated concept-check variants, and 27 lecture-based application questions with explanations for every choice. The bank now contains 653 explained quiz items: 596 authored concept-check variants, 30 reviewed past-paper questions and 27 lecture application questions. All previous concept and question IDs remain intact; saved answers, review checkboxes, dates and notes are retained. More material expands the checkpoint requirements without deleting prior evidence. First attempts on lecture application questions feed the MCQ tracker; repeats of a revealed answer on the same day do not inflate that score.
-
-The material library now holds 14 source records with 1,593 physical pages/slides across the earlier sources and this batch. The nine presentations are displayed as PDF/slide previews, not downloadable original PPTX files. PDF images and slide thumbnails are optimized for delivery; all pages, visual slide previews, extracted text and original numbering are retained. Individual transcript sections remain below the hosting file-size limit. A source note identifies inconsistent solubility wording in MOL 9 slide 12 and an unclear sample question in MOL 7 slide 28; neither is used as an unqualified grading key. The insulin-solubility clarification links the relevant product label.
-
-Validation additionally checks the original slide counts and numbering, preview file existence, complete transcript-part coverage, chapter bookmark ranges, absence of a lecture 4 transcription, exact preservation of prior concept/question IDs, source reference bounds, OCR presence, all per-choice explanations, and three new application questions per lecture. Representative slide previews were visually checked, including pH formulas, strand direction and the amino-acid peptide question.
+Checks cover all guides and source references, source images/pages, stable prior IDs, valid answer keys and reasons, repaired-source labels, no seeded completion, immutable 237-pass plan, all-question practice, distinct-topic spacing, first-attempt idempotency, full-set MCQ aggregation, timer expiry/reload/unanswered grading, safe discard, independent undo, thumbnail validation/backup, per-user API isolation and cloud conflict handling. Browser checks use a separate local preview account and do not seed production progress.

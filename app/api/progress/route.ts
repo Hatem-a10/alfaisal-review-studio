@@ -22,6 +22,7 @@ export async function PUT(request:Request){
 }
 
 function validSnapshot(s: any): boolean {
+ if(s.settings?.profilePhoto!==undefined&&(typeof s.settings.profilePhoto!=='string'||s.settings.profilePhoto.length>100000||(s.settings.profilePhoto!==''&&!/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(s.settings.profilePhoto))))return false;
  const stamp=(v:unknown)=>typeof v==='string'&&Number.isFinite(Date.parse(v));
  const date=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&stamp(v)&&new Date(v).toISOString().slice(0,10)===v;
  for(const [id,record] of Object.entries(s.records)){

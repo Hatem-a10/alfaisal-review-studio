@@ -1,0 +1,354 @@
+{
+  "exams": {
+    "newExplainedItems": 280,
+    "newExplainedItemsMOL1to13": 273,
+    "olderExamItemsOutsideCurrentMidterm": 7,
+    "existingReviewedItemsClarified": 3,
+    "newExamSourceItems": 128,
+    "newExamCoveredDirectly": 110,
+    "newExamRepresentedByEquivalentAdaptation": 18,
+    "newExamItemsUnrepresented": 0,
+    "files": {
+      "mol-exam-2": {
+        "pagesRead": 16,
+        "explainedAdaptationsCitingFile": 42,
+        "originalRecalledItems": 42,
+        "directlyAdapted": 35,
+        "representedByEquivalentAdaptation": 7,
+        "unrepresented": 0
+      },
+      "mol-exam-16": {
+        "pagesRead": 9,
+        "explainedAdaptationsCitingFile": 32,
+        "originalRecalledItems": 33,
+        "directlyAdapted": 24,
+        "representedByEquivalentAdaptation": 9,
+        "unrepresented": 0
+      },
+      "mol-exam-1": {
+        "pagesRead": 11,
+        "explainedAdaptationsCitingFile": 52,
+        "originalRecalledItems": 53,
+        "directlyAdapted": 51,
+        "representedByEquivalentAdaptation": 2,
+        "unrepresented": 0
+      },
+      "mol-midterm": {
+        "pagesRead": 57,
+        "explainedAdaptationsCitingFile": 9,
+        "existingMOL1to13SourceIndexItems": 102,
+        "remainingSourceIndexItems": "Retained; not deleted. Repeated variants and remaining source-only items remain in their source section. See scope note; no blanket claim of separate review is made."
+      },
+      "mol-past": {
+        "pagesRead": 261,
+        "explainedAdaptationsCitingFile": 161,
+        "existingMOL1to13SourceIndexItems": 581,
+        "remainingSourceIndexItems": "Retained; not deleted. Repeated variants and remaining source-only items remain in their source section. See scope note; no blanket claim of separate review is made."
+      }
+    },
+    "bookletScopeNote": "All pages of both booklets remain searchable and all existing513 MOL1–13 source-index entries remain available. Directly cited new explained tasks are counted per file below; many additional repeated booklet tasks occur in the exam-derived adaptations. This is a curated expanded bank, not a claim that each of513 source-index entries has a distinct reviewed explanation. The source index includes repeated tasks, image labels, recalled fragments and some out-of-section questions. No source index entry is deleted. Most MOL14–26 MCQs and later metabolic SAQs remain source-only because outside the current MOL1–13 priority.",
+    "allNewQuestionsAreAdaptations": true,
+    "adaptationPolicy": "Every new graded item is labeled Past paper · adapted. Original recalled wording/source excerpt remains available. Any completed options, repaired keys, replaced missing figures and reconstructed stems are authored study aids rather than official options.",
+    "keyCorrections": [
+      "Lynch syndrome: mismatch repair, not polymerase proofreading",
+      "N-linked glycosylation: asparagine, not arginine",
+      "Stop-loss mutation: UAA→CAA, not UAA→UAG",
+      "Cotranslational order begins with translation, before SRP binding",
+      "RNA template answers require antiparallel strand labels",
+      "Protein thermostability is not explained by protein G–C base pairs",
+      "Asparagine is polar but ordinarily uncharged; the source ionic-interaction item needed a charged alternative",
+      "Cardiac amyloidosis question narrowed toATTR because light chains are also possible",
+      "Glargine: AsnA21→Gly plus two C-terminal B-chain arginines",
+      "Normal stop codons use release factors, not ordinary stop tRNA anticodons",
+      "GAG xylose linker normally attaches to serine in the specified proteoglycan context"
+    ],
+    "verificationReferences": [
+      {
+        "title": "FDA Lantus product label: molecular sequence changes",
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2000/21081lbl.pdf"
+      },
+      {
+        "title": "NCBI: SRP-directed ER targeting",
+        "url": "https://www.ncbi.nlm.nih.gov/books/NBK26841/"
+      },
+      {
+        "title": "NCI Drug Dictionary: cytarabine modified sugar",
+        "url": "https://www.cancer.gov/publications/dictionaries/cancer-drug/def/cytarabine"
+      },
+      {
+        "title": "NCBI Gene CDA: cytidine deamination",
+        "url": "https://www.ncbi.nlm.nih.gov/gene/978"
+      },
+      {
+        "title": "Primary research: cytidine deaminase and araC",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20227960/"
+      }
+    ]
+  },
+  "cvp": {
+    "newExplainedQuestions": 114,
+    "adaptedQuestions": 76,
+    "unchangedReviewedQuestions": 38,
+    "byLecture": {
+      "CVP-P1": 16,
+      "CVP-P4": 5,
+      "CVP-P3": 22,
+      "CVP-P2": 6,
+      "CVP-P7": 1,
+      "CVP-P5": 1,
+      "CVP-P10": 10,
+      "CVP-P6": 4,
+      "CVP-P11": 6,
+      "CVP-P9": 1,
+      "CVP-P8": 2,
+      "CVP-P12": 8,
+      "CVP-P13": 9,
+      "CVP-P17": 10,
+      "CVP-P18": 9,
+      "CVP-P19": 2,
+      "CVP-P16": 2
+    },
+    "pages": [
+      4,
+      109
+    ],
+    "remainingSourceIndexQuestions": 418,
+    "scope": "Cardiac electrophysiology, excitation-contraction coupling, ECG/rhythm, valves/murmurs, cardiac-output/venous-return/baroreflex physiology, lung volumes and mechanics. This is a bounded expansion, not a claim that all 536 CVP source questions have been reviewed.",
+    "skippedWithinFirst150": [
+      {
+        "id": "cvp-booklet-00100ef40e77",
+        "page": 4,
+        "question": "Influx of which of the following ions contributes most to maintaining the plateau in a ventricular myocyte action potential ?",
+        "reason": "Already in the original reviewed bank."
+      },
+      {
+        "id": "cvp-booklet-935db22403cb",
+        "page": 6,
+        "question": "Which of the following currents initiates the slow depolarization (phase 4) of sinoatrial node cells?",
+        "reason": "Already in the original reviewed bank."
+      },
+      {
+        "id": "cvp-booklet-aed83a93cb2b",
+        "page": 8,
+        "question": "If the sinus node stops discharging, what is the expected heart rate (in beats/minute) if the A-V node takes over as the cardiac pacemaker?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-60e3357faab6",
+        "page": 10,
+        "question": "A guy came to the hospital and found to have SA block, what would be his heart rate?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-1cb41a14fe57",
+        "page": 11,
+        "question": "If the AV node is the pacemaker of the heart, what would be the heart rate?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-7cc04c0c7fd3",
+        "page": 12,
+        "question": "During relaxation of cardiac muscle (diastole) which of the following proteins contributes the most to the decline of cytosolic calcium?",
+        "reason": "Already in the original reviewed bank."
+      },
+      {
+        "id": "cvp-booklet-36c8487225e8",
+        "page": 15,
+        "question": "If in an ECG, the voltage at lead I is 0.8 mV and the voltage at lead II is 1.2 mV, what is the voltage at lead III?",
+        "reason": "Already in the original reviewed bank."
+      },
+      {
+        "id": "cvp-booklet-703b8ebc0c9f",
+        "page": 22,
+        "question": "A patient experiences a cardiac arrhythmia and presents with the following ECG, what is the diagnosis of his condition?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-275385465a42",
+        "page": 23,
+        "question": "A 60-year-old man weighing 220 lb had the following ECG, which shows the standard lead II. What is his diagnosis?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-9c0b7e8c566b",
+        "page": 63,
+        "question": "The first heart sound is caused by?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-31418f7bdaac",
+        "page": 65,
+        "question": "When does the third heart sound occur in the ventricular pressure/volume relationship?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-6d96d6e24fb6",
+        "page": 67,
+        "question": "The second heart beat (dub) is created by which one of the following?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-e733621b4769",
+        "page": 68,
+        "question": "A 38 year-old man is participating in a clinical trial of a new drug. This drug leads to an increase in venous compliance and a decrease in cardiac contractility. The star is the intersection point under normal conditions. If only these effects were manifested, which new intersection point would be achieved following administration of the drug?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-53d73477906e",
+        "page": 69,
+        "question": "He was rehydrated by intravenous injections. Which of the following points best describes his venous return cardiac function Curve?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-9d762a926324",
+        "page": 70,
+        "question": "Patient with severe haemorrhage, what is his cardiac/venous return state after all compensatory measures are taken?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-5a32aa6f61ba",
+        "page": 71,
+        "question": "A 32-year-old man is taking part in a trial of an experimental drug. The drug simultaneously decreases arteriolar resistance and decreases myocardial contractility. The star on the attached graph represents the intersection point for the patient before administration of the drug. Which new intersection point will be achieved following drug administration?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-72eafeb88108",
+        "page": 73,
+        "question": "Which of the following is true regarding the new equilibrium point at D that has been reached after surgical removal of some arterioles?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-bf0313d99744",
+        "page": 75,
+        "question": "The cardiac output and venous return graphs of a healthy person are shown in solid lines below. Which of the following is the likely cause of the change shown by the dotted lines at any given moment?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-2a751df73ef5",
+        "page": 78,
+        "question": "Which of the following is a characteristic of the aortic arch baroreceptors?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-e261b82a3c55",
+        "page": 80,
+        "question": "What initially decreases then increases in the renal graph?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-5f325476a1c8",
+        "page": 80,
+        "question": "What decreases mean circulatory filling pressure?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-fbcc280c3cf3",
+        "page": 96,
+        "question": "What is the normal range for Functional Residual Capacity (FRC) in adults?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-8a0dd8518ed9",
+        "page": 96,
+        "question": "Which of the following decreases from age 25 to 65 ?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-9ceb1347cd5b",
+        "page": 97,
+        "question": "Residual volume is included in:",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-babb1317e7ca",
+        "page": 98,
+        "question": "What is the highest compliance for the respiratory system?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-1a59c79f3572",
+        "page": 99,
+        "question": "A patient has developed lung fibrosis in their lung. What is the measured value of RV, FRC and VC of the patient?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-fe2e94751df9",
+        "page": 99,
+        "question": "A 57 yr old heavy smoker comes to your clinic. You diagnose emphysema. Which of the following results will be consistent with pulmonary function tests?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-e04f6b11bc72",
+        "page": 101,
+        "question": "In restrictive lung diseases, what happens to the TLC, RV, and MEF (maximum expiratory flow)?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-805bb563ca93",
+        "page": 103,
+        "question": "A patient suffering a bilateral pneumothorax is taken into the emergency where doctors need to assess the amount of air entering his pleural cavity, what two volumes can they use?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-145737e345ed",
+        "page": 104,
+        "question": "What compliance does the graph show?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-23fa462c7cf1",
+        "page": 105,
+        "question": "What is the effect of surface tension?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-3b06dc432d86",
+        "page": 105,
+        "question": "Alveolar pressure (PA) and intrapleural pressure (Ppl) are measured by a man during a respiratory cycle while his airways are open. Which of the following combinations of PA and Ppl will be obtained at the end of inspiration?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-ecb026af487c",
+        "page": 106,
+        "question": "Which of the following is true:",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-751f293ead43",
+        "page": 106,
+        "question": "Where is the highest compliance in the lung?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-7041078886e8",
+        "page": 106,
+        "question": "What is the best compliance for the respiratory system?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      },
+      {
+        "id": "cvp-booklet-5d7d18be7aa3",
+        "page": 107,
+        "question": "A 65-year-old Caucasian man presents to the clinic for his annual physical examination. Since his last visit, he has noticed progressive worsening of his breathlessness. He can only walk about twenty yards on flat ground without having to stop and get his breath back. He has a 30-year history of smoking two packs of cigarettes per day He is noted to be using accessory muscles for respiration. Wheezing on expiration is noted upon auscultation. If compliances of lung (CL), chest wall (CCW) and respiratory system (CRS) of this patient were measured and compared to corresponding compliances of a healthy person at the same lung volumes, which of the following combinations of changes in these parameters will most likely reflect this patient's condition?",
+        "reason": "Repeated mechanism or figure/case beyond this bounded expansion; remains available in the source-reading index."
+      }
+    ]
+  },
+  "lessons": {
+    "lectures": 13,
+    "sections": 136,
+    "teachingBodyWords": 10797,
+    "fillBlanks": 65,
+    "matchingSets": 13,
+    "expandedExistingCards": 100,
+    "additionalCards": 46,
+    "additionalExplainedQuestions": 109,
+    "coverage": "All source lecture topics have source-linked guide sections, while every new concept card has at least one explained MCQ. Neither guide coverage nor practice checkpoints guarantee examination readiness.",
+    "sharedDeck": "MOL10 and11 share one 28-slide source; topics1–16 are structure/folding,17–28 disease/application, but no official divider is claimed.",
+    "sourceCorrections": [
+      "HFE partner corrected to beta-2 microglobulin using original research PMC24956.",
+      "MOL13 malformed glucose units and universal HbA1c target are not used.",
+      "MOL12 broad secretion statement explicitly excludes cytosolic proteins.",
+      "MOL9 conflicting insulin solubility wording corrected consistently with product label."
+    ]
+  }
+}
