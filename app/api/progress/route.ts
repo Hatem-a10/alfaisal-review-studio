@@ -22,6 +22,9 @@ export async function PUT(request:Request){
 }
 
 function validSnapshot(s: any): boolean {
+ if(s.settings?.englishEnabled!==undefined&&typeof s.settings.englishEnabled!=='boolean')return false;
+ if(s.settings?.examNames!==undefined&&(!s.settings.examNames||typeof s.settings.examNames!=='object'||Array.isArray(s.settings.examNames)||Object.keys(s.settings.examNames).length>64||Object.entries(s.settings.examNames).some(([k,v])=>!/^[a-z0-9][a-z0-9-]{0,119}$/i.test(k)||typeof v!=='string'||!v.trim()||v.length>100)))return false;
+ if(s.settings?.calendarColors!==undefined&&(!s.settings.calendarColors||typeof s.settings.calendarColors!=='object'||Array.isArray(s.settings.calendarColors)||Object.entries(s.settings.calendarColors).some(([k,v])=>!['anatomy','physiology','mol','lab','assessment','break','other','english'].includes(k)||typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v))))return false;
  if(s.settings?.profilePhoto!==undefined&&(typeof s.settings.profilePhoto!=='string'||s.settings.profilePhoto.length>100000||(s.settings.profilePhoto!==''&&!/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(s.settings.profilePhoto))))return false;
  const stamp=(v:unknown)=>typeof v==='string'&&Number.isFinite(Date.parse(v));
  const date=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&stamp(v)&&new Date(v).toISOString().slice(0,10)===v;
