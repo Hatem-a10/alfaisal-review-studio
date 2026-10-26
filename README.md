@@ -74,3 +74,13 @@ Open the printed local URL and /signin-with-chatgpt?return_to=/index.html for th
 - app/api/progress and app/api/materials enforce authenticated user isolation and same-origin/revision checks.
 
 Checks cover all guides and source references, source images/pages, stable prior IDs, valid answer keys and reasons, repaired-source labels, no seeded completion, immutable 237-pass plan, all-question practice, distinct-topic spacing, first-attempt idempotency, full-set MCQ aggregation, timer expiry/reload/unanswered grading, safe discard, independent undo, thumbnail validation/backup, per-user API isolation and cloud conflict handling. Browser checks use a separate local preview account and do not seed production progress.
+
+## CVP Week 1 additions (26 October 2026)
+
+All ten supplied decks/PDFs are indexed: 328 slides/pages across P1–P4 and A1–A5. Both arrhythmia decks support P4; P5 and all original course-plan dates remain unchanged. There are 64 expanded topic sections with inline practice, 140 added application MCQs (12 using focused source figures), 66 focused diagrams, 18 fill-in prompts and nine matching activities. All prior 1,208 bank questions and 43 supplementary checks remain intact.
+
+Choose CVP 112 in Learn & master, then choose the lecture/topic. Material library includes source coverage and presentation downloads.48 embedded narration clips are playable on their source slides, and relevant referenced clips appear in lessons. Narration has not been transcribed. Image-only pericardium text was OCRed; label order may differ from the original image.
+
+Some embedded EMF vector diagrams are omitted by PDF conversion. Presentation downloads preserve those original diagrams. The Normal ECG deck separates audio into slide-linked playable files to fit hosting file limits; its visual presentation retains original slides and diagrams. Source errors are labeled beside relevant content: right sinus-horn fate, usual PAC pause, AV-block classification and flutter ratios. New MCQs are authored study applications, never labeled as verbatim previous-exam items.
+
+Validation checks all64topics rendering, retained question objects/IDs, question grouping/answer keys/reasons, source-page references, local assets/audio, quiz grading/reload persistence, no seeded review completion, exact85% rules, original exams, elimination/undo/timer controls, and schedule personalization.

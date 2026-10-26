@@ -1,0 +1,3 @@
+'use strict';
+const cvpSectionCard=sectionCard;
+sectionCard=function(x,section,i){let html=cvpSectionCard(x,section,i);if(!x.id.startsWith('CVP-'))return html;const refs=section.references||[],narration=refs.flatMap(r=>{const p=sourceById(r.source)?.pages?.find(p=>p.page===r.page);return (p?.audio||[]).map(url=>({url,page:r.page}))});if(narration.length)html=html.replace('<div class="card-sources">',`<details class="topic-narration"><summary>Listen to lecture narration · ${narration.length} source clips</summary>${narration.map(t=>`<label>Slide ${t.page}<audio controls preload="none" src="${esc(t.url)}"></audio></label>`).join('')}</details><div class="card-sources">`);return html};
