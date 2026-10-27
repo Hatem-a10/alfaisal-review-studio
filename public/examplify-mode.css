@@ -34,3 +34,7 @@
 
 #xpExam #xpOriginalCountdown{font:700 18px Arial,sans-serif;color:#fff;font-variant-numeric:tabular-nums}@media(max-width:500px){#xpExam #xpOriginalCountdown{font-size:13px}}
 #xpExam a{color:#388cb1}#xpExam[data-exam-theme=dark] a{color:#80cdea}
+
+/* The palette and device symbols follow the supplied close-ups. */
+#xpExam .xp-palette button{width:30px;height:30px;padding:3px;border:2px solid transparent}#xpExam .xp-palette button span{width:21px;height:21px;border:1px solid #3337;box-shadow:inset 0 1px 2px #ffffff45}#xpExam .xp-palette button[aria-pressed=true]{border:2px solid #3b7095;box-shadow:inset 0 0 0 1px #f1f4ef}#xpExam .xp-status{gap:8px;font-weight:700;font-size:12px}.xp-battery{gap:6px}.xp-color-chevron[aria-expanded=true] svg{transform:rotate(180deg)}
+@media(max-width:500px){#xpExam .xp-status{font-size:10px}#xpExam .xp-palette button{width:26px;height:26px}#xpExam .xp-palette button span{width:17px;height:17px}.xp-battery svg{width:11px;height:16px}}
