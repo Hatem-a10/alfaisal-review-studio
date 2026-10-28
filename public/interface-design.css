@@ -1,6 +1,7 @@
 /* Fluid shell applies to both designs, including the original interface. */
 body>main{width:calc(100% - 230px);max-width:none;min-width:0}
 body.sidebar-hidden>main{margin-left:0;width:100%;max-width:none}
+body.schedule-expanded>main{width:100%!important;max-width:none}
 body>main>#content{min-width:0}
 .interface-design{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);white-space:nowrap}
 .interface-design select{font-size:11px;padding:7px 25px 7px 9px;max-width:110px}
