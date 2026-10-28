@@ -1,0 +1,146 @@
+/* Fluid shell applies to both designs, including the original interface. */
+body>main{width:calc(100% - 230px);max-width:none;min-width:0}
+body.sidebar-hidden>main{margin-left:0;width:100%;max-width:none}
+body>main>#content{min-width:0}
+.interface-design{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);white-space:nowrap}
+.interface-design select{font-size:11px;padding:7px 25px 7px 9px;max-width:110px}
+@media(max-width:1100px) and (min-width:851px){body>main{width:calc(100% - 195px)}}
+@media(max-width:850px){body>main{width:100%}}
+@media(max-width:550px){.interface-design>span{display:none}.interface-design select{max-width:92px;padding:7px;font-size:10px}}
+
+/* Modern is an additive skin. Classic keeps the established styles. */
+html[data-ui=modern]{--bg:#f3f5f7;--ink:#202d3b;--muted:#697785;--line:#e0e6eb;--white:#fff;--surface:var(--white);--light:color-mix(in srgb,var(--accent) 7%,#f5f8f7);--green:var(--accent);--ui-shadow:0 3px 16px #22374d05;--ui-radius:18px}
+html[data-ui=modern] body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink)}
+html[data-ui=modern] body>main{width:calc(100% - 248px);margin-left:248px;padding:0 clamp(24px,3.1vw,68px)}
+html[data-ui=modern] body.sidebar-hidden>main{width:100%;margin-left:0}
+html[data-ui=modern] #mainSidebar{width:248px;padding:30px 16px 20px;background:var(--white);border-right:1px solid var(--line);overflow-y:auto;scrollbar-width:thin;z-index:20}
+html[data-ui=modern] .profile-brand{margin:0 6px;min-height:44px}
+html[data-ui=modern] .brand{gap:11px;font-size:15px;letter-spacing:-.4px;line-height:1.4}
+html[data-ui=modern] .brandmark{width:40px;height:40px;min-width:40px;border-radius:13px;font-size:16px;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 15%,transparent)}
+html[data-ui=modern] .student{margin:26px 14px 25px;font-size:8px;letter-spacing:1.5px;line-height:2.4}
+html[data-ui=modern] .student strong{font-size:11px;font-weight:600;letter-spacing:.2px}
+html[data-ui=modern] #mainSidebar nav{gap:5px}
+html[data-ui=modern] #mainSidebar nav::before{content:'WORKSPACE';font-size:9px;letter-spacing:1.7px;color:var(--muted);padding:0 14px 12px;font-weight:600}
+html[data-ui=modern] #mainSidebar nav button{min-height:45px;padding:12px 14px;border-radius:11px;gap:12px;font-size:12px;font-weight:500;color:var(--muted);transition:background .15s,color .15s}
+html[data-ui=modern] #mainSidebar nav button:hover{background:var(--bg);color:var(--ink)}
+html[data-ui=modern] #mainSidebar nav button.active{color:var(--accent);background:var(--light);box-shadow:inset 3px 0 var(--accent);font-weight:700}
+html[data-ui=modern] #mainSidebar .nav-icon{width:19px;height:19px}
+html[data-ui=modern] .nav-extras{margin-top:14px;border-top:1px solid var(--line);padding-top:13px}
+html[data-ui=modern] .nav-extras>summary{padding:12px 14px;font-size:12px;color:var(--muted)}
+html[data-ui=modern] .nav-extras>div{padding:5px 0}
+html[data-ui=modern] .sidebar-foot{padding-top:28px}
+html[data-ui=modern] .sidebar-foot .sync-widget{background:var(--bg);border-color:transparent;border-radius:13px}
+html[data-ui=modern] .sync-widget>summary{padding:13px 12px;font-size:10px}
+html[data-ui=modern] .sync-widget>summary small{font-size:9px;opacity:.8}
+html[data-ui=modern] main>header{height:auto;min-height:88px;gap:14px;padding:19px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+html[data-ui=modern] .breadcrumb{font-size:9px;letter-spacing:1.5px;margin-right:auto}
+html[data-ui=modern] .breadcrumb span{margin:0 9px}
+html[data-ui=modern] .sidebar-toggle{width:36px;height:36px;border-radius:10px;background:var(--white);border-color:var(--line)}
+html[data-ui=modern] main>header .appearance-controls{margin:0;gap:9px}
+html[data-ui=modern] main>header button,html[data-ui=modern] main>header input,html[data-ui=modern] .interface-design select{min-height:33px;border-radius:8px;font-size:10px;background:var(--white);border-color:var(--line);color:var(--ink)}
+html[data-ui=modern] .datecontrol{font-size:10px;gap:7px}
+html[data-ui=modern] .datecontrol>span{display:none}
+html[data-ui=modern] .interface-design>span{font-size:9px}
+html[data-ui=modern] .intro{margin:38px 0 27px;align-items:center;gap:20px}
+html[data-ui=modern] h1{font-size:clamp(26px,2.35vw,40px);letter-spacing:-1.5px;line-height:1.2;margin:9px 0 11px;overflow-wrap:anywhere}
+html[data-ui=modern] .intro .eyebrow{font-size:9px;letter-spacing:1.8px;font-weight:600}
+html[data-ui=modern] .intro p{font-size:12px;line-height:1.8;margin:0;max-width:80ch}
+html[data-ui=modern] .intro>.pill{font-size:8px;padding:8px 11px;border:1px solid var(--line);background:var(--white);color:var(--muted);letter-spacing:.5px;border-radius:8px;white-space:nowrap}
+html[data-ui=modern] main :is(.panel,.stat,.readiness-card,.document-card,.method,.teaching-card,.adaptive-question,.checkpoint-card){border:1px solid var(--line);border-radius:var(--ui-radius);box-shadow:var(--ui-shadow);background:var(--white)}
+html[data-ui=modern] main .panel{padding:26px;margin-bottom:22px}
+html[data-ui=modern] h2{font-size:17px;font-weight:700;letter-spacing:-.4px}
+html[data-ui=modern] main .section-head{gap:16px;margin-bottom:20px}
+html[data-ui=modern] main .section-sub{font-size:12px;line-height:1.8}
+html[data-ui=modern] main button{transition:background .15s,border-color .15s,box-shadow .15s;border-radius:9px}
+html[data-ui=modern] main button:hover{background:var(--light);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+html[data-ui=modern] main button.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600;box-shadow:0 3px 9px color-mix(in srgb,var(--accent) 14%,transparent)}
+html[data-ui=modern] main button.primary:hover{filter:brightness(.94)}
+html[data-ui=modern] main .linkbtn{color:var(--accent);background:transparent;border:0}
+html[data-ui=modern] .command-hero{background:linear-gradient(115deg,#193b39,#244945);border:1px solid #ffffff0a;border-radius:22px;padding:34px 38px;grid-template-columns:1fr 250px;gap:34px;color:#fff;box-shadow:0 8px 24px #183d3510}
+html[data-ui=modern] .command-hero h2{font-size:18px;color:#fff;margin:0}
+html[data-ui=modern] .command-hero .section-head{justify-content:flex-start;gap:16px;margin-bottom:20px}
+html[data-ui=modern] .command-hero .pill{font-size:8px;letter-spacing:.7px;background:#ffffff18;color:#e7f2c6;border:1px solid #ffffff14;border-radius:6px}
+html[data-ui=modern] .hero-days{font-size:clamp(36px,4vw,58px);line-height:1.1;font-weight:600;letter-spacing:-2.6px;margin:12px 0}
+html[data-ui=modern] .command-hero p{color:#d3e0de;font-size:12px;line-height:1.8}
+html[data-ui=modern] .command-hero button{background:#fff;color:#24423a;padding:11px 17px;border:0;border-radius:9px;margin-top:8px}
+html[data-ui=modern] .command-hero button:hover{background:#ebf4ee}
+html[data-ui=modern] .hero-side{border-left:1px solid #ffffff25;padding-left:30px;align-self:center}
+html[data-ui=modern] .hero-side>span{font-size:8px;letter-spacing:1.6px;color:#b9ceca}
+html[data-ui=modern] .hero-side p{font-size:18px;line-height:1.7;letter-spacing:-.4px;color:#f1f6f4;margin:15px 0}
+html[data-ui=modern] .hero-side small{font-size:10px;color:#b9ceca;line-height:1.6;display:block}
+html[data-ui=modern] .stats{gap:16px;margin:21px 0}
+html[data-ui=modern] .stat{padding:23px 25px;position:relative;overflow:hidden}
+html[data-ui=modern] .stat .eyebrow{font-size:9px;letter-spacing:1px;color:var(--muted)}
+html[data-ui=modern] .stat .value{font-size:32px;letter-spacing:-1.4px;margin:15px 0 5px}
+html[data-ui=modern] .stat small{font-size:11px;line-height:1.6}
+html[data-ui=modern] .readiness-grid{gap:16px;margin:20px 0}
+html[data-ui=modern] .readiness-card{padding:22px 25px}
+html[data-ui=modern] .grid{grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:23px;align-items:start}
+html[data-ui=modern] .notice{font-size:11px;line-height:1.8;border-radius:10px;padding:13px 15px;background:color-mix(in srgb,#c29c52 8%,var(--white));color:#806335}
+html[data-ui=modern] .day-course>h3{font-size:10px;letter-spacing:1.1px;padding:12px 0 13px}
+html[data-ui=modern] .dated-review{padding:19px 0}
+html[data-ui=modern] .dated-review input{width:18px;height:18px;margin-top:2px}
+html[data-ui=modern] .dated-review strong{font-size:14px;font-weight:600;letter-spacing:-.15px}
+html[data-ui=modern] .dated-review small{font-size:11px;margin-top:6px}
+html[data-ui=modern] .dated-review-actions{margin:12px 0 0 29px;gap:8px}
+html[data-ui=modern] .dated-review-actions button{border:0;background:var(--bg);padding:7px 10px;min-height:30px;font-size:10px;color:var(--muted)}
+html[data-ui=modern] .dated-review-actions button:first-child{background:var(--light);color:var(--accent)}
+html[data-ui=modern] .day-overdue{border-top:3px solid color-mix(in srgb,#b6784e 55%,var(--white))}
+html[data-ui=modern] .day-overdue>.section-head h2{color:#9e623f}
+html[data-ui=modern] main :is(.tabs,.learning-tabs,.library-tabs){gap:5px;background:color-mix(in srgb,var(--ink) 4%,var(--bg));border:1px solid var(--line);padding:5px;border-radius:12px;width:fit-content;max-width:100%}
+html[data-ui=modern] main :is(.tabs,.learning-tabs,.library-tabs) button{background:transparent;color:var(--muted);border:0;border-radius:8px;padding:9px 13px;font-size:11px}
+html[data-ui=modern] main :is(.tabs,.learning-tabs,.library-tabs) button.selected{background:var(--white);color:var(--accent);box-shadow:0 2px 5px #23333f0a;font-weight:700}
+html[data-ui=modern] .learning-layout{grid-template-columns:250px minmax(0,1fr);gap:23px;align-items:start}
+html[data-ui=modern] .lesson-catalog{border:1px solid var(--line);border-radius:16px;background:var(--white);overflow:hidden;box-shadow:var(--ui-shadow)}
+html[data-ui=modern] .catalog-head{padding:20px;border-bottom:1px solid var(--line)}
+html[data-ui=modern] .catalog-head h3{font-size:13px;margin-bottom:15px}
+html[data-ui=modern] .catalog-head :is(input,select){font-size:11px;background:var(--bg);border-color:transparent;border-radius:8px}
+html[data-ui=modern] .catalog-list{padding:8px;scrollbar-width:thin}
+html[data-ui=modern] .catalog-list button{border-radius:11px;margin:2px 0;padding:15px 13px;border:1px solid transparent;background:transparent}
+html[data-ui=modern] .catalog-list button.chosen{background:var(--light);border-color:color-mix(in srgb,var(--accent) 15%,var(--line));box-shadow:inset 3px 0 var(--accent)}
+html[data-ui=modern] .catalog-list button:hover{background:var(--bg)}
+html[data-ui=modern] .catalog-list button.lesson-mastered{background:#e8f5ec;color:#285c3b;border-color:#cce6d2;box-shadow:inset 3px 0 #5f9d73}
+html[data-ui=modern] .catalog-list button.lesson-mastered.chosen{box-shadow:inset 3px 0 #5f9d73,0 0 0 1px #9bcca9}
+html[data-ui=modern] .catalog-list button.lesson-mastered small{color:#467452}
+html[data-ui=modern] .catalog-list button h4{font-size:12px;line-height:1.6}
+html[data-ui=modern] .learning-heading{padding:7px 0 18px}
+html[data-ui=modern] .learning-heading h2{font-size:26px;letter-spacing:-.8px}
+html[data-ui=modern] .teaching-card{padding:32px}
+html[data-ui=modern] .teaching-explanation{font-size:15px;line-height:1.95;max-width:85ch}
+html[data-ui=modern] .teaching-rule{padding:18px 22px;background:var(--light);border-radius:0 12px 12px 0;font-size:20px;line-height:1.7}
+html[data-ui=modern] .topic-navigation{gap:8px}
+html[data-ui=modern] .mcq-option-row{background:var(--bg);border-color:var(--line);border-radius:14px;margin:11px 0}
+html[data-ui=modern] .mcq-option-row .answer-option{min-height:62px;font-size:14px;padding:16px 18px}
+html[data-ui=modern] .mcq-option-row:has(input:checked){background:var(--light);border-color:var(--accent)}
+html[data-ui=modern] .mcq-option-row.option-struck{opacity:.65}
+html[data-ui=modern] .eye-control{border-radius:0 14px 14px 0}
+html[data-ui=modern] .deck-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:20px}
+html[data-ui=modern] .deck-grid article{padding:28px;border-radius:18px}
+html[data-ui=modern] .workflow-actions{align-items:end;gap:14px;margin:0 0 22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+html[data-ui=modern] .workflow-actions label{min-width:150px;font-size:11px;line-height:1.7}
+html[data-ui=modern] .workflow-actions :is(input,select){display:block;width:100%;margin-top:6px}
+html[data-ui=modern] .workflow-actions label:has(input[type=checkbox]){display:flex;align-items:center;gap:8px;min-width:130px;align-self:center}
+html[data-ui=modern] .workflow-actions input[type=checkbox]{width:16px;margin:0}
+html[data-ui=modern] .anki-frame{height:clamp(340px,57vh,680px);border-radius:14px;border-color:var(--line);margin:22px 0}
+html[data-ui=modern] .schedule-toolbar{padding:18px;background:var(--white);border:1px solid var(--line);border-radius:16px;gap:14px}
+html[data-ui=modern] .document-card{padding:26px}
+html[data-ui=modern] .document-card h3{font-size:14px}
+html[data-ui=modern] main>footer{font-size:9px;padding:24px 0;margin-top:32px;color:var(--muted);line-height:1.8}
+html[data-ui=modern] dialog:not(#xpExam){border-radius:20px;border-color:var(--line);box-shadow:0 24px 100px #12283826}
+html[data-ui=modern] dialog::backdrop{background:#172b3b77;backdrop-filter:blur(4px)}
+html[data-ui=modern] #timerBar{border-radius:14px;box-shadow:0 8px 35px #172d3420;border-color:var(--line)}
+html[data-ui=modern][data-theme=amoled]{--bg:#000;--white:#0d1115;--surface:#0d1115;--ink:#e7edf3;--muted:#99a7b5;--line:#242d35;--light:color-mix(in srgb,var(--accent) 12%,#0d1215);--ui-shadow:none;color-scheme:dark}
+html[data-ui=modern][data-theme=amoled] body{background:#000}
+html[data-ui=modern][data-theme=amoled] .command-hero{background:linear-gradient(115deg,#102726,#162c29);border-color:#29423b}
+html[data-ui=modern][data-theme=amoled] .notice{color:#cdb784}
+html[data-ui=modern][data-theme=amoled] .day-overdue>.section-head h2{color:#e2ab83}
+html[data-ui=modern][data-theme=amoled] main .mcq-option-row{background:#141a20}
+html[data-ui=modern][data-theme=amoled] .command-hero button{background:#e2ede6;color:#1c3930}
+html[data-ui=modern][data-theme=amoled] .catalog-list button.lesson-mastered{background:#142b1e;color:#b7e2c3;border-color:#2f503c}
+html[data-ui=modern][data-theme=amoled] .catalog-list button.lesson-mastered small{color:#9bc8a8}
+@media(min-width:851px){html[data-ui=modern] #timerBar{left:272px}html[data-ui=modern] body.sidebar-hidden #timerBar{left:24px}}
+@media(max-width:1250px){html[data-ui=modern] .breadcrumb{display:none}html[data-ui=modern] .command-hero{grid-template-columns:1fr 200px}html[data-ui=modern] .grid{grid-template-columns:minmax(0,1fr) 270px}html[data-ui=modern] .learning-layout{grid-template-columns:215px minmax(0,1fr)}}
+@media(max-width:1100px){html[data-ui=modern] #mainSidebar{width:220px;padding-left:12px;padding-right:12px}html[data-ui=modern] body>main{margin-left:220px;width:calc(100% - 220px);padding:0 25px}html[data-ui=modern] body.sidebar-hidden>main{margin-left:0;width:100%}html[data-ui=modern] .grid{grid-template-columns:1fr}html[data-ui=modern] .right-column{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}html[data-ui=modern] .right-column .panel{margin:0}html[data-ui=modern] .hero-side{padding-left:22px}html[data-ui=modern] #timerBar{left:240px}html[data-ui=modern] .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){html[data-ui=modern] #mainSidebar{position:static;width:100%;height:auto;padding:18px 20px;border-right:0;border-bottom:1px solid var(--line);overflow:visible}html[data-ui=modern] body>main{width:100%;margin-left:0;padding:0 22px}html[data-ui=modern] .profile-brand{margin:0}html[data-ui=modern] .student{display:none}html[data-ui=modern] #mainSidebar nav{display:flex;flex-wrap:wrap;margin-top:16px;gap:5px}html[data-ui=modern] #mainSidebar nav::before{display:none}html[data-ui=modern] #mainSidebar nav button{min-height:40px;font-size:11px;padding:10px}html[data-ui=modern] .nav-extras{border:0;padding:0;margin:0}html[data-ui=modern] .nav-extras>summary{padding:10px}html[data-ui=modern] .sidebar-foot{padding-top:14px}html[data-ui=modern] .sidebar-foot .sync-widget{max-width:100%}html[data-ui=modern] main>header{min-height:74px;padding:15px 0;gap:10px}html[data-ui=modern] .learning-layout{grid-template-columns:1fr}html[data-ui=modern] .lesson-catalog{max-height:310px}html[data-ui=modern] .catalog-head{padding:15px}html[data-ui=modern] .catalog-list{height:155px}html[data-ui=modern] .intro{margin-top:28px}html[data-ui=modern] #timerBar{left:15px}html[data-ui=modern] .learning-heading h2{font-size:23px}}
+@media(max-width:600px){html[data-ui=modern] body>main{padding:0 16px}html[data-ui=modern] main>header{gap:8px}html[data-ui=modern] .appearance-controls{margin-left:auto!important}html[data-ui=modern] .interface-design{margin-left:auto}html[data-ui=modern] .datecontrol{margin-left:0}html[data-ui=modern] .intro>.pill{display:none}html[data-ui=modern] h1{font-size:28px;letter-spacing:-1px}html[data-ui=modern] .intro p{font-size:11px}html[data-ui=modern] .command-hero{grid-template-columns:1fr;padding:25px;border-radius:18px;gap:18px}html[data-ui=modern] .hero-side{display:none}html[data-ui=modern] .hero-days{font-size:43px}html[data-ui=modern] .stats{gap:10px;margin:14px 0}html[data-ui=modern] .stat{padding:17px}html[data-ui=modern] .stat .value{font-size:27px}html[data-ui=modern] .stat small{font-size:10px}html[data-ui=modern] main .panel{padding:19px;border-radius:15px}html[data-ui=modern] .right-column{display:block}html[data-ui=modern] .right-column .panel{margin-bottom:18px}html[data-ui=modern] .readiness-grid{gap:10px}html[data-ui=modern] .readiness-card{padding:16px}html[data-ui=modern] .teaching-card{padding:20px}html[data-ui=modern] .teaching-rule{font-size:18px;padding:15px}html[data-ui=modern] .mcq-option-row .answer-option{font-size:13px;padding:13px;gap:10px}html[data-ui=modern] main :is(.tabs,.learning-tabs,.library-tabs) button{font-size:10px;padding:8px 10px}html[data-ui=modern] main .section-head{gap:10px}html[data-ui=modern] .workflow-actions label{min-width:100%}html[data-ui=modern] .deck-grid article{padding:20px}}
+@media(prefers-reduced-motion:reduce){html[data-ui=modern] main button,html[data-ui=modern] #mainSidebar nav button{transition:none}}
