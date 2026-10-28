@@ -1,0 +1,83 @@
+/* Compact teaching, consistent controls and calm hierarchy. */
+html[data-ui=modern] .learning-heading{padding:20px 24px;margin-bottom:14px}
+html[data-ui=modern] .learning-heading h2{font-size:22px;margin:8px 0;line-height:1.3}
+html[data-ui=modern] .learning-heading p{margin:5px 0;font-size:11px;line-height:1.6}
+html[data-ui=modern] .learning-heading .section-head{margin-bottom:8px}
+html[data-ui=modern] .learning-heading .coverage-summary{padding-top:9px;gap:7px}
+html[data-ui=modern] .learning-heading .learning-tabs{margin:12px 0 0}
+html[data-ui=modern] .guide-toolbar{padding:13px 18px;margin-bottom:12px}
+html[data-ui=modern] .guide-toolbar p{font-size:10px;margin:7px 0 0}
+html[data-ui=modern] .complete-guide .topic-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:8;background:var(--white);padding:12px 14px;border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 12px #172c3a0b}
+html[data-ui=modern] .complete-guide .topic-controls label{display:grid;gap:4px;flex:1;min-width:min(100%,220px);font-size:10px;color:var(--muted)}
+html[data-ui=modern] .complete-guide .topic-controls select{width:100%;font-size:12px}
+html[data-ui=modern] .topic-navigation{display:flex;gap:7px}
+html[data-ui=modern] .topic-navigation button{font-size:11px;padding:9px 11px;white-space:nowrap}
+html[data-ui=modern] .inline-topic-questions{margin-top:28px;padding:24px 0 0;border-top:1px solid var(--line)}
+html[data-ui=modern] .inline-topic-questions>.section-head{margin-bottom:8px}
+html[data-ui=modern] .inline-topic-questions>p.muted{font-size:12px;line-height:1.7}
+html[data-ui=modern] .concept-question{padding:24px 0;border-top:1px solid var(--line)}
+html[data-ui=modern] .concept-question h3{font-size:16px;line-height:1.65}
+html[data-ui=modern] .answer-feedback{margin-top:16px;padding:16px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+html[data-ui=modern] .answer-feedback.retry{border-left:3px solid #d05a5a}
+html[data-ui=modern] .answer-feedback.success{border-left:3px solid #45a76a}
+html[data-ui=modern] .inline-score-bottom{padding:12px 0}
+html[data-ui=modern] .inline-quiz-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+html[data-ui=modern] .dated-review-actions button:not(:first-child){opacity:.78}
+html[data-ui=modern] .day-main-tasks{border-top:3px solid var(--accent)}
+html[data-ui=modern] .day-overdue details>summary,html[data-ui=modern] .ui-disclosure>summary{cursor:pointer;list-style:none;font-size:12px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:10px;padding:15px 17px;border-radius:12px;background:var(--white);border:1px solid var(--line)}
+html[data-ui=modern] .day-overdue details>summary:before,html[data-ui=modern] .ui-disclosure>summary:before{content:'›';font-size:20px;line-height:1;color:var(--accent);transition:transform .15s}
+html[data-ui=modern] .day-overdue details[open]>summary:before,html[data-ui=modern] .ui-disclosure[open]>summary:before{transform:rotate(90deg)}
+html[data-ui=modern] .ui-disclosure{min-width:0;margin-bottom:20px}
+html[data-ui=modern] .ui-disclosure[open]>summary{margin-bottom:12px}
+html[data-ui=modern] .ui-disclosure .right-column{display:block}
+html[data-ui=modern] .ui-disclosure .right-column>.panel{margin-bottom:14px}
+html[data-ui=modern] .ui-disclosure .panel{margin-bottom:0}
+html[data-ui=modern] .day-overdue details>summary{margin-top:12px;background:var(--bg)}
+html[data-ui=modern] .et-practice-tabs{display:flex;gap:6px;padding:5px;background:var(--bg);border:1px solid var(--line);border-radius:12px;width:fit-content;max-width:100%;margin:20px 0 16px}
+html[data-ui=modern] .et-practice-tabs button{border:0;background:transparent;color:var(--muted);padding:10px 12px;font-size:11px}
+html[data-ui=modern] .et-practice-tabs button.selected{background:var(--white);color:var(--accent);box-shadow:0 2px 6px #23333f12}
+html[data-ui=modern] .et-workspace>.ui-disclosure{margin:0 0 14px}
+html[data-ui=modern] .ui-advanced-fields{padding:4px 14px 12px}
+html[data-ui=modern] .ui-advanced-fields>label{display:grid;gap:7px;font-size:11px;color:var(--muted);max-width:360px}
+html[data-ui=modern] .ui-advanced-fields>details{margin:12px 0}
+html[data-ui=modern] .et-results-table{margin:24px 0;overflow:auto;border:1px solid var(--line);border-radius:12px}
+html[data-ui=modern] .et-results-table table{width:100%;border-collapse:collapse}
+html[data-ui=modern] .et-results-table th,html[data-ui=modern] .et-results-table td{padding:12px;text-align:left;border-bottom:1px solid var(--line);font-size:12px}
+html[data-ui=modern] .et-question{margin:20px 0 0;padding:24px 0;border-top:1px solid var(--line)}
+html[data-ui=modern] .et-explanation{margin-top:18px;padding:18px;background:var(--bg);border-radius:12px}
+html[data-ui=modern] .ui-anki-toolbar{display:flex;align-items:center;gap:10px;padding-bottom:14px}
+html[data-ui=modern] .ui-anki-toolbar>.ui-disclosure{flex:1;margin:0}
+html[data-ui=modern] .ui-anki-toolbar>.ui-disclosure>summary{padding:10px 12px}
+html[data-ui=modern] .ui-anki-filter-fields{display:flex;align-items:end;gap:10px;flex-wrap:wrap;padding:12px 0}
+html[data-ui=modern] .ui-anki-filter-fields label{flex:1;min-width:140px}
+html[data-ui=modern] .anki-frame{height:clamp(380px,65vh,760px)}
+html[data-ui=modern] main button,html[data-ui=modern] main input,html[data-ui=modern] main select{min-height:36px}
+html[data-ui=modern] main :is(button,input,select,textarea):focus-visible{outline-color:var(--accent)}
+.ui-density{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted)}
+.ui-density select{min-height:33px;border-radius:8px;font-size:10px;padding:7px 9px;background:var(--white);color:var(--ink);border:1px solid var(--line)}
+.ui-rail-toggle{display:grid;place-items:center;flex:none;width:36px;height:36px;padding:8px!important;border-radius:10px}
+.ui-rail-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ui-mobile-nav{display:none}
+@media(min-width:851px){html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden)>#mainSidebar{width:72px;padding:22px 8px;overflow:visible;align-items:stretch}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden)>main{margin-left:72px;width:calc(100% - 72px)}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .profile-brand{margin:0;justify-content:center}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .brand>span:not(.brandmark),html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) :is(.student,.profile-controls,.profile-upload-icon),html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) #mainSidebar nav::before,html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) #mainSidebar nav button>span,html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras summary>span,html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .sidebar-foot{display:none}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) #mainSidebar nav{margin-top:25px}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) #mainSidebar nav button{justify-content:center;padding:12px}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras{position:relative}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras>summary{display:grid;place-items:center;padding:12px}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras>summary .nav-icon{margin:0}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras[open]>div{position:absolute;left:57px;bottom:0;width:220px;padding:8px;background:var(--white);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px #0002;z-index:35}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras[open]>div button{justify-content:flex-start}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) .nav-extras[open]>div button>span{display:inline}html[data-ui=modern] body.sidebar-rail:not(.sidebar-hidden) #timerBar{left:90px}}
+html[data-ui=modern] #toast[data-tone=routine]:not(:has(.toast-undo)){font-size:11px;padding:9px 14px;opacity:.94}
+html[data-ui=modern] #toast[data-tone=attention]{border:1px solid #e69a65;font-weight:600}
+html[data-density=compact][data-ui=modern] .intro{margin:22px 0 16px}
+html[data-density=compact][data-ui=modern] main>header{min-height:65px;padding:12px 0}
+html[data-density=compact][data-ui=modern] main .panel{padding:16px;margin-bottom:12px}
+html[data-density=compact][data-ui=modern] .dated-review{padding:10px 0}
+html[data-density=compact][data-ui=modern] .stats{gap:9px;margin:12px 0}
+html[data-density=compact][data-ui=modern] .stat{padding:15px}
+html[data-density=compact][data-ui=modern] .concept-question{padding:15px 0}
+html[data-density=compact][data-ui=modern] .mcq-option-row .answer-option{min-height:48px;padding:11px 14px}
+html[data-density=compact][data-ui=modern] .anki-frame{height:clamp(320px,58vh,650px)}
+#uiImageViewer{width:min(1100px,calc(100vw - 24px));height:min(90vh,900px);max-width:none;max-height:calc(100vh - 24px);padding:0;background:var(--white);color:var(--ink);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+#uiImageViewer::backdrop{background:#08131dcc;backdrop-filter:none}
+.ui-image-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ui-image-tools{display:flex;align-items:center;gap:8px;font-size:12px}.ui-image-tools button{min-width:36px;min-height:36px;padding:6px;font-size:18px}.ui-image-tools a{white-space:nowrap;font-size:11px}.ui-image-tools span{min-width:38px;text-align:center}
+.ui-image-stage{height:calc(100% - 62px);overflow:auto;display:block;text-align:center;background:var(--bg);padding:16px;overscroll-behavior:contain}.ui-image-stage img{height:auto;max-width:none;min-width:50%;vertical-align:top}
+html.ui-image-open,html.ui-image-open body{overflow:hidden}
+@media(max-width:850px){.ui-rail-toggle{display:none}.ui-density>span{display:none}html[data-ui=modern] .complete-guide .topic-controls{top:0}}
+@media(max-width:600px){html[data-ui=modern] body{padding-bottom:74px}html[data-ui=modern] #mainSidebar{display:none;position:fixed;inset:0 auto 0 0;width:min(300px,86vw);height:100dvh;overflow-y:auto;z-index:80;box-shadow:0 0 0 100vmax #081018a8;padding:22px 16px}html[data-ui=modern] body.mobile-menu-open:not(.sidebar-hidden)>#mainSidebar{display:flex}html[data-ui=modern] body.mobile-menu-open #mainSidebar nav{display:grid;gap:4px}html[data-ui=modern] body.mobile-menu-open #mainSidebar nav button{min-height:44px;justify-content:flex-start}html[data-ui=modern] body.mobile-menu-open #mainSidebar .student{display:block}html[data-ui=modern] body.mobile-menu-open #mainSidebar .nav-extras{display:block}html[data-ui=modern] body.mobile-menu-open #mainSidebar .sidebar-foot{margin-top:20px}.ui-mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;padding:6px 6px max(6px,env(safe-area-inset-bottom));background:var(--white);border-top:1px solid var(--line);box-shadow:0 -4px 18px #15283712}.ui-mobile-nav button{border:0!important;background:transparent!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 2px;min-height:52px;border-radius:9px;color:var(--muted);font-size:9px}.ui-mobile-nav button .nav-icon{width:19px;height:19px;margin:0}.ui-mobile-nav button.active{color:var(--accent);background:var(--light)!important}html[data-ui=modern] .complete-guide .topic-controls{position:sticky;top:0;gap:7px}html[data-ui=modern] .topic-navigation button{font-size:10px;padding:8px}html[data-ui=modern] .et-practice-tabs{width:100%;flex-wrap:wrap}html[data-ui=modern] .et-practice-tabs button{flex:1;min-width:120px}html[data-ui=modern] .ui-anki-toolbar{align-items:stretch;flex-wrap:wrap}.ui-density select{max-width:96px}.ui-image-header{align-items:flex-start;flex-wrap:wrap}.ui-image-tools a{display:none}.ui-image-stage{height:calc(100% - 90px)}html[data-ui=modern] #timerBar{bottom:82px}}
+@media(prefers-reduced-motion:reduce){html[data-ui=modern] .ui-disclosure>summary:before{transition:none}}
+/* Keep occasional task actions available without crowding each row. */
+.ui-task-more{position:relative}.ui-task-more summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:19px;line-height:1.2}.ui-task-more summary::-webkit-details-marker{display:none}.ui-task-more>div{position:absolute;right:0;top:100%;z-index:20;min-width:190px;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px #0003}.ui-task-more>div button{display:flex;align-items:center;gap:8px;width:100%;white-space:nowrap}.ui-task-more button[data-timer]::after{content:'Start timer'}.ui-task-more button[data-edit]::after{content:'Edit notes & dates'}
