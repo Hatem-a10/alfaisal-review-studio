@@ -5,23 +5,27 @@ export async function GET(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
- return json(row?{revision:row.revision,snapshot:JSON.parse(row.snapshot),updatedAt:row.updated_at}:{revision:0,snapshot:null});
+ let snapshot=row?JSON.parse(row.snapshot):null;if(snapshot?.r2Snapshot){if(!env.BUCKET)return json({error:'Cloud file storage is unavailable.'},503);const obj=await env.BUCKET.get(snapshot.r2Snapshot);if(!obj)return json({error:'Cloud snapshot is unavailable. Your device copy is retained.'},503);snapshot=await new Response(obj.body).json()}
+ return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at}:{revision:0,snapshot:null});
 }
 export async function PUT(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
- const raw=await request.text();if(raw.length>2000000)return json({error:'Progress backup is too large.'},413);
+ const raw=await request.text();if(raw.length>12000000)return json({error:'Progress backup is too large.'},413);
  let data;try{data=JSON.parse(raw)}catch{return json({error:'Invalid JSON.'},400)}
  if(!Number.isSafeInteger(data.revision)||data.revision<0||data.snapshot?.app!=='alfaisal-review-studio'||data.snapshot?.version!==2||!data.snapshot.records||Array.isArray(data.snapshot.records)||typeof data.snapshot.records!=='object'||Object.keys(data.snapshot.records).length>79||!validSnapshot(data.snapshot))return json({error:'Invalid progress format.'},400);
- const snapshot=JSON.stringify(data.snapshot),at=new Date().toISOString();let result;
+ // Older open tabs may still send the v2 core-only bundle. Retain newer companion stores.
+ if(data.snapshot.extras===undefined){const existing=await env.DB.prepare('SELECT snapshot FROM study_snapshots WHERE user_id = ?').bind(id).first<{snapshot:string}>();if(existing){let previous=JSON.parse(existing.snapshot);if(previous?.r2Snapshot&&env.BUCKET){const object=await env.BUCKET.get(previous.r2Snapshot);if(object)previous=await new Response(object.body).json()}if(previous?.extras)data.snapshot.extras=previous.extras}}
+ const content=JSON.stringify(data.snapshot),at=new Date().toISOString();let snapshot=content,r2Key:string|null=null;if(new TextEncoder().encode(content).length>1500000){if(!env.BUCKET)return json({error:'Large snapshot storage is unavailable.'},503);r2Key='progress/'+id+'/'+crypto.randomUUID();await env.BUCKET.put(r2Key,content,{httpMetadata:{contentType:'application/json'}});snapshot=JSON.stringify({r2Snapshot:r2Key})}let result;
  if(data.revision===0){result=await env.DB.prepare('INSERT INTO study_snapshots (user_id, revision, snapshot, updated_at) VALUES (?, 1, ?, ?) ON CONFLICT(user_id) DO NOTHING').bind(id,snapshot,at).run()}
  else{result=await env.DB.prepare('UPDATE study_snapshots SET snapshot = ?, revision = revision + 1, updated_at = ? WHERE user_id = ? AND revision = ?').bind(snapshot,at,id,data.revision).run()}
- if(!result.meta.changes)return json({error:'Cloud progress changed on another device. Choose which copy to keep.'},409);
+ if(!result.meta.changes){if(r2Key)await env.BUCKET!.delete(r2Key);return json({error:'Cloud progress changed on another device. Choose which copy to keep.'},409)}
  return json({revision:data.revision+1,updatedAt:at});
 }
 
 function validSnapshot(s: any): boolean {
+ if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,any][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
  if(s.settings?.englishEnabled!==undefined&&typeof s.settings.englishEnabled!=='boolean')return false;
  if(s.settings?.examNames!==undefined&&(!s.settings.examNames||typeof s.settings.examNames!=='object'||Array.isArray(s.settings.examNames)||Object.keys(s.settings.examNames).length>64||Object.entries(s.settings.examNames).some(([k,v])=>!/^[a-z0-9][a-z0-9-]{0,119}$/i.test(k)||typeof v!=='string'||!v.trim()||v.length>100)))return false;
  if(s.settings?.calendarColors!==undefined&&(!s.settings.calendarColors||typeof s.settings.calendarColors!=='object'||Array.isArray(s.settings.calendarColors)||Object.entries(s.settings.calendarColors).some(([k,v])=>!['anatomy','physiology','mol','lab','assessment','break','other','english'].includes(k)||typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v))))return false;
