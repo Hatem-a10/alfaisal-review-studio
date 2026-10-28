@@ -6,7 +6,7 @@ const [command, ...args] = process.argv.slice(2);
 if (!["dev", "build"].includes(command)) throw new Error("Expected dev or build.");
 const {buildLearningPayload,finalizeLearningPayload}=await import("./learning-payload.mjs");
 const {finishSiteAssets}=await import("./site-build-info.mjs");
-if(command==="build"){buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();finishSiteAssets()}})}
+if(command==="build"){await import("./lecture-changelog.mjs");buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();finishSiteAssets()}})}
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 if (managedLinux && command === "build") {
