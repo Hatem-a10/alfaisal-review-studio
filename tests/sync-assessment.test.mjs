@@ -22,3 +22,11 @@ test('sync recognizes equal content despite metadata timestamps but preserves tr
  y.stores.history.value=[2];assert.equal(ctx.vaultValuesEqual(x,y),false);
  assert.equal(ctx.vaultValuesEqual({stores:{history:{value:null}}},{stores:{}}),false);
 });
+
+test('assessment banner follows the selected planning day',()=>{
+ ctx.DATA={events:ctx.events};ctx.Study={gap:(a,b)=>(Date.parse(a)-Date.parse(b))/86400000};ctx.esc=x=>x;ctx.fullDate=x=>x;ctx.day='2026-10-29';
+ vm.runInContext(fn('assessmentHero','function dashboard'),ctx);
+ assert.match(ctx.assessmentHero(),/MOL Midterm/);assert.match(ctx.assessmentHero(),/Today/);
+ ctx.day='2026-10-30';assert.match(ctx.assessmentHero(),/CVP 112 · TBL-4/);assert.match(ctx.assessmentHero(),/2 days left/);
+ ctx.day='2026-11-02';assert.match(ctx.assessmentHero(),/MOL TBL 2/);
+});
