@@ -1,0 +1,31 @@
+'use strict';
+(()=>{
+ let baseline=originalRun?structuredClone(originalRun):null;
+ const save=saveOriginalRun;
+ saveOriginalRun=function(){
+  if(!originalRun)return save();
+  let stored={};try{stored=JSON.parse(localStorage.getItem(originalRunsKey)||'{}')||{}}catch{}
+  const prior=stored[originalRun.setId];
+  if(prior&&prior.startedAt===originalRun.startedAt&&prior.finishedAt&&!originalRun.finishedAt){toast('This exam was completed in another tab. Open its saved results before continuing.');return}
+  if(prior&&prior.startedAt!==originalRun.startedAt&&Date.parse(prior.startedAt)>Date.parse(originalRun.startedAt)){toast('A newer attempt is open in another tab. Reopen the exam to avoid overwriting it.');return}
+  originalRun=AnswerIntegrity.reconcile(originalRun,baseline,prior);originalRuns={...originalRuns,...stored,[originalRun.setId]:originalRun};
+  save();baseline=structuredClone(originalRun);
+ };
+ const hydrate=hydrateStudyStores;
+ hydrateStudyStores=function(){
+  const activeOriginal=originalRun&&!originalRun.finishedAt?originalRun:null,activeSet=etSet&&!etSet.finished?etSet:null;
+  hydrate();let restoreOriginal=false,restoreSet=false;
+  if(activeOriginal&&(!originalRun||originalRun.startedAt!==activeOriginal.startedAt||JSON.stringify(originalRun.answers)!==JSON.stringify(activeOriginal.answers))){
+   const remote=originalRuns[activeOriginal.setId];
+   if(!remote||!remote.finishedAt){originalRun=AnswerIntegrity.reconcile(activeOriginal,baseline,remote);originalRuns[originalRun.setId]=originalRun;restoreOriginal=true}
+  }
+  if(activeSet&&(!etSet||JSON.stringify(etSet)!==JSON.stringify(activeSet))){etSet=activeSet;restoreSet=true}
+  if(restoreOriginal||restoreSet)setTimeout(()=>{if(restoreOriginal&&originalRun&&!originalRun.finishedAt)saveOriginalRun();if(restoreSet&&etSet&&!etSet.finished)savePracticeDraft()},0);
+ };
+ // Correct verified errors without presenting an unreliable key as certain.
+ const fixes={'original-mol-exam-1-1':{answer:2,issue:'The original printed key is incorrect; mismatch repair is the supported answer.'},'original-mol-exam-1-25':{answer:3,issue:'The original printed key is incorrect; disrupted membrane integrity is the supported answer.'},'original-mol-exam-1-6':{answer:null,issue:'No displayed choice correctly describes the arginine modification; self-check only.'},'original-mol-exam-1-20':{answer:null,issue:'Feedback inhibition and allosteric regulation overlap in these choices; self-check only.'},'original-mol-exam-1-22':{answer:null,issue:'No displayed choice clearly states zidovudine chain termination; self-check only.'},'original-mol-exam-1-26':{answer:null,issue:'The displayed sequences omit the correct starting order; self-check only.'},'original-mol-exam-1-29':{answer:null,issue:'The displayed choices do not clearly match the stated insulin glargine changes; self-check only.'},'original-mol-exam-1-32':{answer:null,issue:'The choices do not clearly explain protein thermostability; self-check only.'}};
+ for(const [id,f] of Object.entries(fixes)){const q=originalQuestionById(id);if(q){q.answer=f.answer;q.sourceIssue=f.issue}}
+ // Reconcile older bank copies only after cloud sync has settled.
+ function repairBank(){if(syncBusy||syncConflict||syncMeta.dirty||syncMeta.revision===null)return;let changed=false;for(const entry of wrongBank.entries){if(/^Printed key: /.test(entry.question.explanation||'')){entry.question.explanation=entry.question.explanation.replace(/^Printed key: /,'Original paper key (before shuffling): ');changed=true}const f=fixes[entry.question.id];if(!f)continue;if(Number.isInteger(f.answer)){const text=originalQuestionById(entry.question.id)?.options[f.answer],idx=entry.question.options.indexOf(text);if(idx>=0&&entry.question.answer!==idx){entry.question.answer=idx;changed=true}}else if(!entry.question.keyUncertain){entry.question.keyUncertain=true;changed=true}}if(changed){try{localStorage.setItem(wrongBankKey,JSON.stringify(wrongBank));if(view==='practice'&&etPracticeTab==='wrong')render()}catch{toast('Could not update the local answer-key review.')}}}
+ setInterval(repairBank,3000);repairBank();
+})();
