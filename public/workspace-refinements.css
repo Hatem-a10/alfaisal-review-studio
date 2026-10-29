@@ -81,3 +81,11 @@ html.ui-image-open,html.ui-image-open body{overflow:hidden}
 @media(prefers-reduced-motion:reduce){html[data-ui=modern] .ui-disclosure>summary:before{transition:none}}
 /* Keep occasional task actions available without crowding each row. */
 .ui-task-more{position:relative}.ui-task-more summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:19px;line-height:1.2}.ui-task-more summary::-webkit-details-marker{display:none}.ui-task-more>div{position:absolute;right:0;top:100%;z-index:20;min-width:190px;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px #0003}.ui-task-more>div button{display:flex;align-items:center;gap:8px;width:100%;white-space:nowrap}.ui-task-more button[data-timer]::after{content:'Start timer'}.ui-task-more button[data-edit]::after{content:'Edit notes & dates'}
+
+/* Graded answers must remain distinct from the selected accent in every practice view. */
+html[data-ui=modern] .mcq-option-row:has(.answer-option.incorrect){background:#fff0f0;border-color:#d14d4d;box-shadow:inset 0 0 0 1px #d14d4d}
+html[data-ui=modern] .mcq-option-row:has(.answer-option.incorrect) .choice-check{color:#b62929}
+html[data-ui=modern] .mcq-option-row:has(.answer-option.correct){background:#e9f7ed;border-color:#38a761;box-shadow:none}
+html[data-ui=modern][data-theme=amoled] .mcq-option-row:has(.answer-option.incorrect){background:#351719;border-color:#ed7272;box-shadow:inset 0 0 0 1px #ed7272}
+html[data-ui=modern][data-theme=amoled] .mcq-option-row:has(.answer-option.incorrect) .choice-check{color:#ed7272}
+html[data-ui=modern][data-theme=amoled] .mcq-option-row:has(.answer-option.correct){background:#113021;border-color:#54b77b}

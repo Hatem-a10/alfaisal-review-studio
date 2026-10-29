@@ -6,8 +6,8 @@ const StudyVault=(()=>{
  try{meta=JSON.parse(localStorage.getItem(metaKey)||'{}')}catch{}
  const rawSet=Storage.prototype.setItem,rawRemove=Storage.prototype.removeItem;
  function changed(key){const suffix=key.startsWith(prefix+'-')?key.slice(prefix.length+1):'',name=names[suffix];if(muted||!name)return;meta[name]=new Date().toISOString();rawSet.call(localStorage,metaKey,JSON.stringify(meta));if(typeof scheduleSync==='function')scheduleSync()}
- Storage.prototype.setItem=function(k,v){rawSet.call(this,k,v);if(this===localStorage)changed(String(k))};
- Storage.prototype.removeItem=function(k){rawRemove.call(this,k);if(this===localStorage)changed(String(k))};
+ Storage.prototype.setItem=function(k,v){const previous=this.getItem(k);rawSet.call(this,k,v);if(this===localStorage&&previous!==String(v))changed(String(k))};
+ Storage.prototype.removeItem=function(k){const existed=this.getItem(k)!==null;rawRemove.call(this,k);if(this===localStorage&&existed)changed(String(k))};
  function read(name,fallback=null){try{return JSON.parse(localStorage.getItem(byName[name])||'null')??fallback}catch{return fallback}}
  function set(name,value){if(!byName[name])throw Error('Unknown study store');if(JSON.stringify(value)!==JSON.stringify(read(name)))localStorage.setItem(byName[name],JSON.stringify(value))}
  function shape(name,v){if(v===null)return true;const obj=x=>x&&typeof x==='object'&&!Array.isArray(x),stamp=x=>typeof x==='string'&&Number.isFinite(Date.parse(x)),question=q=>obj(q)&&typeof q.id==='string'&&typeof q.question==='string'&&Array.isArray(q.lectureIds)&&q.lectureIds.every(id=>typeof id==='string')&&Array.isArray(q.options)&&q.options.length>=2&&q.options.length<=8&&q.options.every(s=>typeof s==='string')&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length&&typeof q.explanation==='string'&&Array.isArray(q.reasons)&&q.reasons.length===q.options.length;
