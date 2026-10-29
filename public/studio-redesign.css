@@ -68,3 +68,24 @@ html[data-ui=modern] :is(.schedule-hero,.et-workspace,.complete-guide,.lesson-re
 html[data-ui=modern] .ui-disclosure{border-radius:15px}
 html[data-ui=modern] main button:focus-visible,html[data-ui=modern] #mainSidebar button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.home-shortcut{transition:none!important}}
+/* The home column is in document flow; only the navigation is a fixed sidebar. */
+.home-insights{position:static;inset:auto;width:auto;height:auto;background:transparent;border:0;overflow:visible;display:block}
+.home-agenda{margin-bottom:14px;padding:24px}
+.home-agenda-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}
+.home-agenda-heading h2{margin:0;font-size:19px}.home-agenda-heading>span{color:var(--muted);font-size:11px}.home-agenda>p{margin:7px 0 18px;font-size:11px;color:var(--muted)}
+.home-agenda-list{border-top:1px solid var(--line)}
+html[data-ui=modern] .home-agenda-row{width:100%;display:flex;align-items:center;gap:10px;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;border-radius:0}
+html[data-ui=modern] .home-agenda-row:hover{background:var(--light)}.home-agenda-time{font-size:10px;color:var(--muted);width:52px;flex:none}.home-agenda-row .agenda-dot{flex:none}.home-agenda-copy{flex:1;min-width:0}.home-agenda-copy strong{display:block;font-size:11px;color:var(--ink)}.home-agenda-copy small{display:block;font-size:10px;color:var(--muted);margin-top:4px;line-height:1.4}.home-agenda-arrow{color:var(--muted)}.home-agenda-empty{font-size:11px;color:var(--muted);padding:13px 0;margin:0}
+html[data-ui=modern] #syncWidget #openSiteAdmin{display:block;width:100%;margin-top:8px;text-align:center}
+html[data-ui=modern] .home-spotlight.assessment-theme-0{background:linear-gradient(120deg,#26243f,#493a62)}
+html[data-ui=modern] .home-spotlight.assessment-theme-1{background:linear-gradient(120deg,#163d3d,#277565)}
+html[data-ui=modern] .home-spotlight.assessment-theme-2{background:linear-gradient(120deg,#473047,#9c5369)}
+html[data-ui=modern] .home-spotlight.assessment-theme-3{background:linear-gradient(120deg,#233a60,#436ea0)}
+html[data-ui=modern] .home-spotlight.assessment-theme-4{background:linear-gradient(120deg,#50402c,#a16b3c)}
+html[data-ui=modern] .home-spotlight.assessment-theme-5{background:linear-gradient(120deg,#29423b,#618363)}
+html[data-ui=modern] .home-spotlight.assessment-theme-6{background:linear-gradient(120deg,#423558,#7b5b9c)}
+html[data-ui=modern] .home-spotlight.assessment-theme-7{background:linear-gradient(120deg,#4a2c35,#a05d56)}
+.assessment-theme-1 .home-orbit i,.assessment-theme-4 .home-orbit i{border-radius:25%;transform:rotate(45deg)}
+.assessment-theme-2 .home-orbit i,.assessment-theme-5 .home-orbit i{border-radius:35% 65% 55% 45%;transform:rotate(-25deg)}
+.assessment-theme-3 .home-orbit i,.assessment-theme-6 .home-orbit i{border-radius:5%;transform:rotate(30deg)}
+.assessment-theme-7 .home-orbit i{border-radius:50% 5% 50% 5%;transform:rotate(45deg)}
