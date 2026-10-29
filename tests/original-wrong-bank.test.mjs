@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const context=vm.createContext({});
+vm.runInContext(readFileSync(new URL('../public/original-wrong-engine.js',import.meta.url),'utf8')+'\nthis.engine=OriginalWrongEngine;',context);
+const {adapt}=context.engine;
+const qs=Array.from({length:10},(_,i)=>({id:'q'+i,type:'mcq',question:'Question '+i,options:['yes','no'],letters:['A','B'],answer:0,source:'mol-paper',page:3,figures:i===2?[{image:'/image'}]:[]}));
+const lookup=id=>qs.find(q=>q.id===id),source=()=>({title:'Paper',url:'/paper.pdf'});
+const base={setId:'set',ids:qs.map(q=>q.id),answers:{q0:0,q1:0,q2:1},startedAt:'2026-10-28T00:00:00Z',finishedAt:'2026-10-28T01:00:00Z'};
+test('adapts scored original results and preserves wrong, unanswered, figure and provenance',()=>{const r=adapt(base,lookup,source);assert.equal(r.questions.length,10);assert.equal(r.answers[2],1);assert.equal(r.answers[3],undefined);assert.equal(r.questions[2].image,'/image');assert.equal(r.questions[2].sourceUrl,'/paper.pdf#page=3');assert.equal(r.questions[2].lectureIds[0],'MOL-original-exam')});
+test('only saves completed scores of at least 15% and respects a cleared bank',()=>{assert.equal(adapt({...base,finishedAt:null},lookup,source),null);assert.equal(adapt({...base,answers:{q0:0}},lookup,source),null);assert.ok(adapt(base,lookup,source));assert.equal(adapt(base,lookup,source,'2026-10-28T01:00:01Z'),null);assert.equal(adapt({...base,excludedLowScore:true},lookup,source),null)});
+test('unkeyed questions are not guessed or put into the bank',()=>{const original=qs[2].answer;qs[2].answer=null;try{let r=adapt(base,lookup,source);assert.equal(r.questions.some(q=>q.id==='q2'),false)}finally{qs[2].answer=original}});
