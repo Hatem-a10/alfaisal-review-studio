@@ -13,5 +13,8 @@ export function assembledLearning(){
  const checks={};for(const guide of Object.values(teaching.guides))for(const section of guide.sections||[])checks[section.id]=section.questions||[];
  const transcriptContext={LEARNING:learning,TEACHING:teaching,TOPIC_CHECKS:checks,DIAGRAMS:{},inlineLessonCache:new Map()};
  for(const file of ['cvp-transcript-sources.js','cvp-transcript-anatomy.js','cvp-transcript-physiology.js'])runInNewContext(readFileSync(root+'public/'+file,'utf8'),transcriptContext);
+ const pulmonaryFiles=['cvp-pulmonary-anatomy-data.js','cvp-pulmonary-physiology-data.js','cvp-pulmonary-quiz-data.js','cvp-pulmonary-core.js'];
+ const pulmonaryCode=pulmonaryFiles.map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
+ runInNewContext(pulmonaryCode+';applyPulmonaryContent(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,[CVP_PULMONARY_ANATOMY,CVP_PULMONARY_PHYSIOLOGY],CVP_PULMONARY_QUIZ);applyPulmonaryQuiz(LEARNING,TEACHING,TOPIC_CHECKS,CVP_PULMONARY_QUIZ);',transcriptContext);
  return {learning,teaching,pack};
 }
