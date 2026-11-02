@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+release_script_dir="$(cd "$(dirname "$0")" && pwd)"
+if command -v node >/dev/null 2>&1; then
+  release_node="$(command -v node)"
+elif [[ -x "$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node" ]]; then
+  release_node="$HOME/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
+else
+  echo 'Node.js 22.13+ is required. Install Node or add it to PATH.' >&2
+  exit 69
+fi
+exec "$release_node" "$release_script_dir/review-studio-release.mjs" "$@"
