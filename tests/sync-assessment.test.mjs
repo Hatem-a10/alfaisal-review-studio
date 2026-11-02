@@ -30,3 +30,5 @@ test('assessment banner follows the selected planning day',()=>{
  ctx.day='2026-10-30';assert.match(ctx.assessmentHero(),/CVP 112 · TBL-4/);assert.match(ctx.assessmentHero(),/2 days left/);
  ctx.day='2026-11-02';assert.match(ctx.assessmentHero(),/MOL TBL 2/);
 });
+
+test('sync ignores object key order but keeps completion clears and date changes meaningful',()=>{assert.equal(ctx.syncValuesEqual({done:{0:null},notes:'x'},{notes:'x',done:{0:null}}),true);assert.equal(ctx.syncValuesEqual({done:{0:null}},{done:{0:'2026-11-02T10:00Z'}}),false);assert.equal(ctx.syncValuesEqual({dates:['2026-11-02']},{dates:['2026-11-03']}),false)});

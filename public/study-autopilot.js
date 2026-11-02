@@ -1,0 +1,40 @@
+'use strict';
+(()=>{
+ const validAt=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
+ const clocks=v=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).filter(([k,t])=>k.length<70&&validAt(t)).slice(0,80)):{};
+ const baseValidate=validateBackup;validateBackup=function(raw){const out=baseValidate(raw);for(const[id,r]of Object.entries(out)){const input=raw.records[id];if(input._changed)r._changed=clocks(input._changed);if(typeof input.skipThird==='boolean')r.skipThird=input.skipThird;if(validAt(input.masteryHandledAt))r.masteryHandledAt=input.masteryHandledAt;if(validAt(input.autoFirstAt))r.autoFirstAt=input.autoFirstAt}return out};
+ const baseSettings=cleanSettings;cleanSettings=function(raw){return {...baseSettings(raw),_changed:clocks(raw?._changed)}};settings=cleanSettings(settings);
+ let baseline=structuredClone(state),settingsBaseline=structuredClone(settings),busy=false,planReady=false;
+ const basePersist=persist;persist=function(){const at=new Date().toISOString();StudyAutopilot.stampChanges(baseline,state,at);settings._changed={...settings._changed};for(const k of new Set([...Object.keys(settingsBaseline),...Object.keys(settings)]))if(k!=='_changed'&&JSON.stringify(settings[k])!==JSON.stringify(settingsBaseline[k]))settings._changed[k]=at;baseline=structuredClone(state);settingsBaseline=structuredClone(settings);syncMeta.localUpdatedAt=at;basePersist()};
+ const baseSchedule=scheduleSync;scheduleSync=function(){syncMeta.localUpdatedAt=new Date().toISOString();baseSchedule()};
+ const baseAdopt=adoptCloud;adoptCloud=function(remote){busy=true;try{baseAdopt(remote)}finally{busy=false}baseline=structuredClone(state);settingsBaseline=structuredClone(settings);planReady=true;if(runAutopilot())render()};
+ window.resolveAutoConflict=function(remote){
+  try{try{recoverBackup()}catch{}const localAt=syncMeta.localUpdatedAt||saved.updatedAt||'',remoteAt=remote.updatedAt||'';
+   state=StudyAutopilot.mergeRecords(state,validateBackup(remote.snapshot),localAt,remoteAt,mergeRecords);
+   settings=StudyAutopilot.mergeSettings(settings,cleanSettings(remote.snapshot.settings),localAt,remoteAt);
+   StudyVault.apply(StudyVault.merge(StudyVault.snapshot(),remote.snapshot.extras));
+   baseline=structuredClone(state);settingsBaseline=structuredClone(settings);syncMeta={...syncMeta,revision:remote.revision,dirty:true};syncConflict=null;$('#syncConflict').hidden=true;storeLocalOnly();saveSyncMeta();planReady=true;scheduleSync();render();
+  }catch(e){syncConflict=null;syncMessage('Sync retry needed · device copy retained');console.error('Automatic sync reconciliation failed',e.message)}
+ };
+ const baseMessage=syncMessage;syncMessage=function(message){baseMessage(message);if(/Cloud saved|Cloud ready|unavailable|Sign in|Offline/i.test(message)){planReady=true;queueMicrotask(()=>{if(runAutopilot())render()})}};
+ const baseTasks=tasks;tasks=function(items=DATA.items){return baseTasks(items).filter(t=>!(t.p===2&&rec(t.x).skipThird&&!t.done))};
+ const baseRowWithPlan=row;row=function(x){let html=baseRowWithPlan(x);if(rec(x).skipThird&&!done(x,2))html=html.replace(/<label class="pass [^"]*">(?:(?!<label)[\s\S])*?data-pass="2"[\s\S]*?<\/label>/,'<div class="pass optional-pass"><strong>Third review optional</strong><small>Removed from active plan after strong mastery</small><button data-restore-third="'+esc(x.id)+'">Restore</button></div>');return html};
+ const baseReviewItem=datedReviewItem;datedReviewItem=function(t){return baseReviewItem(t).replace('</small>',''+(t.p===0&&t.done===rec(t.x).autoFirstAt?' · MCQ mastery':'')+'</small>')};
+ function mastered(x){const l=lessonById(x.id);if(!l||!state[x.id]?.learning)return false;return Learn.status(l,rec(x),today()).passed===true}
+ function latestMastery(x){const l=lessonById(x.id);if(!l)return '';return [...inlineLatest(l).values()].map(v=>v.at).filter(validAt).sort().at(-1)||''}
+ function capacity(d){const minute=v=>Number(v.slice(0,2))*60+Number(v.slice(3)),start=minute(settings.start||'17:00'),end=minute(settings.end||'23:00'),events=campusWeekEvents(campusWeekStart(d),false).filter(e=>e.date===d).map(e=>[Math.max(start,e.start),Math.min(end,e.end)]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);let cursor=start,free=0;for(const[a,b]of events){free+=Math.max(0,a-cursor);cursor=Math.max(cursor,b)}free+=Math.max(0,end-cursor);const available=Math.min(Number(settings.budget)||180,free);let completedMinutes=0,timed=0;for(const r of Object.values(state)){completedMinutes+=Object.entries(r.done||{}).filter(([,at])=>at&&Study.localDate(at)===d).reduce((n,[p])=>n+[35,25,15][+p],0);timed+=(r.sessions||[]).filter(s=>Study.localDate(s.endedAt)===d).reduce((n,s)=>n+s.seconds/60,0)}return Math.max(0,available-Math.max(completedMinutes,Math.ceil(timed)))}
+ function runAutopilot(){if(busy)return false;busy=true;let changed=false;try{
+  for(const x of DATA.items){if(done(x,0)||!mastered(x))continue;const at=StudyAutopilot.firstStudyAt(rec(x),true,latestMastery(x));if(!at)continue;state[x.id]={...rec(x),done:{...rec(x).done,0:at},autoFirstAt:at,masteryHandledAt:at};changed=true}
+  const opts=storeOptions(),auto=opts.autopilot||{};
+  if(planReady&&auto.enabled!==false&&auto.lastPlanDay!==today()){
+   const plan=StudyAutopilot.rebalance(DATA.items,state,today(),{...settings,hard:x=>Study.hard(rec(x)),canSkip:x=>{const m=Study.mcq(rec(x));return m.accuracy===null||m.accuracy>=85}},DATA.events,mastered,capacity);
+   if(plan){const at=new Date().toISOString();state=plan.records;saveOptions({...opts,autopilot:{...auto,lastPlanDay:today(),lastPlan:{at,changes:plan.changes,unplaced:plan.unplaced},log:[{at,moved:plan.changes.filter(c=>c.field.startsWith('dates.')).length,optional:plan.omitted.length,unplaced:plan.unplaced.length},...(auto.log||[])].slice(0,8)}});changed=true}
+  }
+  if(changed)persist();return changed;
+ }finally{busy=false}}
+ const baseRender=render;render=function(){runAutopilot();baseRender()};
+ const basePanels=dayTaskPanels;dayTaskPanels=function(){const a=storeOptions().autopilot||{},p=a.lastPlan,log=a.log?.[0];return basePanels()+`<details class="panel auto-plan-status"><summary>Adaptive study plan${log?' · '+log.moved+' reviews reorganized':''}</summary><p>Large backlogs are spread around your study window and documented assessments. First studies and weak topics stay ahead of optional third passes. Rescheduling never marks a review complete.</p><label><input type="checkbox" id="autoPlanEnabled" ${a.enabled!==false?'checked':''}> Adjust large backlogs automatically</label>${log?`<p>Last adjustment: ${esc(stamp(log.at))} · ${log.moved} dates moved · ${log.optional} third passes made optional.</p>`:''}${p?.unplaced?.length?`<p class="notice">${p.unplaced.length} reviews could not fit before their assessment with the current study budget. They remain visible on their original dates. Increase study time or prioritize these lessons.</p>`:''}${p&&!p.undone?'<button id="undoAutoPlan">Undo latest adjustment</button>':''}</details>`};
+ document.addEventListener('change',e=>{if(e.target.id==='autoPlanEnabled'){const o=storeOptions();saveOptions({...o,autopilot:{...o.autopilot,enabled:e.target.checked}});render()}});
+ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.restoreThird){const x=DATA.items.find(x=>x.id===b.dataset.restoreThird);if(x){state[x.id]={...rec(x),skipThird:false};persist();render();toast('Third review restored')}}if(b.id==='undoAutoPlan'){const o=storeOptions(),a=o.autopilot||{},p=a.lastPlan;if(!p||p.undone)return;for(const c of p.changes){const r=state[c.id]||{},[key,index]=c.field.split('.');if(key==='dates'){const x=DATA.items.find(x=>x.id===c.id),d=[...(r.dates||x.dates)];if(d[index]===c.after){d[index]=c.before;r.dates=d}}else if(r[key]===c.after)r[key]=c.before;state[c.id]=r}saveOptions({...o,autopilot:{...a,lastPlan:{...p,undone:true}}});persist();render();toast('Latest automatic date changes undone')}});
+ if(syncConflict)resolveAutoConflict(syncConflict);render();
+})();
