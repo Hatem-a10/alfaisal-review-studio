@@ -16,5 +16,7 @@ export function assembledLearning(){
  const pulmonaryFiles=['cvp-pulmonary-anatomy-data.js','cvp-pulmonary-physiology-data.js','cvp-pulmonary-quiz-data.js','cvp-pulmonary-core.js'];
  const pulmonaryCode=pulmonaryFiles.map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
  runInNewContext(pulmonaryCode+';applyPulmonaryContent(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,[CVP_PULMONARY_ANATOMY,CVP_PULMONARY_PHYSIOLOGY],CVP_PULMONARY_QUIZ);applyPulmonaryQuiz(LEARNING,TEACHING,TOPIC_CHECKS,CVP_PULMONARY_QUIZ);',transcriptContext);
+ const transcriptPatchCode=['cvp-pulmonary-transcript-data.js','cvp-pulmonary-transcript-core.js'].map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
+ runInNewContext(transcriptPatchCode+';applyPulmonaryTranscripts(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,CVP_PULMONARY_TRANSCRIPTS);',transcriptContext);
  return {learning,teaching,pack};
 }
