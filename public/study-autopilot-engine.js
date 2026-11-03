@@ -22,6 +22,12 @@ const StudyAutopilot=(()=>{
  const v=eligible.find(v=>[35,25,15][v.passes[0]]+5<=remaining);if(!v)break;const p=v.passes.shift(),r=state[v.x.id]||{},dates=[...(r.dates||v.x.dates)],before=dates[p];dates[p]=date;r.dates=dates;state[v.x.id]=r;if(before!==date)changes.push({id:v.x.id,field:'dates.'+p,before,after:date});v.last=date;remaining-=[35,25,15][p]+5;
  }}
  for(const v of pending.values())if(v.passes.some(p=>p<2)){const reverted=changes.filter(c=>c.id===v.x.id&&c.field.startsWith('dates.'));for(const c of reverted){state[c.id].dates[+c.field.split('.')[1]]=c.before;unplaced.push({id:c.id,pass:+c.field.split('.')[1]})}for(const p of v.passes)unplaced.push({id:v.x.id,pass:p})}for(const v of pending.values())if(v.passes.length===1&&v.passes[0]===2)unplaced.push({id:v.x.id,pass:2});for(let i=changes.length-1;i>=0;i--)if([...pending.values()].some(v=>v.x.id===changes[i].id&&v.passes.some(p=>p<2))&&changes[i].field.startsWith('dates.'))changes.splice(i,1);return {records:state,changes,omitted,unplaced,overdue:over.length};}
+ // Automatic catch-up is threshold-gated. Routine lateness, reloads and sync do not reset dates.
+ function automaticRebalance(items,records,day,settings,events,isMastered,capacity,options={}){
+  if(!options.ready||options.enabled===false||options.undoDay===day||options.lastPlanDay===day||options.lastAttemptDay===day)return null;
+  return rebalance(items,records,day,settings,events,isMastered,capacity);
+ }
+ // Retained for an explicitly requested full reset; never called by automatic catch-up.
  function freshPlan(items,records,day,settings,events,isMastered,capacity){
  const state=structuredClone(records),changes=[],omitted=[],late=[],capacityShortfall=[],pending=new Map();
  for(const x of items){const r=state[x.id]||{};state[x.id]=r;if(r.done?.[0]&&r.done?.[1]&&!r.done?.[2]&&!r.skipThird&&isMastered(x)&&!settings.hard?.(x)&&(!settings.canSkip||settings.canSkip(x))&&!r.difficult&&!(r.confidence>0&&r.confidence<4)){r.skipThird=true;omitted.push(x.id);changes.push({id:x.id,field:'skipThird',before:false,after:true})}
@@ -35,5 +41,5 @@ const StudyAutopilot=(()=>{
  for(const x of items){const r=state[x.id];if(r.skipThird&&!r.done?.[2]){const afterSecond=r.done?.[1]?localDay(r.done[1]):r.dates?.[1]||day,date=[day,plus(afterSecond,2)].sort().at(-1),dates=[...(r.dates||x.dates)];if(dates[2]!==date){changes.push({id:x.id,field:'dates.2',before:dates[2],after:date});dates[2]=date;r.dates=dates}}}
  return {records:state,changes,omitted,unplaced:[],late,capacityShortfall,reset:true};
  }
- return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,deadline,rebalance,freshPlan};
+ return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,deadline,rebalance,automaticRebalance,freshPlan};
 })();
