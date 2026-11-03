@@ -13,7 +13,8 @@ test('upcoming assessment advances after each date and handles the end of the sc
  assert.equal(ctx.nextAssessment(ctx.events,'2026-10-30').title,'TBL-4');
  assert.equal(ctx.nextAssessment(ctx.events,'2026-11-02').title,'MOL TBL 2');
  assert.match(ctx.nextAssessment(ctx.events,'2026-11-16').title,/Final Exam/);
- assert.equal(ctx.nextAssessment(ctx.events,'2026-11-25'),null);
+ assert.equal(ctx.nextAssessment(ctx.events,'2026-11-25').title,'MOL Final');
+ assert.equal(ctx.nextAssessment(ctx.events,'2026-12-21'),null);
 });
 test('sync recognizes equal content despite metadata timestamps but preserves true differences',()=>{
  const x={stores:{history:{at:'one',value:[1]},options:{at:'a',value:{theme:'dark'}}}};
