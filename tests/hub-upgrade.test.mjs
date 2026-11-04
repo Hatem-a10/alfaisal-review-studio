@@ -17,3 +17,14 @@ test('catch-up blocks official break capacity unless explicitly permitted',()=>{
 test('per-lesson last objective survives progress validation without altering evidence',()=>{const Learn=vm.runInNewContext(read('learn-engine.js')+';Learn'),r={attempts:[],read:['section:a'],navigation:{topic:'MOL-1:3',at:'2026-11-05T10:00:00Z'}};const v=Learn.validate(r);assert.equal(v.navigation.topic,r.navigation.topic);assert.equal(v.read[0],'section:a')});
 test('countdowns reject unsupported dates and explicitly default confirmed date-only events to eight Riyadh',()=>{assert.equal(api.countdown({date:''}).invalid,true);assert.equal(api.countdown({date:'2026-02-31'}).invalid,true);const c=api.countdown({date:'2026-12-20',detail:''},Date.parse('2026-12-20T04:00:00Z'));assert.equal(c.time,'08:00');assert.equal(c.assumed,true);assert.equal(c.text,'00 : 01 : 00 : 00');assert.equal(api.countdown({date:'2026-12-20',detail:'09:00–12:00'}).assumed,false)});
 test('appearance toolbar starts closed and new navigation uses SVG feature icons',()=>{const js=read('hub-upgrade.js');assert.match(js,/createElement\('details'\);top.id='hubTopControls'/);assert.ok(!js.includes('top.open=true'));assert.match(js,/function featureIcon/);assert.match(read('hub-upgrade.css'),/#hubTopControls:not\(\[open\]\)/)});
+
+// A graded mistake is visited once per review pass, then the UI targets Retry.
+test('mistake review advances once through graded mistakes without revealing ungraded answers',()=>{
+ const s={questions:[{answer:0},{answer:1},{answer:0}],answers:{0:1,1:1,2:1},graded:{0:true,1:true,2:true}};
+ assert.equal(api.reviewAttention(s,[]),0);assert.equal(api.reviewAttention(s,[0]),2);assert.equal(api.reviewAttention(s,[0,2]),-1);
+ delete s.graded[0];s.answers[0]=0;delete s.graded[2];delete s.answers[2];assert.equal(api.reviewAttention(s,[0,2]),2);
+ s.answers[2]=1;assert.equal(api.reviewAttention(s,[0,2]),-1); // No comparison with the hidden key.
+});
+test('graded review endpoint is Retry while ungraded endpoint remains Submit',()=>{
+ const js=read('hub-upgrade.js');assert.match(js,/reset\?'inlineRetryAnswers':'inlineCheckAnswers'/);assert.match(js,/reviewVisits.delete/);assert.ok(!js.includes('priorityDropdowns'));
+});
