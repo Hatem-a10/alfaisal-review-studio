@@ -64,3 +64,5 @@ If interrupted after a native deployment starts, inspect that same deployment be
 ## Verification
 
 The current task records its actual test/deployment results under ignored `.sites-runtime/release/verification.json`. A successful native publication verifies the combined **Terminal + Sites connector** path in this session. It does not prove a standalone Terminal API or that every ordinary ChatGPT conversation exposes Sites.
+
+For small scoped changes, set `REVIEW_STUDIO_TEST_FILES=hub-upgrade.test.mjs,countdown-ui.test.mjs` (comma-separated existing test filenames) when running `check` or `prepare`. The build and identity/storage checks still run. Omit this variable for the full suite. Choose tests relevant to the actual change.
