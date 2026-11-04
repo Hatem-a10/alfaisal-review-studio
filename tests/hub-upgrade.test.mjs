@@ -28,3 +28,14 @@ test('mistake review advances once through graded mistakes without revealing ung
 test('graded review endpoint is Retry while ungraded endpoint remains Submit',()=>{
  const js=read('hub-upgrade.js');assert.match(js,/reset\?'inlineRetryAnswers':'inlineCheckAnswers'/);assert.match(js,/reviewVisits.delete/);assert.ok(!js.includes('priorityDropdowns'));
 });
+test('today and overdue lesson filters deduplicate passes and respect actual due dates',()=>{
+ const tasks=[{x:{id:'a'},date:'2026-11-05',done:'2026-11-05T08:00:00Z'},{x:{id:'a'},date:'2026-11-05'},{x:{id:'b'},date:'2026-11-04'},{x:{id:'c'},date:'2026-11-04',done:'2026-11-04T09:00:00Z'},{x:{id:'d'},date:'2026-11-06'}];
+ assert.deepEqual([...api.lessonIdsForDay(tasks,'2026-11-05')],['a']);assert.deepEqual([...api.lessonIdsForDay(tasks,'2026-11-05',true)],['b']);assert.deepEqual([...api.lessonIdsForDay(tasks,'2026-11-07')],[]);
+});
+test('time chip uses Riyadh time without redundant date or location text',()=>{assert.equal(api.timeLabel(new Date('2026-11-04T23:21:55Z')),'02:21');assert.equal(api.timeLabel(new Date('2026-11-05T21:00:00Z')),'00:00')});
+test('readiness expansion survives a fresh page and ignores removed panels',()=>{
+ const js=read('hub-upgrade.js'),code=js.slice(js.indexOf(" const readinessKey="),js.indexOf(' const previousRender=render;')),saved=new Map();
+ function page(){let toggle;const panel={open:false,isConnected:true,matches:s=>s==='.home-more'},ctx={$:()=>panel,localStorage:{getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)},document:{addEventListener:(name,fn)=>{toggle=fn}}};vm.runInNewContext(code,ctx);return {ctx,panel,toggle}}
+ const a=page();a.ctx.restoreReadiness();assert.equal(a.panel.open,false);a.panel.open=true;a.toggle({target:a.panel});const b=page();b.ctx.restoreReadiness();assert.equal(b.panel.open,true);
+ a.panel.isConnected=false;a.panel.open=false;a.toggle({target:a.panel});const c=page();c.ctx.restoreReadiness();assert.equal(c.panel.open,true);c.panel.open=false;c.toggle({target:c.panel});const d=page();d.ctx.restoreReadiness();assert.equal(d.panel.open,false);
+});
