@@ -49,3 +49,11 @@ html[data-ui=modern] body[data-sidebar-stage=compact] #mainSidebar .profile-name
 #hubTopControls>summary{width:36px;justify-content:center;padding:8px}
 #hubTopControls>summary .top-chevron{display:none}
 html[data-ui=modern] main #hubClock.hub-time-chip{display:inline-flex;align-items:center;justify-content:center;min-height:33px;padding:0 11px;margin:0;border:1px solid var(--line);border-radius:8px;background:var(--white);color:var(--ink);font:600 12px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.04em;box-sizing:border-box}
+/* Expired notifications must be invisible regardless of their tone. */
+html[data-ui=modern] #toast:not(.show){opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.countdown-priority{display:flex;flex-direction:column;align-items:center;margin:28px auto 34px;gap:12px;max-width:760px}
+.countdown-priority-label{font-size:10px;letter-spacing:.18em;font-weight:700;color:var(--muted)}
+.countdown-featured{width:100%;padding:34px;box-sizing:border-box;border-color:color-mix(in srgb,var(--course-tint) 38%,var(--line));background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--course-tint) 15%,transparent),transparent 75%),var(--white)}
+.countdown-featured h2{text-align:center;font-size:clamp(25px,3vw,36px);margin-top:28px}.countdown-featured .countdown-date{text-align:center}.countdown-featured .countdown-digits{max-width:580px;margin:30px auto}.countdown-featured .countdown-unit{padding:23px 8px}.countdown-featured .countdown-unit b{font-size:clamp(32px,5vw,56px)}
+.countdown-card.course-REN{--course-tint:#d19b53}
+@media(max-width:760px){.countdown-priority{margin:20px 0 25px}.countdown-featured{padding:22px 17px}.countdown-featured .countdown-unit{padding:18px 4px}.countdown-featured h2{font-size:25px}}

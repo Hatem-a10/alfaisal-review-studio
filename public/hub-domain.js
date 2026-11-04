@@ -7,7 +7,9 @@ const HubDomain=(()=>{
  function reviewAttention(session,seen=[]){const wrong=session.questions.map((q,i)=>i).filter(i=>session.graded[i]&&session.answers[i]!==session.questions[i].answer);if(wrong.length)return wrong.find(i=>!seen.includes(i))??-1;return session.questions.findIndex((q,i)=>!session.graded[i]&&!Number.isInteger(session.answers[i]))}
  function lessonIdsForDay(tasks,date,overdue=false){return [...new Set(tasks.filter(t=>typeof t.date==='string'&&(overdue?t.date<date&&!t.done:t.date===date)).map(t=>t.x.id))]}
  function timeLabel(now=new Date()){return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)}
+ function jumpDirection(rect,viewport){return rect.top+rect.height/2<viewport/2?'up':'down'}
+ function nextSunday(date){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+(7-d.getUTCDay()||7));return d.toISOString().slice(0,10)}
  function activity(records){const days={};const day=t=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(t));const seen=new Set();function put(at,key,kind,n=1){if(!at||!Number.isFinite(Date.parse(at))||seen.has(key))return;seen.add(key);const d=day(at);days[d]??={reviews:0,practice:0,minutes:0};days[d][kind]+=n}for(const[id,r]of Object.entries(records)){for(const[p,at]of Object.entries(r.done||{}))put(at,id+':r'+p,'reviews');for(const a of r.learning?.attempts||[])put(a.at,id+':q'+a.q+':'+a.at,'practice');for(const a of (r.mcqs||[]).filter(a=>!(r.learning?.attempts||[]).some(t=>t.at===a.createdAt)))put(a.createdAt,id+':m'+(a.id||a.createdAt),'practice');for(const a of r.sessions||[])put(a.endedAt,id+':s'+(a.id||a.startedAt),'minutes',Math.max(0,a.seconds||0)/60)}return days}
  const active=(e,date,minute)=>!!e&&e.date===date&&e.start<=minute&&minute<e.end;
- return {grades,countdown,resume,attention,reviewAttention,lessonIdsForDay,timeLabel,activity,active};
+ return {grades,countdown,resume,attention,reviewAttention,lessonIdsForDay,timeLabel,jumpDirection,nextSunday,activity,active};
 })();
