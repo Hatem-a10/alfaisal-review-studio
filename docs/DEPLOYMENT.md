@@ -78,3 +78,11 @@ The check covers phone (390px), tablet (820px), desktop (1440px), light/AMOLED s
 `node scripts/startup-sync-smoke.mjs http://127.0.0.1:5173/ <baseline-full-SHA>` compares cold startup against the retained baseline HTML/app scripts using an isolated mobile-sized Chromium profile, 4× CPU slowdown and 100 ms latency. It also simulates two devices against a local in-memory progress endpoint, checking propagation and preservation of concurrent edits. No production snapshot is read or written. Reports stay under ignored `.sites-runtime/startup-sync/`.
 
 Startup downloads scripts in parallel with ordered `defer` execution, batches intermediate renders, and reveals the final interface once ready. Private progress checks use the backward-compatible `?since=<revision>` protocol: unchanged responses contain only revision metadata. Edits debounce for 300 ms; visible clients poll every five seconds and check again on focus/visibility/network return. Requests time out after 15 seconds with retry backoff; edits remain saved locally. iOS may suspend a background web app, so these timings are foreground targets rather than a background-sync guarantee.
+
+## Runtime cleanup and cached styles
+
+The assessment catalog now reuses lecture-release scans and caches its result until the event or relevant lesson data changes. Returned catalogs are copied to prevent callers mutating the cache. Legacy `oldDashboard`/`stats`, the retired sidebar-toggle script and unused priority-dropdown styles were removed; teaching/question content and hidden routes remain intact.
+
+Production builds use `scripts/client-styles.mjs` to minify/consolidate linked styles into three content-addressed files while preserving positions around inline overrides. Source styles remain separate for maintenance. `scripts/built-preview.mjs` serves the build locally on port 5174 and forwards API requests only to the local development server on port 5173. Run the visual and performance checks against port 5174 when validating production CSS.
+
+Optional question disclosure state is saved explicitly with the topic draft. Jump navigation ignores closed optional questions and never opens the disclosure itself. Rendering a previously opened disclosure does not generate a new draft write or sync loop.

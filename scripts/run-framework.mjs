@@ -5,8 +5,9 @@ import { readExecutionProfile } from "./execution-profile.mjs";
 const [command, ...args] = process.argv.slice(2);
 if (!["dev", "build"].includes(command)) throw new Error("Expected dev or build.");
 const {buildLearningPayload,finalizeLearningPayload}=await import("./learning-payload.mjs");
+const {optimizeClientStyles}=await import("./client-styles.mjs");
 const {finishSiteAssets}=await import("./site-build-info.mjs");
-if(command==="build"){await import("./lecture-changelog.mjs");buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();finishSiteAssets()}})}
+if(command==="build"){await import("./lecture-changelog.mjs");buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();console.log("Client stylesheet optimization:",JSON.stringify(optimizeClientStyles(fileURLToPath(new URL("../",import.meta.url)))));finishSiteAssets()}})}
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 if (managedLinux && command === "build") {
