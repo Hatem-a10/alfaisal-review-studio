@@ -1,0 +1,2 @@
+import fs from 'node:fs';import {createHash} from 'node:crypto';
+export function verifyHeartViewer(){const hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex'),saved=JSON.parse(fs.readFileSync('public/heart-viewer-build.json','utf8'));if(saved.source!==hash('client/heart-viewer.mjs')||saved.output!==hash('public/heart-viewer.mjs'))throw Error('Heart renderer is stale. Run node scripts/build-heart-viewer.mjs with pinned Three.js 0.187.0 prepared.');return true}

@@ -1,0 +1,15 @@
+import {env} from 'cloudflare:workers';
+import {STUDY_ASSETS} from '../../../lib/study-asset-registry';
+const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
+const hash=async(v:Uint8Array)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',v))].map(b=>b.toString(16).padStart(2,'0')).join('');
+export async function GET(request:Request){if(!request.headers.get('oai-authenticated-user-id'))return json({error:'Sign in required'},401);if(!env.BUCKET)return json({error:'Private storage unavailable'},503);let verified=0;for(let i=0;i<STUDY_ASSETS.length;i+=30){const rows=await Promise.all(STUDY_ASSETS.slice(i,i+30).map(a=>env.BUCKET.head('study-assets-v1/'+a.sha)));verified+=rows.filter(Boolean).length}return json({verified,total:STUDY_ASSETS.length})}
+export async function POST(request:Request){
+ if(!request.headers.get('oai-authenticated-user-id'))return json({error:'Sign in required'},401);
+ if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin'},403);
+ if(!env.BUCKET)return json({error:'Private storage unavailable'},503);
+ if(Number(request.headers.get('content-length'))>24500000)return json({error:'Batch too large'},413);
+ const bytes=new Uint8Array(await request.arrayBuffer());if(bytes.length>24500000||bytes.length<30)return json({error:'Invalid batch'},400);
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),known=new Map(STUDY_ASSETS.map(a=>[a.id,a])),files:{asset:(typeof STUDY_ASSETS)[number];data:Uint8Array}[]=[];let offset=0;
+ try{while(offset+30<=bytes.length&&view.getUint32(offset,true)===0x04034b50){const flags=view.getUint16(offset+6,true),method=view.getUint16(offset+8,true),packed=view.getUint32(offset+18,true),size=view.getUint32(offset+22,true),length=view.getUint16(offset+26,true),extra=view.getUint16(offset+28,true),start=offset+30+length+extra,end=start+packed;if(flags&8||method!==0||packed!==size||end>bytes.length)throw Error('Unsupported archive');const id=new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(offset+30,offset+30+length)),asset=known.get(id);if(!asset||asset.size!==size)throw Error('Unknown asset');const data=bytes.subarray(start,end);if(await hash(data)!==asset.sha)throw Error('Checksum mismatch');files.push({asset,data});if(files.length>200)throw Error('Too many files');offset=end}if(!files.length)throw Error('Empty batch')}catch(e){return json({error:e instanceof Error?e.message:'Invalid archive'},400)}
+ let saved=0;for(let i=0;i<files.length;i+=10)await Promise.all(files.slice(i,i+10).map(async({asset,data})=>{const key='study-assets-v1/'+asset.sha,old=await env.BUCKET.head(key);if(old?.size!==asset.size){await env.BUCKET.put(key,data,{httpMetadata:{contentType:asset.type}});const check=await env.BUCKET.get(key);if(!check||await hash(new Uint8Array(await check.arrayBuffer()))!==asset.sha)throw Error('Storage verification failed')}saved++}));return json({saved,total:STUDY_ASSETS.length,verified:true});
+}
