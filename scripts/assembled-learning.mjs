@@ -22,5 +22,8 @@ export function assembledLearning(){
  runInNewContext(metabolismCode+';applyMetabolismContent(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,MOL_METABOLISM);',transcriptContext);
  const nextCode=['respiratory-next-data.js','respiratory-next-core.js'].map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
  runInNewContext(nextCode+';applyRespiratoryNext(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,RESPIRATORY_NEXT);',transcriptContext);
+ for (const file of ['lesson-depth-data.js', 'lesson-depth-core.js', 'lesson-depth-runtime.js']) {
+  runInNewContext(readFileSync(root+'public/'+file,'utf8'), transcriptContext);
+ }
  return {learning,teaching,pack};
 }
