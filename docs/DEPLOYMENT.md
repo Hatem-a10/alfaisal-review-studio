@@ -72,3 +72,9 @@ For small scoped changes, set `REVIEW_STUDIO_TEST_FILES=hub-upgrade.test.mjs,cou
 Start the existing local dev server, then run `node scripts/visual-smoke.mjs http://127.0.0.1:5173/`. It launches a separate temporary browser profile and never opens or reuses the user's browser profile. `REVIEW_STUDIO_BROWSER` can point to an installed Chromium-family executable (default: local Brave on macOS). Screenshots and the report stay under ignored `.sites-runtime/visual-smoke/`.
 
 The check covers phone (390px), tablet (820px), desktop (1440px), light/AMOLED study screens, page overflow, lesson-card overlap, primary navigation state, button captions, horizontal toolbar, compact sidebar, and settings alignment. It checks local preview only and does not prove production cloud authentication. Inspect representative screenshots as well as the report.
+
+## Startup and sync performance checks
+
+`node scripts/startup-sync-smoke.mjs http://127.0.0.1:5173/ <baseline-full-SHA>` compares cold startup against the retained baseline HTML/app scripts using an isolated mobile-sized Chromium profile, 4× CPU slowdown and 100 ms latency. It also simulates two devices against a local in-memory progress endpoint, checking propagation and preservation of concurrent edits. No production snapshot is read or written. Reports stay under ignored `.sites-runtime/startup-sync/`.
+
+Startup downloads scripts in parallel with ordered `defer` execution, batches intermediate renders, and reveals the final interface once ready. Private progress checks use the backward-compatible `?since=<revision>` protocol: unchanged responses contain only revision metadata. Edits debounce for 300 ms; visible clients poll every five seconds and check again on focus/visibility/network return. Requests time out after 15 seconds with retry backoff; edits remain saved locally. iOS may suspend a background web app, so these timings are foreground targets rather than a background-sync guarantee.

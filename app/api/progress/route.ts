@@ -4,6 +4,12 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache
 export async function GET(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
+ // Small authenticated revision check avoids loading unchanged multi-megabyte snapshots from D1/R2.
+ const since=new URL(request.url).searchParams.get('since');
+ if(since!==null&&/^\d+$/.test(since)&&Number.isSafeInteger(Number(since))){
+  const head=await env.DB.prepare('SELECT revision, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;updated_at:string}>();
+  if(head&&head.revision===Number(since))return json({revision:head.revision,updatedAt:head.updated_at,unchanged:true});
+ }
  const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
  let snapshot=row?JSON.parse(row.snapshot):null;if(snapshot?.r2Snapshot){if(!env.BUCKET)return json({error:'Cloud file storage is unavailable.'},503);const obj=await env.BUCKET.get(snapshot.r2Snapshot);if(!obj)return json({error:'Cloud snapshot is unavailable. Your device copy is retained.'},503);snapshot=await new Response(obj.body).json()}
  return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at}:{revision:0,snapshot:null});
