@@ -66,3 +66,9 @@ If interrupted after a native deployment starts, inspect that same deployment be
 The current task records its actual test/deployment results under ignored `.sites-runtime/release/verification.json`. A successful native publication verifies the combined **Terminal + Sites connector** path in this session. It does not prove a standalone Terminal API or that every ordinary ChatGPT conversation exposes Sites.
 
 For small scoped changes, set `REVIEW_STUDIO_TEST_FILES=hub-upgrade.test.mjs,countdown-ui.test.mjs` (comma-separated existing test filenames) when running `check` or `prepare`. The build and identity/storage checks still run. Omit this variable for the full suite. Choose tests relevant to the actual change.
+
+## Local visual checks
+
+Start the existing local dev server, then run `node scripts/visual-smoke.mjs http://127.0.0.1:5173/`. It launches a separate temporary browser profile and never opens or reuses the user's browser profile. `REVIEW_STUDIO_BROWSER` can point to an installed Chromium-family executable (default: local Brave on macOS). Screenshots and the report stay under ignored `.sites-runtime/visual-smoke/`.
+
+The check covers phone (390px), tablet (820px), desktop (1440px), light/AMOLED study screens, page overflow, lesson-card overlap, primary navigation state, button captions, horizontal toolbar, compact sidebar, and settings alignment. It checks local preview only and does not prove production cloud authentication. Inspect representative screenshots as well as the report.
