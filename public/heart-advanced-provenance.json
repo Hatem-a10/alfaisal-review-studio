@@ -1,0 +1,1259 @@
+{
+  "dataset": "BodyParts3D",
+  "version": "4.0",
+  "license": "CC-BY-4.0",
+  "licenseUrl": "https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html",
+  "credit": "BodyParts3D, \u00a9 The Database Center for Life Science licensed under CC Attribution 4.0 International",
+  "sourceUrl": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_BP3D_4.0_obj_99.zip",
+  "transform": {
+    "sourceBoundsMm": {
+      "min": [
+        -36.3037,
+        -176.605,
+        1174.19
+      ],
+      "max": [
+        79.3913,
+        -49.8449,
+        1317.09
+      ]
+    },
+    "centerMm": [
+      21.5438,
+      -113.22494999999999,
+      1245.6399999999999
+    ],
+    "scale": 0.02,
+    "axes": "[x, z, -y]"
+  },
+  "bytes": 3757900,
+  "sha256": "458737ed6b642112ffeaf8e86bc02daaeaa3290e4864af416ef3e56c86185951",
+  "structures": [
+    {
+      "id": "right-atrium",
+      "fma": "FMA9457",
+      "sourceName": "wall of right atrium",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2439",
+          "bytes": 1211683,
+          "sha256": "6e87510c607541b53b124f8224b6be74cb9b7351e29102246053b30a7260d8dd",
+          "vertices": 9887,
+          "triangles": 17784
+        }
+      ],
+      "elements": [
+        "FJ2439"
+      ],
+      "label": "wall of right atrium",
+      "kind": "existing",
+      "vertices": 9887,
+      "triangles": 17784
+    },
+    {
+      "id": "left-atrium",
+      "fma": "FMA9531",
+      "sourceName": "wall of left atrium",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2438",
+          "bytes": 510077,
+          "sha256": "ad28c5925374c6648bafb77ac9a89163316c101559cb730906208c96266ae078",
+          "vertices": 4284,
+          "triangles": 7544
+        }
+      ],
+      "elements": [
+        "FJ2438"
+      ],
+      "label": "wall of left atrium",
+      "kind": "existing",
+      "vertices": 4284,
+      "triangles": 7544
+    },
+    {
+      "id": "ventricular-wall",
+      "fma": "FMA13884",
+      "sourceName": "wall of ventricle",
+      "mapping": "isa",
+      "sources": [
+        {
+          "element": "FJ2428",
+          "bytes": 2660930,
+          "sha256": "ac3c7d6714bed8cf549c97b013546541cf67e189dad2107092a59758aa3ccc45",
+          "vertices": 21053,
+          "triangles": 37442
+        }
+      ],
+      "elements": [
+        "FJ2428"
+      ],
+      "label": "wall of ventricle",
+      "kind": "existing",
+      "vertices": 21053,
+      "triangles": 37442
+    },
+    {
+      "id": "right-ventricle",
+      "fma": "FMA9291",
+      "sourceName": "cavity of right ventricle",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2423",
+          "bytes": 113621,
+          "sha256": "f0d7cbf9e10c0fcefe96741700605e7080d4a627fe214b4c8d5647d970e085f7",
+          "vertices": 973,
+          "triangles": 1918
+        }
+      ],
+      "elements": [
+        "FJ2423"
+      ],
+      "label": "cavity of right ventricle",
+      "kind": "existing",
+      "vertices": 973,
+      "triangles": 1918
+    },
+    {
+      "id": "left-ventricle",
+      "fma": "FMA9466",
+      "sourceName": "cavity of left ventricle",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2422",
+          "bytes": 102171,
+          "sha256": "8844c5fc464d23fdc785d1d254d666a4d3b70b14b73ec90ca0c77ba4aff3dd37",
+          "vertices": 879,
+          "triangles": 1722
+        }
+      ],
+      "elements": [
+        "FJ2422"
+      ],
+      "label": "cavity of left ventricle",
+      "kind": "existing",
+      "vertices": 879,
+      "triangles": 1722
+    },
+    {
+      "id": "ascending-aorta",
+      "fma": "FMA3736",
+      "sourceName": "ascending aorta",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ3413",
+          "bytes": 24686,
+          "sha256": "764f23e432a9308e0780c586f9d1638db1fbcc52a5019ae61817b4b1de323870",
+          "vertices": 229,
+          "triangles": 396
+        }
+      ],
+      "elements": [
+        "FJ3413"
+      ],
+      "label": "ascending aorta",
+      "kind": "existing",
+      "vertices": 229,
+      "triangles": 396
+    },
+    {
+      "id": "aortic-arch",
+      "fma": "FMA3768",
+      "sourceName": "arch of aorta",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ3411",
+          "bytes": 41743,
+          "sha256": "9eeb5e5a627e8145f03961c661c9c66d8fdc55ed1234d04b84212b87a21d902c",
+          "vertices": 381,
+          "triangles": 670
+        }
+      ],
+      "elements": [
+        "FJ3411"
+      ],
+      "label": "arch of aorta",
+      "kind": "existing",
+      "vertices": 381,
+      "triangles": 670
+    },
+    {
+      "id": "pulmonary-trunk",
+      "fma": "FMA8612",
+      "sourceName": "pulmonary trunk",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2966",
+          "bytes": 89640,
+          "sha256": "7d4fbfbeebdb541b4053e62e6ba9e55bdbc8d1354de8192f94d7c6008812ab3f",
+          "vertices": 871,
+          "triangles": 1302
+        }
+      ],
+      "elements": [
+        "FJ2966"
+      ],
+      "label": "pulmonary trunk",
+      "kind": "existing",
+      "vertices": 871,
+      "triangles": 1302
+    },
+    {
+      "id": "superior-vena-cava",
+      "fma": "FMA4720",
+      "sourceName": "superior vena cava",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ3645",
+          "bytes": 36208,
+          "sha256": "5cc007c2ea51255df641225630e83ddbf3e5c4545dffe4814b098c9199ceb26c",
+          "vertices": 318,
+          "triangles": 598
+        }
+      ],
+      "elements": [
+        "FJ3645"
+      ],
+      "label": "superior vena cava",
+      "kind": "existing",
+      "vertices": 318,
+      "triangles": 598
+    },
+    {
+      "id": "left-coronary",
+      "fma": "FMA50040",
+      "sourceName": "left coronary artery",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2737",
+          "bytes": 12641,
+          "sha256": "22aa075132e33f9a3d3be135515362b03ab84f12a0d641edde35e260fb2cd65b",
+          "vertices": 121,
+          "triangles": 204
+        }
+      ],
+      "elements": [
+        "FJ2737"
+      ],
+      "label": "LCA main stem / remaining coronary branches",
+      "kind": "existing",
+      "vertices": 121,
+      "triangles": 204
+    },
+    {
+      "id": "right-coronary",
+      "fma": "FMA50039",
+      "sourceName": "right coronary artery",
+      "mapping": "partof",
+      "sources": [
+        {
+          "element": "FJ2670",
+          "bytes": 28943,
+          "sha256": "e734bab3fcf2ee2bfba0eb6f827f8894fd9ff86e261f4fff0cf1ec37c3f84073",
+          "vertices": 280,
+          "triangles": 442
+        },
+        {
+          "element": "FJ2671",
+          "bytes": 32032,
+          "sha256": "9ca85be93a017bc2a8aa7d565b3ec320620e4b22e78936b0d6f52b7cf3015be5",
+          "vertices": 313,
+          "triangles": 478
+        },
+        {
+          "element": "FJ2673",
+          "bytes": 23827,
+          "sha256": "9ffff6952448478f178b3a4debe89cc0cb28035cf392f992c119768406f1cf32",
+          "vertices": 243,
+          "triangles": 338
+        },
+        {
+          "element": "FJ2676",
+          "bytes": 22233,
+          "sha256": "5455ee32b46013949d56fbdbbe87d08988975d7e3504105b270ed942376a13f8",
+          "vertices": 233,
+          "triangles": 304
+        },
+        {
+          "element": "FJ2677",
+          "bytes": 18719,
+          "sha256": "475b16a4d4a365a732fa8dbc1757f57b81ca99847ef2d36dd160656994dae474",
+          "vertices": 198,
+          "triangles": 252
+        },
+        {
+          "element": "FJ2714",
+          "bytes": 51286,
+          "sha256": "d7d9ed93cb831b5beb98cdbbb814d2628e38efcc524028a4a291ee6144ea5c03",
+          "vertices": 482,
+          "triangles": 794
+        },
+        {
+          "element": "FJ2715",
+          "bytes": 17086,
+          "sha256": "f18dda103cde54e3a21c811c33f2dc3cf25f000eaff460703c696e76cc6a0e3f",
+          "vertices": 185,
+          "triangles": 218
+        },
+        {
+          "element": "FJ2716",
+          "bytes": 17573,
+          "sha256": "0efa7807739a27fd0fd8ee6fb043ebdc17c8c824b1d068ddcf8bc305a138ca19",
+          "vertices": 188,
+          "triangles": 232
+        },
+        {
+          "element": "FJ2717",
+          "bytes": 24857,
+          "sha256": "3fb3cd79b66f9ec1be89382534eef8b9294328d6e7c17a7b48e87dd879316579",
+          "vertices": 259,
+          "triangles": 340
+        },
+        {
+          "element": "FJ2718",
+          "bytes": 13359,
+          "sha256": "f08dbbc4cb90043b874b8483b378c0da44a573a6dccbb17530f8f07e8c32ba0c",
+          "vertices": 139,
+          "triangles": 186
+        },
+        {
+          "element": "FJ2719",
+          "bytes": 28572,
+          "sha256": "56493dd7e056b7c7cb462293402c3fa42dbb82c572dc746dfee5685eb4afe94a",
+          "vertices": 299,
+          "triangles": 380
+        },
+        {
+          "element": "FJ2720",
+          "bytes": 22827,
+          "sha256": "425ff09df45ea552c0d9a6d3cb57ec55a16ca5ca37e0736bf6ba5dea6cdf03a9",
+          "vertices": 233,
+          "triangles": 320
+        },
+        {
+          "element": "FJ2721",
+          "bytes": 18826,
+          "sha256": "36858ad1fc4dd8f39de435eb42715c02b75976da212e9f322723e222d9862922",
+          "vertices": 198,
+          "triangles": 256
+        },
+        {
+          "element": "FJ2722",
+          "bytes": 23583,
+          "sha256": "ba9b6f6885b2fa65dd32aa1799dd1d3c77f2a95baac9dcab816704ad74fcd0d3",
+          "vertices": 244,
+          "triangles": 320
+        },
+        {
+          "element": "FJ2723",
+          "bytes": 281611,
+          "sha256": "cd008769cb9d565a75bf6b91b5ad3bd482932e37c4747837f6c9446cd23b73a2",
+          "vertices": 2255,
+          "triangles": 4502
+        }
+      ],
+      "elements": [
+        "FJ2670",
+        "FJ2671",
+        "FJ2673",
+        "FJ2676",
+        "FJ2677",
+        "FJ2714",
+        "FJ2715",
+        "FJ2716",
+        "FJ2717",
+        "FJ2718",
+        "FJ2719",
+        "FJ2720",
+        "FJ2721",
+        "FJ2722",
+        "FJ2723"
+      ],
+      "label": "RCA main stem / remaining coronary branches",
+      "kind": "existing",
+      "vertices": 5749,
+      "triangles": 9362
+    },
+    {
+      "id": "lad",
+      "label": "Anterior interventricular artery (LAD)",
+      "fma": "FMA3862",
+      "elements": [
+        "FJ2631",
+        "FJ2632",
+        "FJ2641",
+        "FJ2643",
+        "FJ2644",
+        "FJ2645",
+        "FJ2646",
+        "FJ2647"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2631",
+          "bytes": 187038,
+          "sha256": "ca7d8c0c82982ef1c838cd2224650c810adc3e52aaf6b345f0cdb77d7b068c5e",
+          "vertices": 1549,
+          "triangles": 3032
+        },
+        {
+          "element": "FJ2632",
+          "bytes": 8543,
+          "sha256": "74d743ebe7ccb06a69244bccb59789cbb094af1f3b279e24be5541b9d01d2f6c",
+          "vertices": 91,
+          "triangles": 108
+        },
+        {
+          "element": "FJ2641",
+          "bytes": 31770,
+          "sha256": "0a9b2c86202434b7aa66c2499c680c40c5d3ebce6bc3ef73c927018ff2c81718",
+          "vertices": 322,
+          "triangles": 442
+        },
+        {
+          "element": "FJ2643",
+          "bytes": 29632,
+          "sha256": "3ee93d012a24f6fb93c92faa6eb35d918a3875b58cb0dd52ca5e3dc010ee55cf",
+          "vertices": 269,
+          "triangles": 478
+        },
+        {
+          "element": "FJ2644",
+          "bytes": 20055,
+          "sha256": "91b7c72f9fd221c63dd14932b7e66a0331e96d1b0aff3bfbec21f12187530467",
+          "vertices": 193,
+          "triangles": 306
+        },
+        {
+          "element": "FJ2645",
+          "bytes": 22289,
+          "sha256": "d6dcbc3294545f857df903393a6db47b268e3a97e8a0c87a0ab5bef056469eee",
+          "vertices": 224,
+          "triangles": 318
+        },
+        {
+          "element": "FJ2646",
+          "bytes": 30477,
+          "sha256": "4549b2c6a0bf1d15057bd6185fdafbec846deecc464b6cbfb19f7cedb68b815c",
+          "vertices": 287,
+          "triangles": 470
+        },
+        {
+          "element": "FJ2647",
+          "bytes": 21395,
+          "sha256": "18044f3caa4b23c89e8ce42555df29326c1ff1bdbf4b52559473dfb8368b040a",
+          "vertices": 216,
+          "triangles": 306
+        }
+      ],
+      "vertices": 3151,
+      "triangles": 5460
+    },
+    {
+      "id": "circumflex",
+      "label": "Circumflex artery",
+      "fma": "FMA3895",
+      "elements": [
+        "FJ2649",
+        "FJ2650",
+        "FJ2651",
+        "FJ2652",
+        "FJ2653",
+        "FJ2654"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2649",
+          "bytes": 81031,
+          "sha256": "d4833bb0b60ee79f526150ad7ba9124e326aba8cd48000711bf3a6b0997b0ce0",
+          "vertices": 692,
+          "triangles": 1380
+        },
+        {
+          "element": "FJ2650",
+          "bytes": 29816,
+          "sha256": "dd2c38fdc784311c955fb8b0420d70dfbdf16f0ce6e236a086dc5f350faae04c",
+          "vertices": 316,
+          "triangles": 396
+        },
+        {
+          "element": "FJ2651",
+          "bytes": 37854,
+          "sha256": "864567c4b15c3add5a8184edb142766538936e2ef17af4efa25acca67f4344d8",
+          "vertices": 395,
+          "triangles": 510
+        },
+        {
+          "element": "FJ2652",
+          "bytes": 22767,
+          "sha256": "fd5ee304558da1d1ffebb01ca7f59b374087667e71d473fe5401f355a2ff161f",
+          "vertices": 240,
+          "triangles": 308
+        },
+        {
+          "element": "FJ2653",
+          "bytes": 20958,
+          "sha256": "74fc42fbc783857619dccb5a753b06cbfce9abc6403f14e38f55bbb9fafdad80",
+          "vertices": 232,
+          "triangles": 252
+        },
+        {
+          "element": "FJ2654",
+          "bytes": 13776,
+          "sha256": "4e8467b12ca3374d25807d5de058cfb8d147ad2decd99f6debe57847a83099a1",
+          "vertices": 150,
+          "triangles": 172
+        }
+      ],
+      "vertices": 2025,
+      "triangles": 3018
+    },
+    {
+      "id": "diagonal",
+      "label": "Diagonal branches of LAD",
+      "fma": "FMA3860",
+      "elements": [
+        "FJ2633",
+        "FJ2634",
+        "FJ2635",
+        "FJ2636",
+        "FJ2637",
+        "FJ2638",
+        "FJ2639",
+        "FJ2640",
+        "FJ2642",
+        "FJ2648"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2633",
+          "bytes": 32810,
+          "sha256": "ba9e2eca1abc7946b27b8adb9846f1b626c7cc3e942da1a2cd2301e0c02bcf1f",
+          "vertices": 318,
+          "triangles": 492
+        },
+        {
+          "element": "FJ2634",
+          "bytes": 14842,
+          "sha256": "575eec8663acbae025b51ad8fa42dc6229f35d6f5d25673912c76cb59f117aec",
+          "vertices": 158,
+          "triangles": 196
+        },
+        {
+          "element": "FJ2635",
+          "bytes": 51353,
+          "sha256": "bc02d461ae79073f21f350b3c9751d7ccb973ea3c74f8c58bc9a2aeafc533281",
+          "vertices": 495,
+          "triangles": 766
+        },
+        {
+          "element": "FJ2636",
+          "bytes": 28744,
+          "sha256": "119cc81d1816f1db4c3d64add10efa63c9148e3177b74d10184f7a1e579581e5",
+          "vertices": 282,
+          "triangles": 420
+        },
+        {
+          "element": "FJ2637",
+          "bytes": 13104,
+          "sha256": "d4fa7aa9a6e224a3c7fea1264f4d81ea076ec7baaa8b1c8b3da8e1053bbf4e4a",
+          "vertices": 144,
+          "triangles": 160
+        },
+        {
+          "element": "FJ2638",
+          "bytes": 22808,
+          "sha256": "bad6520fcbcea112ca400ba5328e52f7b2ff680346b5b2591db2e97394f9b6e5",
+          "vertices": 246,
+          "triangles": 290
+        },
+        {
+          "element": "FJ2639",
+          "bytes": 11513,
+          "sha256": "a80ec5085d0430fa9ae5b643042742bb9757cfd23d3f0280e162751b91acda5f",
+          "vertices": 122,
+          "triangles": 150
+        },
+        {
+          "element": "FJ2640",
+          "bytes": 20309,
+          "sha256": "7391892f7c4a8ab6165bf17e6e5ba1367267f14b2cf845233456cb5945f31e14",
+          "vertices": 218,
+          "triangles": 260
+        },
+        {
+          "element": "FJ2642",
+          "bytes": 58861,
+          "sha256": "2f6dbb44742cd505762e3f24eb2ed3e9ed929f7a909ac28db4df68393e098888",
+          "vertices": 525,
+          "triangles": 964
+        },
+        {
+          "element": "FJ2648",
+          "bytes": 20026,
+          "sha256": "33bdf6f3048e9c940710c1cfc27e59af549f37c14b58ba24bd12f3bd5b284d73",
+          "vertices": 203,
+          "triangles": 286
+        }
+      ],
+      "vertices": 2711,
+      "triangles": 3984
+    },
+    {
+      "id": "right-marginal",
+      "label": "Right marginal artery",
+      "fma": "FMA3818",
+      "elements": [
+        "FJ2667",
+        "FJ2668",
+        "FJ2672",
+        "FJ2674",
+        "FJ2675"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2667",
+          "bytes": 25908,
+          "sha256": "4a43aa2911b4b1ee153d8948e5edfa99c078f374603a52c69100ab3ae2ef4362",
+          "vertices": 267,
+          "triangles": 360
+        },
+        {
+          "element": "FJ2668",
+          "bytes": 16400,
+          "sha256": "512479cec370a4390d5f2f0555fbdfc7ba3c2e8fb7b78b242cb4382ede30287f",
+          "vertices": 176,
+          "triangles": 216
+        },
+        {
+          "element": "FJ2672",
+          "bytes": 47950,
+          "sha256": "032c1562f06b7c960e1524fd8259fa321d59426ba0a9e6df32b42eb2c79e8e11",
+          "vertices": 447,
+          "triangles": 742
+        },
+        {
+          "element": "FJ2674",
+          "bytes": 18806,
+          "sha256": "e4ff01e6ce03c7f0bfd28d099680623dd2e98829bde7efb9dbd9936029e3961d",
+          "vertices": 186,
+          "triangles": 284
+        },
+        {
+          "element": "FJ2675",
+          "bytes": 14381,
+          "sha256": "18496992ff047cc1578789bb356e181e91fd0bc3f59332f392b64ef02a91cc45",
+          "vertices": 148,
+          "triangles": 200
+        }
+      ],
+      "vertices": 1224,
+      "triangles": 1802
+    },
+    {
+      "id": "posterior-interventricular",
+      "label": "Posterior interventricular artery (RCA-origin PDA)",
+      "fma": "FMA3840",
+      "elements": [
+        "FJ2692",
+        "FJ2693",
+        "FJ2694",
+        "FJ2695",
+        "FJ2696",
+        "FJ2697",
+        "FJ2698",
+        "FJ2699",
+        "FJ2700"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2692",
+          "bytes": 62836,
+          "sha256": "c38882cfb2a4ff493aece22ced1f23c9e044bf9cc091f14d40c7256179d34ccf",
+          "vertices": 608,
+          "triangles": 930
+        },
+        {
+          "element": "FJ2693",
+          "bytes": 50460,
+          "sha256": "2f089666f8301e52400250614677a5c824bfa37fee55bfeb545904c8acffc063",
+          "vertices": 480,
+          "triangles": 766
+        },
+        {
+          "element": "FJ2694",
+          "bytes": 30018,
+          "sha256": "8579bbf2af9aa03a93604db0f05283334baf131b26ca17d9bbd9c1ff281ee048",
+          "vertices": 305,
+          "triangles": 424
+        },
+        {
+          "element": "FJ2695",
+          "bytes": 15952,
+          "sha256": "8a50ff9ad16191e3fd6cadb480943d212796d9cba391659c186be731b8f68d6a",
+          "vertices": 163,
+          "triangles": 236
+        },
+        {
+          "element": "FJ2696",
+          "bytes": 26375,
+          "sha256": "0d90aa40e3ac1a0d4423d19da7c8a9f4446063bdae1b7246f97669c6db3720df",
+          "vertices": 286,
+          "triangles": 336
+        },
+        {
+          "element": "FJ2697",
+          "bytes": 17355,
+          "sha256": "da528958c3c9784dc6ed9c04cd0a8d1fe6678c66e3792e0c258b1b51c9a07874",
+          "vertices": 188,
+          "triangles": 220
+        },
+        {
+          "element": "FJ2698",
+          "bytes": 17208,
+          "sha256": "d253c0270030d4f2845f99ec3658e0e0ac9a79bda8e6d2e3ec1cae9d1942c9bd",
+          "vertices": 195,
+          "triangles": 200
+        },
+        {
+          "element": "FJ2699",
+          "bytes": 11081,
+          "sha256": "4434305060b28d0b294b33cc18cdeb62f7a525f1282500c24dfb558205ec54a5",
+          "vertices": 126,
+          "triangles": 126
+        },
+        {
+          "element": "FJ2700",
+          "bytes": 19411,
+          "sha256": "2c4dacf7f7029de9075b4671085accefcf96200b4dbaba8a130ac1c3b177ebc6",
+          "vertices": 197,
+          "triangles": 280
+        }
+      ],
+      "vertices": 2548,
+      "triangles": 3518
+    },
+    {
+      "id": "coronary-sinus",
+      "label": "Coronary sinus",
+      "fma": "FMA4706",
+      "elements": [
+        "FJ2655"
+      ],
+      "kind": "vein",
+      "sources": [
+        {
+          "element": "FJ2655",
+          "bytes": 37441,
+          "sha256": "6095f578e12b9a85dcf978692793f775494086ab09b7eb44e6a069049640bd82",
+          "vertices": 331,
+          "triangles": 624
+        }
+      ],
+      "vertices": 331,
+      "triangles": 624
+    },
+    {
+      "id": "great-cardiac-vein",
+      "label": "Great cardiac vein",
+      "fma": "FMA4707",
+      "elements": [
+        "FJ2656"
+      ],
+      "kind": "vein",
+      "sources": [
+        {
+          "element": "FJ2656",
+          "bytes": 49555,
+          "sha256": "cb9c6b4e10e43c92c8ea4e2e1a66215d98cf58d72fcc60aeadc8a0f87f6724fc",
+          "vertices": 434,
+          "triangles": 826
+        }
+      ],
+      "vertices": 434,
+      "triangles": 826
+    },
+    {
+      "id": "middle-cardiac-vein",
+      "label": "Middle cardiac vein",
+      "fma": "FMA4713",
+      "elements": [
+        "FJ2678",
+        "FJ2679",
+        "FJ2680",
+        "FJ2681",
+        "FJ2682",
+        "FJ2683",
+        "FJ2684",
+        "FJ2685",
+        "FJ2686",
+        "FJ2687",
+        "FJ2688",
+        "FJ2689",
+        "FJ2690",
+        "FJ2691"
+      ],
+      "kind": "vein",
+      "sources": [
+        {
+          "element": "FJ2678",
+          "bytes": 48606,
+          "sha256": "20a71237bc8a3b211c244e0695c1a6242abb3f684275c0b01061439c92b72ef7",
+          "vertices": 450,
+          "triangles": 770
+        },
+        {
+          "element": "FJ2679",
+          "bytes": 17887,
+          "sha256": "754d84b147f9a8ba3eb7aa0cb434a74a7c047354bb689e8e89de6e4f0160f737",
+          "vertices": 184,
+          "triangles": 252
+        },
+        {
+          "element": "FJ2680",
+          "bytes": 30280,
+          "sha256": "29c830d98097500bb09a506b05275942574a5ea9b18ad58e51bc5b7313f0ed8b",
+          "vertices": 331,
+          "triangles": 376
+        },
+        {
+          "element": "FJ2681",
+          "bytes": 18149,
+          "sha256": "cfb2b3134737d33591f2518ce6338498d8c3a32cb0dbc93cfcd9c88b8c4996d5",
+          "vertices": 210,
+          "triangles": 204
+        },
+        {
+          "element": "FJ2682",
+          "bytes": 31726,
+          "sha256": "1122684d5da8ea6953d03836244552fd33287185304d74e2a0e395f691e323e6",
+          "vertices": 365,
+          "triangles": 360
+        },
+        {
+          "element": "FJ2683",
+          "bytes": 15254,
+          "sha256": "02757805e2e956e4a4425b2c54db8b54ee69f5f97da5aa63ca0cd12c4b159b1e",
+          "vertices": 178,
+          "triangles": 168
+        },
+        {
+          "element": "FJ2684",
+          "bytes": 18740,
+          "sha256": "25a39f3d42a46af2008f426def111b4af3add424dc327543e51b2c7fa67f3d95",
+          "vertices": 192,
+          "triangles": 264
+        },
+        {
+          "element": "FJ2685",
+          "bytes": 16675,
+          "sha256": "578c2f788d36149f535210004762558a7e533cc42c121d26a8f418cb04142263",
+          "vertices": 171,
+          "triangles": 236
+        },
+        {
+          "element": "FJ2686",
+          "bytes": 20789,
+          "sha256": "172e06e35489ae2657678c6d340eace2daed2fb2329324aa40c48824b0e99666",
+          "vertices": 220,
+          "triangles": 280
+        },
+        {
+          "element": "FJ2687",
+          "bytes": 46727,
+          "sha256": "56fa04e9a81334e4492f94eb51ff810f47c786581f098d69083013f4c9ae2a62",
+          "vertices": 493,
+          "triangles": 618
+        },
+        {
+          "element": "FJ2688",
+          "bytes": 27249,
+          "sha256": "79e05aae03bab74714440fd5d4941f67b969293d57be99c6758c61fa15452e7b",
+          "vertices": 313,
+          "triangles": 306
+        },
+        {
+          "element": "FJ2689",
+          "bytes": 17693,
+          "sha256": "2a5596c4d908ff4c6bbe50d36c18759753e9dc5fa9b10029ec7f91ca8a2b5f04",
+          "vertices": 172,
+          "triangles": 274
+        },
+        {
+          "element": "FJ2690",
+          "bytes": 23876,
+          "sha256": "0914e4188f4952d2325f962dd97336d1b55ed40dd8532db46c9309975157f57f",
+          "vertices": 232,
+          "triangles": 364
+        },
+        {
+          "element": "FJ2691",
+          "bytes": 11750,
+          "sha256": "e50b042a1f7e034839c5180a9fdfbf0165a57ce19d02dc0092166d7e6772cb63",
+          "vertices": 125,
+          "triangles": 156
+        }
+      ],
+      "vertices": 3636,
+      "triangles": 4628
+    },
+    {
+      "id": "small-cardiac-vein",
+      "label": "Small cardiac vein",
+      "fma": "FMA4714",
+      "elements": [
+        "FJ2724",
+        "FJ2731"
+      ],
+      "kind": "vein",
+      "sources": [
+        {
+          "element": "FJ2724",
+          "bytes": 33909,
+          "sha256": "1da253198ab9482187ad49300d2d8cc594a44ed4e805c01e027d1df481f3403c",
+          "vertices": 294,
+          "triangles": 570
+        },
+        {
+          "element": "FJ2731",
+          "bytes": 52845,
+          "sha256": "69c00eaa21cf6e04da2b794ec4d56ec0900f502b59cbe616e129ee8099008296",
+          "vertices": 454,
+          "triangles": 892
+        }
+      ],
+      "vertices": 748,
+      "triangles": 1462
+    },
+    {
+      "id": "tricuspid-anterior",
+      "label": "Tricuspid anterior leaflet",
+      "fma": "FMA7238",
+      "elements": [
+        "FJ2421"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2421",
+          "bytes": 532771,
+          "sha256": "7303c55e6d9c2e294759f7f7e01d23fc120eba74bce9ade0a01cc4bdb2bd4200",
+          "vertices": 4282,
+          "triangles": 8160
+        }
+      ],
+      "vertices": 4282,
+      "triangles": 8160
+    },
+    {
+      "id": "tricuspid-posterior",
+      "label": "Tricuspid posterior leaflet",
+      "fma": "FMA7239",
+      "elements": [
+        "FJ2433"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2433",
+          "bytes": 325359,
+          "sha256": "6519afbf9aa2eb3c0dc25d8e332a0208fd2ad68956c1dfe1ef6b010f04984d55",
+          "vertices": 2729,
+          "triangles": 4926
+        }
+      ],
+      "vertices": 2729,
+      "triangles": 4926
+    },
+    {
+      "id": "tricuspid-septal",
+      "label": "Tricuspid septal leaflet",
+      "fma": "FMA7240",
+      "elements": [
+        "FJ2436"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2436",
+          "bytes": 302591,
+          "sha256": "f0572079c56ea2a00eff869b07c4910defd624c5bda3fddd2403e4f1831f6be1",
+          "vertices": 2591,
+          "triangles": 4526
+        }
+      ],
+      "vertices": 2591,
+      "triangles": 4526
+    },
+    {
+      "id": "mitral-anterior",
+      "label": "Mitral anterior leaflet",
+      "fma": "FMA7242",
+      "elements": [
+        "FJ2420"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2420",
+          "bytes": 495300,
+          "sha256": "f0294cbbd35096d1df5e8bdc92f17dbed5ebf981e62024a07e7ca18e31eb1a94",
+          "vertices": 4052,
+          "triangles": 7558
+        }
+      ],
+      "vertices": 4052,
+      "triangles": 7558
+    },
+    {
+      "id": "mitral-posterior",
+      "label": "Mitral posterior leaflet",
+      "fma": "FMA7243",
+      "elements": [
+        "FJ2432"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2432",
+          "bytes": 274620,
+          "sha256": "0b296151ecceff395da5c435bcf65cf6dfca390e72eb0be71d778fee84bc216b",
+          "vertices": 2560,
+          "triangles": 3820
+        }
+      ],
+      "vertices": 2560,
+      "triangles": 3820
+    },
+    {
+      "id": "pulmonary-left-anterior",
+      "label": "Pulmonary left anterior cusp (source terminology)",
+      "fma": "FMA7247",
+      "elements": [
+        "FJ2417"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2417",
+          "bytes": 78664,
+          "sha256": "12d2dccc78efa7d21f6f4af53ae08603be473613ec4e04b0beb9c0239b96da56",
+          "vertices": 708,
+          "triangles": 1272
+        }
+      ],
+      "vertices": 708,
+      "triangles": 1272
+    },
+    {
+      "id": "pulmonary-right-anterior",
+      "label": "Pulmonary right anterior cusp (source terminology)",
+      "fma": "FMA7249",
+      "elements": [
+        "FJ2434"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2434",
+          "bytes": 85105,
+          "sha256": "ed432a90e8fbfe9742d524044c0bd20c165f2a9a820ee585f00635cc47c5b5c0",
+          "vertices": 769,
+          "triangles": 1370
+        }
+      ],
+      "vertices": 769,
+      "triangles": 1370
+    },
+    {
+      "id": "pulmonary-posterior",
+      "label": "Pulmonary posterior cusp (source terminology)",
+      "fma": "FMA7250",
+      "elements": [
+        "FJ2427"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2427",
+          "bytes": 62530,
+          "sha256": "eb867fa648f3da04036d925e6a740d4e3a922b893d74a20dec40d8d763a18414",
+          "vertices": 573,
+          "triangles": 996
+        }
+      ],
+      "vertices": 573,
+      "triangles": 996
+    },
+    {
+      "id": "aortic-right-posterior",
+      "label": "Aortic right posterior cusp (source terminology)",
+      "fma": "FMA7252",
+      "elements": [
+        "FJ2431"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2431",
+          "bytes": 21434,
+          "sha256": "40ae6e23decbb5fe2ea3800d44d517302f219078266abd8dcbc7d86ebc246799",
+          "vertices": 215,
+          "triangles": 316
+        }
+      ],
+      "vertices": 215,
+      "triangles": 316
+    },
+    {
+      "id": "aortic-anterior",
+      "label": "Aortic anterior cusp (source terminology)",
+      "fma": "FMA7253",
+      "elements": [
+        "FJ2435"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2435",
+          "bytes": 56513,
+          "sha256": "b498ef286aa1ba0bfeaf2114298f43078007beab66fc81f422ff6017c309bd7a",
+          "vertices": 508,
+          "triangles": 920
+        }
+      ],
+      "vertices": 508,
+      "triangles": 920
+    },
+    {
+      "id": "aortic-left-posterior",
+      "label": "Aortic left posterior cusp (source terminology)",
+      "fma": "FMA7254",
+      "elements": [
+        "FJ2426"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2426",
+          "bytes": 57407,
+          "sha256": "86fa5ef6decf47a91d33f826e1b5579bbecd94795c206b2d797f52c36c3e1020",
+          "vertices": 526,
+          "triangles": 914
+        }
+      ],
+      "vertices": 526,
+      "triangles": 914
+    },
+    {
+      "id": "rv-papillary-anterior",
+      "label": "RV anterior papillary muscle",
+      "fma": "FMA7260",
+      "elements": [
+        "FJ2419"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2419",
+          "bytes": 59575,
+          "sha256": "1169b9b927ff75aac2dc2406a700b962bb9f3c95b860c5271548414d9e1226da",
+          "vertices": 580,
+          "triangles": 882
+        }
+      ],
+      "vertices": 580,
+      "triangles": 882
+    },
+    {
+      "id": "rv-papillary-posterior",
+      "label": "RV posterior papillary muscle",
+      "fma": "FMA7261",
+      "elements": [
+        "FJ2430"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2430",
+          "bytes": 48375,
+          "sha256": "971ab49fff2908862fc230653f5f0980424e2030ae7f29f7f96637e8b636c4e8",
+          "vertices": 484,
+          "triangles": 692
+        }
+      ],
+      "vertices": 484,
+      "triangles": 692
+    },
+    {
+      "id": "rv-papillary-septal",
+      "label": "RV septal papillary muscle",
+      "fma": "FMA7262",
+      "elements": [
+        "FJ2437"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2437",
+          "bytes": 56351,
+          "sha256": "8ac0c0aa95adc3f41e82f51bbd8e8a74681f4e58af7f7edd4bc9c5aafffa97c7",
+          "vertices": 539,
+          "triangles": 844
+        }
+      ],
+      "vertices": 539,
+      "triangles": 844
+    },
+    {
+      "id": "lv-papillary",
+      "label": "LV papillary muscles (source grouped)",
+      "fma": "FMA9352",
+      "elements": [
+        "FJ2418",
+        "FJ2429"
+      ],
+      "kind": "internal",
+      "sources": [
+        {
+          "element": "FJ2418",
+          "bytes": 54778,
+          "sha256": "ad6dbf98d5afb2dd5010c42df9d707bf172b0ecc4f6e22c70716d022660aadc8",
+          "vertices": 532,
+          "triangles": 816
+        },
+        {
+          "element": "FJ2429",
+          "bytes": 51282,
+          "sha256": "2f02411a806eedacfcb662b2dee47ca60f8448eb5243f48fb32083df66541ca4",
+          "vertices": 487,
+          "triangles": 780
+        }
+      ],
+      "vertices": 1019,
+      "triangles": 1596
+    }
+  ],
+  "limitations": [
+    "No chordae tendineae, moderator band, pectinate muscles, fossa ovalis, crista terminalis or conduction meshes verified in this source.",
+    "This is a static adult single-specimen atlas; no embryological animation, valve motion, perfusion, or dominance variants.",
+    "Source valve cusp orientation terminology retained; do not relabel coronary/noncoronary cusps without visual validation.",
+    "LV papillary mesh grouping retained; not relabeled separate clinical groups.",
+    "Existing coronary IDs now own only mesh elements not allocated to named branch IDs.",
+    "RV and LV IDs are cavity surfaces, not myocardium."
+  ]
+}
