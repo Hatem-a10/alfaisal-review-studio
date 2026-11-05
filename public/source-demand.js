@@ -1,0 +1,12 @@
+'use strict';
+(()=>{
+ const pending=new Map(),errors=new Map();
+ function request(url,apply){if(pending.has(url))return pending.get(url);errors.delete(url);const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000),p=fetch(url,{signal:controller.signal,credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('Could not load this reading');return r.json()}).then(data=>{apply(data);pending.delete(url);if(view==='library')render()}).catch(e=>{pending.delete(url);errors.set(url,e.name==='AbortError'?'Loading timed out.':e.message);if(view==='library')render()}).finally(()=>clearTimeout(timeout));pending.set(url,p);return p}
+ function source(s){return s?.readingURL&&!s.readingLoaded}
+ function load(s){return request(s.readingURL,rows=>{if(!Array.isArray(rows)||rows.some(p=>!Number.isInteger(p.page)||typeof p.text!=='string'))throw Error('Invalid reading data');const map=new Map(rows.map(p=>[p.page,p.text]));s.pages.forEach(p=>p.text=map.get(p.page)??p.text);s.readingLoaded=true})}
+ function message(url){return '<div class="source-load-state" role="status">'+(errors.has(url)?esc(errors.get(url))+' <button data-retry-reading="'+esc(url)+'">Retry loading</button>':'Loading the requested lecture material…')+'</div>'}
+ const documentBefore=documentPanel;documentPanel=function(){const s=LEARNING.sources.find(s=>s.id===documentId);if(source(s)){if(!errors.has(s.readingURL))load(s);return message(s.readingURL)}if(sourceSearch){const missing=LEARNING.sources.filter(source);if(missing.length){missing.forEach(s=>{if(!errors.has(s.readingURL))load(s)});return message(missing.find(s=>errors.has(s.readingURL))?.readingURL||missing[0].readingURL)}}return documentBefore()};
+ const sourceBefore=sourceQuestionsPanel;sourceQuestionsPanel=function(){if(LEARNING.sourceQuestionsURL&&!LEARNING.sourceQuestionsLoaded){if(!errors.has(LEARNING.sourceQuestionsURL))request(LEARNING.sourceQuestionsURL,rows=>{if(!Array.isArray(rows)||rows.some(q=>typeof q.id!=='string'||!Array.isArray(q.options)))throw Error('Invalid source question index');LEARNING.sourceQuestions=rows;LEARNING.sourceQuestionsLoaded=true});return message(LEARNING.sourceQuestionsURL)}return sourceBefore()};
+ const libraryBefore=library;library=function(){return libraryBefore().replace(/Source questions · \d+/, 'Source questions · '+(LEARNING.sourceQuestionCount??LEARNING.sourceQuestions.length))};
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-retry-reading]');if(b){errors.delete(b.dataset.retryReading);render()}});
+})();
