@@ -4,3 +4,17 @@
 a,.link-button{color:var(--accent-text,var(--green))}button.primary{color:var(--on-accent)!important}.ui-mobile-nav .active,.learning-tabs .selected{color:var(--accent-text,var(--green))}
 html[data-ui=modern] .home-text-link,html[data-ui=modern] .intro .eyebrow,html[data-ui=modern] .intro>.pill,.home-top h1 span,.home-top-tag span,.home-card-label span{color:var(--accent-text,var(--green))}
 .mobile-sync-dialog{width:min(440px,94vw);padding:22px;border:1px solid var(--line);border-radius:22px;background:var(--bg);color:var(--ink)}.mobile-sync-dialog::backdrop{background:#0009}.mobile-sync-dialog .sync-widget{display:block!important}.mobile-sync-dialog #syncWidget .sync-widget-body{display:grid;gap:10px}.mobile-sync-dialog #syncWidget>summary{display:none}
+/* Raised above the system gesture strip, with comfortable targets and tap paging. */
+.mobile-dock-shell{display:none}
+@media(max-width:760px){
+ .mobile-dock-shell{position:fixed;display:flex;align-items:center;gap:2px;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:100;max-width:calc(100vw - 16px);border:1px solid var(--line);border-radius:22px;background:var(--white);box-shadow:0 8px 28px #0002;padding:6px 3px;isolation:isolate}
+ .mobile-dock-shell .ui-mobile-nav{position:static!important;inset:auto!important;flex:1;min-width:0;max-width:none;width:auto!important;min-height:76px;height:76px!important;padding:3px 4px!important;border:0;box-shadow:none;background:transparent;border-radius:16px;gap:7px;touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ .mobile-dock-shell .ui-mobile-nav button{flex:0 0 105px!important;min-width:105px!important;min-height:68px!important;padding:8px 10px!important;font-size:12px!important;gap:7px;border-radius:14px;white-space:normal;line-height:1.25}
+ .mobile-dock-shell .ui-mobile-nav button[data-mobile-extra]{flex-basis:144px!important;min-width:144px!important}
+ .mobile-dock-shell .ui-mobile-nav button .feature-icon,.mobile-dock-shell .ui-mobile-nav button .nav-icon{width:23px;height:23px;margin:0;flex:none}
+ .mobile-dock-shell .ui-mobile-nav button span{overflow:visible;text-overflow:clip;white-space:normal;max-width:100%}
+ .dock-scroll{flex:0 0 32px;align-self:stretch;width:32px;min-width:32px;padding:0;border:0;border-radius:14px;background:transparent;color:var(--green);display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+ .dock-scroll svg{width:21px;height:21px}.dock-scroll:disabled{opacity:.22;cursor:default}
+ body:has(.mobile-dock-shell) main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 146px)!important}
+ html[data-ui=modern] #timerBar,#etExamDock,.jump-first-wrong{bottom:calc(env(safe-area-inset-bottom,0px) + 124px)!important}
+}

@@ -104,3 +104,9 @@ The production compiler defers canonical extracted source-page text into content
 `performance-budget.mjs` fails builds exceeding one startup JavaScript request, 7 MiB raw or 1.55 MiB gzip. Budgets are payload regression limits, not an iPhone launch-time guarantee. The Settings performance panel reports the actual current device's latest/median ready timings against a one-second target. New large sources should use incremental reading rather than raising the startup budget silently.
 
 Mobile primary navigation and expanded More tools share one horizontally scrolling bottom dock, including icons, grade/activity/library tools and access to Sync & Settings. The second mobile extras strip is retired.
+
+### Mobile gesture clearance and reading compression
+
+The mobile dock is raised by the device safe-area inset plus 18px, with 105px-wide, 68px-minimum-height labelled targets. Left/right tap controls page the same horizontal scroller; no second extras strip is created. This avoids requiring a swipe at the iOS home-indicator edge; web code does not disable operating-system app-switch gestures. Test the physical iPhone when confirming OS-level gesture behavior.
+
+Deferred reading/source-index assets are now losslessly gzip-compressed in the publisher package. The reader detects gzip magic bytes and uses browser-standard decompression, accepting already HTTP-decoded JSON as well. The build checks byte-for-byte round trips, and regression tests cover both delivery modes. The measured package is approximately 29.8 MiB (rather than 32.4 MiB); the hosting size is not the startup download size.
