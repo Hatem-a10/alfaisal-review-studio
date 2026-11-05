@@ -9,6 +9,16 @@
  // Remove redundant overview; retain the profile anchor and route it without opening Extras.
  sidebar.querySelectorAll('[data-view="dashboard"],[data-view="studyhub"],[data-view="lectures"],[data-view="weakness"],[data-view="methods"],[data-view="sources"]').forEach(b=>b.remove());const lib=sidebar.querySelector('[data-view="library"]');if(lib&&extras)extras.append(lib);
  for(const[id,label]of [['grades','Course Grade Calculator'],['activity','Study Activity'],['countdowns','Exam & TBL Countdowns']]){const b=document.createElement('button');b.dataset.view=id;b.textContent=label;extras?.append(b)}if(lib&&extras)extras.append(lib);
+ function arrangePrimaryNav(){
+  const nav=sidebar.querySelector('nav'),menu=sidebar.querySelector('#navExtras');
+  nav.querySelectorAll('[data-view="planner"],[data-original-mode]').forEach(b=>b.remove());
+  for(const id of ['learning','calendar','practice','countdowns','anki']){
+   const b=nav.querySelector('[data-view="'+id+'"]');if(!b)continue;
+   nav.insertBefore(b,menu);const label=id==='countdowns'?'Countdowns':id==='anki'?'Anki decks':null;
+   if(label){const span=b.querySelector('span');if(span)span.textContent=label;else b.textContent=label;b.title=label;b.setAttribute('aria-label',label)}
+  }
+ }
+ arrangePrimaryNav();
  $('#uiRailToggle')?.remove();const toggle=$('#sidebarToggle');body.append(toggle);let stage=localStorage.getItem('hub-sidebar-stage')||(body.classList.contains('sidebar-hidden')?'collapsed':body.classList.contains('sidebar-rail')?'compact':'expanded');function side(){if(stage==='collapsed')body.append(toggle);else sidebar.prepend(toggle);body.dataset.sidebarStage=stage;body.classList.toggle('sidebar-hidden',stage==='collapsed');body.classList.toggle('sidebar-rail',stage==='compact');const next={expanded:'Compact sidebar',compact:'Collapse sidebar',collapsed:'Expand sidebar'}[stage];toggle.title=next;toggle.setAttribute('aria-label',next);toggle.textContent=stage==='collapsed'?'☰':stage==='compact'?'‹':'«';toggle.setAttribute('aria-expanded',String(stage!=='collapsed'));localStorage.setItem('hub-sidebar-stage',stage)}toggle.onclick=()=>{stage={expanded:'compact',compact:'collapsed',collapsed:'expanded'}[stage];side()};side();
  const accent=$('#accentColor'),appearance=document.createElement('section');appearance.className='panel hub-appearance';appearance.innerHTML='<h3>Appearance</h3><label class="hub-accent-control"><span>Accent color</span></label><label class="hub-break-control"><input type="checkbox" id="permitBreakStudy"><span>Allow automatic study during official breaks</span></label>';appearance.querySelector('label').append(accent);$('#siteAdmin .admin-frame')?.prepend(appearance);$('#permitBreakStudy').checked=!!opts().allowBreakStudy;
  const theme=$('#themeToggle');$('#day').before(theme);const topLabel=header.querySelector('label:has(#accentColor)');topLabel?.remove();header.querySelectorAll('label').forEach(l=>{if(l.textContent.trim()==='Accent')l.remove()});
