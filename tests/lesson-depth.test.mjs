@@ -46,3 +46,17 @@ test('new teaching and question citations resolve to a page and questions retain
   assert.equal(shared.length, 1);
   assert.ok(!learning.sources.some(source => source.id === 'depth-t-7'));
 });
+
+test('citations for extracted readings open the correct page in the library', () => {
+  const source = load('learning.js');
+  const start = source.indexOf('function sourceLink(');
+  const end = source.indexOf('\n}', start) + 2;
+  const sourceLink = vm.runInNewContext(source.slice(start, end) + ';sourceLink', {
+    sourceTarget: () => ({s: {name: 'Coronary slides'}, url: '#library', label: 'slide 14'}),
+    esc: String,
+  });
+  const markup = sourceLink({source: 'cvp-w2-slides-1', page: 14});
+  assert.match(markup, /data-open-page="cvp-w2-slides-1"/);
+  assert.match(markup, /data-page="14"/);
+  assert.doesNotMatch(markup, /#library#page/);
+});
