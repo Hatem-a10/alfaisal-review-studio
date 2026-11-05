@@ -86,3 +86,9 @@ The assessment catalog now reuses lecture-release scans and caches its result un
 Production builds use `scripts/client-styles.mjs` to minify/consolidate linked styles into three content-addressed files while preserving positions around inline overrides. Source styles remain separate for maintenance. `scripts/built-preview.mjs` serves the build locally on port 5174 and forwards API requests only to the local development server on port 5173. Run the visual and performance checks against port 5174 when validating production CSS.
 
 Optional question disclosure state is saved explicitly with the topic draft. Jump navigation ignores closed optional questions and never opens the disclosure itself. Rendering a previously opened disclosure does not generate a new draft write or sync loop.
+
+## Single-request production client
+
+`scripts/client-scripts.mjs` compiles the declared startup scripts in their dependency order into a content-addressed classic script. Global names stay stable for the existing plugins; this is a production build step, while development retains separate source scripts. The canonical lesson payload is included in its original position. No runtime eval, new dependencies, or loading placeholder for missing course data is introduced. Existing source assets remain available for readers and compatibility with older open tabs.
+
+When changing this build step, verify direct startup and route refreshes, compare source/compiled content hashes, and exercise learning, practice, past exams, Anki, and custom tool routes. Browser code combining can expose declaration-order issues even when source-only tests pass. The PWA keeps its original manifest ID/scope but launches `/index.html` directly to avoid the internal root redirect when the browser updates its launch metadata.

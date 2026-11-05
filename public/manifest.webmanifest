@@ -1,9 +1,9 @@
 {
   "id": "/",
-  "name": "Hatem · Review Studio",
+  "name": "Hatem \u00b7 Review Studio",
   "short_name": "Review Studio",
   "description": "Your personal medical study space.",
-  "start_url": "/",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#071112",
