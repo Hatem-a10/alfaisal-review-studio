@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
- function stableApply(fn,args){const protect=['learning','practice','anki','anatomy'].includes(view);if(protect)window.studySessionStable=true;try{return fn(...args)}finally{if(protect){window.studySessionRefreshPending=true;queueMicrotask(()=>window.studySessionStable=false)}}}
+ function stableApply(fn,args){const protect=['learning','practice','anki','anatomy','labs'].includes(view);if(protect)window.studySessionStable=true;try{return fn(...args)}finally{if(protect){window.studySessionRefreshPending=true;queueMicrotask(()=>window.studySessionStable=false)}}}
  const adopt=adoptCloud;adoptCloud=function(...args){return stableApply(adopt,args)};
  const resolve=window.resolveAutoConflict;window.resolveAutoConflict=function(...args){return stableApply(resolve,args)};
  const beforeRender=render;render=function(){if(window.studySessionStable){window.studySessionRefreshPending=true;return}return beforeRender()};

@@ -20,5 +20,7 @@ export function assembledLearning(){
  runInNewContext(transcriptPatchCode+';applyPulmonaryTranscripts(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,CVP_PULMONARY_TRANSCRIPTS);',transcriptContext);
  const metabolismCode=['mol-metabolism-data.js','mol-metabolism-core.js'].map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
  runInNewContext(metabolismCode+';applyMetabolismContent(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,MOL_METABOLISM);',transcriptContext);
+ const nextCode=['respiratory-next-data.js','respiratory-next-core.js'].map(file=>readFileSync(root+'public/'+file,'utf8')).join('\n');
+ runInNewContext(nextCode+';applyRespiratoryNext(LEARNING,TEACHING,TOPIC_CHECKS,DIAGRAMS,RESPIRATORY_NEXT);',transcriptContext);
  return {learning,teaching,pack};
 }
