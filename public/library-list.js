@@ -18,6 +18,22 @@ function suppliedLectureForFile(name) {
   'Hemodynamics II- Vascular distensibility and function of blood - Dr. Nader.pptx': 'CVP-P9',
   'Hemodynamics I - Overview of the circulation Dr Moni Nader.pptx': 'CVP-P8',
   'Cardiac Cycle- Dr Moni Nader.pptx': 'CVP-P6',
+  "Mediastinum - Dr Olena.pdf": "CVP-A11",
+  "Lecture 3 Microcirculation Histology 2026 Fall Dr Ani.pptx": "CVP-A10",
+  "ANATOMY OF THE NOSE, LARYNX AND TRACHEA.pptx": "CVP-A12",
+  "Histology of respiratory tract 1_Dr. Einas-compressed.pdf": "CVP-A13",
+  "A10. Lecture 3 Microcirculation Histology 2026 Fall Dr Ani.pdf": "CVP-A10",
+  "A11 Mediastinum transcription.pdf": "CVP-A11",
+  "A12. Anatomy of the Nose, Larynx, & Trachea Transcription - Haadiya Zeeshan.pdf": "CVP-A12",
+  "A13_Histology_of_the_Upper_Respiratory_Tract_Transcription.pdf": "CVP-A13",
+  "Embryology of Heart 2-aortic arch.pptx": "CVP-A14",
+  "Intercostal Space, Diaphragm - Dr. Olena.pdf": "CVP-A15",
+  "Lungs Anatomy - Dr. Olena.pdf": "CVP-A16",
+  "Histology of respiratory tract 2_Dr. Einas-compressed.pdf": "CVP-A17",
+  "A14. Aortic Arch Transcription by Wasan Binsadiq.pdf": "CVP-A14",
+  "A15. Intercostal Space, Diaphragm - Dr. Olena - by Merehan Soliman.pdf": "CVP-A15",
+  "A16 Lungs Anatomy Transcription - Haadiya Zeeshan.pdf": "CVP-A16",
+  "A17_Histology of the Lower Respiratory Tract_Transcription (1)-1.pdf": "CVP-A17",
  }[file];
 }
 
@@ -30,7 +46,7 @@ function libraryMaterials(item, lesson, sources) {
   if (/not verified lecturer transcript/i.test(source.kind || '')) continue;
   const category = /transcri|\btranscript\b/i.test(source.kind || '') || /^cvp-t-|^cvp-transcript$/.test(id) ? 'transcript'
    : /slide|supplied lecture$/i.test(source.kind || '') && !/notes|quiz|syllabus/i.test(source.kind || '') || /^cvp-w3-/.test(id) ? 'slides'
-   : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
+   : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$|^A10\. Lecture 3 Microcirculation Histology/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
   if (!category || (source.lectureIds?.length && !source.lectureIds.includes(item.id))) continue;
   const reference = refs.find(ref => ref.source === id);
   const range = Array.isArray(source.lectureRanges) && source.lectureRanges.find(entry => entry.lectureId === item.id);
