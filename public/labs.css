@@ -2,3 +2,11 @@
 @media(max-width:1000px){.lab-layout{grid-template-columns:1fr}.lab-catalog{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.lab-catalog>.eyebrow,.lab-catalog>p{grid-column:1/-1}}
 @media(max-width:600px){.learning-kind-switch{width:100%}.learning-kind-switch button{flex:1;padding:10px}.lab-course-tabs button{flex:1;min-width:0}.lab-catalog{grid-template-columns:1fr}.lab-map>div{grid-template-columns:1fr}.lab-activity label{grid-template-columns:1fr;gap:6px}.lab-layout{gap:16px}.lab-question h3{font-size:17px}.lab-heading h2{font-size:22px}}
 .heart-model-picker{display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-bottom:.75rem;font-weight:650}.heart-model-picker select{min-width:0;max-width:100%;font-weight:500}.study-resource-storage button{margin:.35rem .35rem 0 0}
+.heart-pinned::before { content: "✓ "; color: var(--green); }
+#heartPins { flex-basis: 100%; overflow-wrap: anywhere; }
+.heart-wall-cutaway { margin: 16px 0; }
+.heart-wall-cutaway svg { display: block; width: 100%; max-width: 320px; margin: 10px 0; }
+.heart-wall-cutaway label { display: block; margin: 5px 0; }
+#heartGroups { margin: 10px 0; border: 1px solid var(--line); border-radius: 8px; }
+#heartGroups[hidden] { display: none; }
+#heartGroups label { display: inline-flex; align-items: center; gap: 5px; margin: 4px 12px 4px 0; }

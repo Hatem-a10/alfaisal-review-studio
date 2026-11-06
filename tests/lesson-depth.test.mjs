@@ -49,8 +49,8 @@ test('new teaching and question citations resolve to a page and questions retain
 
 test('citations for extracted readings open the correct page in the library', () => {
   const source = load('learning.js');
-  const start = source.indexOf('function sourceLink(');
-  const end = source.indexOf('\n}', start) + 2;
+  const start = source.indexOf('function sourcePageURL(');
+  const end = source.indexOf('function provisionalGuide(', start);
   const sourceLink = vm.runInNewContext(source.slice(start, end) + ';sourceLink', {
     sourceTarget: () => ({s: {name: 'Coronary slides'}, url: '#library', label: 'slide 14'}),
     esc: String,

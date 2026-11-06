@@ -23,6 +23,27 @@
  const accent=$('#accentColor'),appearance=document.createElement('section');appearance.className='panel hub-appearance';appearance.innerHTML='<h3>Appearance</h3><label class="hub-accent-control"><span>Accent color</span></label><label class="hub-break-control"><input type="checkbox" id="permitBreakStudy"><span>Allow automatic study during official breaks</span></label>';appearance.querySelector('label').append(accent);$('#siteAdmin .admin-frame')?.prepend(appearance);$('#permitBreakStudy').checked=!!opts().allowBreakStudy;
  const theme=$('#themeToggle');$('#day').before(theme);const topLabel=header.querySelector('label:has(#accentColor)');topLabel?.remove();header.querySelectorAll('label').forEach(l=>{if(l.textContent.trim()==='Accent')l.remove()});
  const top=document.createElement('details');top.id='hubTopControls';top.innerHTML='<summary aria-label="Expand appearance and date controls"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg><span class="top-chevron">⌄</span></summary>';const topBody=document.createElement('div');topBody.className='hub-top-body';[...header.childNodes].forEach(n=>topBody.append(n));top.append(topBody);header.append(top);topBody.querySelector('.breadcrumb')?.remove();
+ const topToggle = top.querySelector('summary');
+ function setTopOpen(open) {
+  top.open = open;
+  topToggle.setAttribute('aria-expanded', String(open));
+  topToggle.setAttribute('aria-label', (open ? 'Close' : 'Open') + ' appearance and date controls');
+ }
+ setTopOpen(false);
+ topToggle.addEventListener('click', event => {
+  event.preventDefault();
+  setTopOpen(!top.open);
+ });
+ document.addEventListener('pointerdown', event => {
+  if (top.open && !top.contains(event.target)) setTopOpen(false);
+ });
+ top.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && top.open) {
+   setTopOpen(false);
+   topToggle.focus();
+  }
+ });
+
  function featureIcon(name){const paths={grades:'M4 3h16v18H4z M7 7h10 M8 12h1m6 0h1m-8 5h1m6 0h1',activity:'M4 20V10m5 10V4m6 16v-7m5 7V7',countdowns:'M9 2h6m-3 0v4m5 2 2-2 M20 14a8 8 0 1 1-16 0 8 8 0 0 1 16 0 M12 10v5l3 2',library:'M3 4h5v16H3z M11 4h4v16h-4z M18 4l3 15',dashboard:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',calendar:'M4 5h16v16H4z M8 2v6m8-6v6M4 10h16',learning:'M3 4h7l2 2 2-2h7v15h-7l-2 2-2-2H3z M12 6v15',practice:'M7 3h10v3H7z M5 5H3v16h18V5h-2 M7 12l2 2 4-5',anki:'M5 5h14v16H5z M8 2h14v16'};return '<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(paths[name]||paths.practice)+'"/></svg>'}
  for(const b of document.querySelectorAll('#mainSidebar nav button[data-view]'))if(!b.querySelector('svg')){const label=b.textContent.trim();b.innerHTML=featureIcon(b.dataset.view)+'<span>'+esc(label)+'</span>';b.title=label;b.setAttribute('aria-label',label)}
  const clock=document.createElement('time');clock.id='hubClock';clock.className='hub-time-chip';clock.setAttribute('aria-label','Current time in Riyadh');clock.title='Current time · Asia/Riyadh';topBody.append(clock);
