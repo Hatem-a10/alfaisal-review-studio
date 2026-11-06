@@ -170,3 +170,41 @@ test('checked concept-card quizzes link to the next card at the bottom of the re
  session.index=0;score.total=0;
  assert.doesNotMatch(markup({id:'lesson'}),/data-unified-card-next/);
 });
+
+test('every lesson objective has five distinct core questions and the study bank has four choices per question', () => {
+ const {learning,teaching,checks} = assembledLearning();
+ const core = load('inline-topics.js');
+ const group = vm.runInNewContext(core.split('let inlineLessonCache')[0] + ';InlineTopics.group');
+ const bank = [...new Map([...Object.values(checks).flat(),...learning.questions].map(q=>[q.id,q])).values()];
+ const gaps = [];
+ for (const lesson of learning.lessons) {
+  const topics = teaching.guides[lesson.id]?.sections || lesson.facts.map(f=>({id:f.id,concept:f.id}));
+  const questions = bank.filter(q=>q.lectureIds.includes(lesson.id)&&q.id!=='CVP-P14:w3-renal-signals-q2').map(q=>{
+   const objectiveId = q.objectiveByLecture?.[lesson.id];
+   return objectiveId ? {...q,objectiveId} : q;
+  });
+  group(topics,questions,checks).forEach((set,index)=>{
+   const stems = new Set(set.filter(q=>!q.duplicateOf).map(q=>q.question.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')));
+   if (stems.size<5) gaps.push(topics[index].id+' ('+stems.size+')');
+  });
+ }
+ assert.deepEqual(gaps, []);
+ assert.deepEqual(bank.filter(q=>q.options.length<4).map(q=>q.id), []);
+});
+
+test('supplemental questions have valid answer keys, choice-specific feedback and resolvable citations', () => {
+ const {learning} = assembledLearning();
+ const sources = new Map(learning.sources.map(s=>[s.id,new Set(s.pages.map(p=>p.page))]));
+ const {questions} = JSON.parse(load('supplemental-objective-questions.json'));
+ const ids = new Set();
+ for (const q of questions) {
+  assert.ok(!ids.has(q.id), q.id);
+  ids.add(q.id);
+  assert.ok(q.options.length>=4 && new Set(q.options.map(o=>o.trim().toLowerCase())).size===q.options.length, q.id);
+  assert.equal(q.options.length,q.reasons.length,q.id);
+  assert.ok(q.reasons.every(r=>r.trim().length>0),q.id);
+  assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length,q.id);
+  assert.equal(q.explanation,q.reasons[q.answer],q.id);
+  assert.ok(q.references.length && q.references.every(r=>sources.get(r.source)?.has(r.page)),q.id);
+ }
+});
