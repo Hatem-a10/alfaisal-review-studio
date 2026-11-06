@@ -25,5 +25,8 @@ export function assembledLearning(){
  for (const file of ['lesson-depth-data.js', 'lesson-depth-core.js', 'lesson-depth-runtime.js']) {
   runInNewContext(readFileSync(root+'public/'+file,'utf8'), transcriptContext);
  }
+ const supplemental=JSON.parse(readFileSync(root+'public/supplemental-objective-questions.json','utf8'));
+ const existing=new Set(learning.questions.map(q=>q.id));
+ for(const q of supplemental) if(!existing.has(q.id)){existing.add(q.id);learning.questions.push(q);}
  return {learning,teaching,pack,checks};
 }

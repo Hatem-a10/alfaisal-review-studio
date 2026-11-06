@@ -40,7 +40,9 @@ function inlineSession(l) {
  const answers = {}, graded = {};
  const orders = selected.questions.map((q,i) => {
   const index = previous.get(q.id);
-  const order = draft?.orders?.[index];
+  const priorOrder = draft?.orders?.[index];
+  const appended = q.appendedOption && Array.isArray(priorOrder) && priorOrder.length === q.options.length - 1;
+  const order = appended ? [...priorOrder, priorOrder.length] : priorOrder;
   const valid = Array.isArray(order) && order.length === q.options.length && new Set(order).size === order.length
     && order.every(n=>Number.isInteger(n)&&n>=0&&n<order.length);
   if (!valid) return ExamEngine.shuffle(q.options.map((_,n)=>n));

@@ -82,15 +82,16 @@ test('lecture rows keep original slide and transcription actions and omit text r
  assert.equal(match('Unrecognized document.pdf'),undefined);
 });
 
-test('A10 and A11 provide five distinct explained core questions per objective', () => {
+test('A10–A13 provide five distinct explained core questions per objective and four options per question', () => {
  const {learning,teaching,checks} = assembledLearning();
  const group = vm.runInNewContext(load('inline-topics.js').split('let inlineLessonCache')[0] + ';InlineTopics.group');
- for (const id of ['CVP-A10','CVP-A11']) {
+ for (const id of ['CVP-A10','CVP-A11','CVP-A12','CVP-A13']) {
   const questions = learning.questions.filter(q=>q.lectureIds.includes(id));
   const topics = teaching.guides[id].sections;
   group(topics,questions,checks).forEach((set,i)=>{
    const core = set.filter(q=>!q.duplicateOf);
    assert.ok(new Set(core.map(q=>q.id)).size >= 5, topics[i].id);
+   assert.ok(core.every(q=>q.options.length>=4), topics[i].id);
    for (const q of core.filter(q=>q.id.includes(':extra-'))) {
     assert.equal(q.options.length,q.reasons.length);
     assert.equal(q.explanation,q.reasons[q.answer]);
@@ -129,4 +130,26 @@ test('adding a question keeps existing draft answers and option order by questio
  assert.equal(result.graded[1],true);
  assert.equal(result.orders[1].join(','),'1,0');
  assert.equal(result.answers[0],undefined);
+});
+
+test('supplemental questions defer past Dashboard and load once for learning and practice', async () => {
+ const content = {innerHTML:''};
+ let requests = 0, paints = 0;
+ const ctx = {
+  view:'dashboard',render(){paints++},esc:String,
+  document:{getElementById:()=>content,addEventListener(){}},
+  LEARNING:{questions:[]},inlineLessonCache:new Map(),
+  fetch:async()=>{requests++;return {ok:true,json:async()=>[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]}},
+ };
+ vm.runInNewContext(load('supplemental-objectives.js'),ctx);
+ ctx.render();
+ assert.equal(requests,0);
+ ctx.view='learning';ctx.render();ctx.render();
+ assert.equal(requests,1);
+ assert.match(content.innerHTML,/Loading your question bank/);
+ await new Promise(resolve=>setImmediate(resolve));
+ ctx.view='practice';ctx.render();
+ assert.equal(requests,1);
+ assert.equal(ctx.LEARNING.questions.length,1);
+ assert.equal(paints,3);
 });
