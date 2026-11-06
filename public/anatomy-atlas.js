@@ -19,7 +19,7 @@ const AnatomyAtlas=(()=>{
   return intro('CVP 112 · SPATIAL ANATOMY','3D Anatomy Lab','Choose a specimen to rotate, inspect and isolate structures.')+
    '<section class="atlas-gallery" aria-label="Anatomy models">'+Object.entries(models).map(([id,[title,group,note,lessons,tone]],index)=>
    `<button class="atlas-card" type="button" style="--atlas-tone:${tone}" data-atlas-model="${id}">
-    <span class="atlas-art"><span class="atlas-category">${group}</span><img src="${root+id}.webp" alt="" width="560" height="300" ${index>2?'loading="lazy"':''}></span>
+    <span class="atlas-art"><span class="atlas-category">${group}</span><img src="${root+id}.webp?v=2" alt="" width="560" height="300" ${index>2?'loading="lazy"':''}></span>
     <span class="atlas-copy"><strong>${title}</strong><span class="atlas-description">${note}</span>
     <span class="atlas-card-footer"><span class="atlas-codes">${codes(lessons)}</span><span class="atlas-arrow" aria-hidden="true">↗</span></span></span>
    </button>`).join('')+'</section>';

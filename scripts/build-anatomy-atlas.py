@@ -92,13 +92,23 @@ def anatomical_model(entries, archive):
 
 def thumbnail(raw, key, only=None):
     doc, binary = unpack(raw)
+    if key == 'diaphragm':
+        only = {'right-hemidiaphragm', 'left-hemidiaphragm', 'esophagus', 'inferior-vena-cava', 'descending-aorta'}
+    elif key == 'nose':
+        only = {'nasal-bones', 'lateral-cartilages', 'alar-cartilages', 'septal-cartilage', 'vomer',
+                'inferior-conchae', 'frontal-sinuses', 'anterior-ethmoid-cells', 'middle-ethmoid-cells',
+                'posterior-ethmoid-cells', 'maxillary-sinuses', 'sphenoid-sinus'}
 
     def values(idx):
         a = doc['accessors'][idx]
         b = doc['bufferViews'][a['bufferView']]
-        dtype = {5126: '<f4', 5125: '<u4', 5123: '<u2', 5121: 'u1'}[a['componentType']]
+        dtype = np.dtype({5126: '<f4', 5125: '<u4', 5123: '<u2', 5121: 'u1'}[a['componentType']])
         count = {'VEC3': 3, 'SCALAR': 1}[a['type']]
-        return np.frombuffer(binary, dtype=dtype, count=count * a['count'], offset=b.get('byteOffset', 0) + a.get('byteOffset', 0))
+        # Some GLBs interleave POSITION and NORMAL in the same buffer view.
+        stride = b.get('byteStride', count * dtype.itemsize)
+        offset = b.get('byteOffset', 0) + a.get('byteOffset', 0)
+        return np.ndarray((a['count'], count), dtype=dtype, buffer=binary,
+                          offset=offset, strides=(stride, dtype.itemsize))
 
     yaw = {'nose': .70, 'diaphragm': .30, 'pharynx': 2.65}.get(key, -.30)
     pitch = {'diaphragm': .85}.get(key, .14)
@@ -112,7 +122,7 @@ def thumbnail(raw, key, only=None):
         if 'mesh' not in node or (only and node['name'] not in only):
             continue
         for primitive in doc['meshes'][node['mesh']]['primitives']:
-            xyz = values(primitive['attributes']['POSITION']).reshape(-1, 3) @ basis
+            xyz = values(primitive['attributes']['POSITION']) @ basis
             tris = xyz[values(primitive['indices']).reshape(-1, 3)]
             normal = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
             normal /= np.maximum(np.linalg.norm(normal, axis=1, keepdims=True), 1e-12)
@@ -158,6 +168,15 @@ def save(key, raw, names=None):
     (output / f'{key}.glb.gz').write_bytes(gzip.compress(pack(doc, binary), compresslevel=9, mtime=0))
     thumbnail(raw, key)
     return labels
+
+
+if sys.argv[1:] == ['--previews-only']:
+    for key in ['lungs', 'nose', 'larynx', 'diaphragm', 'pharynx']:
+        raw = gzip.decompress((output / f'{key}.glb.gz').read_bytes())
+        thumbnail(raw, key)
+        if key == 'lungs':
+            thumbnail(raw, 'airway', airway)
+    sys.exit()
 
 
 labels = {}
