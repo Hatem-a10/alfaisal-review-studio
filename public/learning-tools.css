@@ -7,3 +7,8 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 @media(max-width:600px){.anatomy-intro{display:block}.anatomy-progress{margin-top:18px}.anatomy-intro h2{font-size:23px}.heart-stage{height:390px}.anatomy-workspace{padding:14px!important}.heart-controls button{padding:10px;font-size:12px}.heart-actions{flex-wrap:wrap}.heart-controls input{max-width:125px}}
 @media(prefers-reduced-motion:reduce){.heart-stage *{scroll-behavior:auto!important}}
 .source-transcript{overflow-wrap:anywhere}.guide-section p,.option-reason p,.answer-feedback p{overflow-wrap:anywhere}
+
+.heart-picked{position:absolute;z-index:2;top:12px;left:50%;transform:translateX(-50%);max-width:calc(100% - 28px);padding:7px 14px;border-radius:999px;background:#172238;color:#fff;font-size:.9rem;font-weight:650;text-align:center;pointer-events:none}
+.heart-picked[hidden]{display:none}
+.heart-highlight-toggle{display:flex;align-items:center;gap:7px}
+.heart-highlight-toggle input{width:auto;margin:0}

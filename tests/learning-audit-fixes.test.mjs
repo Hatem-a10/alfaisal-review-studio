@@ -58,3 +58,26 @@ test('isolating several parts intersects the selection with the active preset', 
  isolate(['wall','valve','vein']);
  assert.deepEqual(meshes.map(mesh=>mesh.visible),[true,true,false]);
 });
+
+test('lecture rows keep original slide and transcription actions and omit text readers', () => {
+ const item = {id:'CVP-A8'};
+ const sources = [
+  {id:'extract',name:'Thoracic Wall - Dr. Olena.pdf',kind:'Slides',lectureIds:[item.id],url:'#library'},
+  {id:'full-slide',name:'Thoracic Wall - Dr. Olena (3).pdf',lectureId:item.id},
+  {id:'full-transcript',name:'A8. Thoracic Wall Transcript - Adam Elmorsy.pdf',lectureId:item.id},
+ ];
+ const ctx = {
+  DATA:{items:[item]}, LEARNING:{sources:sources.slice(0,1)}, uploads:sources.slice(1),
+  lessonById:()=>({}), title:()=> 'Thoracic wall', esc:String,
+  sourceTarget:({source,page})=>({url:sources.find(x=>x.id===source).url || '/api/materials/'+source,page}),
+  sourcePageURL:({url,page})=>url+'#page='+page,
+ };
+ const html = vm.runInNewContext(load('library-list.js') + ';libraryLectureLists()',ctx);
+ assert.match(html,/api\/materials\/full-slide#page=1[^>]+>Slides/);
+ assert.match(html,/api\/materials\/full-transcript#page=1[^>]+>Transcription/);
+ assert.doesNotMatch(html,/#library|data-open-page|\(text\)/);
+ const match = vm.runInNewContext(load('library-list.js') + ';suppliedLectureForFile');
+ assert.equal(match('Lecture 2 Blood Vessel Histology 2026 Fall Dr Ani (3).pptx'),'CVP-A7');
+ assert.equal(match('Heart valves and heart sounds - Dr Moni Nader-15102026 (3).pptx'),'CVP-P10');
+ assert.equal(match('Unrecognized document.pdf'),undefined);
+});

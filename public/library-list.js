@@ -1,5 +1,26 @@
 'use strict';
 
+function libraryDocumentURL(source, page = 1) {
+ if (!source) return null;
+ const target = sourceTarget({source: source.id, page});
+ if (!target || !/^(?:\/api\/(?:materials|study-assets)\/[\w-]+(?:[?#]|$)|\/(?:api\/site-assets\/)?(?:materials|study_material)\/|https:\/\/)/.test(target.url)) return null;
+ if (!/\.(?:pdf|pptx?)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?)(?:$|[?#])/i.test(source.name)) return null;
+ return sourcePageURL(target);
+}
+
+function suppliedLectureForFile(name) {
+ const file = name.replace(/ \(\d+\)(?=\.[^.]+$)/, '');
+ return {
+  'Thoracic Wall - Dr. Olena.pdf': 'CVP-A8',
+  'Lecture 2 Blood Vessel Histology 2026 Fall Dr Ani.pptx': 'CVP-A7',
+  'A7. Blood Vessel Histology Transcription.pdf': 'CVP-A7',
+  'Heart valves and heart sounds - Dr Moni Nader-15102026.pptx': 'CVP-P10',
+  'Hemodynamics II- Vascular distensibility and function of blood - Dr. Nader.pptx': 'CVP-P9',
+  'Hemodynamics I - Overview of the circulation Dr Moni Nader.pptx': 'CVP-P8',
+  'Cardiac Cycle- Dr Moni Nader.pptx': 'CVP-P6',
+ }[file];
+}
+
 function libraryMaterials(item, lesson, sources) {
  const refs = lesson?.references || [];
  const coverage = lesson?.coverage;
@@ -9,7 +30,7 @@ function libraryMaterials(item, lesson, sources) {
   if (/not verified lecturer transcript/i.test(source.kind || '')) continue;
   const category = /transcri|\btranscript\b/i.test(source.kind || '') || /^cvp-t-|^cvp-transcript$/.test(id) ? 'transcript'
    : /slide|supplied lecture$/i.test(source.kind || '') && !/notes|quiz|syllabus/i.test(source.kind || '') || /^cvp-w3-/.test(id) ? 'slides'
-   : source.lectureId === item.id ? (/transcri|transcript/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) ? 'slides' : null) : null;
+   : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
   if (!category || (source.lectureIds?.length && !source.lectureIds.includes(item.id))) continue;
   const reference = refs.find(ref => ref.source === id);
   const range = Array.isArray(source.lectureRanges) && source.lectureRanges.find(entry => entry.lectureId === item.id);
@@ -29,7 +50,7 @@ function libraryMaterials(item, lesson, sources) {
 }
 
 function libraryLectureLists() {
- const sources = LEARNING.sources.concat(uploads);
+ const sources = LEARNING.sources.concat(uploads).filter(source => libraryDocumentURL(source));
  const covered = new Set();
  const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine']];
  const lists = groups.map(([prefix,label]) => {
@@ -40,15 +61,14 @@ function libraryLectureLists() {
     if (!list.length) return `<button disabled title="${label} unavailable">${label} unavailable</button>`;
     const button = ({source,page}, caption) => {
      covered.add(source.id);
-     const target = sourceTarget({source: source.id,page});
-     const url = target && sourcePageURL(target);
+     const url = libraryDocumentURL(source, page);
      return url ? `<a class="material-action" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(source.name)}">${esc(caption)} ↗</a>`
-      : `<button data-open-page="${esc(source.id)}" data-page="${page}" title="${esc(source.name)}">${esc(caption)}${source.url==='#library'?' (text)':''} →</button>`;
+      : '';
     };
     return button(list[0], label) + (list.length > 1 ? `<details class="material-alternates"><summary>More ${label.toLowerCase()} (${list.length - 1})</summary>${list.slice(1).map(entry => button(entry, entry.source.displayName || entry.source.name)).join('')}</details>` : '');
    };
    return `<li><div><small>${esc(item.id.replace('-', ' '))}</small><strong>${esc(title(item))}</strong></div><div class="material-actions"><div>${actions(selections.slides,'Slides')}</div><div>${actions(selections.transcript,'Transcription')}</div></div></li>`;
   }).join('')}</ol></section>`;
  }).join('');
- return lists + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><button data-document="${esc(source.id)}">${esc(source.displayName || source.name)}</button></li>`).join('')}</ul></details>`;
+ return lists + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
 }
