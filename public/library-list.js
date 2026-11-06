@@ -46,7 +46,7 @@ function libraryMaterials(item, lesson, sources) {
   if (/not verified lecturer transcript/i.test(source.kind || '')) continue;
   const category = /transcri|\btranscript\b/i.test(source.kind || '') || /^cvp-t-|^cvp-transcript$/.test(id) ? 'transcript'
    : /slide|supplied lecture$/i.test(source.kind || '') && !/notes|quiz|syllabus/i.test(source.kind || '') || /^cvp-w3-/.test(id) ? 'slides'
-   : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$|^A10\. Lecture 3 Microcirculation Histology/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
+   : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$|^A10\. Lecture 3 Microcirculation Histology|^A15\. Intercostal Space, Diaphragm - Dr\. Olena - by Merehan Soliman/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
   if (!category || (source.lectureIds?.length && !source.lectureIds.includes(item.id))) continue;
   const reference = refs.find(ref => ref.source === id);
   const range = Array.isArray(source.lectureRanges) && source.lectureRanges.find(entry => entry.lectureId === item.id);
