@@ -19,7 +19,7 @@
  const models={complete:{title:'Complete heart · all structures',ids:structures.map(s=>s.id),view:'anterior'},overview:{title:'Heart overview',ids:structures.slice(0,11).map(s=>s.id),view:'anterior'},coronary:{title:'Coronary arteries & veins',ids:['left-coronary','right-coronary',...structures.slice(11,20).map(s=>s.id)],view:'anterior'},valves:{title:'Valves & papillary muscles',ids:structures.slice(20).map(s=>s.id),view:'superior'}};
  const MODEL_URL='/api/study-assets/heart-advanced-v1';
  let modelKind='complete';
- const pinned = new Set();
+ const pinned = new Set(), hiddenParts = new Set();
  const visibleGroups = new Set(['overview','coronary','valves']);
  let isolating = false;
  const activeParts=()=>structures.filter(s=>models[modelKind].ids.includes(s.id));
@@ -53,17 +53,22 @@
  <label><input type="checkbox" data-wall-toggle="endo" checked> Endocardium</label>
  <p class="muted">Layer order is schematic. The 3D specimen supplies gross walls and chamber surfaces.</p></details></div><div id="heartQuizNotes" hidden><h3>Identify from the model</h3><p>Structure names are hidden during testing. Rotate the model and use its relationships. You can also use the keyboard to highlight candidates and Enter to choose.</p></div><details class="heart-limits"><summary>What this model includes</summary><p>Complete heart combines all 35 structures. Choose a focused view or add several structures to the selection and isolate them together. The semilunar cusp labels follow the dataset convention and are for exploration.</p><p><b>Not individually selectable:</b> chordae, septal landmarks and conduction fibres. This specimen shows one coronary dominance pattern. These remain in your lab photos and diagrams. Cavities are spaces, not myocardium. Vessel ends are truncated. No diagnostic measurements or simulated blood flow.</p><p>Valves and detailed internal landmarks remain in <button data-lesson="CVP-A5">CVP A5</button>. Coronary territories remain in <button data-lesson="CVP-A6">CVP A6</button>.</p></details><details><summary>Sources, model credit & license</summary><p>${credit}.</p><p>Review Studio expanded the OrganUI reference subset with original BodyParts3D 4.0 meshes. The focused views hide unrelated structures so you can inspect and rotate them. Colors are illustrative. The source dataset can contain omissions or inaccuracies.</p><a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">Official CC BY 4.0 license ↗</a><br><a href="https://github.com/organui/heart-3d/blob/c72ce6654ff8e282942f97750d3104f55ef4fc3d/public/models/manifest.json" target="_blank" rel="noopener">Mesh IDs, provenance & transformations ↗</a><br><a href="/heart-advanced-provenance.json" target="_blank">Expanded model provenance ↗</a><br><a href="https://www.nhlbi.nih.gov/health/heart/blood-flow" target="_blank" rel="noopener">NHLBI · circulation and coronary arteries ↗</a><br><a href="/heart-viewer-LICENSE.txt" target="_blank">Three.js MIT license ↗</a></details></aside></div>`}
  function describe(id){selected=id;const s=structures.find(s=>s.id===id);if(!s)return;const opacity=document.querySelector('#heartOpacity');if(id==='left-ventricle'||id==='right-ventricle'){viewer?.setOpacity(.17);if(opacity)opacity.value=.17}else if(id==='ventricular-wall'||id.includes('atrium')){viewer?.setOpacity(1);if(opacity)opacity.value=1}paintSelection();document.querySelector('#heartDescription').innerHTML='<h3>'+s.name+'</h3><p>'+s.note+'</p><button data-lesson="'+s.lesson+'">Open '+s.lesson.replace('-',' ')+' lesson</button><p class="muted">'+sourceLink({source:s.source,page:s.page})+'</p>';document.querySelectorAll('[data-heart-structure]').forEach(b=>b.classList.toggle('selected',b.dataset.heartStructure===id))}
+ const heartSelection=()=>(pinned.size?[...pinned]:[selected]).filter(id=>visibleParts().includes(id));
  function paintSelection() {
   const groups = document.querySelector('#heartGroups');
   if (groups) groups.hidden = mode !== 'explore' || modelKind !== 'complete';
-  const chosen = (pinned.size ? [...pinned] : [selected]).filter(id => visibleParts().includes(id));
+  const chosen=heartSelection(), shown=chosen.filter(id=>!hiddenParts.has(id));
+  if(mode==='explore'&&hiddenParts.size)viewer?.setParts(visibleParts().filter(id=>!hiddenParts.has(id)));
+  AnatomyAtlas.paintHideButton(document.querySelector('#heartHide'),hiddenParts,chosen,ready&&mode==='explore');
+  const isolate=document.querySelector('#heartIsolate');
+  if(isolate)isolate.disabled=mode!=='explore'||!shown.length;
   viewer?.select(selected, showHighlight || mode !== 'explore' ? [...new Set([...chosen,selected])] : []);
   const badge = document.querySelector('#heartPicked');
   if (badge) {
    badge.hidden = mode !== 'explore' || !ready;
-   badge.textContent = structures.find(part => part.id === selected)?.name || '';
+   badge.textContent = (structures.find(part => part.id === selected)?.name || '')+(hiddenParts.has(selected)?' · Hidden':'');
   }
-  if (isolating) viewer?.isolate(chosen);
+  if (isolating&&shown.length) viewer?.isolate(shown);
   const status = document.querySelector('#heartPins');
   if (status) status.textContent = pinned.size ? 'Selected: ' + [...pinned].map(id => structures.find(part => part.id === id).name).join(', ') : '';
   const pin = document.querySelector('#heartPin');
@@ -72,7 +77,9 @@
    pin.setAttribute('aria-pressed', String(pinned.has(selected)));
   }
   for (const button of document.querySelectorAll('[data-heart-structure]')) {
-   button.classList.toggle('heart-pinned', pinned.has(button.dataset.heartStructure));
+   const id=button.dataset.heartStructure;
+   button.classList.toggle('heart-pinned', pinned.has(id));
+   button.textContent=structures.find(part=>part.id===id).name+(hiddenParts.has(id)?' · Hidden':'');
   }
  }
  function clearSelection() {
@@ -81,7 +88,7 @@
   viewer?.showAll();
   paintSelection();
  }
- function paintActivity(){const el=document.querySelector('#heartActivity');if(!el)return;document.querySelector('#heartExplore').hidden=mode!=='explore';document.querySelector('#heartHighlight').disabled=mode!=='explore';document.querySelector('#heartPicked').hidden=mode!=='explore'||!ready;document.querySelector('#heartQuizNotes').hidden=mode==='explore';document.querySelectorAll('[data-heart-mode]').forEach(b=>b.classList.toggle('selected',b.dataset.heartMode===mode));for (const id of ['heartIsolate','heartPin','heartClear']) document.querySelector('#'+id).disabled=mode!=='explore';
+ function paintActivity(){const el=document.querySelector('#heartActivity');if(!el)return;document.querySelector('#heartExplore').hidden=mode!=='explore';document.querySelector('#heartHighlight').disabled=mode!=='explore';document.querySelector('#heartPicked').hidden=mode!=='explore'||!ready;document.querySelector('#heartQuizNotes').hidden=mode==='explore';document.querySelectorAll('[data-heart-mode]').forEach(b=>b.classList.toggle('selected',b.dataset.heartMode===mode));for (const id of ['heartPin','heartClear']) document.querySelector('#'+id).disabled=mode!=='explore';
   if(mode==='explore'){el.innerHTML='<div class="heart-study-hint">Select a structure in the model or list to connect its appearance with the lecture. Start with the great vessels, then make the walls transparent to inspect cavity spaces.</div>';return}
   if(!run){el.innerHTML='<h3>'+ (mode==='label'?'Name the highlighted structure':'Find the named structure')+'</h3><p>'+(mode==='label'?'Type the name of the highlighted part. Incorrect items can be retried after the first pass.':'Click each requested structure from a changing view. Answers stay hidden until the test ends.')+'</p>'+(mode==='practical'?'<label>Time limit<select id="heartMinutes"><option value="2">2 minutes</option><option value="3" selected>3 minutes</option><option value="5">5 minutes</option></select></label>':'')+'<button class="primary" id="heartStart" '+(!ready?'disabled':'')+'>Start '+(mode==='label'?'labeling':'practical')+'</button>';return}
   if(run.finished){const correct=run.answers.filter(a=>a.correct).length,total=run.ids.length,wrong=run.answers.filter(a=>!a.correct);el.innerHTML=scoreRing(Math.round(correct*100/total),'3D identification',correct+' / '+total+' correct')+'<p>'+(run.expired?'Time expired. ':'')+(run.saved?'Activity saved separately from your lesson MCQ mastery.':'Below 15% · practical result shown for review only.')+'</p>'+run.ids.map((id,i)=>{const s=structures.find(s=>s.id===id),a=run.answers[i];return '<details class="heart-result '+(a?.correct?'correct':'incorrect')+'"><summary>'+(a?.correct?'✓ ':'↻ ')+s.name+'</summary><p>'+s.note+'</p><button data-heart-review="'+s.id+'">Locate in model</button><button data-lesson="'+s.lesson+'">Review lesson</button></details>'}).join('')+'<div class="heart-actions"><button id="heartRestart">New session</button>'+(wrong.length?'<button id="heartRetryMissed">Retry missed structures</button>':'')+'</div>';return}
@@ -97,7 +104,7 @@
  async function mount(){modelRequest?.abort();modelRequest=new AbortController();const generation=++loadGeneration;loading=true;ready=false;paintActivity();try{const module=await loadAnatomyViewer();if(generation!==loadGeneration||view!=='anatomy')return;viewer=await module.mountHeart(document.querySelector('#heartStage'),{signal:modelRequest.signal,localModelURL:MODEL_URL,visibleIds:visibleParts(),onViewChange:value=>{const select=document.querySelector('#heartView');if(select)select.value=value},onPick:id=>{if(mode==='explore')describe(id);else if(mode==='practical')answer(id)},onReady:ids=>{const missing=structures.filter(s=>!ids.includes(s.id));if(missing.length)throw Error('Model part mapping is incomplete');ready=true;document.querySelector('#heartLoad').hidden=true;describe(selected);paintActivity()},onError:message=>{if(generation!==loadGeneration||view!=='anatomy')return;ready=false;run=null;clearInterval(timer);paintActivity();const el=document.querySelector('#heartLoad');if(el){el.hidden=false;el.innerHTML=esc(message)+' <button id="heartReload">Retry model</button>'}}});if(view!=='anatomy'||generation!==loadGeneration)viewer?.dispose();else{viewer?.setParts(visibleParts());viewer?.setView(models[modelKind].view);describe(selected)}}catch(e){const el=document.querySelector('#heartLoad');if(el)el.textContent='Unable to start 3D: '+e.message}finally{loading=false}}
  function cleanup(){loadGeneration++;modelRequest?.abort();viewer?.dispose();viewer=null;ready=false;run=null;clearInterval(timer)}
  let atlasModel=null, stopAtlas=null;
- function resetAtlas(){stopAtlas?.();stopAtlas=null;cleanup();pinned.clear();isolating=false}
+ function resetAtlas(){stopAtlas?.();stopAtlas=null;cleanup();pinned.clear();hiddenParts.clear();isolating=false}
  function renderAtlas(){
   const content=document.querySelector('#content');
   content.innerHTML=atlasModel==='heart'?AnatomyAtlas.back+page():atlasModel?AnatomyAtlas.page(atlasModel):AnatomyAtlas.gallery();
@@ -120,9 +127,10 @@
   if(b.dataset.atlasModel==='heart'){modelKind='complete';mode='explore';selected=activeParts()[0].id}
   openAtlas(b.dataset.atlasModel);return
  }
- if(Object.hasOwn(models,b.dataset.anatomyModel)){modelKind=b.dataset.anatomyModel;mode='explore';selected=activeParts()[0].id;openAtlas('heart')}if(b.dataset.heartMode){clearSelection();mode=b.dataset.heartMode;viewer?.setParts(visibleParts());paintSelection();run=null;clearInterval(timer);viewer?.showAll();viewer?.setOpacity(1);if(mode==='explore')describe(selected);paintActivity()}if(b.dataset.heartStructure)describe(b.dataset.heartStructure);if(b.id==='heartStart')start();if(b.id==='heartCheckLabel'){const s=target(),typed=document.querySelector('#heartLabelAnswer').value.trim();if(!typed){toast('Enter a label first');return}answer(s.aliases.map(normalize).includes(normalize(typed))?s.id:'incorrect',typed)}if(b.id==='heartReveal')answer('incorrect','Revealed');if(b.id==='heartFinish')finish(false);if(b.id==='heartNext')next();if(b.id==='heartShowAll'){isolating=false;viewer?.showAll();viewer?.setOpacity(Number(document.querySelector('#heartOpacity').value))}if(b.id==='heartPin'){if(pinned.has(selected))pinned.delete(selected);else pinned.add(selected);paintSelection()}
+ if(Object.hasOwn(models,b.dataset.anatomyModel)){modelKind=b.dataset.anatomyModel;mode='explore';selected=activeParts()[0].id;openAtlas('heart')}if(b.dataset.heartMode){clearSelection();mode=b.dataset.heartMode;viewer?.setParts(visibleParts());paintSelection();run=null;clearInterval(timer);viewer?.showAll();viewer?.setOpacity(1);if(mode==='explore')describe(selected);paintActivity()}if(b.dataset.heartStructure)describe(b.dataset.heartStructure);if(b.id==='heartStart')start();if(b.id==='heartCheckLabel'){const s=target(),typed=document.querySelector('#heartLabelAnswer').value.trim();if(!typed){toast('Enter a label first');return}answer(s.aliases.map(normalize).includes(normalize(typed))?s.id:'incorrect',typed)}if(b.id==='heartReveal')answer('incorrect','Revealed');if(b.id==='heartFinish')finish(false);if(b.id==='heartNext')next();if(b.id==='heartShowAll'){hiddenParts.clear();isolating=false;viewer?.setParts(visibleParts());paintSelection();viewer?.setOpacity(Number(document.querySelector('#heartOpacity').value))}if(b.id==='heartPin'){if(pinned.has(selected))pinned.delete(selected);else pinned.add(selected);paintSelection()}
+ if(b.id==='heartHide'){AnatomyAtlas.toggleHidden(hiddenParts,heartSelection());isolating=false;viewer?.setParts(visibleParts());paintSelection();}
  if(b.id==='heartClear')clearSelection();
- if(b.id==='heartIsolate'){isolating=true;paintSelection()}if(b.id==='heartReset'){clearSelection();viewer?.setView(models[modelKind].view);viewer?.setOpacity(1);document.querySelector('#heartOpacity').value=1}if(b.id==='heartCancel'){run=null;clearInterval(timer);viewer?.showAll();paintActivity()}if(b.id==='heartRestart'){run=null;paintActivity()}if(b.id==='heartRetryMissed'){const ids=run.answers.filter(a=>!a.correct).map(a=>a.structure);mode='label';start(ids)}if(b.dataset.heartReview){viewer?.showAll();viewer?.setOpacity(.17);viewer?.select(b.dataset.heartReview)}if(b.id==='heartReload'){viewer?.dispose();mount()}});
+ if(b.id==='heartIsolate'){isolating=true;paintSelection()}if(b.id==='heartReset'){hiddenParts.clear();viewer?.setParts(visibleParts());clearSelection();viewer?.setView(models[modelKind].view);viewer?.setOpacity(1);document.querySelector('#heartOpacity').value=1}if(b.id==='heartCancel'){run=null;clearInterval(timer);viewer?.showAll();paintActivity()}if(b.id==='heartRestart'){run=null;paintActivity()}if(b.id==='heartRetryMissed'){const ids=run.answers.filter(a=>!a.correct).map(a=>a.structure);mode='label';start(ids)}if(b.dataset.heartReview){viewer?.showAll();viewer?.setOpacity(.17);viewer?.select(b.dataset.heartReview)}if(b.id==='heartReload'){viewer?.dispose();mount()}});
  document.addEventListener('change',e=>{const group = e.target.dataset.heartGroup;
  if (group && Object.hasOwn(models,group)) {
   if(e.target.checked) visibleGroups.add(group);

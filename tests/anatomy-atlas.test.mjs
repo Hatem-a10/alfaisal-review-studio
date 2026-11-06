@@ -72,9 +72,19 @@ test('all atlas viewers expose the heart controls and the same right-panel searc
   const html=atlas.page(id);
   assert.ok(html.includes(atlas.exploreControls('atlas')));
   assert.match(html,/<aside[^>]*>[\s\S]*Find a structure[\s\S]*id="atlasSearch"/);
+  assert.match(html,/id="atlasExplorer" class="anatomy-layout atlas-explorer"/);
+  assert.match(html,/Visible layers · select any combination/);
   assert.match(html,/id="atlasPreset"/);
   assert.ok(html.indexOf('id="atlasKnown"')<html.indexOf('id="atlasStage"'));
   assert.match(html,/id="atlasSearchJump" aria-controls="atlasSidebar"/);
   assert.match(html,/<aside id="atlasSidebar" class="panel heart-notes atlas-parts"/);
  }
+});
+
+test('hiding selected structures keeps independent hidden structures until restored',()=>{
+ const hidden=new Set(['left-main-bronchus']);
+ atlas.toggleHidden(hidden,['trachea','right-main-bronchus']);
+ assert.deepEqual([...hidden],['left-main-bronchus','trachea','right-main-bronchus']);
+ atlas.toggleHidden(hidden,['trachea','right-main-bronchus']);
+ assert.deepEqual([...hidden],['left-main-bronchus']);
 });

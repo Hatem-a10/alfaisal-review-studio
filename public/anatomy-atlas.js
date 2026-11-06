@@ -95,11 +95,21 @@ const AnatomyAtlas=(()=>{
   <button type="button" id="${prefix}ShowAll"${disabled}>Show all</button>
   <button type="button" id="${prefix}Pin"${disabled}>Add current structure</button>
   <button type="button" id="${prefix}Isolate"${disabled}>Isolate selection</button>
+  <button type="button" id="${prefix}Hide"${disabled}>Hide selection</button>
   <button type="button" id="${prefix}Clear"${disabled}>Clear selection</button>
   <output id="${prefix}Pins" aria-live="polite"></output><button type="button" id="${prefix}Reset"${disabled}>Reset view</button></div>`;
  }
  const structureSearch=prefix=>`<label>Find a structure<input id="${prefix}Search" type="search" placeholder="Search structures…"></label>`;
  const gestures='<p class="muted heart-gesture">Drag to rotate · pinch/scroll to zoom · keyboard arrows rotate, +/− zoom, [ and ] highlight a candidate, Enter selects it.</p>';
+ function toggleHidden(hidden,parts){
+  const restore=parts.every(part=>hidden.has(part));
+  for(const part of parts){if(restore)hidden.delete(part);else hidden.add(part);}
+ }
+ function paintHideButton(button,hidden,parts,enabled){
+  if(!button)return;
+  button.disabled=!enabled||!parts.length;
+  button.textContent=parts.length&&parts.every(part=>hidden.has(part))?'Show selection':'Hide selection';
+ }
  function progress(id,known='—',total){
   const value=total===undefined?known:known+' / '+total;
   return `<div class="anatomy-progress"><strong id="${id}" aria-live="polite">${value}</strong><small>Latest identification correct · separate from MCQ mastery</small></div>`;
@@ -111,7 +121,7 @@ const AnatomyAtlas=(()=>{
    asset==='nose'?'Z-Anatomy and BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 4.0':
    'BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 2.1 Japan';
   return back+intro('CVP 112 · '+group.toUpperCase(),title,note)+
-   `<div id="atlasExplorer" class="atlas-explorer">
+   `<div id="atlasExplorer" class="anatomy-layout atlas-explorer">
     <section class="panel anatomy-intro atlas-summary" aria-label="Model identification progress">
      <div><span class="pill">${group}</span><h2>Understand the shape. Find the structure.</h2><p>${note}</p></div>
      ${progress('atlasKnown')}
@@ -122,10 +132,10 @@ const AnatomyAtlas=(()=>{
      <button type="button" data-atlas-mode="practical" aria-pressed="false" disabled>Timed practical</button>
      <button type="button" class="atlas-search-jump" id="atlasSearchJump" aria-controls="atlasSidebar">Find a structure ↓</button>
     </div>
-    <section class="panel atlas-viewport">
+    <section class="panel anatomy-workspace atlas-viewport">
      <div id="atlasLayerTools">
       <label class="heart-model-picker">Anatomy model<select id="atlasPreset" disabled><option value="all">Complete model</option><option value="custom" disabled>Custom layers</option></select></label>
-      <details class="atlas-layer-menu"><summary>Visible layers</summary><div id="atlasLayers"></div></details>
+      <fieldset class="atlas-layer-menu"><legend>Visible layers · select any combination</legend><div id="atlasLayers"></div></fieldset>
      </div>
      <div id="atlasStage" class="heart-stage atlas-stage"><div id="atlasStatus" role="status">Loading model…</div><output id="atlasSelected" class="heart-picked" aria-live="polite" hidden></output><div class="heart-orientation" aria-hidden="true">ANATOMICAL MODEL · ILLUSTRATIVE COLORS</div></div>
      ${exploreControls('atlas')}${gestures}
@@ -148,7 +158,7 @@ const AnatomyAtlas=(()=>{
  }
  function mount(id,loadViewer){
   const shell=document.querySelector('#atlasExplorer'), get=id=>shell.querySelector('#'+id);
-  const request=new AbortController(), pinned=new Set();
+  const request=new AbortController(), pinned=new Set(), hiddenParts=new Set();
   const signal=request.signal, asset=models[id][5]||id;
   const status=get('atlasStatus'), list=get('atlasParts'), label=get('atlasSelected');
   let viewer, labels={}, groups=[], current=null, isolated=false, ready=false, mode='explore', run=null, timer;
@@ -158,22 +168,26 @@ const AnatomyAtlas=(()=>{
   const orderedIds=()=>Object.keys(labels);
   const visibleIds=()=>[...new Set([...get('atlasLayers').querySelectorAll('input:checked')].flatMap(box=>groups[Number(box.value)][1]))];
   function noteFor(part){return id==='mediastinum'&&part==='esophagus'?'Trace the esophagus posterior to the trachea into the posterior mediastinum.':notes[part]||'';}
+  const selection=()=>pinned.size?[...pinned]:current?[current]:[];
   function update(){
    if(mode!=='explore')return;
-   const chosen=pinned.size?[...pinned]:current?[current]:[];
+   const chosen=selection(), shown=chosen.filter(part=>!hiddenParts.has(part));
+   viewer?.setParts(visibleIds().filter(part=>!hiddenParts.has(part)));
    label.hidden=!ready||!current;
-   label.textContent=labels[current]||'';
+   label.textContent=current?labels[current]+(hiddenParts.has(current)?' · Hidden':''):'';
    for(const button of list.children){
     const part=button.dataset.part;
     button.classList.toggle('selected',part===current);
     button.classList.toggle('heart-pinned',pinned.has(part));
+    button.textContent=labels[part]+(hiddenParts.has(part)?' · Hidden':'');
     button.setAttribute('aria-pressed',String(part===current));
    }
    const pin=get('atlasPin');
    pin.disabled=!ready||!current;
    pin.textContent=pinned.has(current)?'Remove current structure':'Add current structure';
    pin.setAttribute('aria-pressed',String(pinned.has(current)));
-   get('atlasIsolate').disabled=!ready||!chosen.length;
+   get('atlasIsolate').disabled=!ready||!shown.length;
+   paintHideButton(get('atlasHide'),hiddenParts,chosen,ready);
    get('atlasShowAll').disabled=!ready;
    get('atlasClear').disabled=!ready||(!pinned.size&&!isolated);
    get('atlasReset').disabled=!ready;
@@ -183,7 +197,7 @@ const AnatomyAtlas=(()=>{
    const note=get('atlasNote');
    note.textContent=current?noteFor(current):'';
    note.hidden=!note.textContent;
-   if(isolated&&chosen.length)viewer?.isolate(chosen);
+   if(isolated&&shown.length)viewer?.isolate(shown);
    else viewer?.showAll();
    viewer?.select(current,get('atlasHighlight').checked?[...new Set([...chosen,current])]:[]);
   }
@@ -221,7 +235,7 @@ const AnatomyAtlas=(()=>{
    get('atlasQuizNotes').hidden=exploring;
    get('atlasOpacity').disabled=!exploring;
    get('atlasHighlight').disabled=!exploring;
-   for(const control of ['ShowAll','Pin','Isolate','Clear','Reset'])get('atlas'+control).disabled=!exploring;
+   for(const control of ['ShowAll','Pin','Isolate','Hide','Clear','Reset'])get('atlas'+control).disabled=!exploring;
    activity.hidden=exploring;
    viewer?.setParts(exploring?visibleIds():orderedIds());
    viewer?.setOpacity(exploring?Number(get('atlasOpacity').value):1);
@@ -361,7 +375,7 @@ const AnatomyAtlas=(()=>{
    const ids=visibleIds();
    for(const part of pinned)if(!ids.includes(part))pinned.delete(part);
    if(!ids.includes(current))current=ids[0];
-   isolated=false;viewer?.setParts(ids);filter();update();
+   isolated=false;filter();update();
   }
   get('atlasLayers').addEventListener('change',e=>{
    if(!visibleIds().length){e.target.checked=true;return;}
@@ -378,7 +392,7 @@ const AnatomyAtlas=(()=>{
    const button=e.target.closest('button');if(!button)return;
    const {atlasAction:action,atlasReview:review}=button.dataset;
    if(review){
-    setMode('explore');pinned.clear();current=review;isolated=true;update();
+    setMode('explore');pinned.clear();hiddenParts.delete(review);current=review;isolated=true;update();
     viewer.setView(defaultView,true);get('atlasStage').scrollIntoView({block:'center'});return;
    }
    if(action==='start')start();
@@ -396,15 +410,16 @@ const AnatomyAtlas=(()=>{
   get('atlasClear').addEventListener('click',()=>{pinned.clear();isolated=false;update();});
   get('atlasOpacity').addEventListener('input',e=>viewer?.setOpacity(Number(e.target.value)));
   get('atlasReset').addEventListener('click',()=>{
-   pinned.clear();isolated=false;get('atlasOpacity').value=1;
-   viewer?.setOpacity(1);viewer?.setView(defaultView);update();
+   pinned.clear();hiddenParts.clear();isolated=false;get('atlasOpacity').value=1;
+   viewer?.setOpacity(1);update();viewer?.setView(defaultView);
   });
   get('atlasHighlight').addEventListener('change',update);
   get('atlasView').addEventListener('change',e=>viewer?.setView(e.target.value));
   get('atlasIsolate').addEventListener('click',()=>{isolated=true;update();});
-  get('atlasShowAll').addEventListener('click',()=>{isolated=false;update();});
+  get('atlasHide').addEventListener('click',()=>{toggleHidden(hiddenParts,selection());isolated=false;update();});
+  get('atlasShowAll').addEventListener('click',()=>{hiddenParts.clear();isolated=false;update();});
   load();
   return ()=>{clearInterval(timer);request.abort();viewer?.dispose();};
  }
- return {models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures,progress};
+ return {models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures,progress,toggleHidden,paintHideButton};
 })();
