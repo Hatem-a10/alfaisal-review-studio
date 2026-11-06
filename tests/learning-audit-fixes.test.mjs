@@ -81,3 +81,52 @@ test('lecture rows keep original slide and transcription actions and omit text r
  assert.equal(match('Heart valves and heart sounds - Dr Moni Nader-15102026 (3).pptx'),'CVP-P10');
  assert.equal(match('Unrecognized document.pdf'),undefined);
 });
+
+test('A10 and A11 provide five distinct explained core questions per objective', () => {
+ const {learning,teaching,checks} = assembledLearning();
+ const group = vm.runInNewContext(load('inline-topics.js').split('let inlineLessonCache')[0] + ';InlineTopics.group');
+ for (const id of ['CVP-A10','CVP-A11']) {
+  const questions = learning.questions.filter(q=>q.lectureIds.includes(id));
+  const topics = teaching.guides[id].sections;
+  group(topics,questions,checks).forEach((set,i)=>{
+   const core = set.filter(q=>!q.duplicateOf);
+   assert.ok(new Set(core.map(q=>q.id)).size >= 5, topics[i].id);
+   for (const q of core.filter(q=>q.id.includes(':extra-'))) {
+    assert.equal(q.options.length,q.reasons.length);
+    assert.equal(q.explanation,q.reasons[q.answer]);
+    assert.ok(q.references.every(r=>learning.sources.some(s=>s.id===r.source&&s.pages.some(p=>p.page===r.page))));
+   }
+  });
+ }
+});
+
+test('upload queue distinguishes saved, pending and failed files and estimates remaining time', () => {
+ const source = load('learning.js').split('function materialQueueMarkup()')[1].split('function updateMaterialQueue')[0];
+ const html = vm.runInNewContext('(function materialQueueMarkup()'+source+')()', {
+  esc:String, materialQueueStarted:Date.now()-10000, materialQueue:[
+   {name:'deck.pdf',lecture:'CVP A10',state:'Saved'},
+   {name:'notes.pdf',lecture:'CVP A11',state:'Failed',error:'Storage unavailable'},
+   {name:'lecture.pptx',lecture:'CVP A12',state:'Uploading',phase:'Reading slide 3 of 5'},
+   {name:'transcript.pdf',lecture:'CVP A13',state:'Queued'},
+  ],
+ });
+ assert.match(html,/1 of 4 saved/);
+ assert.match(html,/value="2" max="4"/);
+ assert.match(html,/CVP A12 · Reading slide 3 of 5 · about/);
+ assert.match(html,/Storage unavailable/);
+ assert.match(html,/Queued/);
+});
+
+test('adding a question keeps existing draft answers and option order by question ID', () => {
+ const source = load('inline-topics.js').split('function inlineSession(l)')[1].split('function inlineLatest')[0];
+ const result = vm.runInNewContext('(function inlineSession(l)'+source+')({id:"L"})', {
+  inlineSelected:()=>({topic:{id:'T'},questions:[{id:'new',options:['a','b']},{id:'kept',options:['a','b']}]}),
+  inlineTopicSessions:new Map(),
+  inlineReadDrafts:()=>({'L:T':{ids:['kept'],orders:[[1,0]],answers:{0:1},graded:{0:true}}}),
+  ExamEngine:{shuffle:x=>x},
+ });
+ assert.equal(result.answers[1],1);
+ assert.equal(result.graded[1],true);
+ assert.equal(result.orders[1].join(','),'1,0');
+ assert.equal(result.answers[0],undefined);
+});

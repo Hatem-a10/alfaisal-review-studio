@@ -12,3 +12,11 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 .heart-picked[hidden]{display:none}
 .heart-highlight-toggle{display:flex;align-items:center;gap:7px}
 .heart-highlight-toggle input{width:auto;margin:0}
+
+.material-upload-queue progress{width:100%;accent-color:var(--accent)}
+.material-upload-queue ol{max-height:18rem;overflow:auto;padding:0;list-style:none}
+.material-upload-queue li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.25rem .75rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.material-upload-queue li span{overflow-wrap:anywhere}
+.material-upload-queue li small{grid-column:1/-1}
+.concept-sources{margin-top:1rem}
+.concept-sources summary{cursor:pointer;color:var(--muted)}

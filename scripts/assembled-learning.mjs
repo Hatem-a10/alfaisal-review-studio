@@ -25,5 +25,5 @@ export function assembledLearning(){
  for (const file of ['lesson-depth-data.js', 'lesson-depth-core.js', 'lesson-depth-runtime.js']) {
   runInNewContext(readFileSync(root+'public/'+file,'utf8'), transcriptContext);
  }
- return {learning,teaching,pack};
+ return {learning,teaching,pack,checks};
 }
