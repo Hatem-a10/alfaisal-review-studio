@@ -20,3 +20,35 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 .material-upload-queue li small{grid-column:1/-1}
 .concept-sources{margin-top:1rem}
 .concept-sources summary{cursor:pointer;color:var(--muted)}
+
+/* 3D model gallery and shared explorer */
+.atlas-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1rem;margin-block:1.2rem}
+.atlas-gallery .atlas-card{min-width:0;padding:0;text-align:left;display:flex;flex-direction:column;overflow:hidden;border-radius:1rem;background:var(--panel);color:inherit;border:1px solid var(--line);transition:transform .18s,border-color .18s}
+.atlas-gallery .atlas-card:is(:hover,:focus-visible){border-color:var(--atlas-tone);transform:translateY(-3px)}
+.atlas-art{position:relative;display:grid;place-items:center;aspect-ratio:1.95;width:100%;background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--atlas-tone) 74%,#1e2434),#141b2b 82%);overflow:hidden}
+.atlas-art::before{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at center,transparent 0 23px,#fff1 24px 25px);mask-image:linear-gradient(#000,transparent)}
+.atlas-art img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 9px #0006)}
+.atlas-category{position:absolute;z-index:1;top:.65rem;left:.65rem;background:#131a29d9;color:#fff;border:1px solid #fff3;border-radius:100px;padding:.24rem .55rem;font-size:.68rem}
+.atlas-copy{padding:.85rem 1rem;display:grid;align-content:start;gap:.44rem;width:100%;flex:1}
+.atlas-copy strong{font-size:1.03rem;line-height:1.24}
+.atlas-description{font-size:.84rem;color:var(--muted);line-height:1.45}
+.atlas-card-footer,.atlas-controls{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.atlas-card-footer{justify-content:space-between;margin-top:.22rem}
+.atlas-codes{display:flex;gap:.26rem;flex-wrap:wrap}
+.atlas-codes span,.atlas-arrow{padding:.17rem .42rem;border-radius:.4rem;background:color-mix(in srgb,var(--atlas-tone) 17%,transparent);font-size:.72rem}
+.atlas-arrow{font-size:1rem}
+.atlas-back{margin-bottom:1rem}
+.atlas-explorer{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(15rem,1fr);gap:1rem;align-items:start}
+.atlas-stage{height:clamp(20rem,53vh,37rem)}
+.atlas-stage #atlasStatus{padding:1rem}
+.atlas-controls label{display:flex;align-items:center;gap:.4rem}
+.atlas-controls :is(input,select){width:auto}
+.atlas-parts h2{margin-top:0}
+.atlas-parts input[type=search]{margin:.35rem 0}
+.atlas-part-list{display:grid;gap:.35rem;max-height:20rem;overflow:auto;overscroll-behavior:contain}
+.atlas-part-list button{text-align:left}
+.atlas-part-list button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 3px 0 var(--accent)}
+.atlas-instructions,.atlas-lessons{margin:.75rem 0}
+.heart-lesson-link{flex-wrap:wrap}
+@media(max-width:760px){.atlas-explorer{grid-template-columns:1fr}.atlas-stage{height:clamp(17rem,44vh,28rem)}}
+@media(prefers-reduced-motion:reduce){.atlas-gallery .atlas-card{transition:none;transform:none!important}}
