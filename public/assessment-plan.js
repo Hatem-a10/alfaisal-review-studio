@@ -3,6 +3,11 @@
 const AssessmentPlan=(()=>{
  const plus=(d,n)=>{const t=new Date(d+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)},gap=(a,b)=>Math.round((Date.parse(a)-Date.parse(b))/86400000);
  function classify(e){if(e.type==='CVP PDF plan')return null;const t=(e.title||'').replace(/\s+/g,' ').trim(),mol=/^MOL\b/i.test(t)||e.hubCustom&&e.course==='MOL',cvp=e.hubCustom&&e.course==='CVP'||/^CVP\b/i.test(t)||/^TBL[-\s]*\d+/i.test(t)&&/CVP/i.test(e.source||'');if(!mol&&!cvp)return null;const n=t.match(/\bTBL[-\s]*(\d+)/i);let kind=n?'tbl':/mid\s*term/i.test(t)?'midterm':/final/i.test(t)?'final':/ospe/i.test(t)?'ospe':null;if(!kind&&e.hubCustom)kind=/tbl/i.test(e.type)?'tbl':/exam|midterm/i.test(e.type)?'final':/practical/i.test(e.type)?'ospe':null;if(!kind)return null;return {course:mol?'MOL':'CVP',kind,number:n?+n[1]:null}}
+ function cvpFinalDate(events){
+  const finals=events.filter(e=>!e.hubCustom&&classify(e)?.course==='CVP'&&classify(e)?.kind==='final');
+  return (finals.length?finals:events.filter(e=>e.type==='CVP PDF plan'&&/^CVP FINAL\b/i.test(e.title||'')))
+   .map(e=>e.date).sort()[0]||null;
+ }
  function endMinute(e){const s=e.detail||'',clock=s.match(/\d{1,2}:\d{2}\s*[–-]\s*(\d{1,2}):(\d{2})/);if(clock)return +clock[1]*60+ +clock[2];const words=s.match(/\d{1,2}:\d{2}\s*(?:to|–|-)\s*(\d{1,2}):(\d{2})\s*(am|pm)/i);if(words)return(+words[1]%12+(words[3].toLowerCase()==='pm'?12:0))*60+ +words[2];return 1440}
  function release(item,events){if(item.course!=='CVP')return item.dates[0];const code=item.id.replace('CVP-',''),pattern=new RegExp('^'+code+'(?:\\b|[. ])','i');let earliest=null;for(const e of events)if(pattern.test(e.title||'')&&(!earliest||e.date<earliest))earliest=e.date;return earliest||item.dates[0]}
  const catalogCache=new WeakMap(),copyCatalog=list=>list.map(a=>({...a,lectureIds:a.lectureIds.slice()}));
@@ -12,20 +17,32 @@ const AssessmentPlan=(()=>{
  function target(item,list,day,minute=0){const future=upcoming(list,day,minute);return future.find(a=>a.lectureIds.includes(item.id))||future.find(a=>a.course===item.course&&a.kind==='final')||null}
  function spread(items,records,day,settings,events,isMastered,capacity,minute=0){
   const state=structuredClone(records),list=catalog(events,items),changes=[],late=[],unplaced=[],groups=new Map(),jobs=[],used={},counts={},blocked=new Set(),omitted=[],cap=Math.max(1,Math.min(6,Math.floor((Number(settings.budget)||180)/40))),localDay=t=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(t));
+  const final=cvpFinalDate(events);
   const cost=p=>[40,30,20][p],dateOf=(x,p)=>(state[x.id]?.dates||x.dates)[p];
-  for(const x of items){const r=state[x.id]||{},a=target(x,list,day,minute),key=a?.id||x.course+':unlisted';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x);for(let p=0;p<3;p++)if(!r.done?.[p]&&!(p===2&&r.skipThird))jobs.push({x,p,a,key})}
+  for(const x of items){if(x.course==='CVP'&&final&&day>=final)continue;const r=state[x.id]||{},a=target(x,list,day,minute),key=a?.id||x.course+':unlisted';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x);for(let p=0;p<3;p++)if(!r.done?.[p]&&!(p===2&&r.skipThird))jobs.push({x,p,a,key})}
   for(const group of groups.values())group.sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
-  jobs.sort((a,b)=>Number(a.p===2)-Number(b.p===2)||(a.a?.date||'9999').localeCompare(b.a?.date||'9999')||a.p-b.p||a.x.id.localeCompare(b.x.id,undefined,{numeric:true}));
+  jobs.sort((a,b)=>Number(a.p===2)-Number(b.p===2)||Number(b.x.course==='CVP'&&b.p===0)-Number(a.x.course==='CVP'&&a.p===0)||(a.a?.date||'9999').localeCompare(b.a?.date||'9999')||a.p-b.p||a.x.id.localeCompare(b.x.id,undefined,{numeric:true}));
   for(const j of jobs){const {x,p,a,key}=j,r=state[x.id]||{},group=groups.get(key),rank=group.findIndex(v=>v.id===x.id),released=[day,release(x,events)].sort().at(-1),prev=p>0?(r.done?.[p-1]?localDay(r.done[p-1]):dateOf(x,p-1)):null;
+   const cutoff=x.course==='CVP'?final:null;
    const earliest=[released,prev?plus(prev,p===1?(settings.hard?.(x)?1:2):(settings.hard?.(x)?2:4)):released].sort().at(-1),limit=a?plus(a.date,-1):plus(day,35),stagger=plus(released,Math.floor(rank/cap));let ideal=p===2&&a?plus(limit,-Math.floor((group.length-1-rank)/cap)):plus(stagger,p===1?2:0);ideal=[ideal,earliest].sort().at(-1);
    if(blocked.has(x.id)){unplaced.push({id:x.id,pass:p,reason:'An earlier pass cannot fit the study window; date retained.'});continue}
    if(p===2&&a&&ideal>=a.date&&r.done?.[0]&&r.done?.[1]&&isMastered(x)&&!settings.hard?.(x)&&(!settings.canSkip||settings.canSkip(x))&&!r.difficult&&!(r.confidence>0&&r.confidence<4)){r.skipThird=true;state[x.id]=r;omitted.push(x.id);changes.push({id:x.id,field:'skipThird',before:false,after:true});continue}
-   let chosen=null;for(let i=0;i<180;i++){const d=plus(ideal,i);if((used[d]||0)+cost(p)<=capacity(d)&&(counts[d+':'+x.course]||0)<cap){chosen=d;break}}
-   if(!chosen){blocked.add(x.id);unplaced.push({id:x.id,pass:p,reason:'Study window cannot fit this pass; original date retained.'});continue}
+   const fits=d=>(used[d]||0)+cost(p)<=capacity(d)&&(counts[d+':'+x.course]||0)<cap;
+   let chosen=null;
+   for(let i=0;i<180;i++){const d=plus(ideal,i);if(cutoff&&d>=cutoff)break;if(fits(d)){chosen=d;break}}
+   if(!chosen&&cutoff){
+    // Recover earlier capacity before tightening the gap between successive passes.
+    const compressed=prev&&plus(prev,1)>released?plus(prev,1):released;
+    for(const start of [earliest,compressed]){
+     for(let d=start;d<cutoff;d=plus(d,1)){if(fits(d)){chosen=d;break}}
+     if(chosen)break;
+    }
+   }
+   if(!chosen){blocked.add(x.id);unplaced.push({id:x.id,pass:p,reason:cutoff?'No capacity before the CVP final.':'Study window cannot fit this pass; original date retained.'});continue}
    used[chosen]=(used[chosen]||0)+cost(p);counts[chosen+':'+x.course]=(counts[chosen+':'+x.course]||0)+1;const before=dateOf(x,p),dates=[...(r.dates||x.dates)];dates[p]=chosen;r.dates=dates;state[x.id]=r;if(chosen!==before)changes.push({id:x.id,field:'dates.'+p,before,after:chosen});if(a&&chosen>=a.date)late.push({id:x.id,pass:p,date:chosen,assessment:a.date,target:a.label});
   }
   return {records:state,changes,late,unplaced,omitted,courseDailyCap:cap,targets:groups.size};
  }
- return {classify,endMinute,release,catalog,upcoming,nextByCourse,target,spread};
+ return {classify,cvpFinalDate,endMinute,release,catalog,upcoming,nextByCourse,target,spread};
 })();
 function assessmentClock(now=new Date()){const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now).map(v=>[v.type,v.value]));return {date:p.year+'-'+p.month+'-'+p.day,minute:+p.hour*60+ +p.minute}}
