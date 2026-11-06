@@ -153,3 +153,20 @@ test('supplemental questions defer past Dashboard and load once for learning and
  assert.equal(ctx.LEARNING.questions.length,1);
  assert.equal(paints,3);
 });
+
+test('checked concept-card quizzes link to the next card at the bottom of the results', () => {
+ const code = load('inline-topics.js').split('function inlineQuizMarkup(l)')[1].split('const inlineOriginalReader')[0];
+ const session = {questions:[],graded:{},topic:{id:'one',title:'One'},index:0,topics:[{},{}]};
+ const score = {complete:false,total:1,correct:0,available:1,percent:0};
+ const markup = vm.runInNewContext('(function inlineQuizMarkup(l)'+code+')', {
+  inlineSession:()=>session,inlineTopicScore:()=>score,scoreRing:()=>'',esc:String,
+  deepMode:'cards',guideFor:()=>({}),
+ });
+ const html = markup({id:'lesson'});
+ assert.ok(html.indexOf('data-inline-jump="1"') > html.indexOf('id="inlineTopicScore"'));
+ assert.match(html,/data-unified-card-next>Next card/);
+ session.index=1;
+ assert.doesNotMatch(markup({id:'lesson'}),/data-unified-card-next/);
+ session.index=0;score.total=0;
+ assert.doesNotMatch(markup({id:'lesson'}),/data-unified-card-next/);
+});
