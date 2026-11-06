@@ -44,7 +44,18 @@ def geometry(archive, file):
             faces.extend((indices[0], indices[i], indices[i + 1]) for i in range(1, len(indices) - 1))
     xyz = np.asarray(vertices, dtype='<f4')
     xyz = xyz[:, [0, 2, 1]] * [1, 1, -1]
-    return xyz, np.asarray(faces, dtype='<u4')
+    faces = np.asarray(faces, dtype='<u4')
+    if file.rstrip('M') in {'FJ1451', 'FJ1454', 'FJ1455'}:
+        # Weld the unusually dense muscle meshes on a 2 mm grid for mobile.
+        _, cells, lookup, counts = np.unique(np.round(xyz / 2), axis=0, return_index=True,
+                                            return_inverse=True, return_counts=True)
+        points = np.zeros((len(cells), 3))
+        np.add.at(points, lookup, xyz)
+        xyz = points / counts[:, None]
+        faces = lookup[faces].astype('<u4')
+        distinct = (faces[:, 0] != faces[:, 1]) & (faces[:, 1] != faces[:, 2]) & (faces[:, 0] != faces[:, 2])
+        faces = faces[distinct]
+    return xyz, faces
 
 
 def anatomical_model(entries, archive):
@@ -94,6 +105,10 @@ def thumbnail(raw, key, only=None):
     doc, binary = unpack(raw)
     if key == 'diaphragm':
         only = {'right-hemidiaphragm', 'left-hemidiaphragm', 'esophagus', 'inferior-vena-cava', 'descending-aorta'}
+    elif key == 'ribcage':
+        only = {node['name'] for node in doc['nodes']
+                if 'intercostal' not in node['name'] and 'cervical' not in node['name']
+                and node['name'] not in {'atlas', 'axis'}}
     elif key == 'nose':
         only = {'nasal-bones', 'lateral-cartilages', 'alar-cartilages', 'septal-cartilage', 'vomer',
                 'inferior-conchae', 'frontal-sinuses', 'anterior-ethmoid-cells', 'middle-ethmoid-cells',
@@ -197,8 +212,17 @@ for line in (work / 'isa_element_parts.txt').read_text().splitlines():
 bone = (.75,.60,.44)
 cartilage = (.28,.60,.67)
 names = [name for name in mapping if re.fullmatch(r'(right|left) \w+ (rib|costal cartilage)', name)]
-names += ['manubrium', 'body of sternum', 'xiphoid process', 'thoracic vertebra']
+ordinals = 'first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth'.split()
+vertebrae = {'atlas': 'C1 · Atlas', 'axis': 'C2 · Axis'}
+vertebrae.update({f'{name} cervical vertebra': f'C{i} · {name.title()} cervical vertebra'
+                  for i, name in enumerate(ordinals[2:7], 3)})
+vertebrae.update({f'{name} thoracic vertebra': f'T{i} · {name.title()} thoracic vertebra'
+                  for i, name in enumerate(ordinals, 1)})
+names += ['manubrium', 'body of sternum', 'xiphoid process', *vertebrae]
 ribcage = [(name, cartilage if 'cartilage' in name else bone) for name in names]
+muscles = {'external intercostal muscle': (.76,.28,.21), 'internal intercostal muscle': (.62,.25,.41),
+           'innermost intercostal muscle': (.49,.29,.57)}
+ribcage += list(muscles.items())
 red, blue, tan = (.72,.22,.24), (.25,.37,.72), (.66,.47,.31)
 mediastinum = [(name, red) for name in ['ascending aorta', 'arch of aorta', 'descending thoracic aorta',
               'brachiocephalic artery', 'left common carotid artery', 'left subclavian artery']]
@@ -210,7 +234,8 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
     for key, entries in [('ribcage', ribcage), ('mediastinum', mediastinum)]:
         parts = [(name.replace(' ', '-'), sorted(mapping[name] & available), color) for name, color in entries]
         assert all(files for _, files, _ in parts), [name for name, files, _ in parts if not files]
-        labels[key] = save(key, anatomical_model(parts, archive))
+        names = {name.replace(' ', '-'): label for name, label in vertebrae.items()} if key == 'ribcage' else None
+        labels[key] = save(key, anatomical_model(parts, archive), names)
 thumbnail(Path(sys.argv[2]).read_bytes(), 'heart', {
     'right-atrium','left-atrium','ventricular-wall','ascending-aorta','aortic-arch',
     'pulmonary-trunk','superior-vena-cava','left-coronary','right-coronary','lad','circumflex'})

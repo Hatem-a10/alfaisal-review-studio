@@ -52,3 +52,13 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 .heart-lesson-link{flex-wrap:wrap}
 @media(max-width:760px){.atlas-explorer{grid-template-columns:1fr}.atlas-stage{height:clamp(17rem,44vh,28rem)}}
 @media(prefers-reduced-motion:reduce){.atlas-gallery .atlas-card{transition:none;transform:none!important}}
+.atlas-modes{grid-column:1/-1}
+.atlas-modes [aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 -2px var(--accent)}
+.atlas-layer-menu{margin-block:.65rem}
+#atlasLayers{display:flex;flex-wrap:wrap;gap:.35rem .8rem;padding-block:.55rem}
+#atlasLayers label{display:inline-flex;align-items:center;gap:.28rem;font-size:.82rem}
+#atlasLayers input{width:auto}
+#atlasActivity{margin-top:.8rem}
+#atlasActivity :is(form,details){margin-block:.55rem}
+#atlasActivity label{margin-bottom:.5rem}
+#atlasActivity input{max-width:24rem}

@@ -39,3 +39,27 @@ test('all compressed specimens open as valid GLB and their labels match actual m
  assert.equal(Object.keys(labels.lungs).filter(id=>labels.lungs[id].includes('segment')).length,17);
  assert.equal(labels.lungs.FMA7394,'Trachea');
 });
+
+test('every structure has a layer, with independent spine and muscle groups',()=>{
+ for(const [id,parts] of Object.entries(labels)){
+  const ids=Object.keys(parts);
+  assert.deepEqual([...new Set(atlas.groupParts(id,ids).flatMap(([,members])=>members))].sort(),ids.sort());
+ }
+ const groups=Object.fromEntries(atlas.groupParts('ribcage',Object.keys(labels.ribcage)));
+ assert.equal(groups['Cervical spine'].length,7);
+ assert.equal(groups['Thoracic spine'].length,12);
+ for(const [index,prefix] of [[7,'C'],[12,'T']]){
+  for(let i=1;i<=index;i++)assert.ok(Object.values(labels.ribcage).some(label=>label.startsWith(prefix+i+' · ')));
+ }
+ for(const name of ['External intercostals','Internal intercostals','Innermost intercostals'])assert.equal(groups[name].length,1);
+ const lungLayers=Object.fromEntries(atlas.groupParts('lungs',Object.keys(labels.lungs)));
+ assert.ok(lungLayers['Left lower lobe segments'].includes('FMA7376'));
+});
+
+test('vertebra labels accept numbers or anatomical names without accepting the wrong level',()=>{
+ assert.ok(atlas.matchesLabel('C1',labels.ribcage.atlas));
+ assert.ok(atlas.matchesLabel('Atlas',labels.ribcage.atlas));
+ assert.ok(atlas.matchesLabel('T4',labels.ribcage['fourth-thoracic-vertebra']));
+ assert.ok(atlas.matchesLabel('Fourth thoracic vertebra',labels.ribcage['fourth-thoracic-vertebra']));
+ assert.equal(atlas.matchesLabel('T5',labels.ribcage['fourth-thoracic-vertebra']),false);
+});
