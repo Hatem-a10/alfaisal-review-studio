@@ -63,3 +63,15 @@ test('vertebra labels accept numbers or anatomical names without accepting the w
  assert.ok(atlas.matchesLabel('Fourth thoracic vertebra',labels.ribcage['fourth-thoracic-vertebra']));
  assert.equal(atlas.matchesLabel('T5',labels.ribcage['fourth-thoracic-vertebra']),false);
 });
+
+test('all atlas viewers expose the heart controls and the same right-panel search',()=>{
+ const heartControls=atlas.exploreControls('heart').replaceAll('id="heart','id="atlas');
+ const atlasControls=atlas.exploreControls('atlas').replaceAll(' disabled','');
+ assert.equal(atlasControls,heartControls.replaceAll(' disabled',''));
+ for(const id of Object.keys(atlas.models).filter(id=>id!=='heart')){
+  const html=atlas.page(id);
+  assert.ok(html.includes(atlas.exploreControls('atlas')));
+  assert.match(html,/<aside[^>]*>[\s\S]*Find a structure[\s\S]*id="atlasSearch"/);
+  assert.match(html,/id="atlasPreset"/);
+ }
+});
