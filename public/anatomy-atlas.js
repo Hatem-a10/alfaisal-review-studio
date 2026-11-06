@@ -2,6 +2,7 @@
 const AnatomyAtlas=(()=>{
  const root='/anatomy-models/';
  const models={
+  complete:['Complete Model','Integrated CVP atlas','Explore the heart, thorax, lungs and upper airway together in one layered model.','A2 A4 A5 A6 A8 A11 A12 A13 A14 A15 A16 A17 A20','#587d80'],
   heart:['Heart & coronary circulation','Cardiovascular','Chambers, valves, coronary vessels and practical labeling.','A4 A5 A6','#9c5363'],
   ribcage:['Ribs & thoracic cage','Thoracic wall','Compare ribs, costal cartilage, intercostal layers and individual C1–C7 and T1–T12 vertebrae.','A2 A8 A15','#927250'],
   diaphragm:['Diaphragm','Thoracic wall','Compare the domes and trace the aorta, esophagus and inferior vena cava.','A15 A20','#9a5664'],
@@ -59,10 +60,20 @@ const AnatomyAtlas=(()=>{
   FMA26661:'The right main bronchus is generally wider, shorter and more vertical than the left.',
   FMA26662:'The left main bronchus runs beneath the aortic arch toward the left lung.',
  };
- const defaultLayer=(id,name)=>id!=='ribcage'||!name.endsWith('intercostals');
+ const completeLayers={
+  'Ribs & sternum':/^ribcage\/(?!.*(?:vertebra|atlas|axis|intercostal))/,
+  'Cervical & thoracic spine':/^ribcage\/(?:.*vertebra|atlas|axis)/,
+  'Intercostal muscles':/^ribcage\/.*intercostal/,
+  'Lung segments':/^lungs\/(?!FMA(?:7394|26661|26662)$)/,
+  'Trachea & bronchial trees':/^lungs\/FMA(?:7394|26661|26662)$/,
+  'Heart & coronary circulation':/^heart\//,'Mediastinum & great vessels':/^mediastinum\//,
+  'Diaphragm & upper abdominal organs':/^diaphragm\//,
+  'Nasal cavity & sinuses':/^nose\//,Pharynx:/^pharynx\//,Larynx:/^larynx\//,
+ };
+ const defaultLayer=(id,name)=>id==='complete'?name!=='Intercostal muscles':id!=='ribcage'||!name.endsWith('intercostals');
  const normalize=value=>value.toLowerCase().replace(/[^a-z0-9]/g,'');
  function groupParts(id,ids){
-  const groups=Object.entries(layers[id]).map(([name,match])=>[name,ids.filter(part=>match.test(part))]).filter(([,parts])=>parts.length);
+  const groups=Object.entries(id==='complete'?completeLayers:layers[id]).map(([name,match])=>[name,ids.filter(part=>match.test(part))]).filter(([,parts])=>parts.length);
   const used=new Set(groups.flatMap(([,parts])=>parts)), other=ids.filter(part=>!used.has(part));
   if(other.length)groups.push(['Other structures',other]);
   return groups;
@@ -78,7 +89,7 @@ const AnatomyAtlas=(()=>{
  function gallery(){
   return intro('CVP 112 · SPATIAL ANATOMY','3D Anatomy Lab','Choose a specimen to rotate, inspect and isolate structures.')+
    '<section class="atlas-gallery" aria-label="Anatomy models">'+Object.entries(models).map(([id,[title,group,note,lessons,tone]],index)=>
-   `<button class="atlas-card" type="button" style="--atlas-tone:${tone}" data-atlas-model="${id}">
+   `<button class="atlas-card${id==='complete'?' atlas-featured':''}" type="button" style="--atlas-tone:${tone}" data-atlas-model="${id}">
     <span class="atlas-art"><span class="atlas-category">${group}</span><img src="${root+id}.webp?v=3" alt="" width="560" height="300" ${index>2?'loading="lazy"':''}></span>
     <span class="atlas-copy"><strong>${title}</strong><span class="atlas-description">${note}</span>
     <span class="atlas-card-footer"><span class="atlas-codes">${codes(lessons)}</span><span class="atlas-arrow" aria-hidden="true">↗</span></span></span>
@@ -148,15 +159,16 @@ const AnatomyAtlas=(()=>{
      </div>
      <div id="atlasQuizNotes" hidden><h3>Identify from the model</h3><p>Rotate the model and use the structure’s relationships. Use [ and ] to highlight a candidate and Enter to select it.</p></div>
      <p class="atlas-lessons">${lessons.split(' ').map(code=>`<button type="button" data-lesson="CVP-${code}">${code} ↗</button>`).join(' ')}</p>
-     <details class="muted"><summary>Model credits &amp; limitations</summary><p>${credit}</p>
+     <details class="muted"><summary>Model credits &amp; limitations</summary>
+      ${id==='complete'?'<p>Teaching composite assembled from independently prepared reference meshes. Registration is approximate, especially at the diaphragm and upper airway. Use the individual models and lecture images for fine relationships.</p><p>BodyParts3D, © The Database Center for Life Science (CC BY 4.0 and CC BY-SA 2.1 Japan); OrganUI adaptations; Z-Anatomy (CC BY-SA 4.0).</p>':'<p>'+credit+'</p>'}
       <p>Colors distinguish structures. These are selected teaching meshes with simplified boundaries.</p>
       ${asset==='nose'?'<p>The maxillary sinuses are illustrative reconstructions.</p>':''}
-      <a href="${official?'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html':root+asset+'-credits.txt'}" target="_blank" rel="noopener">Source and attribution ↗</a> ·
-      <a href="${official?'https://creativecommons.org/licenses/by/4.0/':asset==='nose'?'https://creativecommons.org/licenses/by-sa/4.0/':'https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en'}" target="_blank" rel="noopener">License ↗</a></details>
+      ${id==='complete'?'<a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">BodyParts3D license ↗</a> · <a href="https://organui.com/docs/licences" target="_blank" rel="noopener">OrganUI credits and licenses ↗</a>':`<a href="${official?'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html':root+asset+'-credits.txt'}" target="_blank" rel="noopener">Source and attribution ↗</a> ·
+      <a href="${official?'https://creativecommons.org/licenses/by/4.0/':asset==='nose'?'https://creativecommons.org/licenses/by-sa/4.0/':'https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en'}" target="_blank" rel="noopener">License ↗</a>`}</details>
     </aside>
    </div>`;
  }
- function mount(id,loadViewer){
+ function mount(id,loadViewer,heartParts=[]){
   const shell=document.querySelector('#atlasExplorer'), get=id=>shell.querySelector('#'+id);
   const request=new AbortController(), pinned=new Set(), hiddenParts=new Set();
   const signal=request.signal, asset=models[id][5]||id;
@@ -167,7 +179,11 @@ const AnatomyAtlas=(()=>{
   const quizModes=[...shell.querySelectorAll('[data-atlas-mode]')];
   const orderedIds=()=>Object.keys(labels);
   const visibleIds=()=>[...new Set([...get('atlasLayers').querySelectorAll('input:checked')].flatMap(box=>groups[Number(box.value)][1]))];
-  function noteFor(part){return id==='mediastinum'&&part==='esophagus'?'Trace the esophagus posterior to the trachea into the posterior mediastinum.':notes[part]||'';}
+  function noteFor(part){
+   const [source,key]=id==='complete'?(part||'').split('/'):[id,part];
+   if(source==='heart')return heartParts.find(row=>row.id===key)?.note||'';
+   return source==='mediastinum'&&key==='esophagus'?'Trace the esophagus posterior to the trachea into the posterior mediastinum.':notes[key]||'';
+  }
   const selection=()=>pinned.size?[...pinned]:current?[current]:[];
   function update(){
    if(mode!=='explore')return;
@@ -330,11 +346,26 @@ const AnatomyAtlas=(()=>{
   }
   async function load(){
    try{
-    const [response,module]=await Promise.all([fetch(root+'structures.json?v=3',{signal}),loadViewer()]);
+    const [response,module,layoutResponse]=await Promise.all([
+     fetch(root+'structures.json?v=3',{signal}),loadViewer(),
+     id==='complete'?fetch(root+'complete.json?v=1',{signal}):null
+    ]);
     if(!response.ok)throw Error('The structure list could not be loaded.');
-    const available=(await response.json())[asset];
+    const all=await response.json();
+    let components;
+    const modelURL=key=>key==='heart'?'/api/study-assets/heart-advanced-v1':root+key+'.glb.gz'+(key==='ribcage'?'?v=3':'');
+    if(layoutResponse){
+     if(!layoutResponse.ok)throw Error('The complete model layout could not be loaded.');
+     const layout=await layoutResponse.json();
+     all.heart=Object.fromEntries(heartParts.map(part=>[part.id,part.name]));
+     components=Object.entries(layout).map(([key,placement])=>({key,url:modelURL(key),...placement}));
+     labels=Object.fromEntries(components.flatMap(({key,omit=[]})=>Object.entries(all[key])
+      .filter(([part])=>!omit.includes(part)).map(([part,name])=>[key+'/'+part,name])));
+    }else{
+     const available=all[asset];
+     labels=id==='airway'?Object.fromEntries(airwayParts.map(key=>[key,available[key]])):available;
+    }
     if(signal.aborted)return;
-    labels=id==='airway'?Object.fromEntries(airwayParts.map(key=>[key,available[key]])):available;
     groups=groupParts(id,orderedIds());
     const preset=get('atlasPreset');
     groups.forEach(([name],index)=>preset.add(new Option(name,index)));
@@ -348,7 +379,7 @@ const AnatomyAtlas=(()=>{
      list.append(button);
     }
     const instance=await module.mountHeart(get('atlasStage'),{
-     signal,modelLabel:models[id][0],localModelURL:root+asset+'.glb.gz'+(asset==='ribcage'?'?v=3':''),
+     signal,modelLabel:models[id][0],localModelURL:modelURL(asset),components,
      visibleIds:visibleIds(),onPick:pick,onError:error,
      onReady(ids){if(orderedIds().some(key=>!ids.includes(key)))throw Error('The model is missing a listed structure.');status.hidden=true;ready=true;},
      onViewChange(value){get('atlasView').value=value;}

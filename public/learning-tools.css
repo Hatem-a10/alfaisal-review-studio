@@ -22,10 +22,10 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 .concept-sources summary{cursor:pointer;color:var(--muted)}
 
 /* 3D model gallery and shared explorer */
-.atlas-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1rem;margin-block:1.2rem}
+.atlas-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;margin-block:1.2rem}
 .atlas-gallery .atlas-card{min-width:0;padding:0;text-align:left;display:flex;flex-direction:column;overflow:hidden;border-radius:1rem;background:var(--panel);color:inherit;border:1px solid var(--line);transition:transform .18s,border-color .18s}
 .atlas-gallery .atlas-card:is(:hover,:focus-visible){border-color:var(--atlas-tone);transform:translateY(-3px)}
-.atlas-art{position:relative;display:grid;place-items:center;aspect-ratio:1.95;width:100%;background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--atlas-tone) 74%,#1e2434),#141b2b 82%);overflow:hidden}
+.atlas-art{position:relative;display:grid;place-items:center;aspect-ratio:1.58;width:100%;background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--atlas-tone) 74%,#1e2434),#141b2b 82%);overflow:hidden}
 .atlas-art::before{content:"";position:absolute;inset:0;background:repeating-radial-gradient(circle at center,transparent 0 23px,#fff1 24px 25px);mask-image:linear-gradient(#000,transparent)}
 .atlas-art img{position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 9px #0006)}
 .atlas-category{position:absolute;z-index:1;top:.65rem;left:.65rem;background:#131a29d9;color:#fff;border:1px solid #fff3;border-radius:100px;padding:.24rem .55rem;font-size:.68rem}
@@ -65,3 +65,10 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 @media(max-width:1050px){.atlas-search-jump:not([hidden]){display:inline-flex}}
 
 .atlas-layer-menu{min-width:0}
+
+.atlas-gallery .atlas-featured{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.atlas-featured .atlas-art{aspect-ratio:2.3}
+.atlas-featured .atlas-copy{align-content:center;padding:clamp(1rem,3vw,2rem)}
+.atlas-featured .atlas-copy strong{font-size:clamp(1.2rem,2.5vw,2rem)}
+@media(max-width:950px){.atlas-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.atlas-gallery{grid-template-columns:minmax(0,1fr)}.atlas-gallery .atlas-featured{grid-template-columns:minmax(0,1fr)}}

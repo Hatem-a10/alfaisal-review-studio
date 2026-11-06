@@ -1,0 +1,10 @@
+{
+  "ribcage": {"scale": 2.8402, "offset": [-0.0074, -0.2021, 0.0139]},
+  "lungs": {"scale": 1, "offset": [0, 0, 0]},
+  "heart": {"scale": 0.9, "offset": [0.3903, -0.186, 0.1276]},
+  "mediastinum": {"scale": 1.9301, "offset": [0.4937, -0.3848, -0.0320], "omit": ["ascending-aorta", "arch-of-aorta", "pulmonary-trunk", "superior-vena-cava", "trachea"]},
+  "diaphragm": {"scale": 1.04, "offset": [0, -2.82, -0.15], "omit": ["heart", "right-lung-lower-lobe", "left-lung-lower-lobe"]},
+  "nose": {"scale": 0.72, "offset": [0, 4.91, 0.49]},
+  "pharynx": {"scale": 1.8, "offset": [-0.0171, 3.5039, 0.2347], "omit": ["hyoid-bone", "thyroid-cartilage", "cricoid-cartilage", "arytenoid-cartilages", "epiglottis"]},
+  "larynx": {"scale": 1.125, "offset": [-0.0097, 1.926, -0.0531], "omit": ["trachea"]}
+}

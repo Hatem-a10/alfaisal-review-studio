@@ -101,8 +101,8 @@ def anatomical_model(entries, archive):
     return pack(doc, binary)
 
 
-def thumbnail(raw, key, only=None):
-    doc, binary = unpack(raw)
+def thumbnail(raw, key, only=None, components=None):
+    doc, binary = unpack(raw) if raw else (None, None)
     if key == 'diaphragm':
         only = {'right-hemidiaphragm', 'left-hemidiaphragm', 'esophagus', 'inferior-vena-cava', 'descending-aorta'}
     elif key == 'ribcage':
@@ -133,19 +133,21 @@ def thumbnail(raw, key, only=None):
     up = np.cross(forward, right)
     basis = np.stack([right, -up, forward], axis=1)
     triangles, colors = [], []
-    for node in doc['nodes']:
-        if 'mesh' not in node or (only and node['name'] not in only):
-            continue
-        for primitive in doc['meshes'][node['mesh']]['primitives']:
-            xyz = values(primitive['attributes']['POSITION']) @ basis
-            tris = xyz[values(primitive['indices']).reshape(-1, 3)]
-            normal = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
-            normal /= np.maximum(np.linalg.norm(normal, axis=1, keepdims=True), 1e-12)
-            light = .50 + .50 * np.abs(normal @ [-.32, -.44, .84])
-            material = doc['materials'][primitive.get('material', 0)]
-            color = material.get('pbrMetallicRoughness', {}).get('baseColorFactor', [.8,.35,.4,1])[:3]
-            colors.extend(np.clip(np.power(np.array(color), .65) * light[:,None] * 255 + 12, 0, 255).astype('uint8'))
-            triangles.extend(tris)
+    scenes = components or [(doc, binary, 1, [0, 0, 0], only)]
+    for doc, binary, scale, offset, included in scenes:
+        for node in doc['nodes']:
+            if 'mesh' not in node or (included is not None and node['name'] not in included):
+                continue
+            for primitive in doc['meshes'][node['mesh']]['primitives']:
+                xyz = (values(primitive['attributes']['POSITION']) * scale + offset) @ basis
+                tris = xyz[values(primitive['indices']).reshape(-1, 3)]
+                normal = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
+                normal /= np.maximum(np.linalg.norm(normal, axis=1, keepdims=True), 1e-12)
+                light = .50 + .50 * np.abs(normal @ [-.32, -.44, .84])
+                material = doc['materials'][primitive.get('material', 0)]
+                color = material.get('pbrMetallicRoughness', {}).get('baseColorFactor', [.8,.35,.4,1])[:3]
+                colors.extend(np.clip(np.power(np.array(color), .65) * light[:,None] * 255 + 12, 0, 255).astype('uint8'))
+                triangles.extend(tris)
     tris = np.asarray(triangles)
     depth = tris[:, :, 2].mean(axis=1)
     xy = tris[:, :, :2]
@@ -183,6 +185,27 @@ def save(key, raw, names=None):
     (output / f'{key}.glb.gz').write_bytes(gzip.compress(pack(doc, binary), compresslevel=9, mtime=0))
     thumbnail(raw, key)
     return labels
+
+
+if len(sys.argv) == 3 and sys.argv[1] == '--complete-preview':
+    layout = json.loads((output / 'complete.json').read_text())
+    scenes = []
+    preview_groups = {
+        'ribcage': lambda name: 'intercostal' not in name,
+        'heart': lambda name: name in {'right-atrium', 'left-atrium', 'ventricular-wall', 'aortic-arch',
+                                      'ascending-aorta', 'pulmonary-trunk', 'superior-vena-cava', 'lad'},
+        'diaphragm': lambda name: 'hemidiaphragm' in name,
+    }
+    for key, entry in layout.items():
+        raw = (Path(sys.argv[2]).read_bytes() if key == 'heart'
+               else gzip.decompress((output / f'{key}.glb.gz').read_bytes()))
+        doc, binary = unpack(raw)
+        keep = preview_groups.get(key, lambda name: True)
+        included = {node['name'] for node in doc['nodes']
+                    if node.get('name') not in entry.get('omit', []) and keep(node.get('name', ''))}
+        scenes.append((doc, binary, entry['scale'], entry['offset'], included))
+    thumbnail(None, 'complete', components=scenes)
+    sys.exit()
 
 
 if sys.argv[1:] == ['--previews-only']:

@@ -11,12 +11,12 @@ const labels=JSON.parse(readModel('structures.json'));
 
 test('every gallery card has a thumbnail, lesson mapping and a deferred model',()=>{
  const gallery=atlas.gallery();
- assert.equal(Object.keys(atlas.models).length,9);
+ assert.equal(Object.keys(atlas.models).length,10);
  for(const [id,model] of Object.entries(atlas.models)){
   assert.match(gallery,new RegExp('data-atlas-model="'+id+'"'));
   assert.match(model[3],/^[AP]\d+( [AP]\d+)*$/);
   assert.equal(readModel(id+'.webp').toString('ascii',8,12),'WEBP');
-  if(id!=='heart')assert.ok(labels[model[5]||id]);
+  if(id!=='heart'&&id!=='complete')assert.ok(labels[model[5]||id]);
  }
  assert.doesNotMatch(gallery,/\.glb|heart-viewer/);
  assert.equal(atlas.models.airway[5],'lungs');
@@ -87,4 +87,21 @@ test('hiding selected structures keeps independent hidden structures until resto
  assert.deepEqual([...hidden],['left-main-bronchus','trachea','right-main-bronchus']);
  atlas.toggleHidden(hidden,['trachea','right-main-bronchus']);
  assert.deepEqual([...hidden],['left-main-bronchus']);
+});
+
+test('complete model registers every specimen once and groups the combined structures',()=>{
+ const layout=JSON.parse(readModel('complete.json'));
+ assert.deepEqual(Object.keys(layout).sort(),[...Object.keys(labels),'heart'].sort());
+ const composite=[];
+ for(const [key,placement] of Object.entries(layout)){
+  assert.ok(placement.scale>0);
+  assert.equal(placement.offset.length,3);
+  assert.ok(placement.offset.every(Number.isFinite));
+  if(key==='heart'){composite.push('heart/ventricular-wall');continue;}
+  for(const part of placement.omit||[])assert.ok(Object.hasOwn(labels[key],part));
+  for(const part of Object.keys(labels[key]))if(!placement.omit?.includes(part))composite.push(key+'/'+part);
+ }
+ assert.equal(composite.filter(key=>key.endsWith('/trachea')||key.endsWith('/FMA7394')).length,1);
+ assert.ok(composite.length>140);
+ assert.ok(atlas.groupParts('complete',composite).every(([name])=>name!=='Other structures'));
 });

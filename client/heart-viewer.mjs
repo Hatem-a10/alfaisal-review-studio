@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-export async function mountHeart(stage,{onPick,onReady,onError,onViewChange,localModelURL,visibleIds,signal,modelLabel='heart'}={}){
- let disposed=false,frame=0,renderer,model,selected=null;const meshes=[],original=new Map();let parts=visibleIds?new Set(visibleIds):null;
+export async function mountHeart(stage,{onPick,onReady,onError,onViewChange,localModelURL,components,visibleIds,signal,modelLabel='heart'}={}){
+ let disposed=false,frame=0,renderer,model,selected=null;const meshes=[];let parts=visibleIds?new Set(visibleIds):null;
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.05,100);camera.position.set(0,.2,6.5);
  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;stage.append(renderer.domElement);renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();onError?.('3D rendering was interrupted. Retry the model to continue. Your completed activity is saved.')})}catch(e){onError?.('3D rendering is unavailable on this device. You can still read all structure notes below.');return {dispose(){},select(){},setView(){},showAll(){},setOpacity(){},isolate(){},setQuiz(){},setParts(){}}}
  renderer.domElement.setAttribute('aria-label','Interactive '+modelLabel+'. Drag to rotate, pinch to zoom. Arrow keys rotate; plus and minus zoom; Enter selects the highlighted candidate.');renderer.domElement.tabIndex=0;
@@ -19,6 +19,46 @@ export async function mountHeart(stage,{onPick,onReady,onError,onViewChange,loca
  function isolate(ids){const subset=new Set(Array.isArray(ids)?ids:[ids]);for(const mesh of meshes)mesh.visible=subset.has(mesh.userData.structure)&&(!parts||parts.has(mesh.userData.structure));render()}
  function setView(view,visibleOnly=false){const positions={anterior:[0,.1,6.5],posterior:[0,.1,-6.5],left:[6.5,.1,0],right:[-6.5,.1,0],superior:[0,6.5,.01]};programmatic=true;const bounds=new THREE.Box3();for(const m of meshes)if(visibleOnly?m.visible:!parts||parts.has(m.userData.structure))bounds.expandByObject(m);const center=bounds.isEmpty()?new THREE.Vector3():bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3());const fit=Math.max(modelLabel==='heart'?2.4:.16,size.length()*1.45,Math.max(size.x,size.z)*1.3/Math.min(1,camera.aspect));controls.minDistance=modelLabel==='heart'?2:Math.min(2,fit*.30);controls.maxDistance=Math.max(12,fit*2);camera.position.set(...(positions[view]||positions.anterior)).normalize().multiplyScalar(fit).add(center);controls.target.copy(center);controls.update();programmatic=false;onViewChange?.(view);render()}
  function setQuiz(id,highlight){quizTarget=id;showAll();setOpacity(id==='ventricular-wall'?1:.17);if(id.includes('atrium'))for(const m of meshes)if(m.userData.structure.includes('atrium')){m.material.opacity=.85;m.material.transparent=true;m.material.depthWrite=false}if(highlight)for(const m of meshes)if(m.userData.structure===id){m.material.opacity=1;m.material.transparent=false;m.material.depthWrite=true}select(highlight?id:null)}
- try{const response=await fetch(localModelURL||'/api/study-assets/heart-v1',{credentials:'same-origin',signal});if(!response.ok)throw Error(response.status===401?'Sign in to load your private model.':'The model could not be loaded. Retry or check private resource storage.');let bytes=await response.arrayBuffer();const signature=new Uint8Array(bytes,0,Math.min(2,bytes.byteLength));if(signature[0]===31&&signature[1]===139)bytes=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();const gltf=await new GLTFLoader().parseAsync(bytes,'');if(disposed)return;model=gltf.scene;model.traverse(m=>{if(m.isMesh){let parent=m;while(parent&&!parent.name)parent=parent.parent;const id=m.name||parent?.name;m.userData.structure=id;m.material=m.material.clone();const palette={tricuspid:0xd09a5c,mitral:0x8cb7bd,pulmonary:0x9c83c9,aortic:0xe8bf79,rv:0xb87783,lv:0xb87783};const tint=modelLabel==='heart'?palette[id.split('-')[0]]:undefined;if(tint!==undefined&&/leaflet|papillary|^(aortic|pulmonary)-(?!arch$|trunk$)/.test(id))m.material.color.set(tint);m.material.side=THREE.DoubleSide;original.set(m,m.material.color.clone());meshes.push(m)}});const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3());model.position.sub(center);scene.add(model);showAll();onReady?.(meshes.map(m=>m.userData.structure));render()}catch(e){if(!signal?.aborted)onError?.(e.message)}
+ async function loadComponent({url,key,scale=1,offset=[0,0,0],omit=[]}){
+  const response=await fetch(url,{credentials:'same-origin',signal});
+  if(!response.ok)throw Error(response.status===401?'Sign in to load your private model.':'The model could not be loaded. Retry to reload it.');
+  let bytes=await response.arrayBuffer();
+  const signature=new Uint8Array(bytes,0,Math.min(2,bytes.byteLength));
+  if(signature[0]===31&&signature[1]===139)bytes=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  const gltf=await new GLTFLoader().parseAsync(bytes,'');
+  const component=gltf.scene;
+  component.scale.setScalar(scale);component.position.set(...offset);
+  const omitted=new Set(omit), skipped=[];
+  component.traverse(mesh=>{
+   if(!mesh.isMesh)return;
+   let parent=mesh;while(parent&&!parent.name)parent=parent.parent;
+   const id=mesh.name||parent?.name;
+   if(omitted.has(id)){skipped.push(mesh);return;}
+   mesh.userData.structure=key?key+'/'+id:id;
+   mesh.material=mesh.material.clone();
+   const palette={tricuspid:0xd09a5c,mitral:0x8cb7bd,pulmonary:0x9c83c9,aortic:0xe8bf79,rv:0xb87783,lv:0xb87783};
+   const tint=modelLabel==='heart'||key==='heart'?palette[id.split('-')[0]]:undefined;
+   if(tint!==undefined&&/leaflet|papillary|^(aortic|pulmonary)-(?!arch$|trunk$)/.test(id))mesh.material.color.set(tint);
+   mesh.material.side=THREE.DoubleSide;meshes.push(mesh);
+  });
+  for(const mesh of skipped)mesh.removeFromParent();
+  return component;
+ }
+ try{
+  model=new THREE.Group();
+  const sources=components||[{url:localModelURL||'/api/study-assets/heart-v1'}];
+  for(const source of sources){
+   const component=await loadComponent(source);
+   if(disposed||signal?.aborted)break;
+   model.add(component);
+  }
+  if(disposed||signal?.aborted){for(const mesh of meshes){mesh.geometry.dispose();mesh.material.dispose();}}
+  else{
+   const box=new THREE.Box3().setFromObject(model);
+   model.position.sub(box.getCenter(new THREE.Vector3()));
+   scene.add(model);showAll();onReady?.(meshes.map(mesh=>mesh.userData.structure));render();
+  }
+ }catch(e){if(!signal?.aborted)onError?.(e.message);}
+
  return {select,setView,showAll,setOpacity,isolate,setQuiz,setParts,dispose(){disposed=true;cancelAnimationFrame(frame);resize.disconnect();controls.dispose();for(const m of meshes){m.geometry.dispose();m.material.dispose()}renderer.dispose();renderer.domElement.remove()}};
 }
