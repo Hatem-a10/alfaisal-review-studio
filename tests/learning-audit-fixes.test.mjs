@@ -138,8 +138,8 @@ test('supplemental questions defer past Dashboard and load once for learning and
  const ctx = {
   view:'dashboard',render(){paints++},esc:String,
   document:{getElementById:()=>content,addEventListener(){}},
-  LEARNING:{questions:[]},inlineLessonCache:new Map(),
-  fetch:async()=>{requests++;return {ok:true,json:async()=>[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]}},
+  LEARNING:{questions:[]},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
+  fetch:async()=>{requests++;return {ok:true,json:async()=>({questions:[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]})}},
  };
  vm.runInNewContext(load('supplemental-objectives.js'),ctx);
  ctx.render();

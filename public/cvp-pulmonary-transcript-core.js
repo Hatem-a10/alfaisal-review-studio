@@ -37,7 +37,9 @@ function applyPulmonaryTranscripts(learning,teaching,checks,diagrams,pack){
  for(const guide of Object.values(teaching.guides)){
   for(const section of guide.sections||[])if(excludedSections.has(section.id))for(const q of section.questions||[])excludedQuestions.add(q.id);
   guide.sections=(guide.sections||[]).filter(s=>!excludedSections.has(s.id));
-  for(const section of guide.sections){section.questions=(section.questions||[]).filter(q=>!excludedQuestions.has(q.id));checks[section.id]=section.questions;for(const q of section.questions)if(!learning.questions.some(x=>x.id===q.id))learning.questions.push(q)}
+  for(const section of guide.sections){section.questions=(section.questions||[]).filter(q=>!excludedQuestions.has(q.id));const curated=(checks[section.id]||[]).filter(q=>!excludedQuestions.has(q.id));
+   const assigned=new Map([...curated,...section.questions].map(q=>[q.id,q]));
+   checks[section.id]=[...assigned.values()];for(const q of section.questions)if(!learning.questions.some(x=>x.id===q.id))learning.questions.push(q)}
  }
  learning.questions=learning.questions.filter(q=>!excludedQuestions.has(q.id)&&!excludedSections.has(q.concept));
  for(const id of excludedSections)delete checks[id];
