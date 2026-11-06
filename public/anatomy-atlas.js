@@ -100,6 +100,10 @@ const AnatomyAtlas=(()=>{
  }
  const structureSearch=prefix=>`<label>Find a structure<input id="${prefix}Search" type="search" placeholder="Search structures…"></label>`;
  const gestures='<p class="muted heart-gesture">Drag to rotate · pinch/scroll to zoom · keyboard arrows rotate, +/− zoom, [ and ] highlight a candidate, Enter selects it.</p>';
+ function progress(id,known='—',total){
+  const value=total===undefined?known:known+' / '+total;
+  return `<div class="anatomy-progress"><strong id="${id}" aria-live="polite">${value}</strong><small>Latest identification correct · separate from MCQ mastery</small></div>`;
+ }
  function page(id){
   const [title,group,note,lessons,,shared]=models[id];
   const asset=shared||id, official=['ribcage','mediastinum'].includes(asset);
@@ -108,10 +112,15 @@ const AnatomyAtlas=(()=>{
    'BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 2.1 Japan';
   return back+intro('CVP 112 · '+group.toUpperCase(),title,note)+
    `<div id="atlasExplorer" class="atlas-explorer">
+    <section class="panel anatomy-intro atlas-summary" aria-label="Model identification progress">
+     <div><span class="pill">${group}</span><h2>Understand the shape. Find the structure.</h2><p>${note}</p></div>
+     ${progress('atlasKnown')}
+    </section>
     <div class="atlas-controls atlas-modes" role="group" aria-label="Study mode">
      <button type="button" data-atlas-mode="explore" aria-pressed="true">Explore</button>
      <button type="button" data-atlas-mode="label" aria-pressed="false" disabled>Name the structure</button>
      <button type="button" data-atlas-mode="practical" aria-pressed="false" disabled>Timed practical</button>
+     <button type="button" class="atlas-search-jump" id="atlasSearchJump" aria-controls="atlasSidebar">Find a structure ↓</button>
     </div>
     <section class="panel atlas-viewport">
      <div id="atlasLayerTools">
@@ -122,9 +131,8 @@ const AnatomyAtlas=(()=>{
      ${exploreControls('atlas')}${gestures}
      <div id="atlasActivity" aria-live="polite" hidden></div>
     </section>
-    <aside class="panel atlas-parts">
-     <div id="atlasExplore">${structureSearch('atlas')}
-      <p id="atlasKnown" class="muted"></p>
+    <aside id="atlasSidebar" class="panel heart-notes atlas-parts" aria-label="Structure sidebar">
+     <div id="atlasExplore"><h2>Structures</h2>${structureSearch('atlas')}
       <div id="atlasParts" class="heart-structure-list atlas-part-list"></div>
       <div id="atlasDescription" hidden><h3 id="atlasPartName"></h3><p id="atlasNote" class="muted" hidden></p></div>
      </div>
@@ -194,7 +202,7 @@ const AnatomyAtlas=(()=>{
     if(!previous||Date.parse(previous.at)<=Date.parse(attempt.at))latest.set(attempt.structure,attempt);
    }
    const known=orderedIds().filter(part=>latest.get(id+'/'+part)?.correct).length;
-   get('atlasKnown').textContent=known+' / '+orderedIds().length+' identified in practice';
+   get('atlasKnown').textContent=known+' / '+orderedIds().length;
   }
   function saveResults(){
    const options=storeOptions(), anatomy=options.anatomy||{}, at=new Date().toISOString();
@@ -207,6 +215,7 @@ const AnatomyAtlas=(()=>{
    const exploring=mode==='explore';
    for(const button of quizModes)button.setAttribute('aria-pressed',String(button.dataset.atlasMode===mode));
    get('atlasExplore').hidden=!exploring;
+   get('atlasSearchJump').hidden=!exploring;
    get('atlasSelected').hidden=true;
    get('atlasLayerTools').hidden=!exploring;
    get('atlasQuizNotes').hidden=exploring;
@@ -343,6 +352,10 @@ const AnatomyAtlas=(()=>{
    for(const b of list.children)b.hidden=!visible.has(b.dataset.part)||!b.textContent.toLowerCase().includes(q);
   }
   get('atlasSearch').addEventListener('input',filter);
+  get('atlasSearchJump').addEventListener('click',()=>{
+   get('atlasSidebar').scrollIntoView({block:'start'});
+   get('atlasSearch').focus({preventScroll:true});
+  });
   const boxes=()=>[...get('atlasLayers').querySelectorAll('input')];
   function applyLayers(){
    const ids=visibleIds();
@@ -393,5 +406,5 @@ const AnatomyAtlas=(()=>{
   load();
   return ()=>{clearInterval(timer);request.abort();viewer?.dispose();};
  }
- return {models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures};
+ return {models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures,progress};
 })();

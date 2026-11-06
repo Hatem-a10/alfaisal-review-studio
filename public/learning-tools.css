@@ -62,3 +62,8 @@ html[data-figure-captions=hidden] .lesson-figure figcaption,html[data-figure-cap
 #atlasActivity :is(form,details){margin-block:.55rem}
 #atlasActivity label{margin-bottom:.5rem}
 #atlasActivity input{max-width:24rem}
+.atlas-summary{grid-column:1/-1}
+.atlas-parts{min-width:0;scroll-margin-top:75px}
+.atlas-search-jump{display:none}
+@media(min-width:761px){.atlas-explorer .atlas-parts{position:sticky;top:70px}}
+@media(max-width:760px){.atlas-search-jump:not([hidden]){display:inline-flex}}

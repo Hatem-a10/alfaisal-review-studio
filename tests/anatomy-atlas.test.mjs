@@ -73,5 +73,8 @@ test('all atlas viewers expose the heart controls and the same right-panel searc
   assert.ok(html.includes(atlas.exploreControls('atlas')));
   assert.match(html,/<aside[^>]*>[\s\S]*Find a structure[\s\S]*id="atlasSearch"/);
   assert.match(html,/id="atlasPreset"/);
+  assert.ok(html.indexOf('id="atlasKnown"')<html.indexOf('id="atlasStage"'));
+  assert.match(html,/id="atlasSearchJump" aria-controls="atlasSidebar"/);
+  assert.match(html,/<aside id="atlasSidebar" class="panel heart-notes atlas-parts"/);
  }
 });
