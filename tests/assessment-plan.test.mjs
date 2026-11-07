@@ -1,4 +1,5 @@
 import test from'node:test';import assert from'node:assert/strict';import{readFileSync}from'node:fs';import{runInNewContext}from'node:vm';
+import {finalCatchup} from '../public/final-catchup.mjs';
 const context={structuredClone,Intl,Date};runInNewContext(readFileSync(new URL('../public/data.js',import.meta.url),'utf8')+readFileSync(new URL('../public/assessment-plan.js',import.meta.url),'utf8')+';this.data=DATA;this.api=AssessmentPlan;',context);const {data,api}=context,day='2026-11-03';
 test('priorities use documented ranges, label inferred recent CVP groups and expire after actual event end',()=>{const list=api.catalog(data.events,data.items),mol=list.find(a=>a.course==='MOL'&&a.number===2);assert.equal(mol.endMinute,600);assert.deepEqual([...mol.lectureIds],['MOL-14','MOL-15','MOL-16','MOL-17','MOL-18','MOL-19']);assert.equal(mol.scopeKind,'documented');assert.equal(list.filter(a=>a.course==='MOL'&&a.number===2).length,1);assert.ok(api.nextByCourse(data.events,data.items,day,550).some(a=>a.label==='MOL TBL 2'));const now=api.nextByCourse(data.events,data.items,day,720);assert.ok(!now.some(a=>a.label==='MOL TBL 2'));assert.ok(now.some(a=>a.label==='CVP TBL 5'));const cvp=now.find(a=>a.course==='CVP');assert.equal(cvp.scopeKind,'suggested');assert.ok(cvp.lectureIds.includes('CVP-P23'));assert.ok(!cvp.lectureIds.includes('CVP-P1'));assert.match(cvp.scopeNote,/not confirmed/);assert.equal(api.nextByCourse(data.events,data.items,'2026-11-09',0).find(a=>a.course==='CVP').label,'CVP TBL 6');assert.equal(api.nextByCourse(data.events,data.items,'2026-11-25',0).find(a=>a.course==='MOL').label,'MOL Final Exam');assert.equal(api.nextByCourse(data.events,data.items,'2026-12-21',0).length,0)});
 test('full personal plan spreads both courses, obeys budget and course caps, preserves completions and official events',()=>{const records={'MOL-1':{done:{0:'2026-11-01T09:00:00Z',1:'2026-11-02T09:00:00Z'},notes:'Keep me',learning:{results:{q:{ok:true}}}},'CVP-P1':{done:{0:'2026-11-01T10:00:00Z'}}},before=JSON.stringify({data,records}),p=api.spread(data.items,records,day,{budget:180},data.events,()=>false,()=>180,720),daily={},courses={},molDays=new Set();for(const x of data.items){const r=p.records[x.id]||records[x.id]||{};for(let pass=0;pass<3;pass++){if(r.done?.[pass]||pass===2&&r.skipThird)continue;if(p.unplaced.some(u=>u.id===x.id&&u.pass===pass))continue;const d=(r.dates||x.dates)[pass];assert.ok(d>=day,x.id);assert.ok(d>=api.release(x,data.events),x.id+' release');daily[d]=(daily[d]||0)+[40,30,20][pass];courses[d+':'+x.course]=(courses[d+':'+x.course]||0)+1;if(x.course==='MOL')molDays.add(d);if(pass>0&&!r.done?.[pass-1]){const prev=(r.dates||x.dates)[pass-1];assert.ok(Date.parse(d)-Date.parse(prev)>=(pass===1?2:4)*86400000,x.id+' spacing')}}}assert.ok(molDays.size>10);assert.ok(Object.values(daily).every(n=>n<=180));assert.ok(Object.values(courses).every(n=>n<=p.courseDailyCap));assert.equal(p.records['MOL-1'].done[0],records['MOL-1'].done[0]);assert.equal(p.records['MOL-1'].notes,'Keep me');assert.equal(JSON.stringify(p.records['MOL-1'].learning),JSON.stringify(records['MOL-1'].learning));assert.equal(JSON.stringify({data,records}),before);assert.ok(!p.changes.some(c=>c.field.startsWith('done')));assert.ok(p.late.every(x=>x.date>=x.assessment));});
@@ -20,4 +21,47 @@ test('CVP hard cutoff uses the source plan date and leaves overflow unscheduled'
  const overdue=[{...cvp[0],dates:['2026-11-16','2026-11-17','2026-11-18']}];
  assert.ok(study.daily(overdue,{},'2026-11-17',{budget:180},data.events).selected.length);
  assert.equal(study.daily(overdue,{},final,{budget:180},data.events).selected.length,0);
+});
+
+test('final catch-up assigns first passes before second passes and makes every third optional under pressure',()=>{
+ const current='2026-11-15',final='2026-11-18';
+ const items=['CVP-A1','CVP-A2','CVP-A3','CVP-A4','MOL-1'].map(id=>({id,course:id.split('-')[0],dates:['2026-11-01','2026-11-02','2026-11-03']}));
+ const done={0:'2026-11-02T00:00:00Z',1:'2026-11-04T00:00:00Z'};
+ const records={'CVP-A4':{done,difficult:true},'MOL-1':{dates:[current,'2026-11-20','2026-11-22']}};
+ const before=JSON.stringify(records);
+ const plan=finalCatchup(api,items,records,current,[{date:final,title:'CVP Final Exam'}],()=>80);
+ assert.equal(JSON.stringify(records),before);
+ assert.equal(plan.firstPlaced,3);
+ assert.equal(plan.secondPlaced,2);
+ assert.equal(plan.unplaced.length,1);
+ assert.equal(plan.unplaced[0].pass,1);
+ assert.ok(items.slice(0,4).every(x=>plan.records[x.id].skipThird));
+ assert.equal(JSON.stringify(plan.records['CVP-A4'].done),JSON.stringify(done));
+ assert.equal(JSON.stringify(plan.records['MOL-1']),JSON.stringify(records['MOL-1']));
+ assert.ok(plan.changes.filter(c=>c.field.startsWith('dates.')).every(c=>c.after<final));
+});
+
+test('final catch-up uses spare slots for spaced third passes without changing completed work',()=>{
+ const current='2026-11-15',final='2026-11-18';
+ const x={id:'CVP-A1',course:'CVP',dates:['2026-11-01','2026-11-02','2026-11-03']};
+ const done={0:'2026-11-12T00:00:00Z',1:'2026-11-13T22:00:00Z'};
+ const plan=finalCatchup(api,[x],{[x.id]:{done,skipThird:true}},current,[{date:final,title:'CVP Final Exam'}],()=>90);
+ assert.equal(plan.unplaced.length,0);
+ assert.equal(plan.records[x.id].skipThird,false);
+ assert.equal(plan.records[x.id].dates[2],'2026-11-16');
+});
+
+test('a large first-pass backlog switches to shorter sessions only when that improves coverage',()=>{
+ const day='2026-11-08',final='2026-11-18';
+ const items=Array.from({length:47},(_,i)=>({id:'CVP-P'+(i+1),course:'CVP',dates:['2026-11-01','2026-11-02','2026-11-03']}));
+ const plan=finalCatchup(api,items,{},day,[{date:final,title:'CVP Final Exam'}],()=>180);
+ assert.equal(plan.focused,true);
+ assert.equal(plan.firstPlaced,47);
+ assert.ok(plan.unplaced.every(x=>x.pass===1));
+ assert.equal(plan.omitted.length,47);
+ const daily={};
+ for(const c of plan.changes.filter(c=>c.field.startsWith('dates.'))){
+  const pass=+c.field.split('.')[1];daily[c.after]=(daily[c.after]||0)+[30,25,20][pass];assert.ok(c.after<final);
+ }
+ assert.ok(Object.values(daily).every(n=>n<=180));
 });
