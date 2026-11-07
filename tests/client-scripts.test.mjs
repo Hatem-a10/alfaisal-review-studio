@@ -3,3 +3,25 @@ test('production bundle preserves ordered shared globals, Unicode content and or
 test('lesson payload occupies its original dependency position and no redundant preload remains',()=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'studio-payload-'));try{fs.mkdirSync(path.join(root,'dist/client'),{recursive:true});fs.mkdirSync(path.join(root,'public'));fs.writeFileSync(path.join(root,'public/learning-data.js'),"const LEARNING={questions:[{id:'q',answer:2}]};");fs.writeFileSync(path.join(root,'public/check.js'),"globalThis.answer=LEARNING.questions[0].answer");fs.writeFileSync(path.join(root,'dist/client/index.html'),'<head><link rel="preload" as="script" href="/api/lesson-data?v=42"></head><script defer src="/api/lesson-data?v=42"></script><script defer src="check.js"></script>');optimizeClientScripts(root);const html=fs.readFileSync(path.join(root,'dist/client/index.html'),'utf8'),ctx={};assert.ok(!html.includes('/api/lesson-data'));vm.runInNewContext(fs.readFileSync(path.join(root,'dist/client',html.match(/src="([^"]+)"/)[1]),'utf8'),ctx);assert.equal(ctx.answer,2)}finally{fs.rmSync(root,{recursive:true,force:true})}});
 
 test('installed app targets the document directly without changing app identity or scope',()=>{const m=JSON.parse(fs.readFileSync('public/manifest.webmanifest','utf8'));assert.equal(m.id,'/');assert.equal(m.scope,'/');assert.equal(m.start_url,'/index.html')});
+
+test('bundle cleanup removes redundant deployed copies and keeps independent entry points',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'studio-prune-'));
+ try{
+  const dist=path.join(root,'dist/client'),pub=path.join(root,'public');
+  fs.mkdirSync(dist,{recursive:true});fs.mkdirSync(pub);
+  const files={'bundle-only.js':'const marker=1;', 'shared-reader.js':'globalThis.marker=marker;', 'lazy.mjs':'export const value=1;'};
+  for(const [name,source] of Object.entries(files)){
+   fs.writeFileSync(path.join(pub,name),source);
+   fs.writeFileSync(path.join(dist,name),source);
+  }
+  fs.writeFileSync(path.join(dist,'index.html'),'<script defer src="bundle-only.js"></script><script defer src="shared-reader.js"></script>');
+  fs.writeFileSync(path.join(dist,'reader.html'),'<script defer src="shared-reader.js?v=4"></script>');
+  const result=optimizeClientScripts(root);
+  assert.equal(result.removedFiles,1);
+  assert.equal(result.removedBytes,Buffer.byteLength(files['bundle-only.js']));
+  assert.ok(!fs.existsSync(path.join(dist,'bundle-only.js')));
+  assert.ok(fs.existsSync(path.join(pub,'bundle-only.js')));
+  assert.ok(fs.existsSync(path.join(dist,'shared-reader.js')));
+  assert.ok(fs.existsSync(path.join(dist,'lazy.mjs')));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

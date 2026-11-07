@@ -8,7 +8,7 @@ const {buildLearningPayload,finalizeLearningPayload}=await import("./learning-pa
 const {optimizeClientScripts}=await import("./client-scripts.mjs");
 const {optimizeClientStyles}=await import("./client-styles.mjs");
 const {finishSiteAssets}=await import("./site-build-info.mjs");
-if(command==="build"){const {verifyHeartViewer}=await import("./verify-heart-viewer.mjs");verifyHeartViewer();await import("./lecture-changelog.mjs");buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();console.log("Client script optimization:",JSON.stringify(optimizeClientScripts(fileURLToPath(new URL("../",import.meta.url)))));console.log("Client stylesheet optimization:",JSON.stringify(optimizeClientStyles(fileURLToPath(new URL("../",import.meta.url)))));finishSiteAssets()}})}
+if(command==="build"){const {verifyHeartViewer}=await import("./verify-heart-viewer.mjs");verifyHeartViewer();await import("./lecture-changelog.mjs");buildLearningPayload();process.once("exit",code=>{if(code===0){finalizeLearningPayload();const scripts=optimizeClientScripts(fileURLToPath(new URL("../",import.meta.url)));console.log("Client script optimization:",JSON.stringify(scripts));console.log("Client stylesheet optimization:",JSON.stringify(optimizeClientStyles(fileURLToPath(new URL("../",import.meta.url)))));finishSiteAssets(scripts)}})}
 const managedLinux = readExecutionProfile() === "managed-linux";
 
 if (managedLinux && command === "build") {
