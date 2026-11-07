@@ -2,11 +2,11 @@
 (()=>{
  const validAt=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));
  const clocks=v=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).filter(([k,t])=>k.length<70&&validAt(t)).slice(0,80)):{};
- const baseValidate=validateBackup;validateBackup=function(raw){const out=baseValidate(raw);for(const[id,r]of Object.entries(out)){const input=raw.records[id];if(input._changed)r._changed=clocks(input._changed);if(typeof input.skipThird==='boolean')r.skipThird=input.skipThird;if(validAt(input.masteryHandledAt))r.masteryHandledAt=input.masteryHandledAt;if(validAt(input.autoFirstAt))r.autoFirstAt=input.autoFirstAt}return out};
+ const baseValidate=validateBackup;validateBackup=function(raw){const out=baseValidate(raw);for(const[id,r]of Object.entries(out)){const input=raw.records[id];if(input._changed)r._changed=clocks(input._changed);if(typeof input.skipThird==='boolean')r.skipThird=input.skipThird;if(input.finalThirdDate===null||validDate(input.finalThirdDate))r.finalThirdDate=input.finalThirdDate;if(validAt(input.masteryHandledAt))r.masteryHandledAt=input.masteryHandledAt;if(validAt(input.autoFirstAt))r.autoFirstAt=input.autoFirstAt}return out};
  const baseSettings=cleanSettings;cleanSettings=function(raw){return {...baseSettings(raw),_changed:clocks(raw?._changed)}};settings=cleanSettings(settings);
  let baseline=structuredClone(state),settingsBaseline=structuredClone(settings),busy=false,planReady=false,finalCatchup,finalLoading,finalError;
  function loadFinalCatchup(){
-  finalLoading??=import('/final-catchup.mjs?v=1').then(m=>{finalCatchup=m.finalCatchup;render()}).catch(()=>{
+  finalLoading??=import('/final-catchup.mjs?v=2').then(m=>{finalCatchup=m.finalCatchup;render()}).catch(()=>{
    finalError=true;render();
   });
  }
@@ -22,24 +22,27 @@
   }catch(e){syncConflict=null;syncMessage('Sync retry needed · device copy retained');console.error('Automatic sync reconciliation failed',e.message)}
  };
  const baseMessage=syncMessage;syncMessage=function(message){baseMessage(message);if(/Cloud saved|Cloud ready|unavailable|Sign in|Offline/i.test(message)){planReady=true;queueMicrotask(()=>{if(runAutopilot())render()})}};
+ const finalDate=()=>AssessmentPlan.cvpFinalDate(DATA.events);
+ const inFinalWindow=(date,final)=>!!final&&date<final&&Study.gap(final,date)<=14;
+ const optionalThird=(x,date,current,final)=>StudyAutopilot.thirdOptional(rec(x),x.course,date,current,final);
  const baseTasks=tasks;tasks=function(items=DATA.items){
-  const final=AssessmentPlan.cvpFinalDate(DATA.events);
-  return baseTasks(items).filter(t=>t.done||(!(t.p===2&&rec(t.x).skipThird)&&
+  const final=finalDate(),current=today();
+  return baseTasks(items).filter(t=>t.done||(!(t.p===2&&optionalThird(t.x,t.date,current,final))&&
    !(t.x.course==='CVP'&&final&&(day>=final||t.date>=final))));
  };
- const baseRowWithPlan=row;row=function(x){let html=baseRowWithPlan(x);if(rec(x).skipThird&&!done(x,2))html=html.replace(/<label class="pass [^"]*">(?:(?!<label)[\s\S])*?data-pass="2"[\s\S]*?<\/label>/,'<div class="pass optional-pass"><strong>Third review optional</strong><small>Excluded from your active review queue</small><button data-restore-third="'+esc(x.id)+'">Restore</button></div>');return html};
+ const baseRowWithPlan=row;row=function(x){let html=baseRowWithPlan(x);const current=today(),final=finalDate(),protectedWindow=inFinalWindow(current,final);if(optionalThird(x,dates(x)[2],current,final))html=html.replace(/<label class="pass [^"]*">(?:(?!<label)[\s\S])*?data-pass="2"[\s\S]*?<\/label>/,'<div class="pass optional-pass"><strong>Third review optional</strong><small>Excluded from your active review queue</small>'+(protectedWindow?'':'<button data-restore-third="'+esc(x.id)+'">Restore</button>')+'</div>');return html};
  const baseReviewItem=datedReviewItem;datedReviewItem=function(t){const plan=storeOptions().autopilot?.lastPlan,focused=t.x.course==='CVP'&&!t.done&&t.p<2&&plan?.focused&&!plan.undone&&t.date>=today()&&t.date<plan.final?' · '+[25,20][t.p]+' min focused review':'';return baseReviewItem(t).replace('</small>',focused+'</small>').replace('</small>',''+(t.p===0&&t.done===rec(t.x).autoFirstAt?' · MCQ mastery':'')+'</small>')};
  function mastered(x){const l=lessonById(x.id);if(!l||!state[x.id]?.learning)return false;return Learn.status(l,rec(x),today()).passed===true}
  function latestMastery(x){const l=lessonById(x.id);if(!l)return '';return [...inlineLatest(l).values()].map(v=>v.at).filter(validAt).sort().at(-1)||''}
  function capacity(d,after=0){if(typeof ACADEMIC_IMPORT!=='undefined'&&!storeOptions().allowBreakStudy&&ACADEMIC_IMPORT.breaks.some(([a,b])=>d>=a&&d<=b))return 0;const minute=v=>Number(v.slice(0,2))*60+Number(v.slice(3)),start=Math.max(after,minute(settings.start||'17:00')),end=minute(settings.end||'23:00'),events=campusWeekEvents(campusWeekStart(d),false).filter(e=>e.date===d).map(e=>[Math.max(start,e.start),Math.min(end,e.end)]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);let cursor=start,free=0;for(const[a,b]of events){free+=Math.max(0,a-cursor);cursor=Math.max(cursor,b)}free+=Math.max(0,end-cursor);const budget=Number(settings.budget)||180;let completedMinutes=0,timed=0;for(const r of Object.values(state)){completedMinutes+=Object.entries(r.done||{}).filter(([,at])=>at&&Study.localDate(at)===d).reduce((n,[p])=>n+[35,25,15][+p],0);timed+=(r.sessions||[]).filter(s=>Study.localDate(s.endedAt)===d).reduce((n,s)=>n+s.seconds/60,0)}const spent=Math.max(completedMinutes,Math.ceil(timed));return Math.max(0,after?Math.min(free,budget-spent):Math.min(free,budget)-spent)}
  function runAutopilot(){if(busy)return false;busy=true;let changed=false;try{
-  const final=AssessmentPlan.cvpFinalDate(DATA.events),current=today(),finalWindow=!!final&&current<final&&Study.gap(final,current)<=14;
-  for(const x of DATA.items){if(x.course==='CVP'&&final&&current>=final)continue;if(!(x.course==='CVP'&&finalWindow)&&StudyAutopilot.restoreThird(rec(x),mastered(x),Study.mcq(rec(x)).accuracy)){state[x.id]={...rec(x),skipThird:false};changed=true}if(done(x,0)||!mastered(x))continue;const at=StudyAutopilot.firstStudyAt(rec(x),true,latestMastery(x));if(!at)continue;state[x.id]={...rec(x),done:{...rec(x).done,0:at},autoFirstAt:at,masteryHandledAt:at};changed=true}
+  const final=finalDate(),current=today(),finalWindow=inFinalWindow(current,final);
+  for(const x of DATA.items){if(x.course==='CVP'&&final&&current>=final)continue;if(!finalWindow&&StudyAutopilot.restoreThird(rec(x),mastered(x),Study.mcq(rec(x)).accuracy)){state[x.id]={...rec(x),skipThird:false};changed=true}if(done(x,0)||!mastered(x))continue;const at=StudyAutopilot.firstStudyAt(rec(x),true,latestMastery(x));if(!at)continue;state[x.id]={...rec(x),done:{...rec(x).done,0:at},autoFirstAt:at,masteryHandledAt:at};changed=true}
   const opts=storeOptions(),auto=opts.autopilot||{};
   const clock=assessmentClock(),cvp=DATA.items.filter(x=>x.course==='CVP');
-  const cvpOverdue=cvp.reduce((n,x)=>n+[0,1,2].filter(p=>!done(x,p)&&!(p===2&&rec(x).skipThird)&&dates(x)[p]<current).length,0);
+  const cvpOverdue=cvp.reduce((n,x)=>n+[0,1].filter(p=>!done(x,p)&&dates(x)[p]<current).length,0);
   const finalPlan=planReady&&finalWindow&&(auto.requestFinalCatchup||
-   (auto.enabled!==false&&auto.undoDay!==current&&(auto.finalCatchupVersion!==final||
+   (auto.enabled!==false&&auto.undoDay!==current&&(auto.finalCatchupVersion!==final+':2'||
    (cvpOverdue>=6&&auto.lastAttemptDay!==current))));
   if(finalPlan&&!finalCatchup){if(!finalError)loadFinalCatchup();if(changed)persist();return changed}
   const balanced=planReady&&!finalWindow&&auto.assessmentPlanVersion!==1;
@@ -49,7 +52,7 @@
    finalWindow?null:StudyAutopilot.automaticRebalance(DATA.items,state,current,planSettings,DATA.events,mastered,capacity,{...auto,ready:planReady});
   if(plan){const at=new Date().toISOString(),applied=plan.changes.length>0;
    if(applied){state=plan.records;changed=true}
-   saveOptions({...opts,autopilot:{...auto,...(balanced?{assessmentPlanVersion:1}:{}),...(finalPlan?{finalCatchupVersion:final,requestFinalCatchup:false}:{}),lastAttemptDay:today(),...(applied||finalPlan||balanced?{lastPlanDay:today(),undoDay:null,lastPlan:{at,changes:plan.changes,unplaced:plan.unplaced,late:plan.late||[],assessmentBalanced:balanced,...(finalPlan?{final,firstPlaced:plan.firstPlaced,secondPlaced:plan.secondPlaced,focused:plan.focused}: {})},log:[{at,moved:plan.changes.filter(c=>c.field.startsWith('dates.')).length,optional:plan.omitted.length,unplaced:plan.unplaced.length},...(auto.log||[])].slice(0,8)}:{})}});
+   saveOptions({...opts,autopilot:{...auto,...(balanced?{assessmentPlanVersion:1}:{}),...(finalPlan?{finalCatchupVersion:final+':2',requestFinalCatchup:false}:{}),lastAttemptDay:today(),...(applied||finalPlan||balanced?{lastPlanDay:today(),undoDay:null,lastPlan:{at,changes:plan.changes,unplaced:plan.unplaced,late:plan.late||[],assessmentBalanced:balanced,...(finalPlan?{final,firstPlaced:plan.firstPlaced,secondPlaced:plan.secondPlaced,focused:plan.focused}: {})},log:[{at,moved:plan.changes.filter(c=>c.field.startsWith('dates.')).length,optional:plan.omitted.length,unplaced:plan.unplaced.length},...(auto.log||[])].slice(0,8)}:{})}});
   }
   if(changed)persist();return changed;
  }finally{busy=false}}

@@ -8,6 +8,13 @@ const StudyAutopilot=(()=>{
  const evidence=r=>Math.max(0,...Object.values(r.done||{}).map(time),...(r.learning?.attempts||[]).map(x=>time(x.at)),...Object.values(r.learning?.results||{}).map(x=>time(x.at)),...(r.mcqs||[]).map(x=>time(x.createdAt)),...(r.sessions||[]).map(x=>time(x.endedAt)));
  function mergeRecords(local,remote,localAt,remoteAt,mergeBase){const out=mergeBase(local,remote);for(const id of new Set([...Object.keys(local),...Object.keys(remote)])){const a=local[id],b=remote[id];if(!a||!b)continue;const c=out[id];c._changed={...a._changed};const fallbackA=Math.max(evidence(a),time(localAt)),fallbackB=Math.max(evidence(b),time(remoteAt));for(const key of new Set([...Object.keys(a),...Object.keys(b)])){if(['_changed','learning','mcqs','sessions'].includes(key))continue;if(key==='done'||key==='dates'){c[key]=key==='dates'?[...(a.dates||b.dates||[])]:{};for(let p=0;p<3;p++){const k=key+'.'+p,ta=time(a._changed?.[k]),tb=time(b._changed?.[k]);let useB=tb>ta||(!ta&&!tb&&fallbackB>fallbackA);if(key==='done'&&!ta&&!tb){const va=a.done?.[p],vb=b.done?.[p];useB=!!vb&&(!va||time(vb)>time(va))}const chosen=useB?b:a,other=useB?a:b;if(Object.prototype.hasOwnProperty.call(chosen[key]||{},p))c[key][p]=chosen[key][p];else if(Object.prototype.hasOwnProperty.call(other[key]||{},p))c[key][p]=other[key][p];if(ta||tb)c._changed[k]=ta>=tb?a._changed[k]:b._changed[k]}continue}const ta=time(a._changed?.[key]),tb=time(b._changed?.[key]);const pick=tb>ta||(!ta&&!tb&&fallbackB>fallbackA)?b:a;if(Object.prototype.hasOwnProperty.call(pick,key))c[key]=structuredClone(pick[key]);if(ta||tb)c._changed[key]=ta>=tb?a._changed[key]:b._changed[key]}}
  return out}
+ function thirdOptional(record,course,date,day,final){
+  if(record.done?.[2])return false;
+  if(final&&day<final&&day>=plus(final,-14)){
+   return course!=='CVP'||record.finalThirdDate!==date||date<day||date>=final||!!record.skipThird;
+  }
+  return !!record.skipThird;
+ }
  function restoreThird(r,mastered,accuracy){return !!r.skipThird&&!r.done?.[2]&&(!mastered||r.difficult||(r.confidence>0&&r.confidence<4)||(accuracy!==null&&accuracy<85))}
  function firstStudyAt(r,passed,at){if(!passed||r.done?.[0]||!time(at)||time(at)<=time(r.masteryHandledAt))return null;if(r.done?.[0]===null&&time(r._changed?.['done.0'])>=time(at))return null;return at}
  function mergeSettings(a,b,localAt,remoteAt){const c={...a,_changed:{...a._changed}};for(const k of new Set([...Object.keys(a),...Object.keys(b)])){if(k==='_changed')continue;const ta=time(a._changed?.[k])||time(localAt),tb=time(b._changed?.[k])||time(remoteAt);if(tb>ta&&Object.prototype.hasOwnProperty.call(b,k))c[k]=structuredClone(b[k]);if(a._changed?.[k]||b._changed?.[k])c._changed[k]=time(a._changed?.[k])>=time(b._changed?.[k])?a._changed[k]:b._changed[k]}return c}
@@ -46,5 +53,5 @@ const StudyAutopilot=(()=>{
  for(const x of items){const r=state[x.id];if(r.skipThird&&!r.done?.[2]){const afterSecond=r.done?.[1]?localDay(r.done[1]):r.dates?.[1]||day,date=[day,plus(afterSecond,2)].sort().at(-1),dates=[...(r.dates||x.dates)];if((x.course!=='CVP'||!final||date<final)&&dates[2]!==date){changes.push({id:x.id,field:'dates.2',before:dates[2],after:date});dates[2]=date;r.dates=dates}}}
  return {records:state,changes,omitted,unplaced,late,capacityShortfall,reset:true};
  }
- return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,deadline,rebalance,automaticRebalance,freshPlan};
+ return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,thirdOptional,deadline,rebalance,automaticRebalance,freshPlan};
 })();

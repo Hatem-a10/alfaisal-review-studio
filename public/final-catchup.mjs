@@ -6,7 +6,7 @@ export function finalCatchup(assessment,items,records,day,events,capacity,focuse
  const cvp=items.filter(x=>x.course==='CVP'),remaining=new Map(),placed=new Map();
  const datesFor=x=>state[x.id]?.dates||x.dates;
  const completionDay=at=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
- const otherWork=items.filter(x=>x.course!=='CVP').flatMap(x=>[0,1,2].filter(p=>!records[x.id]?.done?.[p]&&!(p===2&&records[x.id]?.skipThird)).map(p=>({date:datesFor(x)[p],minutes:[40,30,20][p]})));
+ const otherWork=items.filter(x=>x.course!=='CVP').flatMap(x=>[0,1].filter(p=>!records[x.id]?.done?.[p]).map(p=>({date:datesFor(x)[p],minutes:[40,30,20][p]})));
  for(let date=day;final&&date<final;date=plus(date,1)){
   remaining.set(date,Math.max(0,capacity(date)-otherWork.reduce((sum,t)=>sum+(t.date===date?t.minutes:0),0)));
  }
@@ -35,9 +35,15 @@ export function finalCatchup(assessment,items,records,day,events,capacity,focuse
   if(state[x.id]?.done?.[2])continue;
   const optional=unplaced.length>0||!schedule(x,2),r=state[x.id]||{};
   if(optional)omitted.push(x.id);
-  if(!!r.skipThird===optional)continue;
-  state[x.id]={...r,skipThird:optional};
-  changes.push({id:x.id,field:'skipThird',before:!!r.skipThird,after:optional});
+  const finalThirdDate=placed.get(x.id+':2')||null;
+  if(!!r.skipThird!==optional){
+   state[x.id]={...r,skipThird:optional};
+   changes.push({id:x.id,field:'skipThird',before:!!r.skipThird,after:optional});
+  }
+  if((r.finalThirdDate??null)!==finalThirdDate){
+   state[x.id]={...state[x.id],finalThirdDate};
+   changes.push({id:x.id,field:'finalThirdDate',before:r.finalThirdDate??null,after:finalThirdDate});
+  }
  }
  if(!focused&&unplaced.some(x=>x.pass===0)){
   const shorter=finalCatchup(assessment,items,records,day,events,capacity,true);

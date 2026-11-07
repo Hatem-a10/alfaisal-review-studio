@@ -65,3 +65,39 @@ test('a large first-pass backlog switches to shorter sessions only when that imp
  }
  assert.ok(Object.values(daily).every(n=>n<=180));
 });
+
+test('startup and cloud restore keep legacy third reviews out of the overdue queue during the CVP final window',()=>{
+ const current='2026-11-08',final='2026-11-18';
+ const items=['CVP-A1','MOL-1','CVP-A2','CVP-A3','CVP-A4'].map(id=>({
+  id,course:id.split('-')[0],dates:['2026-11-01','2026-11-02','2026-11-03']
+ }));
+ const saved={records:{
+  'CVP-A1':{skipThird:false},
+  'MOL-1':{skipThird:true},
+  'CVP-A2':{dates:['2026-11-01','2026-11-02',current],finalThirdDate:current},
+  'CVP-A3':{finalThirdDate:'2026-11-03'},
+  'CVP-A4':{done:{2:'2026-11-04T00:00:00Z'}}
+ }};
+ const ctx={structuredClone,Intl,Date,AssessmentPlan:api,DATA:{items,events:[{date:final,title:'CVP Final Exam'}]},
+  today:()=>current,day:current,Study:{gap:(a,b)=>(Date.parse(a)-Date.parse(b))/86400000},
+  settings:{},filters:{},lessonCourse:'all',syncMeta:{},syncConflict:null,
+  state:structuredClone(saved.records),validDate:s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s),
+  validateBackup:raw=>Object.fromEntries(Object.entries(raw.records).map(([id,{dates,done}])=>[id,{dates,done}])),
+  cleanSettings:()=>({}),persist(){},scheduleSync(){},syncMessage(){},render(){},row(){},datedReviewItem(){},dayTaskPanels(){},
+  lessonById:()=>null,storeOptions:()=>({autopilot:{enabled:false}}),assessmentClock:()=>({}),
+  document:{addEventListener(){}},window:{}};
+ ctx.rec=x=>ctx.state[x.id]||{};
+ ctx.dates=x=>ctx.rec(x).dates||x.dates;
+ ctx.done=(x,p)=>ctx.rec(x).done?.[p];
+ ctx.tasks=(xs=items)=>xs.flatMap(x=>[0,1,2].map(p=>({x,p,date:ctx.dates(x)[p],done:ctx.done(x,p)})));
+ ctx.adoptCloud=remote=>{ctx.state=ctx.validateBackup(remote.snapshot);ctx.render()};
+ runInNewContext(readFileSync('public/study-autopilot-engine.js','utf8')+'\n'+readFileSync('public/study-autopilot.js','utf8'),ctx);
+ const check=()=>{
+  assert.equal(ctx.tasks().filter(t=>t.p===2&&!t.done&&t.date<current).length,0);
+  assert.deepEqual(ctx.tasks().filter(t=>t.p===2).map(t=>t.x.id),['CVP-A2','CVP-A4']);
+  assert.equal(ctx.tasks().filter(t=>t.p<2&&t.date<current).length,10);
+ };
+ check();
+ ctx.adoptCloud({snapshot:JSON.parse(JSON.stringify(saved))});
+ check();
+});
