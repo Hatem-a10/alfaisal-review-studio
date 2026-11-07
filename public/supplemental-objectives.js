@@ -32,6 +32,14 @@ function applySupplementalObjectives(learning, checks, pack) {
  }
 }
 
+function applyTopicTakeaways(teaching, points) {
+ for (const guide of Object.values(teaching.guides)) {
+  for (const section of guide.sections) {
+   if (Object.hasOwn(points, section.id)) section.keyPoints = points[section.id];
+  }
+ }
+}
+
 (()=>{
  let request, ready = false, error = '';
  const views = new Set(['learning','practice','original-exams','wrong-bank']);
@@ -49,10 +57,11 @@ function applySupplementalObjectives(learning, checks, pack) {
    if(!response.ok)throw Error('Could not load the lesson content.');
    return response.json();
   };
-  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1')])
-   .then(([pack,expansion])=>{
+  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1')])
+   .then(([pack,expansion,takeaways])=>{
     applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, expansion);
     applySupplementalObjectives(LEARNING, TOPIC_CHECKS, pack);
+    applyTopicTakeaways(TEACHING, takeaways);
     inlineLessonCache.clear();
     ready = true;
    })

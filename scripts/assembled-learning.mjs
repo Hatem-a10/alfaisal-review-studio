@@ -30,7 +30,9 @@ export function assembledLearning(){
  const applyExpansion=runInNewContext(readFileSync(root+'public/lesson-expansion.js','utf8')+';applyLessonExpansion');
  applyExpansion(learning,teaching,checks,expansion);
  const supplemental=JSON.parse(readFileSync(root+'public/supplemental-objective-questions.json','utf8'));
- const applySupplement=runInNewContext(readFileSync(root+'public/supplemental-objectives.js','utf8').split('(()=>{')[0]+';applySupplementalObjectives');
- applySupplement(learning,checks,supplemental);
+ const {applySupplementalObjectives,applyTopicTakeaways}=runInNewContext(readFileSync(root+'public/supplemental-objectives.js','utf8').split('(()=>{')[0]+';({applySupplementalObjectives,applyTopicTakeaways})');
+ applySupplementalObjectives(learning,checks,supplemental);
+ const takeaways=JSON.parse(readFileSync(root+'public/topic-takeaways.json','utf8'));
+ applyTopicTakeaways(teaching,takeaways);
  return {learning,teaching,pack,checks};
 }
