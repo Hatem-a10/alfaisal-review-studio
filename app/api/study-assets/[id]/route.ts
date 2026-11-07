@@ -2,9 +2,7 @@ import {env} from 'cloudflare:workers';
 import {STUDY_ASSETS} from '../../../../lib/study-asset-registry';
 export const dynamic='force-dynamic';
 export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){
- const user=request.headers.get('oai-authenticated-user-id');
- if(!user)return new Response('Sign in required',{status:401});
- if(env.REVIEW_OWNER_ID&&user!==env.REVIEW_OWNER_ID)return new Response('Not found',{status:404,headers:{'Cache-Control':'no-store'}});
+ if(!request.headers.get('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});
  if(!env.BUCKET)return new Response('Storage unavailable',{status:503});
  const id=(await params).id,asset=STUDY_ASSETS.find(a=>a.id===id);if(!asset)return new Response('Not found',{status:404});
  const key='study-assets-v1/'+asset.sha;let obj=await env.BUCKET.get(key);

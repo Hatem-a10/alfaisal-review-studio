@@ -2,7 +2,7 @@
 
 Verified 2026-11-02. This is the existing Site, not a replacement:
 
-- URL: https://hub.barcman2000.chatgpt.site/
+- URL: https://alfaisal-review-studio.barcman2000.chatgpt.site/
 - Project: `appgprj_6ade126fa77081919dc24e7a87700a9f`
 - Manifest: `.openai/hosting.json`; preserve `d1: DB` and `r2: BUCKET`.
 - Local checkout: `/Users/hatemalabrach/Documents/Codex/2026-10-25/referenced-chatgpt-conversation-this-is-an/outputs/review-tracker`

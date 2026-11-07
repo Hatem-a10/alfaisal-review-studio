@@ -6,7 +6,7 @@ import path from 'node:path';
 import {homedir} from 'node:os';
 import {isDeepStrictEqual} from 'node:util';
 const root=realpathSync(fileURLToPath(new URL('../',import.meta.url)));
-const project='appgprj_6ade126fa77081919dc24e7a87700a9f',url='https://hub.barcman2000.chatgpt.site';
+const project='appgprj_6ade126fa77081919dc24e7a87700a9f',url='https://alfaisal-review-studio.barcman2000.chatgpt.site';
 const stateDir=path.join(root,'.sites-runtime/release'),env={...process.env,PATH:path.dirname(process.execPath)+path.delimiter+(process.env.PATH||'')};
 const mode=process.argv[2]||'help';let locked=false;
 function fail(message){throw Error(message)}

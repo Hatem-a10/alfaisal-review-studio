@@ -1,12 +1,9 @@
-import {requireAccountMatch} from '../../../lib/review-account';
 import {ProgressDelta} from '../../../lib/progress-delta';
 import { env } from 'cloudflare:workers';
 export const dynamic = 'force-dynamic';
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(request:Request){
- const mismatch=await requireAccountMatch(request);if(mismatch)return mismatch;
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
- if(env.REVIEW_OWNER_ID&&id!==env.REVIEW_OWNER_ID)return json({error:'Use the student workspace to save your progress.'},403);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  // Small authenticated revision check avoids loading unchanged multi-megabyte snapshots from D1/R2.
  const since=new URL(request.url).searchParams.get('since');
@@ -19,9 +16,7 @@ export async function GET(request:Request){
  return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at,acceptsPatch:true}:{revision:0,snapshot:null,acceptsPatch:true});
 }
 export async function PUT(request:Request){
- const mismatch=await requireAccountMatch(request);if(mismatch)return mismatch;
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
- if(env.REVIEW_OWNER_ID&&id!==env.REVIEW_OWNER_ID)return json({error:'Use the student workspace to save your progress.'},403);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  const raw=await request.text();if(raw.length>12000000)return json({error:'Progress backup is too large.'},413);
@@ -63,9 +58,7 @@ function validSnapshot(s: any): boolean {
 
 // CAS protects the read/apply/write sequence, including edits from older full-snapshot clients.
 export async function PATCH(request:Request){
- const mismatch=await requireAccountMatch(request);if(mismatch)return mismatch;
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
- if(env.REVIEW_OWNER_ID&&id!==env.REVIEW_OWNER_ID)return json({error:'Use the student workspace to save your progress.'},403);
  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  const raw=await request.text();if(raw.length>12000000)return json({error:'Patch is too large.'},413);

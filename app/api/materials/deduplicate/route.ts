@@ -1,9 +1,6 @@
-import {requireAdmin} from '../../../../lib/admin-auth';
 import {env} from 'cloudflare:workers';
 import {digest,knownOriginal,materialRows} from '../../../../lib/material-dedup';
 export async function POST(request:Request){
- const denial=await requireAdmin(request);if(denial)return denial;
-
  const user=request.headers.get('oai-authenticated-user-id'),json=(x:unknown,s=200)=>Response.json(x,{status:s,headers:{'Cache-Control':'no-store'}});
  if(!user)return json({error:'Sign in required'},401);if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin'},403);
  if(!env.DB||!env.BUCKET)return json({error:'Storage unavailable'},503);

@@ -5,7 +5,7 @@ import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 const worker = {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
-    const media = await readPrivateMedia(request, env.BUCKET, env.REVIEW_OWNER_ID);
+    const media = await readPrivateMedia(request, env.BUCKET);
     if (media) return media;
     let binding = ctx.props?.CONNECTORS;
     // Local preview emulates the same request-scoped capability. This branch and

@@ -4,8 +4,6 @@ import { readExecutionProfile } from "./execution-profile.mjs";
 
 const [command, ...args] = process.argv.slice(2);
 if (!["dev", "build"].includes(command)) throw new Error("Expected dev or build.");
-const {buildStudentLessons}=await import("./student-lessons.mjs");
-buildStudentLessons();
 const {buildLearningPayload,finalizeLearningPayload}=await import("./learning-payload.mjs");
 const {optimizeClientScripts}=await import("./client-scripts.mjs");
 const {optimizeClientStyles}=await import("./client-styles.mjs");

@@ -13,12 +13,10 @@ export function privateAsset(request:Request){
  try{return paths.get(decodeURI(new URL(request.url).pathname));}catch{return;}
 }
 
-export async function readPrivateMedia(request:Request,bucket:R2Bucket|undefined,ownerId?:string){
+export async function readPrivateMedia(request:Request,bucket:R2Bucket|undefined){
  const asset=privateAsset(request);
  if(!asset)return null;
- const user=request.headers.get('oai-authenticated-user-id');
- if(!user)return new Response('Sign in required',{status:401});
- if(ownerId&&user!==ownerId)return new Response('Not found',{status:404,headers:{'Cache-Control':'no-store'}});
+ if(!request.headers.get('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});
  if(!bucket)return null;
  const key=mediaKey(asset.sha);
  const file=request.method==='HEAD'?await bucket.head(key):await bucket.get(key);
@@ -30,6 +28,5 @@ export async function readPrivateMedia(request:Request,bucket:R2Bucket|undefined
   const cacheHeaders=new Headers(headers);cacheHeaders.delete('Content-Length');
   return new Response(null,{status:304,headers:cacheHeaders});
  }
- const body='body' in file?(file as R2ObjectBody).body:null;
- return new Response(body,{headers});
+ return new Response('body' in file?file.body:null,{headers});
 }

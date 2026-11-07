@@ -24,7 +24,7 @@ function setup(){
   return module.exports;
  };
  const media=load('lib/private-media.ts',{'./private-media-manifest.json':manifest});
- return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media,'../../../lib/admin-auth':{requireAdmin:()=>null}}),env,files};
+ return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media}),env,files};
 }
 
 const get=(path,headers=auth)=>new Request(origin+path,{headers});

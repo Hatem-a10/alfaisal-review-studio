@@ -1,6 +1,6 @@
 /* Versioned companion stores shared by device saving, backup and private cloud sync. */
 const StudyVault=(()=>{
- const prefix=globalThis.reviewAccount?.namespace||'alfaisal-review-studio-v1',metaKey=prefix+'-vault-meta-v1';
+ const prefix='alfaisal-review-studio-v1',metaKey=prefix+'-vault-meta-v1';
  const names={'wrong-bank-v1':'wrongBank','mock-history-v1':'history','mock-exam-v1':'mock','original-exam-runs-v1':'originals','lesson-drafts-v1':'drafts','study-resume-v1':'resume','study-practice-v1':'practice','upload-review-v1':'queue','visual-recall-v1':'visual','anki-progress-v1':'anki','study-options-v1':'options'};
  const byName=Object.fromEntries(Object.entries(names).map(([k,v])=>[v,prefix+'-'+k]));let muted=false,meta={};
  try{meta=JSON.parse(localStorage.getItem(metaKey)||'{}')}catch{}
