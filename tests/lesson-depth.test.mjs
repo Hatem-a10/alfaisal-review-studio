@@ -8,6 +8,8 @@ const load = name => fs.readFileSync('public/' + name, 'utf8');
 const pack = vm.runInNewContext(load('lesson-depth-data.js') + ';LESSON_DEPTH');
 const apply = vm.runInNewContext(load('lesson-depth-core.js') + ';applyLessonDepth');
 const {learning, teaching} = assembledLearning();
+const applyExpansion=vm.runInNewContext(load('lesson-expansion.js')+';applyLessonExpansion');
+const expansion=JSON.parse(load('lesson-expansion-data.json'));
 
 test('lesson expansion keeps existing topics, opens new guides with teaching, and is idempotent', () => {
   const lecture = learning.lessons.find(item => item.id === 'CVP-A22');
@@ -19,6 +21,7 @@ test('lesson expansion keeps existing topics, opens new guides with teaching, an
   const teachingBefore = JSON.stringify(teaching);
   const sourcesBefore = learning.sources.length;
   apply(learning, teaching, {}, {}, pack);
+  applyExpansion(learning, teaching, {}, expansion);
   assert.equal(learning.questions.length, length);
   assert.equal(JSON.stringify(teaching), teachingBefore);
   assert.equal(learning.sources.length, sourcesBefore);
@@ -30,7 +33,8 @@ test('new teaching and question citations resolve to a page and questions retain
   for (const [lectureId, change] of Object.entries(pack.lessons)) {
     for (const addition of change.sections) {
       const actual = teaching.guides[lectureId].sections.find(section => section.id === addition.id);
-      assert.ok(actual?.body.includes(addition.body[0]), addition.id);
+      const expected=expansion[lectureId]?.sections[addition.id]?.body[0]??addition.body[0];
+      assert.ok(actual?.body.includes(expected), addition.id);
       for (const ref of addition.references) {
         assert.ok(sources.get(ref.source)?.pages.some(page => page.page === ref.page), JSON.stringify(ref));
       }

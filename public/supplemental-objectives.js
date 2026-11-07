@@ -44,12 +44,14 @@ function applySupplementalObjectives(learning, checks, pack) {
    return;
   }
   content.innerHTML = '<div class="panel notice" role="status">Loading your question bank…</div>';
-  request ??= fetch('/supplemental-objective-questions.json?v=3', {credentials:'same-origin'})
-   .then(response=>{
-    if (!response.ok) throw Error('Could not load the supplemental question bank.');
-    return response.json();
-   })
-   .then(pack=>{
+  const load=async path=>{
+   const response=await fetch(path,{credentials:'same-origin'});
+   if(!response.ok)throw Error('Could not load the lesson content.');
+   return response.json();
+  };
+  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1')])
+   .then(([pack,expansion])=>{
+    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, expansion);
     applySupplementalObjectives(LEARNING, TOPIC_CHECKS, pack);
     inlineLessonCache.clear();
     ready = true;

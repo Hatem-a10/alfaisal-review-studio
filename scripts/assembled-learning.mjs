@@ -26,6 +26,9 @@ export function assembledLearning(){
  for (const file of ['lesson-depth-data.js', 'lesson-depth-core.js', 'lesson-depth-runtime.js']) {
   runInNewContext(readFileSync(root+'public/'+file,'utf8'), transcriptContext);
  }
+ const expansion=JSON.parse(readFileSync(root+'public/lesson-expansion-data.json','utf8'));
+ const applyExpansion=runInNewContext(readFileSync(root+'public/lesson-expansion.js','utf8')+';applyLessonExpansion');
+ applyExpansion(learning,teaching,checks,expansion);
  const supplemental=JSON.parse(readFileSync(root+'public/supplemental-objective-questions.json','utf8'));
  const applySupplement=runInNewContext(readFileSync(root+'public/supplemental-objectives.js','utf8').split('(()=>{')[0]+';applySupplementalObjectives');
  applySupplement(learning,checks,supplemental);
