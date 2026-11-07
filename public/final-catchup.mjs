@@ -10,14 +10,20 @@ export function finalCatchup(assessment,items,records,day,events,capacity,focuse
  for(let date=day;final&&date<final;date=plus(date,1)){
   remaining.set(date,Math.max(0,capacity(date)-otherWork.reduce((sum,t)=>sum+(t.date===date?t.minutes:0),0)));
  }
- const availableDays=[...remaining.keys()];
+ const availableDays=[...remaining.keys()],eve=final&&plus(final,-1),secondCounts=new Map();
  function schedule(x,p){
   const r=state[x.id]||{},previous=p>0?(r.done?.[p-1]?completionDay(r.done[p-1]):placed.get(x.id+':'+(p-1))):null;
   if(p>0&&!previous)return false;
   const earliest=[release(x,events),previous?plus(previous,p===1?1:2):day].sort().at(-1);
-  const cost=(focused?[30,25,20]:[40,30,20])[p],date=availableDays.find(d=>d>=earliest&&remaining.get(d)>=cost);
+  const cost=(focused?[30,25,20]:[40,30,20])[p];
+  const eligible=availableDays.filter(d=>d>=earliest&&remaining.get(d)>=cost);
+  const date=p===1
+   ? eligible.filter(d=>d!==eve).sort((a,b)=>(secondCounts.get(a)||0)-(secondCounts.get(b)||0)||a.localeCompare(b))[0]
+     || (eligible.includes(eve)&&(secondCounts.get(eve)||0)<2?eve:null)
+   : eligible[0];
   if(!date)return false;
   remaining.set(date,remaining.get(date)-cost);
+  if(p===1)secondCounts.set(date,(secondCounts.get(date)||0)+1);
   placed.set(x.id+':'+p,date);
   const dates=[...datesFor(x)],before=dates[p];
   if(before!==date){
@@ -27,9 +33,11 @@ export function finalCatchup(assessment,items,records,day,events,capacity,focuse
   }
   return true;
  }
+ const lastFirstDay=x=>state[x.id]?.done?.[0]?completionDay(state[x.id].done[0]):placed.get(x.id+':0')||'';
  for(const p of [0,1]){
   const queue=cvp.filter(x=>!state[x.id]?.done?.[p]).sort((a,b)=>datesFor(a)[p].localeCompare(datesFor(b)[p])||a.id.localeCompare(b.id,undefined,{numeric:true}));
-  for(const x of queue)if(!schedule(x,p))unplaced.push({id:x.id,pass:p,reason:'No study slot before the CVP final.'});
+  if(p===1)queue.sort((a,b)=>lastFirstDay(b).localeCompare(lastFirstDay(a)));
+  for(const x of queue)if(!schedule(x,p))unplaced.push({id:x.id,pass:p,date:datesFor(x)[p],reason:'No study slot before the CVP final.'});
  }
  for(const x of cvp){
   if(state[x.id]?.done?.[2])continue;
@@ -45,10 +53,21 @@ export function finalCatchup(assessment,items,records,day,events,capacity,focuse
    changes.push({id:x.id,field:'finalThirdDate',before:r.finalThirdDate??null,after:finalThirdDate});
   }
  }
- if(!focused&&unplaced.some(x=>x.pass===0)){
+ if(!focused&&unplaced.length){
   const shorter=finalCatchup(assessment,items,records,day,events,capacity,true);
-  if(shorter.unplaced.filter(x=>x.pass===0).length<unplaced.filter(x=>x.pass===0).length)return shorter;
+  const firstGap=shorter.unplaced.filter(x=>x.pass===0).length-unplaced.filter(x=>x.pass===0).length;
+  if(firstGap<0||(firstGap===0&&shorter.unplaced.length<unplaced.length))return shorter;
  }
  return {records:state,changes,omitted,unplaced,late:[],final,focused,
   firstPlaced:cvp.filter(x=>placed.has(x.id+':0')).length,secondPlaced:cvp.filter(x=>placed.has(x.id+':1')).length};
 }
+
+export function finalOverflow(plan,items,done,dates,courseDayTasks){
+  if(plan.undone)return '';
+  const byId=new Map(items.map(x=>[x.id,x]));
+  const pending=(plan.unplaced||[]).filter(u=>u.pass===1&&u.date&&byId.has(u.id))
+   .map(u=>({x:byId.get(u.id),p:u.pass,date:u.date}))
+   .filter(t=>!done(t.x,t.p)&&dates(t.x)[t.p]===t.date);
+  return pending.length?'<details><summary>Second reviews without a slot · '+pending.length+'</summary>'+
+   courseDayTasks(pending.map(t=>({...t,unscheduled:true})),'')+'</details>':'';
+ }

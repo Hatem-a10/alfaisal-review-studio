@@ -68,7 +68,7 @@ test('a large first-pass backlog switches to shorter sessions only when that imp
 
 test('startup and cloud restore keep legacy third reviews out of the overdue queue during the CVP final window',()=>{
  const current='2026-11-08',final='2026-11-18';
- const items=['CVP-A1','MOL-1','CVP-A2','CVP-A3','CVP-A4'].map(id=>({
+ const items=['CVP-A1','MOL-1','CVP-A2','CVP-A3','CVP-A4','CVP-A5'].map(id=>({
   id,course:id.split('-')[0],dates:['2026-11-01','2026-11-02','2026-11-03']
  }));
  const saved={records:{
@@ -76,15 +76,16 @@ test('startup and cloud restore keep legacy third reviews out of the overdue que
   'MOL-1':{skipThird:true},
   'CVP-A2':{dates:['2026-11-01','2026-11-02',current],finalThirdDate:current},
   'CVP-A3':{finalThirdDate:'2026-11-03'},
-  'CVP-A4':{done:{2:'2026-11-04T00:00:00Z'}}
+  'CVP-A4':{done:{2:'2026-11-04T00:00:00Z'}},
+  'CVP-A5':{dates:['2026-11-01','2026-11-17','2026-11-19']}
  }};
  const ctx={structuredClone,Intl,Date,AssessmentPlan:api,DATA:{items,events:[{date:final,title:'CVP Final Exam'}]},
   today:()=>current,day:current,Study:{gap:(a,b)=>(Date.parse(a)-Date.parse(b))/86400000},
-  settings:{},filters:{},lessonCourse:'all',syncMeta:{},syncConflict:null,
+  settings:{},filters:{},view:'dashboard',lessonCourse:'all',syncMeta:{},syncConflict:null,
   state:structuredClone(saved.records),validDate:s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s),
   validateBackup:raw=>Object.fromEntries(Object.entries(raw.records).map(([id,{dates,done}])=>[id,{dates,done}])),
   cleanSettings:()=>({}),persist(){},scheduleSync(){},syncMessage(){},render(){},row(){},datedReviewItem(){},dayTaskPanels(){},
-  lessonById:()=>null,storeOptions:()=>({autopilot:{enabled:false}}),assessmentClock:()=>({}),
+  lessonById:()=>null,storeOptions:()=>({autopilot:{enabled:false,lastPlan:{final,unplaced:[{id:'CVP-A5',pass:1,date:'2026-11-17'}]}}}),assessmentClock:()=>({}),
   document:{addEventListener(){}},window:{}};
  ctx.rec=x=>ctx.state[x.id]||{};
  ctx.dates=x=>ctx.rec(x).dates||x.dates;
@@ -93,11 +94,29 @@ test('startup and cloud restore keep legacy third reviews out of the overdue que
  ctx.adoptCloud=remote=>{ctx.state=ctx.validateBackup(remote.snapshot);ctx.render()};
  runInNewContext(readFileSync('public/study-autopilot-engine.js','utf8')+'\n'+readFileSync('public/study-autopilot.js','utf8'),ctx);
  const check=()=>{
+  assert.ok(!ctx.tasks().some(t=>t.x.id==='CVP-A5'&&t.p===1));
   assert.equal(ctx.tasks().filter(t=>t.p===2&&!t.done&&t.date<current).length,0);
   assert.deepEqual(ctx.tasks().filter(t=>t.p===2).map(t=>t.x.id),['CVP-A2','CVP-A4']);
-  assert.equal(ctx.tasks().filter(t=>t.p<2&&t.date<current).length,10);
+  assert.equal(ctx.tasks().filter(t=>t.p<2&&t.date<current).length,11);
  };
  check();
  ctx.adoptCloud({snapshot:JSON.parse(JSON.stringify(saved))});
  check();
+});
+
+test('27 second reviews spread across eligible days, with at most two on the exam eve',()=>{
+ const day='2026-11-08',final='2026-11-18',eve='2026-11-17';
+ const items=Array.from({length:27},(_,i)=>({id:'CVP-P'+(i+1),course:'CVP',dates:['2026-11-01',eve,'2026-11-19']}));
+ const records=Object.fromEntries(items.map(x=>[x.id,{done:{0:'2026-11-06T00:00:00Z'}}]));
+ const events=[{date:final,title:'CVP Final Exam'}];
+ const plan=finalCatchup(api,items,records,day,events,()=>120);
+ assert.equal(plan.secondPlaced,27);
+ const dates=items.map(x=>plan.records[x.id].dates[1]);
+ assert.equal(new Set(dates).size,9);
+ assert.ok(dates.every(d=>d<eve));
+ assert.ok(dates.every(d=>dates.filter(other=>other===d).length<=3));
+ const constrained=finalCatchup(api,items,records,day,events,d=>d===eve?180:0);
+ assert.equal(constrained.secondPlaced,2);
+ assert.equal(constrained.unplaced.length,25);
+ assert.ok(constrained.unplaced.every(u=>u.date===eve&&u.pass===1));
 });
