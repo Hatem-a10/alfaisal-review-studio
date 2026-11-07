@@ -26,9 +26,26 @@ export function storageDetails(build,limit){
   <ul class="storage-legend">${[...rows,['Available','var(--storage-free)',free]].map(([name,color,bytes])=>`<li><i style="--segment-color:${color}"></i><span>${name}</span><strong>${fmt(bytes)}</strong></li>`).join('')}</ul>
   <details class="storage-largest"><summary>Largest files in this build</summary><ul>${largest.map(row=>`<li><code>${escape(row.path.replace(/^client\//,''))}</code><strong>${fmt(row.bytes)}</strong></li>`).join('')}</ul></details>
   <div class="storage-options"><h4>Reduce package size</h4>
+   ${build.privateMedia?.offloaded?'<p><strong>Private media offloaded</strong><span>'+build.privateMedia.total+' verified files are served from private storage, reclaiming '+fmt(build.privateMedia.bytes)+' in bundled file bytes.</span></p>':
+    build.privateMedia?.total?'<button type="button" id="migratePublisherMedia">Copy publisher files to private storage</button><p id="publisherMediaStatus" role="status"></p>':''}
    ${info.removedBytes>0?`<p><strong>Already saved ${fmt(info.removedBytes)}</strong> by removing ${info.removedFiles} standalone script copies from the publisher package.</p>`:''}
    ${info.modelOffloadBytes>0?`<p><strong>Move model meshes to private storage</strong><span>Reclaim up to ${fmt(info.modelOffloadBytes)} of publisher space. Previews can stay here. Verify every private copy before removing its bundled file.</span></p>`:''}
    ${info.categories.figures>0?`<p><strong>Move older course figures to private storage</strong><span>${fmt(info.categories.figures)} of figures are currently bundled. Offload verified copies while keeping frequently used thumbnails in the app.</span></p>`:''}
   </div>
  </div>`;
+}
+
+export function bindMigration(dialog){
+ dialog.addEventListener('click',async event=>{
+  const button=event.target.closest('#migratePublisherMedia');
+  if(!button)return;
+  const status=dialog.querySelector('#publisherMediaStatus');
+  button.disabled=true;
+  try{
+   status.textContent='Checking existing private copies…';
+   const {syncPrivateMedia}=await import('/private-media-migration.mjs?v=1');
+   await syncPrivateMedia(status);
+  }catch(error){status.textContent=error.message+' Verified files are retained. You can retry.';}
+  finally{button.disabled=false;}
+ });
 }
