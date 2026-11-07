@@ -1,0 +1,20 @@
+.shell{min-height:100svh;padding:clamp(1rem,5vw,4rem);display:grid;place-items:start center}
+.card{display:grid;gap:1rem;width:min(100%,42rem);padding:clamp(1rem,4vw,2rem);border:1px solid currentColor;border-radius:1.25rem}
+.card h1{font-size:clamp(1.5rem,5vw,2.4rem);line-height:1.2;margin:0}
+.card progress{width:100%;accent-color:var(--student-accent)}
+.card label{display:grid;gap:.3rem}
+.card input:not([type="checkbox"]),.card select,.card button{padding:.55rem .75rem;border:1px solid currentColor;border-radius:.5rem;background:transparent;color:inherit}
+.card input[type="checkbox"]{accent-color:var(--student-accent)}
+.card details,.card fieldset{border:1px solid currentColor;border-radius:.5rem;padding:.75rem}
+.card legend{max-width:100%}
+.card summary{cursor:pointer}
+.row{display:flex;flex-wrap:wrap;gap:.6rem}
+.row label{display:flex;align-items:center}
+.card .primary{background:var(--student-accent);color:white}
+.card a{text-decoration:underline;justify-self:start}
+.lesson,.lesson article{display:grid;gap:.85rem}
+.lesson fieldset{min-inline-size:0;overflow-wrap:anywhere}
+.lesson label.choice{display:flex;align-items:baseline;gap:.55rem;padding:.4rem 0}
+.lesson button:last-child{margin-inline-start:auto}
+.heatmap{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.25rem}
+.heatmap abbr{font-size:.75rem;padding:.35rem .1rem;text-align:center;border:1px solid currentColor;border-radius:.25rem;text-decoration:none}

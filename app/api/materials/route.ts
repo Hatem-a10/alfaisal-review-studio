@@ -1,9 +1,12 @@
+import {requireAdmin} from '../../../lib/admin-auth';
 import {env} from 'cloudflare:workers';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
 export const dynamic='force-dynamic';
 const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all();return json({materials:rows.results})}
 export async function POST(request:Request){
+ const denial=await requireAdmin(request);if(denial)return denial;
+
  const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to upload materials.'},401);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  if(!env.DB||!env.BUCKET)return json({error:'Material storage is unavailable.'},503);

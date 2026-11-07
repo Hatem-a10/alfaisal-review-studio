@@ -45,3 +45,5 @@ yarn-error.log*
 .DS_Store
 
 /study_material/
+
+/lib/student-lesson-packs.generated.ts

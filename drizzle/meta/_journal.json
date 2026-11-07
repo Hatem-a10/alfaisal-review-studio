@@ -15,6 +15,13 @@
       "when": 1792944379770,
       "tag": "0001_purple_norman_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794090847958,
+      "tag": "0002_multi_student",
+      "breakpoints": true
     }
   ]
 }

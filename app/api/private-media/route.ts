@@ -1,3 +1,4 @@
+import {requireAdmin} from '../../../lib/admin-auth';
 import {env} from 'cloudflare:workers';
 import {PRIVATE_MEDIA,hashBytes,manifestHash,mediaKey,mediaPrefix} from '../../../lib/private-media';
 
@@ -7,12 +8,15 @@ const assetsByPath=new Map(PRIVATE_MEDIA.map(asset=>[asset.path,asset]));
 const authorized=(request:Request)=>Boolean(request.headers.get('oai-authenticated-user-id'));
 
 export async function GET(request:Request){
+ const denial=await requireAdmin(request);if(denial)return denial;
+
  if(!authorized(request))return json({error:'Sign in required.'},401);
  const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable.'},503);
  const stored=new Map<string,R2Object>();
  let cursor:string|undefined;
  do{
-  const page=await bucket.list({prefix:mediaPrefix,include:['customMetadata'],...(cursor?{cursor}:{})});
+  const options:R2ListOptions & {include:['customMetadata']}={prefix:mediaPrefix,include:['customMetadata'],...(cursor?{cursor}:{})};
+  const page=await bucket.list(options);
   for(const object of page.objects)stored.set(object.key,object);
   cursor=page.truncated?page.cursor:undefined;
  }while(cursor);
@@ -25,6 +29,8 @@ export async function GET(request:Request){
 }
 
 export async function POST(request:Request){
+ const denial=await requireAdmin(request);if(denial)return denial;
+
  if(!authorized(request))return json({error:'Sign in required.'},401);
  if(request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable.'},503);

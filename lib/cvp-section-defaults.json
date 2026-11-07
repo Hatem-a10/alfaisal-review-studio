@@ -1,0 +1,6242 @@
+[
+  {
+    "classCode": "M1",
+    "groupCode": "M1",
+    "tblGroups": [
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6",
+      "M7",
+      "M8",
+      "M9",
+      "M10",
+      "M11",
+      "M12",
+      "M13",
+      "M14",
+      "M15",
+      "M16",
+      "M17"
+    ],
+    "lectures": [
+      {
+        "id": "CVP-A1",
+        "title": "A1. Formation of heart tubes-",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-P1",
+        "title": "P1. Electrophysiology of heart M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-A2",
+        "title": "A2. Thorax, thoracic cage, and cavity",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A3",
+        "title": "A3. Histology of heart and conducting system",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-P2",
+        "title": "P2. Excitation- contraction coupling M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A4",
+        "title": "A4. Pericardium and external features of heart",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P3",
+        "title": "P3. ECG I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P4",
+        "title": "P4. ECG II (+ arrhythmias). M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-A5",
+        "title": "A5. Internal features of the Heart.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-P5",
+        "title": "P5. Interactive Session I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-A6",
+        "title": "A6. Coronary arteries and major blood vessels.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-A7",
+        "title": "A7. Histology of Arteries, Veins.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P6",
+        "title": "P6. Cardiac Cycle M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P7",
+        "title": "P7. Ventricular P-V loops M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-12"
+      },
+      {
+        "id": "CVP-A8",
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-P8",
+        "title": "P8. Hemodynamics I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-A9",
+        "title": "A9. Formation of heart chambers and its defects.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P9",
+        "title": "P9. Hemodynamics II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P10",
+        "title": "P10. Heart Valve Disorders and Murmurs M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-15"
+      },
+      {
+        "id": "CVP-A10",
+        "title": "A10. Histology of Microcirculation.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-P11",
+        "title": "P11. Control of Cardiac output I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-A11",
+        "title": "A11. Mediastinum.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-P12",
+        "title": "P12. Control of Cardiac output II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-A13",
+        "title": "A13. Histology of Upper respiratory tract .",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P13",
+        "title": "P13. Integrated Control of CV System I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P14",
+        "title": "P14. Integ Control of CV System II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-A12",
+        "title": "A12. Nose, Larynx and Trachea.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-P15",
+        "title": "P15. Interactive Session II (TBL Special) M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-A15",
+        "title": "A15. Intercostal space, diaphragm",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-P16",
+        "title": "P16. Introduction to pulmonary physiology H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-A14",
+        "title": "A14. Embryology-Aortic arch",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P17",
+        "title": "P17. Lung volumes H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-A16",
+        "title": "A16. Lungs Anatomy",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-P18",
+        "title": "P18. Lung mechanics I H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-P19",
+        "title": "P19. Lung mechanics II H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-A17",
+        "title": "A17. Histology of Lower respiratory tract",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-P20",
+        "title": "P20. Airway resistance H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-A18",
+        "title": "A18. Lung development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-P21",
+        "title": "P21. Assessing pulmonary functions H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-A19",
+        "title": "A19. Anatomy of the Pleura",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-A20",
+        "title": "A20. Diaphragm development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P22",
+        "title": "P22. Alveolar ventilation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-A21",
+        "title": "A21. Innervation of Thoracic Viscera",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-P23",
+        "title": "P23. Pulmonary gas exchange H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-P24",
+        "title": "P24 Pulmonary circulation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-P25",
+        "title": "P25. Blood gas transport H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-A22",
+        "title": "A22. Embryology of venous system",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-P26",
+        "title": "P26. Hypoxemia H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-P27",
+        "title": "P27. Ventilation/Perfusion mismatch H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-A23",
+        "title": "A23. Clinical Embryology/Review",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "CVP-P28",
+        "title": "P28. Control of breathing H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "MOL-12",
+        "title": "Cellular Protein Sorting and Trafficking",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-13",
+        "title": "Introduction to Carbohydrates, Glycosaminoglycans & Glycoproteins",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-14",
+        "title": "Introduction to Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-15",
+        "title": "Glycolysis I",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-16",
+        "title": "Glycolysis II",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-17",
+        "title": "TCA Cycle",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-18",
+        "title": "The Respiratory Chain and Oxidative Phosphorylation",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-19",
+        "title": "Gluconeogenesis",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-20",
+        "title": "Glycogen Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-21",
+        "title": "Pentose Phosphate Pathway",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-22",
+        "title": "Reactive Oxygen Species and Cellular Antioxidants",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-23",
+        "title": "Alternative Pathway of Carbohydrates Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-24",
+        "title": "Alcohol Metabolism",
+        "course": "MOL 114"
+      }
+    ],
+    "events": [
+      {
+        "title": "Introduction to the block and to McGraw Hill. venue : PHA. M1 & M2 sections",
+        "date": "2026-10-04",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A1",
+        "date": "2026-10-04",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P1",
+        "date": "2026-10-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-05",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A2",
+        "date": "2026-10-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P2",
+        "date": "2026-10-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "A3",
+        "date": "2026-10-05",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-05",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P3",
+        "date": "2026-10-06",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A4",
+        "date": "2026-10-06",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-06",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M1-A",
+        "date": "2026-10-06",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "MOL 114 LAB M1-B (1.9 & 1.10)",
+        "date": "2026-10-06",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.9",
+          "1.10"
+        ]
+      },
+      {
+        "title": "Ana LAB M1-B",
+        "date": "2026-10-06",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-06",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-07",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-07",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-07",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P4",
+        "date": "2026-10-07",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-07",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A5",
+        "date": "2026-10-08",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P5",
+        "date": "2026-10-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar . M1.004",
+        "date": "2026-10-08",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "A7. Histology of Arteries, Veins. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P6. Cardiac Cycle - Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A6. Coronary arteries and major blood vessels. Dr. Akef / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 1",
+        "date": "2026-10-12",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P7. Ventricular P-V loops . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab & ECG principles. Physiology Dept. / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-12",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 Mid Term Exam",
+        "date": "2026-10-13",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P8. Hemodynamics I . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-13",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A9. Formation of heart chambers and its defects. Dr. Paul / online - zoom session M1 - M2 - F1 - F2 (10-11:30)",
+        "date": "2026-10-14",
+        "time": "10:00",
+        "end": "11:30",
+        "kind": "class"
+      },
+      {
+        "title": "P9. Hemodynamics II Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-14",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-14",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar - online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P10. Heart Valve Disorders and Murmurs. Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB M1 and M2 online - zoom session",
+        "date": "2026-10-15",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 2",
+        "date": "2026-10-18",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P11. Control of Cardiac output I Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A10. Histology of Microcirculation. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-18",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A11. Mediastinum. Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P12. Control of Cardiac output II Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-19",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 10 am-12 pm (Electrocardiogram) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "10:00",
+        "end": "12:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 1-3 pm (Blood pressure) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-20",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-21",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P14. Integ Control of CV System II - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A13. Histology of Upper respiratory tract . Dr. Einas / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "P13. Integrated Control of CV System I - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-21",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A12. Nose, Larynx and Trachea. Dr. Hassan/ online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P15. Interactive Session II (TBL Special) - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB M1 and M2 online - zoom session",
+        "date": "2026-10-22",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 3",
+        "date": "2026-10-25",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A15",
+        "date": "2026-10-25",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-25",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P16",
+        "date": "2026-10-25",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-25",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-26",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A14",
+        "date": "2026-10-26",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-26",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P17",
+        "date": "2026-10-26",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Coffee with Mentor Program 3-5 pm",
+        "date": "2026-10-26",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-26",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P18",
+        "date": "2026-10-27",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A16",
+        "date": "2026-10-27",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-27",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M1-B",
+        "date": "2026-10-27",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Ana LAB M1-A",
+        "date": "2026-10-27",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-27",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-28",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-28",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-28",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P19",
+        "date": "2026-10-28",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-28",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 Mid Term Exam",
+        "date": "2026-10-29",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "A17",
+        "date": "2026-10-29",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-29",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P20",
+        "date": "2026-10-29",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 4",
+        "date": "2026-11-01",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A18",
+        "date": "2026-11-01",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-01",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P21",
+        "date": "2026-11-01",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-01",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-02",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A19",
+        "date": "2026-11-02",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-02",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P22",
+        "date": "2026-11-02",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "A20",
+        "date": "2026-11-02",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-02",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 · TBL 2",
+        "date": "2026-11-03",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P23",
+        "date": "2026-11-03",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A21",
+        "date": "2026-11-03",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-03",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M1-A",
+        "date": "2026-11-03",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Ana LAB M1-B",
+        "date": "2026-11-03",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-03",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-04",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P24",
+        "date": "2026-11-04",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P25",
+        "date": "2026-11-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab",
+        "date": "2026-11-05",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 5",
+        "date": "2026-11-08",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A22",
+        "date": "2026-11-08",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P26",
+        "date": "2026-11-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P M1 A 1.1-1.3",
+        "date": "2026-11-08",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "1.1",
+          "1.2",
+          "1.3"
+        ]
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-08",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-09",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P M1A 1.4-1.6",
+        "date": "2026-11-09",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "1.4",
+          "1.5",
+          "1.6"
+        ]
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-09",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P27",
+        "date": "2026-11-09",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-09",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P28",
+        "date": "2026-11-10",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A23",
+        "date": "2026-11-10",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-10",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M1-B",
+        "date": "2026-11-10",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Ana LAB M1-A",
+        "date": "2026-11-10",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-10",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P M1B 1.7-1.9",
+        "date": "2026-11-11",
+        "time": "08:00",
+        "end": "08:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.7",
+          "1.8",
+          "1.9"
+        ]
+      },
+      {
+        "title": "P M1B 1.10-1.12",
+        "date": "2026-11-11",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.10",
+          "1.11",
+          "1.12"
+        ]
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-11",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-11",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 6",
+        "date": "2026-11-15",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "Lab Anat SDL",
+        "date": "2026-11-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Lab Anat M1 A SDL",
+        "date": "2026-11-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-15",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Physiology review",
+        "date": "2026-11-15",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Lab Anat M1 B SDL",
+        "date": "2026-11-16",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-16",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-16",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-17",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 Final Exam",
+        "date": "2026-11-18",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "exam"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 OSPE",
+        "date": "2026-11-19",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "practical"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      }
+    ],
+    "labGroups": {
+      "A": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4",
+        "1.5",
+        "1.6"
+      ],
+      "B": [
+        "1.7",
+        "1.8",
+        "1.9",
+        "1.10",
+        "1.11",
+        "1.12"
+      ]
+    }
+  },
+  {
+    "classCode": "M2",
+    "groupCode": "M2",
+    "tblGroups": [
+      "M18",
+      "M19",
+      "M20",
+      "M21",
+      "M22",
+      "M23",
+      "M24",
+      "M25",
+      "M26",
+      "M27",
+      "M28"
+    ],
+    "lectures": [
+      {
+        "id": "CVP-A1",
+        "title": "A1. Formation of heart tubes-",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-P1",
+        "title": "P1. Electrophysiology of heart M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-A2",
+        "title": "A2. Thorax, thoracic cage, and cavity",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A4",
+        "title": "A4. Pericardium and external features of heart",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-P2",
+        "title": "P2. Excitation- contraction coupling M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A3",
+        "title": "A3. Histology of heart and conducting system",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P3",
+        "title": "P3. ECG I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-A5",
+        "title": "A5. Internal features of the Heart.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-P4",
+        "title": "P4. ECG II (+ arrhythmias). M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-P5",
+        "title": "P5. Interactive Session I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-A6",
+        "title": "A6. Coronary arteries and major blood vessels.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-A7",
+        "title": "A7. Histology of Arteries, Veins.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P6",
+        "title": "P6. Cardiac Cycle M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P7",
+        "title": "P7. Ventricular P-V loops M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-12"
+      },
+      {
+        "id": "CVP-A8",
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-P8",
+        "title": "P8. Hemodynamics I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-A9",
+        "title": "A9. Formation of heart chambers and its defects.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P9",
+        "title": "P9. Hemodynamics II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P10",
+        "title": "P10. Heart Valve Disorders and Murmurs M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-15"
+      },
+      {
+        "id": "CVP-A10",
+        "title": "A10. Histology of Microcirculation.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-P11",
+        "title": "P11. Control of Cardiac output I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-A11",
+        "title": "A11. Mediastinum.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-P12",
+        "title": "P12. Control of Cardiac output II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-A13",
+        "title": "A13. Histology of Upper respiratory tract .",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P13",
+        "title": "P13. Integrated Control of CV System I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P14",
+        "title": "P14. Integ Control of CV System II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-A12",
+        "title": "A12. Nose, Larynx and Trachea.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-P15",
+        "title": "P15. Interactive Session II (TBL Special) M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-A15",
+        "title": "A15. Intercostal space, diaphragm",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-P16",
+        "title": "P16. Introduction to pulmonary physiology H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-A14",
+        "title": "A14. Embryology-Aortic arch",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P17",
+        "title": "P17. Lung volumes H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-A16",
+        "title": "A16. Lungs Anatomy",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-P18",
+        "title": "P18. Lung mechanics I H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-A17",
+        "title": "A17. Histology of Lower respiratory tract",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-P19",
+        "title": "P19. Lung mechanics II H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-P20",
+        "title": "P20. Airway resistance H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-A18",
+        "title": "A18. Lung development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-P21",
+        "title": "P21. Assessing pulmonary functions H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-A19",
+        "title": "A19. Anatomy of the Pleura",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P22",
+        "title": "P22. Alveolar ventilation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-A20",
+        "title": "A20. Diaphragm development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-A21",
+        "title": "A21. Innervation of Thoracic Viscera",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-P23",
+        "title": "P23. Pulmonary gas exchange H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-P24",
+        "title": "P24 Pulmonary circulation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-P25",
+        "title": "P25. Blood gas transport H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-P26",
+        "title": "P26. Hypoxemia H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-A22",
+        "title": "A22. Embryology of venous system",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-P27",
+        "title": "P27. Ventilation/Perfusion mismatch H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-A23",
+        "title": "A23. Clinical Embryology/Review",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "CVP-P28",
+        "title": "P28. Control of breathing H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "MOL-12",
+        "title": "Cellular Protein Sorting and Trafficking",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-13",
+        "title": "Introduction to Carbohydrates, Glycosaminoglycans & Glycoproteins",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-14",
+        "title": "Introduction to Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-15",
+        "title": "Glycolysis I",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-16",
+        "title": "Glycolysis II",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-17",
+        "title": "TCA Cycle",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-18",
+        "title": "The Respiratory Chain and Oxidative Phosphorylation",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-19",
+        "title": "Gluconeogenesis",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-20",
+        "title": "Glycogen Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-21",
+        "title": "Pentose Phosphate Pathway",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-22",
+        "title": "Reactive Oxygen Species and Cellular Antioxidants",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-23",
+        "title": "Alternative Pathway of Carbohydrates Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-24",
+        "title": "Alcohol Metabolism",
+        "course": "MOL 114"
+      }
+    ],
+    "events": [
+      {
+        "title": "Introduction to the block and to McGraw Hill. venue : PHA. M1 & M2 sections",
+        "date": "2026-10-04",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A1",
+        "date": "2026-10-04",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P1",
+        "date": "2026-10-04",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-04",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A2",
+        "date": "2026-10-05",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A4",
+        "date": "2026-10-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P2",
+        "date": "2026-10-05",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-05",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A3",
+        "date": "2026-10-06",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-06",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P3",
+        "date": "2026-10-06",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-06",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P4",
+        "date": "2026-10-07",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A5",
+        "date": "2026-10-07",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-07",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-07",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M2-A",
+        "date": "2026-10-07",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Ana LAB M2-B",
+        "date": "2026-10-07",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-07",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P5",
+        "date": "2026-10-08",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar . M1.004",
+        "date": "2026-10-08",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "A7. Histology of Arteries, Veins. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P6. Cardiac Cycle - Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A6. Coronary arteries and major blood vessels. Dr. Akef / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 1",
+        "date": "2026-10-12",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P7. Ventricular P-V loops . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab & ECG principles. Physiology Dept. / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-12",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 Mid Term Exam",
+        "date": "2026-10-13",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P8. Hemodynamics I . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-13",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A9. Formation of heart chambers and its defects. Dr. Paul / online - zoom session M1 - M2 - F1 - F2 (10-11:30)",
+        "date": "2026-10-14",
+        "time": "10:00",
+        "end": "11:30",
+        "kind": "class"
+      },
+      {
+        "title": "P9. Hemodynamics II Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-14",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-14",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar - online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P10. Heart Valve Disorders and Murmurs. Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB M1 and M2 online - zoom session",
+        "date": "2026-10-15",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 2",
+        "date": "2026-10-18",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P11. Control of Cardiac output I Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A10. Histology of Microcirculation. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-18",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A11. Mediastinum. Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P12. Control of Cardiac output II Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-19",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 10 am-12 pm (Electrocardiogram) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "10:00",
+        "end": "12:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 1-3 pm (Blood pressure) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-20",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-21",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P14. Integ Control of CV System II - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A13. Histology of Upper respiratory tract . Dr. Einas / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "P13. Integrated Control of CV System I - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-21",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A12. Nose, Larynx and Trachea. Dr. Hassan/ online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P15. Interactive Session II (TBL Special) - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB M1 and M2 online - zoom session",
+        "date": "2026-10-22",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 3",
+        "date": "2026-10-25",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A15",
+        "date": "2026-10-25",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P16",
+        "date": "2026-10-25",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-25",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-25",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-25",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P17",
+        "date": "2026-10-26",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A14",
+        "date": "2026-10-26",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-26",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-26",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Coffee with Mentor Program 3-5 pm",
+        "date": "2026-10-26",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-26",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A16",
+        "date": "2026-10-27",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-27",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P18",
+        "date": "2026-10-27",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-27",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P19",
+        "date": "2026-10-28",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A17",
+        "date": "2026-10-28",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-28",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-28",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M2-B",
+        "date": "2026-10-28",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "MOL 114 LAB M2-A (2.1 & 2.2)",
+        "date": "2026-10-28",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.1",
+          "2.2"
+        ]
+      },
+      {
+        "title": "Ana LAB M2-A",
+        "date": "2026-10-28",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-28",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 Mid Term Exam",
+        "date": "2026-10-29",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P20",
+        "date": "2026-10-29",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-29",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 4",
+        "date": "2026-11-01",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A18",
+        "date": "2026-11-01",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P21",
+        "date": "2026-11-01",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-01",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-01",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-01",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A19",
+        "date": "2026-11-02",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-02",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-02",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P22",
+        "date": "2026-11-02",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-02",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 · TBL 2",
+        "date": "2026-11-03",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "A21",
+        "date": "2026-11-03",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A20",
+        "date": "2026-11-03",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-03",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P23",
+        "date": "2026-11-03",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-03",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P24",
+        "date": "2026-11-04",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab",
+        "date": "2026-11-04",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-04",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M2-A",
+        "date": "2026-11-04",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "MOL 114 LAB M2-B (2.11 & 2.12)",
+        "date": "2026-11-04",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.11",
+          "2.12"
+        ]
+      },
+      {
+        "title": "Ana LAB M2-B",
+        "date": "2026-11-04",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P25",
+        "date": "2026-11-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 5",
+        "date": "2026-11-08",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P M2 A 2.1-2.3",
+        "date": "2026-11-08",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.1",
+          "2.2",
+          "2.3"
+        ]
+      },
+      {
+        "title": "P26",
+        "date": "2026-11-08",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-08",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-08",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P M2 A 2.4-2.6",
+        "date": "2026-11-09",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.4",
+          "2.5",
+          "2.6"
+        ]
+      },
+      {
+        "title": "A22",
+        "date": "2026-11-09",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-09",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-09",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "P M2B 2.7-2.9",
+        "date": "2026-11-09",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.7",
+          "2.8",
+          "2.9"
+        ]
+      },
+      {
+        "title": "P27",
+        "date": "2026-11-09",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "P M2B 2.10-2.12",
+        "date": "2026-11-09",
+        "time": "16:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.10",
+          "2.11",
+          "2.12"
+        ]
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-09",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A23",
+        "date": "2026-11-10",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-10",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "P28",
+        "date": "2026-11-10",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-10",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB M2-B",
+        "date": "2026-11-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "MOL 114 LAB M2-A (2.3 & 2.4)",
+        "date": "2026-11-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.3",
+          "2.4"
+        ]
+      },
+      {
+        "title": "Ana LAB M2-A",
+        "date": "2026-11-11",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 6",
+        "date": "2026-11-15",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "Lab Anat M2 A SDL",
+        "date": "2026-11-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Physiology review",
+        "date": "2026-11-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-15",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-15",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Lab Anat M2 B SDL",
+        "date": "2026-11-16",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-16",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-16",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-17",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 Final Exam",
+        "date": "2026-11-18",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "exam"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 OSPE",
+        "date": "2026-11-19",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "practical"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "break"
+      }
+    ],
+    "labGroups": {
+      "A": [
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.4",
+        "2.5",
+        "2.6"
+      ],
+      "B": [
+        "2.7",
+        "2.8",
+        "2.9",
+        "2.10",
+        "2.11",
+        "2.12"
+      ]
+    }
+  },
+  {
+    "classCode": "F1",
+    "groupCode": "F1",
+    "tblGroups": [
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "F10",
+      "F11",
+      "F12",
+      "F13",
+      "F14",
+      "F15",
+      "F16",
+      "F17",
+      "F18",
+      "F19",
+      "F20",
+      "F21",
+      "F22"
+    ],
+    "lectures": [
+      {
+        "id": "CVP-A2",
+        "title": "A2. Thorax, thoracic cage, and cavity",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-P1",
+        "title": "P1. Electrophysiology of heart M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-A1",
+        "title": "A1. Formation of heart tubes-",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A4",
+        "title": "A4. Pericardium and external features of heart",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-P2",
+        "title": "P2. Excitation- contraction coupling M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A3",
+        "title": "A3. Histology of heart and conducting system",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P3",
+        "title": "P3. ECG I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-A5",
+        "title": "A5. Internal features of the Heart.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-P4",
+        "title": "P4. ECG II (+ arrhythmias). M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-P5",
+        "title": "P5. Interactive Session I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-A6",
+        "title": "A6. Coronary arteries and major blood vessels.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-A7",
+        "title": "A7. Histology of Arteries, Veins.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P6",
+        "title": "P6. Cardiac Cycle M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P7",
+        "title": "P7. Ventricular P-V loops M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-12"
+      },
+      {
+        "id": "CVP-A8",
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-P8",
+        "title": "P8. Hemodynamics I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-A9",
+        "title": "A9. Formation of heart chambers and its defects.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P9",
+        "title": "P9. Hemodynamics II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P10",
+        "title": "P10. Heart Valve Disorders and Murmurs M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-15"
+      },
+      {
+        "id": "CVP-A10",
+        "title": "A10. Histology of Microcirculation.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-P11",
+        "title": "P11. Control of Cardiac output I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-A11",
+        "title": "A11. Mediastinum.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-P12",
+        "title": "P12. Control of Cardiac output II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-A13",
+        "title": "A13. Histology of Upper respiratory tract .",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P13",
+        "title": "P13. Integrated Control of CV System I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P14",
+        "title": "P14. Integ Control of CV System II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-A12",
+        "title": "A12. Nose, Larynx and Trachea.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-P15",
+        "title": "P15. Interactive Session II (TBL Special) M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-A14",
+        "title": "A14. Embryology-Aortic arch",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-P16",
+        "title": "P16. Introduction to pulmonary physiology H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-A15",
+        "title": "A15. Intercostal space, diaphragm",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P17",
+        "title": "P17. Lung volumes H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P18",
+        "title": "P18. Lung mechanics I H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-A16",
+        "title": "A16. Lungs Anatomy",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-A17",
+        "title": "A17. Histology of Lower respiratory tract",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-P19",
+        "title": "P19. Lung mechanics II H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-P20",
+        "title": "P20. Airway resistance H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-A19",
+        "title": "A19. Anatomy of the Pleura",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-P21",
+        "title": "P21. Assessing pulmonary functions H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-A18",
+        "title": "A18. Lung development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P22",
+        "title": "P22. Alveolar ventilation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P23",
+        "title": "P23. Pulmonary gas exchange H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-A20",
+        "title": "A20. Diaphragm development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-P24",
+        "title": "P24 Pulmonary circulation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-A21",
+        "title": "A21. Innervation of Thoracic Viscera",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-P25",
+        "title": "P25. Blood gas transport H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-A22",
+        "title": "A22. Embryology of venous system",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-P26",
+        "title": "P26. Hypoxemia H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-P27",
+        "title": "P27. Ventilation/Perfusion mismatch H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-P28",
+        "title": "P28. Control of breathing H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "CVP-A23",
+        "title": "A23. Clinical Embryology/Review",
+        "course": "CVP 112",
+        "availableOn": "2026-11-11"
+      },
+      {
+        "id": "MOL-12",
+        "title": "Cellular Protein Sorting and Trafficking",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-13",
+        "title": "Introduction to Carbohydrates, Glycosaminoglycans & Glycoproteins",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-14",
+        "title": "Introduction to Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-15",
+        "title": "Glycolysis I",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-16",
+        "title": "Glycolysis II",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-17",
+        "title": "TCA Cycle",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-18",
+        "title": "The Respiratory Chain and Oxidative Phosphorylation",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-19",
+        "title": "Gluconeogenesis",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-20",
+        "title": "Glycogen Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-21",
+        "title": "Pentose Phosphate Pathway",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-22",
+        "title": "Reactive Oxygen Species and Cellular Antioxidants",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-23",
+        "title": "Alternative Pathway of Carbohydrates Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-24",
+        "title": "Alcohol Metabolism",
+        "course": "MOL 114"
+      }
+    ],
+    "events": [
+      {
+        "title": "Introduction to the block and to McGraw Hill. venue : PHA. F1 & F2 sections",
+        "date": "2026-10-04",
+        "time": "08:00",
+        "end": "08:50",
+        "kind": "class"
+      },
+      {
+        "title": "P1",
+        "date": "2026-10-04",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A2",
+        "date": "2026-10-04",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A4",
+        "date": "2026-10-05",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A1",
+        "date": "2026-10-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P2",
+        "date": "2026-10-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-05",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-05",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-06",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P3",
+        "date": "2026-10-06",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A3",
+        "date": "2026-10-06",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-06",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-06",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P4",
+        "date": "2026-10-07",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A5",
+        "date": "2026-10-07",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-07",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-07",
+        "time": "14:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-07",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F1 - A",
+        "date": "2026-10-08",
+        "time": "09:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "MOL 114 LAB F1-B (1.11 & 1.12)",
+        "date": "2026-10-08",
+        "time": "09:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.11",
+          "1.12"
+        ]
+      },
+      {
+        "title": "Ana LAB F1 - B",
+        "date": "2026-10-08",
+        "time": "11:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar . MG.016",
+        "date": "2026-10-08",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "P5",
+        "date": "2026-10-08",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "A7. Histology of Arteries, Veins. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P6. Cardiac Cycle - Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A6. Coronary arteries and major blood vessels. Dr. Akef / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 1",
+        "date": "2026-10-12",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P7. Ventricular P-V loops . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab & ECG principles. Physiology Dept. / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-12",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 Mid Term Exam",
+        "date": "2026-10-13",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P8. Hemodynamics I . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-13",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A9. Formation of heart chambers and its defects. Dr. Paul / online - zoom session M1 - M2 - F1 - F2 (10-11:30)",
+        "date": "2026-10-14",
+        "time": "10:00",
+        "end": "11:30",
+        "kind": "class"
+      },
+      {
+        "title": "P9. Hemodynamics II Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-14",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-14",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar - online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P10. Heart Valve Disorders and Murmurs. Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB F1 and F2 online - zoom session",
+        "date": "2026-10-15",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 2",
+        "date": "2026-10-18",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P11. Control of Cardiac output I Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A10. Histology of Microcirculation. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-18",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A11. Mediastinum. Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P12. Control of Cardiac output II Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-19",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 10 am-12 pm (Electrocardiogram) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "10:00",
+        "end": "12:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 1-3 pm (Blood pressure) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-20",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-21",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P14. Integ Control of CV System II - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A13. Histology of Upper respiratory tract . Dr. Einas / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "P13. Integrated Control of CV System I - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-21",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A12. Nose, Larynx and Trachea. Dr. Hassan/ online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P15. Interactive Session II (TBL Special) - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB F1 and F2 online - zoom session",
+        "date": "2026-10-22",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 3",
+        "date": "2026-10-25",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P16",
+        "date": "2026-10-25",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A14",
+        "date": "2026-10-25",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-25",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-25",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A15",
+        "date": "2026-10-26",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P17",
+        "date": "2026-10-26",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Coffee with Mentor Program 1-3 pm",
+        "date": "2026-10-26",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-26",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-27",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P18",
+        "date": "2026-10-27",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-27",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-27",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-27",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A16",
+        "date": "2026-10-28",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P19",
+        "date": "2026-10-28",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A17",
+        "date": "2026-10-28",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-28",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-28",
+        "time": "14:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-28",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 Mid Term Exam",
+        "date": "2026-10-29",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P20",
+        "date": "2026-10-29",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F1-B",
+        "date": "2026-10-29",
+        "time": "11:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-29",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Ana LAB F1-A",
+        "date": "2026-10-29",
+        "time": "14:00",
+        "end": "15:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "CVP 112 · TBL 4",
+        "date": "2026-11-01",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P21",
+        "date": "2026-11-01",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "A19",
+        "date": "2026-11-01",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-01",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-01",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A18",
+        "date": "2026-11-02",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P22",
+        "date": "2026-11-02",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-02",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-02",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-02",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 · TBL 2",
+        "date": "2026-11-03",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-03",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P23",
+        "date": "2026-11-03",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-03",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-03",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A20",
+        "date": "2026-11-04",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P24",
+        "date": "2026-11-04",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab",
+        "date": "2026-11-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-04",
+        "time": "14:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F1-A",
+        "date": "2026-11-05",
+        "time": "09:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Ana LAB F1-B",
+        "date": "2026-11-05",
+        "time": "11:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "A21",
+        "date": "2026-11-05",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "P25",
+        "date": "2026-11-05",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 5",
+        "date": "2026-11-08",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P26",
+        "date": "2026-11-08",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P F1 A 1.1-1.3",
+        "date": "2026-11-08",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "1.1",
+          "1.2",
+          "1.3"
+        ]
+      },
+      {
+        "title": "A22",
+        "date": "2026-11-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-08",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P27",
+        "date": "2026-11-09",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-09",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-09",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-09",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P F1 A 1.4-1.6",
+        "date": "2026-11-10",
+        "time": "08:00",
+        "end": "08:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "1.4",
+          "1.5",
+          "1.6"
+        ]
+      },
+      {
+        "title": "P F1 B 1.7-1.9",
+        "date": "2026-11-10",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.7",
+          "1.8",
+          "1.9"
+        ]
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-10",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P28",
+        "date": "2026-11-10",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P F1 B 1.10-1.12",
+        "date": "2026-11-10",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "1.10",
+          "1.11",
+          "1.12"
+        ]
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-10",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-10",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A23",
+        "date": "2026-11-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-11",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-11",
+        "time": "14:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F1-B",
+        "date": "2026-11-12",
+        "time": "09:00",
+        "end": "10:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Ana LAB F1-A",
+        "date": "2026-11-12",
+        "time": "11:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 6",
+        "date": "2026-11-15",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "Physiology review",
+        "date": "2026-11-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-15",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Lab Anat F1 A SDL",
+        "date": "2026-11-15",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Lab Anat F1 B SDL",
+        "date": "2026-11-16",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-16",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-16",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-17",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 Final Exam",
+        "date": "2026-11-18",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "exam"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-18",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 OSPE",
+        "date": "2026-11-19",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "practical"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      }
+    ],
+    "labGroups": {
+      "A": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4",
+        "1.5",
+        "1.6"
+      ],
+      "B": [
+        "1.7",
+        "1.8",
+        "1.9",
+        "1.10",
+        "1.11",
+        "1.12"
+      ]
+    }
+  },
+  {
+    "classCode": "F2",
+    "groupCode": "F2",
+    "tblGroups": [
+      "F23",
+      "F24",
+      "F25",
+      "F26",
+      "F27",
+      "F28",
+      "F29",
+      "F30",
+      "F31",
+      "F32",
+      "F33",
+      "F34",
+      "F35",
+      "F36",
+      "F37"
+    ],
+    "lectures": [
+      {
+        "id": "CVP-A2",
+        "title": "A2. Thorax, thoracic cage, and cavity",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-P1",
+        "title": "P1. Electrophysiology of heart M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-04"
+      },
+      {
+        "id": "CVP-A1",
+        "title": "A1. Formation of heart tubes-",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A3",
+        "title": "A3. Histology of heart and conducting system",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-P2",
+        "title": "P2. Excitation- contraction coupling M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-05"
+      },
+      {
+        "id": "CVP-A4",
+        "title": "A4. Pericardium and external features of heart",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P3",
+        "title": "P3. ECG I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-06"
+      },
+      {
+        "id": "CVP-P4",
+        "title": "P4. ECG II (+ arrhythmias). M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-07"
+      },
+      {
+        "id": "CVP-A5",
+        "title": "A5. Internal features of the Heart.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-P5",
+        "title": "P5. Interactive Session I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-08"
+      },
+      {
+        "id": "CVP-A6",
+        "title": "A6. Coronary arteries and major blood vessels.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-A7",
+        "title": "A7. Histology of Arteries, Veins.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P6",
+        "title": "P6. Cardiac Cycle M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-11"
+      },
+      {
+        "id": "CVP-P7",
+        "title": "P7. Ventricular P-V loops M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-12"
+      },
+      {
+        "id": "CVP-A8",
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-P8",
+        "title": "P8. Hemodynamics I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-13"
+      },
+      {
+        "id": "CVP-A9",
+        "title": "A9. Formation of heart chambers and its defects.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P9",
+        "title": "P9. Hemodynamics II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-14"
+      },
+      {
+        "id": "CVP-P10",
+        "title": "P10. Heart Valve Disorders and Murmurs M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-15"
+      },
+      {
+        "id": "CVP-A10",
+        "title": "A10. Histology of Microcirculation.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-P11",
+        "title": "P11. Control of Cardiac output I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-18"
+      },
+      {
+        "id": "CVP-A11",
+        "title": "A11. Mediastinum.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-P12",
+        "title": "P12. Control of Cardiac output II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-19"
+      },
+      {
+        "id": "CVP-A13",
+        "title": "A13. Histology of Upper respiratory tract .",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P13",
+        "title": "P13. Integrated Control of CV System I M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-P14",
+        "title": "P14. Integ Control of CV System II M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-21"
+      },
+      {
+        "id": "CVP-A12",
+        "title": "A12. Nose, Larynx and Trachea.",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-P15",
+        "title": "P15. Interactive Session II (TBL Special) M Nader",
+        "course": "CVP 112",
+        "availableOn": "2026-10-22"
+      },
+      {
+        "id": "CVP-A14",
+        "title": "A14. Embryology-Aortic arch",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-P16",
+        "title": "P16. Introduction to pulmonary physiology H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-25"
+      },
+      {
+        "id": "CVP-A15",
+        "title": "A15. Intercostal space, diaphragm",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P17",
+        "title": "P17. Lung volumes H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-26"
+      },
+      {
+        "id": "CVP-P18",
+        "title": "P18. Lung mechanics I H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-27"
+      },
+      {
+        "id": "CVP-A16",
+        "title": "A16. Lungs Anatomy",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-P19",
+        "title": "P19. Lung mechanics II H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-28"
+      },
+      {
+        "id": "CVP-A17",
+        "title": "A17. Histology of Lower respiratory tract",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-P20",
+        "title": "P20. Airway resistance H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-10-29"
+      },
+      {
+        "id": "CVP-A19",
+        "title": "A19. Anatomy of the Pleura",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-P21",
+        "title": "P21. Assessing pulmonary functions H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-01"
+      },
+      {
+        "id": "CVP-A18",
+        "title": "A18. Lung development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P22",
+        "title": "P22. Alveolar ventilation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-02"
+      },
+      {
+        "id": "CVP-P23",
+        "title": "P23. Pulmonary gas exchange H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-03"
+      },
+      {
+        "id": "CVP-A20",
+        "title": "A20. Diaphragm development",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-P24",
+        "title": "P24 Pulmonary circulation H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-04"
+      },
+      {
+        "id": "CVP-A21",
+        "title": "A21. Innervation of Thoracic Viscera",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-P25",
+        "title": "P25. Blood gas transport H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-05"
+      },
+      {
+        "id": "CVP-P26",
+        "title": "P26. Hypoxemia H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-08"
+      },
+      {
+        "id": "CVP-A22",
+        "title": "A22. Embryology of venous system",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-P27",
+        "title": "P27. Ventilation/Perfusion mismatch H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-09"
+      },
+      {
+        "id": "CVP-P28",
+        "title": "P28. Control of breathing H Shams",
+        "course": "CVP 112",
+        "availableOn": "2026-11-10"
+      },
+      {
+        "id": "CVP-A23",
+        "title": "A23. Clinical Embryology/Review",
+        "course": "CVP 112",
+        "availableOn": "2026-11-11"
+      },
+      {
+        "id": "MOL-12",
+        "title": "Cellular Protein Sorting and Trafficking",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-13",
+        "title": "Introduction to Carbohydrates, Glycosaminoglycans & Glycoproteins",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-14",
+        "title": "Introduction to Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-15",
+        "title": "Glycolysis I",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-16",
+        "title": "Glycolysis II",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-17",
+        "title": "TCA Cycle",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-18",
+        "title": "The Respiratory Chain and Oxidative Phosphorylation",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-19",
+        "title": "Gluconeogenesis",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-20",
+        "title": "Glycogen Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-21",
+        "title": "Pentose Phosphate Pathway",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-22",
+        "title": "Reactive Oxygen Species and Cellular Antioxidants",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-23",
+        "title": "Alternative Pathway of Carbohydrates Metabolism",
+        "course": "MOL 114"
+      },
+      {
+        "id": "MOL-24",
+        "title": "Alcohol Metabolism",
+        "course": "MOL 114"
+      }
+    ],
+    "events": [
+      {
+        "title": "Introduction to the block and to McGraw Hill. venue : PHA. F1 & F2 sections",
+        "date": "2026-10-04",
+        "time": "08:00",
+        "end": "08:50",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-04",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A2",
+        "date": "2026-10-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P1",
+        "date": "2026-10-04",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A3",
+        "date": "2026-10-05",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "P2",
+        "date": "2026-10-05",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A1",
+        "date": "2026-10-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-05",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A4",
+        "date": "2026-10-06",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-06",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-06",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P3",
+        "date": "2026-10-06",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-06",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F2 - A",
+        "date": "2026-10-07",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Ana LAB F2 -B",
+        "date": "2026-10-07",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "P4",
+        "date": "2026-10-07",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-07",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-07",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P5",
+        "date": "2026-10-08",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "A5",
+        "date": "2026-10-08",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar . MG.016",
+        "date": "2026-10-08",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "A7. Histology of Arteries, Veins. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P6. Cardiac Cycle - Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A6. Coronary arteries and major blood vessels. Dr. Akef / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-11",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 1",
+        "date": "2026-10-12",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P7. Ventricular P-V loops . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab & ECG principles. Physiology Dept. / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-12",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 Mid Term Exam",
+        "date": "2026-10-13",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "P8. Hemodynamics I . Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "A8. Thoracic wall blood supply and lymphatic drainage Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-13",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-13",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A9. Formation of heart chambers and its defects. Dr. Paul / online - zoom session M1 - M2 - F1 - F2 (10-11:30)",
+        "date": "2026-10-14",
+        "time": "10:00",
+        "end": "11:30",
+        "kind": "class"
+      },
+      {
+        "title": "P9. Hemodynamics II Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-14",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-14",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "PHYSIO Mastery class Dr. Abdul Jabar - online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P10. Heart Valve Disorders and Murmurs. Dr. Moni Nader / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-15",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB F1 and F2 online - zoom session",
+        "date": "2026-10-15",
+        "time": "15:00",
+        "end": "17:00",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 2",
+        "date": "2026-10-18",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "P11. Control of Cardiac output I Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A10. Histology of Microcirculation. Dr. ANI / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "COM 116 / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-18",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-18",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A11. Mediastinum. Dr. Olena / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P12. Control of Cardiac output II Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-19",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-19",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 10 am-12 pm (Electrocardiogram) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "10:00",
+        "end": "12:00",
+        "kind": "class"
+      },
+      {
+        "title": "Physiology lab 1-3 pm (Blood pressure) , Male and female groups",
+        "date": "2026-10-20",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-20",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-21",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P14. Integ Control of CV System II - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A13. Histology of Upper respiratory tract . Dr. Einas / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "P13. Integrated Control of CV System I - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-21",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-21",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "A12. Nose, Larynx and Trachea. Dr. Hassan/ online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "P15. Interactive Session II (TBL Special) - Dr. Moni / online - zoom session M1 - M2 - F1 - F2",
+        "date": "2026-10-22",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy LAB F1 and F2 online - zoom session",
+        "date": "2026-10-22",
+        "time": "13:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 3",
+        "date": "2026-10-25",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-10-25",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A14",
+        "date": "2026-10-25",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-25",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P16",
+        "date": "2026-10-25",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-25",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P17",
+        "date": "2026-10-26",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-26",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A15",
+        "date": "2026-10-26",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Coffee with Mentor Program 1-3 pm",
+        "date": "2026-10-26",
+        "time": "13:00",
+        "end": "15:00",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-26",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-10-27",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-27",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P18",
+        "date": "2026-10-27",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-27",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F2-B",
+        "date": "2026-10-28",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Ana LAB F2-A",
+        "date": "2026-10-28",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "MOL 114 LAB F2-B (2.7 & 2.8)",
+        "date": "2026-10-28",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.7",
+          "2.8"
+        ]
+      },
+      {
+        "title": "A16",
+        "date": "2026-10-28",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-28",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P19",
+        "date": "2026-10-28",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-10-28",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 Mid Term Exam",
+        "date": "2026-10-29",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "exam"
+      },
+      {
+        "title": "A17",
+        "date": "2026-10-29",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-10-29",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P20 room MG.016",
+        "date": "2026-10-29",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "CVP 112 · TBL 4",
+        "date": "2026-11-01",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-01",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A19",
+        "date": "2026-11-01",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-01",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P21",
+        "date": "2026-11-01",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-01",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P22",
+        "date": "2026-11-02",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-02",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A18",
+        "date": "2026-11-02",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-02",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-02",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114 · TBL 2",
+        "date": "2026-11-03",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-03",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-03",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P23",
+        "date": "2026-11-03",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-03",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F2-A",
+        "date": "2026-11-04",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Ana LAB F2-B",
+        "date": "2026-11-04",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "MOL 114 LAB F2-A (2.3 & 2.4)",
+        "date": "2026-11-04",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.3",
+          "2.4"
+        ]
+      },
+      {
+        "title": "A20",
+        "date": "2026-11-04",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-04",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P24",
+        "date": "2026-11-04",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-04",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P25",
+        "date": "2026-11-05",
+        "time": "09:00",
+        "end": "09:50",
+        "kind": "class"
+      },
+      {
+        "title": "Pre-Physiology Lab",
+        "date": "2026-11-05",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "A21",
+        "date": "2026-11-05",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-05",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 5",
+        "date": "2026-11-08",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-08",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P F2 A 2.1-2.3",
+        "date": "2026-11-08",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.1",
+          "2.2",
+          "2.3"
+        ]
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-08",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P26",
+        "date": "2026-11-08",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-08",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "P27",
+        "date": "2026-11-09",
+        "time": "10:00",
+        "end": "10:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-09",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "P F2A 2.4-2.6",
+        "date": "2026-11-09",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "A",
+        "labGroups": [
+          "2.4",
+          "2.5",
+          "2.6"
+        ]
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-09",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "A22",
+        "date": "2026-11-09",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-09",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-10",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-10",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P28",
+        "date": "2026-11-10",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class"
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-10",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Ana LAB F2-B",
+        "date": "2026-11-11",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Ana LAB F2-A",
+        "date": "2026-11-11",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "MOL 114 LAB F2-B (2.9 & 2.10)",
+        "date": "2026-11-11",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.9",
+          "2.10"
+        ]
+      },
+      {
+        "title": "A23",
+        "date": "2026-11-11",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-11",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "P F2 B 2.7-2.9",
+        "date": "2026-11-11",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.7",
+          "2.8",
+          "2.9"
+        ]
+      },
+      {
+        "title": "P F2 B 2.10-2.12",
+        "date": "2026-11-11",
+        "time": "15:00",
+        "end": "15:50",
+        "kind": "class",
+        "labStream": "B",
+        "labGroups": [
+          "2.10",
+          "2.11",
+          "2.12"
+        ]
+      },
+      {
+        "title": "Anatomy Evening Lab",
+        "date": "2026-11-11",
+        "time": "17:00",
+        "end": "20:00",
+        "kind": "class"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-12",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 · TBL 6",
+        "date": "2026-11-15",
+        "time": "08:00",
+        "end": "09:50",
+        "kind": "tbl"
+      },
+      {
+        "title": "COM 116",
+        "date": "2026-11-15",
+        "time": "10:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Lab Anat F2 A SDL",
+        "date": "2026-11-15",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "A"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-15",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Physiology review",
+        "date": "2026-11-15",
+        "time": "14:00",
+        "end": "14:50",
+        "kind": "class"
+      },
+      {
+        "title": "MOL 114",
+        "date": "2026-11-16",
+        "time": "11:00",
+        "end": "11:50",
+        "kind": "class"
+      },
+      {
+        "title": "Lab Anat F2 B SDL",
+        "date": "2026-11-16",
+        "time": "12:00",
+        "end": "13:00",
+        "kind": "class",
+        "labStream": "B"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-16",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-17",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 Final Exam",
+        "date": "2026-11-18",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "exam"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-18",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      },
+      {
+        "title": "CVP 112 OSPE",
+        "date": "2026-11-19",
+        "time": "08:00",
+        "end": "11:50",
+        "kind": "practical"
+      },
+      {
+        "title": "Prayer and Lunch",
+        "date": "2026-11-19",
+        "time": "13:00",
+        "end": "13:50",
+        "kind": "break"
+      }
+    ],
+    "labGroups": {
+      "A": [
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.4",
+        "2.5",
+        "2.6"
+      ],
+      "B": [
+        "2.7",
+        "2.8",
+        "2.9",
+        "2.10",
+        "2.11",
+        "2.12"
+      ]
+    }
+  }
+]
