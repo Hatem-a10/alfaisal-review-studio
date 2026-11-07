@@ -132,24 +132,24 @@ test('adding a question keeps existing draft answers and option order by questio
  assert.equal(result.answers[0],undefined);
 });
 
-test('supplemental questions defer past Dashboard and load once for learning and practice', async () => {
+test('supplemental questions defer past Dashboard and load one pack per endpoint for learning and practice', async () => {
  const content = {innerHTML:''};
  let requests = 0, paints = 0;
  const ctx = {
   view:'dashboard',render(){paints++},esc:String,
   document:{getElementById:()=>content,addEventListener(){}},
-  LEARNING:{questions:[]},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
+  LEARNING:{questions:[]},TEACHING:{guides:{}},applyLessonExpansion(){},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
   fetch:async()=>{requests++;return {ok:true,json:async()=>({questions:[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]})}},
  };
  vm.runInNewContext(load('supplemental-objectives.js'),ctx);
  ctx.render();
  assert.equal(requests,0);
  ctx.view='learning';ctx.render();ctx.render();
- assert.equal(requests,1);
+ assert.equal(requests,3);
  assert.match(content.innerHTML,/Loading your question bank/);
  await new Promise(resolve=>setImmediate(resolve));
  ctx.view='practice';ctx.render();
- assert.equal(requests,1);
+ assert.equal(requests,3);
  assert.equal(ctx.LEARNING.questions.length,1);
  assert.equal(paints,3);
 });
@@ -165,6 +165,13 @@ test('checked concept-card quizzes link to the next card at the bottom of the re
  const html = markup({id:'lesson'});
  assert.ok(html.indexOf('data-inline-jump="1"') > html.indexOf('id="inlineTopicScore"'));
  assert.match(html,/data-unified-card-next>Next card/);
+ const styles = load('inline-topics.css');
+ assert.match(styles,/\.lesson-actions \[data-unified-card-next\]\{margin-inline-start:auto\}/);
+ assert.match(styles,/\.inline-quiz-actions \.primary\{[^}]*margin-inline-start:auto/);
+ session.graded[0]=true;
+ assert.match(markup({id:'lesson'}),/id="inlineRetryAnswers"[\s\S]*id="inlineCheckAnswers"/);
+ delete session.graded[0];
+ assert.doesNotMatch(markup({id:'lesson'}),/id="inlineRetryAnswers"/);
  session.index=1;
  assert.doesNotMatch(markup({id:'lesson'}),/data-unified-card-next/);
  session.index=0;score.total=0;
