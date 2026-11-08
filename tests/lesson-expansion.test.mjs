@@ -4,11 +4,12 @@ import {readFileSync} from 'node:fs';
 import {assembledLearning} from '../scripts/assembled-learning.mjs';
 
 const pack=JSON.parse(readFileSync('public/lesson-expansion-data.json','utf8'));
+const lab=JSON.parse(readFileSync('public/cvp-ecg-lab-teaching.json','utf8'));
 const {learning,teaching,checks}=assembledLearning();
 
 test('expanded lessons retain their topic IDs, substantial teaching and real page references',()=>{
  const sources=new Map(learning.sources.map(s=>[s.id,new Set((s.pages||[]).map(p=>p.page))]));
- assert.equal(Object.keys(pack).length,19);
+ const partialLessons=new Set(['CVP-P3','CVP-P12']); assert.equal(Object.keys(pack).filter(id=>!partialLessons.has(id)).length,19);
  for(const [id,entry] of Object.entries(pack)){
   const guide=teaching.guides[id];
   assert.equal(guide.sections.length,Object.keys(entry.sections).length,id);
@@ -33,6 +34,17 @@ test('priority lectures include independent retrieval activities and source-link
    assert.equal(q.options.length,4);
    assert.equal(new Set(q.reasons).size,4);
    assert.equal(q.reasons[q.answer],q.explanation);
+  }
+ }
+});
+
+test('ECG lab walkthroughs attach to existing topics with valid references',()=>{
+ const sources=new Map(learning.sources.map(source=>[source.id,source]));
+ for(const [id,{sections}] of Object.entries(lab)){
+  for(const sectionId of Object.keys(sections)){
+   const section=teaching.guides[id].sections.find(item=>item.id===sectionId);
+   assert.ok(section.body.some(paragraph=>paragraph.startsWith('ECG lab ·')),sectionId);
+   for(const {source,page} of section.references)assert.ok(sources.get(source)?.pages.some(item=>item.page===page));
   }
  }
 });

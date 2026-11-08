@@ -1,0 +1,34 @@
+{
+  "CVP-P3": {
+    "sections": {
+      "CVP-P3:week1-2": {
+        "body": [
+          "At 25 mm/s, one small 1-mm square is 0.04 s and one large 5-mm square is 0.20 s. Standard voltage calibration is 10 mm/mV; confirm the actual trace settings before measuring. The PR interval runs from P onset to QRS onset and includes atrial depolarization plus AV conduction. The PR segment excludes the P wave.",
+          "The QT interval runs from QRS onset to T end and encompasses ventricular depolarization and repolarization. It varies with heart rate and should not be equated precisely with the duration of mechanical contraction. A typical adult PR interval is 0.12–0.20 s; QRS is normally narrower than 0.12 s.",
+          "ECG lab · timing one beat (slide 12). At 25 mm/s, suppose QRS onset to T-wave end spans 9 small squares and T-wave end to the next QRS onset spans 11. The intervals are 0.36 s and 0.44 s. Together they give an approximate 0.80 s cycle, or 75 beats/min. These are ECG estimates of systolic and diastolic time for the lab. Electrical and mechanical timing do not coincide exactly. Use equivalent landmarks on adjacent beats if comparing with an R–R measurement."
+        ],
+        "references": "cvp-slides-p3:13;cvp-slides-p3:14;cvp-slides-p3:15;cvp-slides-p3:16"
+      },
+      "CVP-P3:week1-3": {
+        "body": [
+          "For a regular rhythm at 25 mm/s, heart rate equals 300 divided by the number of large squares between successive R waves, or 1500 divided by small squares. Alternatively use 60 divided by RR in seconds. These formulas express the same conversion from cycle length to cycles per minute.",
+          "For an irregular rhythm, one RR interval is not representative. Count QRS complexes in a known time window and scale to a minute; a six-second count multiplied by ten gives an approximate average. Report regularity separately from rate.",
+          "ECG lab · compare limb leads (slides 10–11). Use the same pair of beats on simultaneously recorded leads. Three large squares equal 15 small squares, so 300 ÷ 3 and 1500 ÷ 15 both give 100 beats/min. If your two counts disagree, recheck the calibration, R peaks, and fractional squares before interpreting the result. Leads I, II, and III view the same beats from different angles. The rate should agree across clean traces."
+        ],
+        "references": "cvp-slides-p3:14;cvp-slides-p3:15"
+      }
+    }
+  },
+  "CVP-P12": {
+    "sections": {
+      "CVP-P12:w3-posture": {
+        "body": [
+          "Standing shifts blood toward dependent veins, temporarily reducing central filling and output. Arterial baroreceptor unloading promotes tachycardia, increased contractility and vasoconstriction to restore head perfusion. The response depends on intact neural and vascular effectors.",
+          "Skeletal-muscle contraction compresses veins, and valves favor movement toward the heart; abdominal compression can also mobilize blood. During respiration, changing intrathoracic pressures, stretch signals and central interactions produce arterial-pressure oscillations. Inspiration can increase right-heart venous return, but left-heart output and peripheral pressure timing depend on transit and interactions; the lecture’s simplified arrows should not be applied instantaneously to every phase.",
+          "ECG lab · compare seated, standing and breathing recordings (slide 13). Calculate rate from each recording before explaining the change. On standing, transient venous pooling lowers venous return and can trigger a reflex rise in heart rate. With respiratory sinus arrhythmia, R–R intervals tend to shorten during inspiration and lengthen during expiration. Compare clear beats and keep the measured response separate from the expected mechanism."
+        ],
+        "references": "cvp-w3-p12:28;cvp-w3-p12:29;cvp-w3-p12:30;cvp-w3-p12:31"
+      }
+    }
+  }
+}

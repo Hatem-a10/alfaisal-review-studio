@@ -28,7 +28,8 @@ export function assembledLearning(){
  }
  const expansion=JSON.parse(readFileSync(root+'public/lesson-expansion-data.json','utf8'));
  const applyExpansion=runInNewContext(readFileSync(root+'public/lesson-expansion.js','utf8')+';applyLessonExpansion');
- applyExpansion(learning,teaching,checks,expansion);
+ const lab=JSON.parse(readFileSync(root+'public/cvp-ecg-lab-teaching.json','utf8'));
+ applyExpansion(learning,teaching,checks,{...expansion,...lab});
  const supplemental=JSON.parse(readFileSync(root+'public/supplemental-objective-questions.json','utf8'));
  const {applySupplementalObjectives,applyTopicTakeaways}=runInNewContext(readFileSync(root+'public/supplemental-objectives.js','utf8').split('(()=>{')[0]+';({applySupplementalObjectives,applyTopicTakeaways})');
  applySupplementalObjectives(learning,checks,supplemental);
