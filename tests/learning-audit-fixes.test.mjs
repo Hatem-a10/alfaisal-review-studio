@@ -245,3 +245,31 @@ test('checking a mapped topic question records it under the open lesson',()=>{
  assert.equal(state.open.learning.results.mapped.ok,true);
  assert.equal(state.first.learning,undefined);
 });
+
+test('P2 Topic 7 updates the displayed count after a checked correction even with a stale saved answer',()=>{
+ const {learning,teaching,checks}=assembledLearning();
+ const lesson=learning.lessons.find(row=>row.id==='CVP-P2');
+ const topics=teaching.guides[lesson.id].sections;
+ const group=vm.runInNewContext(load('inline-topics.js').split('let inlineLessonCache')[0]+';InlineTopics.group');
+ const bank=[...new Map([...Object.values(checks).flat(),...learning.questions]
+  .filter(q=>q.lectureIds.includes(lesson.id)).map(q=>[q.id,q])).values()];
+ const questions=group(topics,bank,checks)[6];
+ assert.equal(questions.filter(q=>!q.duplicateOf).length,5);
+ const score=load('inline-topics.js').split('\n').find(line=>line.startsWith('function inlineTopicScore'));
+ const wrapper=load('study-workflows.js').split('\n').find(line=>line.startsWith('const minBefore='));
+ const context={inlineLatest:()=>new Map(),storeOptions:()=>({minimumQuestions:3})};
+ const calculate=vm.runInNewContext(score+'\n'+wrapper+'\ninlineTopicScore',context);
+ const record={learning:{results:{[questions[0].id]:{ok:false}}}};
+ const session={graded:{0:true,1:true},answers:{0:questions[0].answer,1:questions[1].answer}};
+ const result=calculate(lesson,questions,record,session);
+ assert.equal(result.correct,2);
+ assert.equal(result.total,2);
+ assert.equal(result.fullPercent,40);
+ assert.equal(result.complete,false);
+ session.graded[2]=true;
+ session.answers[2]=questions[2].answer;
+ const next=calculate(lesson,questions,record,session);
+ assert.equal(next.fullPercent,60);
+ assert.equal(next.total,3);
+ assert.equal(next.complete,true);
+});
