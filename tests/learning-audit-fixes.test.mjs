@@ -217,3 +217,16 @@ test('combined uploaded pulmonary slides appear in both lecture rows with the co
  assert.equal(materials({id:'CVP-P27'},null,[source]).slides[0].page,7);
  assert.equal(materials({id:'CVP-P28'},null,[source]).slides.length,0);
 });
+
+test('topic score uses the full core question count and retains checked-answer accuracy',()=>{
+ const source=load('inline-topics.js');
+ const calculate=vm.runInNewContext(source.split('function inlineTopicScore')[1].split('\n')[0].replace(/^/,'(function inlineTopicScore')+')',{inlineLatest:()=>new Map()});
+ const questions=Array.from({length:5},(_,i)=>({id:String(i)})).concat({id:'optional',duplicateOf:'0'});
+ const record={learning:{results:{0:{ok:true},1:{ok:false},optional:{ok:true}}}};
+ const score=calculate({id:'lesson'},questions,record);
+ assert.equal(score.correct,1);
+ assert.equal(score.available,5);
+ assert.equal(score.fullPercent,20);
+ assert.equal(score.total,2);
+ assert.equal(score.percent,50);
+});
