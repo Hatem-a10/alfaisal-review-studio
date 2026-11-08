@@ -57,9 +57,10 @@ function applyTopicTakeaways(teaching, points) {
    if(!response.ok)throw Error('Could not load the lesson content.');
    return response.json();
   };
-  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1'),load('/cvp-ecg-lab-teaching.json')])
+  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1'),load('/cvp-source-walkthroughs.json')])
    .then(([pack,expansion,takeaways,lab])=>{
-    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, {...expansion,...lab});
+    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, expansion);
+    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, lab);
     applySupplementalObjectives(LEARNING, TOPIC_CHECKS, pack);
     applyTopicTakeaways(TEACHING, takeaways);
     inlineLessonCache.clear();

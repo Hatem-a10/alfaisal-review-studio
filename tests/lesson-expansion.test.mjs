@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {assembledLearning} from '../scripts/assembled-learning.mjs';
 
 const pack=JSON.parse(readFileSync('public/lesson-expansion-data.json','utf8'));
-const lab=JSON.parse(readFileSync('public/cvp-ecg-lab-teaching.json','utf8'));
+const lab=JSON.parse(readFileSync('public/cvp-source-walkthroughs.json','utf8'));
 const {learning,teaching,checks}=assembledLearning();
 
 test('expanded lessons retain their topic IDs, substantial teaching and real page references',()=>{
@@ -38,12 +38,12 @@ test('priority lectures include independent retrieval activities and source-link
  }
 });
 
-test('ECG lab walkthroughs attach to existing topics with valid references',()=>{
+test('CVP source walkthroughs attach to existing topics with valid references',()=>{
  const sources=new Map(learning.sources.map(source=>[source.id,source]));
  for(const [id,{sections}] of Object.entries(lab)){
   for(const sectionId of Object.keys(sections)){
    const section=teaching.guides[id].sections.find(item=>item.id===sectionId);
-   assert.ok(section.body.some(paragraph=>paragraph.startsWith('ECG lab ·')),sectionId);
+   assert.ok(section.body.some(paragraph=>paragraph === sections[sectionId].body.at(-1)),sectionId);
    for(const {source,page} of section.references)assert.ok(sources.get(source)?.pages.some(item=>item.page===page));
   }
  }

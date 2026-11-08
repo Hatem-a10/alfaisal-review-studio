@@ -1,8 +1,10 @@
 import {env} from 'cloudflare:workers';
+import {withMaterialLectureLinks} from '../../../lib/material-lecture-links';
+import type {MaterialRow} from '../../../lib/material-dedup';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
 export const dynamic='force-dynamic';
 const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
-export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all();return json({materials:rows.results})}
+export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all<MaterialRow>();return json({materials:rows.results.map(withMaterialLectureLinks)})}
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to upload materials.'},401);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
@@ -16,10 +18,10 @@ export async function POST(request:Request){
  const mime=file.type==='application/pdf'?'application/pdf':/\.json$/i.test(file.name)?'application/json':/\.(pptx|docx)$/i.test(file.name)?'application/octet-stream':'text/plain';if(!/\.(pdf|txt|md|json|pptx|docx)$/i.test(file.name))return json({error:'Use PDF, PPTX, DOCX, TXT, Markdown or a question-pack JSON file.'},400);
  const bytes=await file.arrayBuffer(),sha=await digest(bytes),known=await knownOriginal(env.BUCKET,sha,bytes.byteLength);
  if(known)return json({duplicate:true,builtin:true,url:known.url,name:known.name});
- const existing=await duplicateMaterial(env.BUCKET,user,await materialRows(env.DB,user),sha,bytes.byteLength);if(existing)return json({...existing,duplicate:true});
+ const existing=await duplicateMaterial(env.BUCKET,user,await materialRows(env.DB,user),sha,bytes.byteLength);if(existing)return json({...withMaterialLectureLinks(existing),duplicate:true});
  const id=crypto.randomUUID(),base='materials/'+user+'/'+id,createdAt=new Date().toISOString();
  await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime}});
  await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures:Array.isArray(parsed.figures)?parsed.figures.filter((f:any)=>Number.isInteger(f.page)&&f.page>0&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60):[]}),{httpMetadata:{contentType:'application/json'}});
  try{await env.DB.prepare('INSERT INTO study_materials (id,user_id,name,lecture_id,mime,bytes,page_count,created_at) VALUES (?,?,?,?,?,?,?,?)').bind(id,user,file.name.slice(0,250),lectureId,mime,file.size,parsed.pages.length,createdAt).run()}catch(error){await env.BUCKET.delete([base+'/original',base+'/text']);throw error}
- return json({id,name:file.name.slice(0,250),lectureId,mime,bytes:file.size,pageCount:parsed.pages.length,createdAt});
+ return json(withMaterialLectureLinks({id,name:file.name.slice(0,250),lectureId,mime,bytes:file.size,pageCount:parsed.pages.length,createdAt}));
 }

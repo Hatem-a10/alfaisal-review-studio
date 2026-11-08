@@ -1,0 +1,150 @@
+{
+  "CVP-P3": {
+    "sections": {
+      "CVP-P3:week1-2": {
+        "body": [
+          "At 25 mm/s, one small 1-mm square is 0.04 s and one large 5-mm square is 0.20 s. Standard voltage calibration is 10 mm/mV; confirm the actual trace settings before measuring. The PR interval runs from P onset to QRS onset and includes atrial depolarization plus AV conduction. The PR segment excludes the P wave.",
+          "The QT interval runs from QRS onset to T end and encompasses ventricular depolarization and repolarization. It varies with heart rate and should not be equated precisely with the duration of mechanical contraction. A typical adult PR interval is 0.12–0.20 s; QRS is normally narrower than 0.12 s.",
+          "ECG lab · timing one beat (slide 12). At 25 mm/s, suppose QRS onset to T-wave end spans 9 small squares and T-wave end to the next QRS onset spans 11. The intervals are 0.36 s and 0.44 s. Together they give an approximate 0.80 s cycle, or 75 beats/min. These are ECG estimates of systolic and diastolic time for the lab. Electrical and mechanical timing do not coincide exactly. Use equivalent landmarks on adjacent beats if comparing with an R–R measurement."
+        ],
+        "references": "cvp-slides-p3:13;cvp-slides-p3:14;cvp-slides-p3:15;cvp-slides-p3:16"
+      },
+      "CVP-P3:week1-3": {
+        "body": [
+          "For a regular rhythm at 25 mm/s, heart rate equals 300 divided by the number of large squares between successive R waves, or 1500 divided by small squares. Alternatively use 60 divided by RR in seconds. These formulas express the same conversion from cycle length to cycles per minute.",
+          "For an irregular rhythm, one RR interval is not representative. Count QRS complexes in a known time window and scale to a minute; a six-second count multiplied by ten gives an approximate average. Report regularity separately from rate.",
+          "ECG lab · compare limb leads (slides 10–11). Use the same pair of beats on simultaneously recorded leads. Three large squares equal 15 small squares, so 300 ÷ 3 and 1500 ÷ 15 both give 100 beats/min. If your two counts disagree, recheck the calibration, R peaks, and fractional squares before interpreting the result. Leads I, II, and III view the same beats from different angles. The rate should agree across clean traces."
+        ],
+        "references": "cvp-slides-p3:14;cvp-slides-p3:15"
+      }
+    }
+  },
+  "CVP-P12": {
+    "sections": {
+      "CVP-P12:w3-posture": {
+        "body": [
+          "Standing shifts blood toward dependent veins, temporarily reducing central filling and output. Arterial baroreceptor unloading promotes tachycardia, increased contractility and vasoconstriction to restore head perfusion. The response depends on intact neural and vascular effectors.",
+          "Skeletal-muscle contraction compresses veins, and valves favor movement toward the heart; abdominal compression can also mobilize blood. During respiration, changing intrathoracic pressures, stretch signals and central interactions produce arterial-pressure oscillations. Inspiration can increase right-heart venous return, but left-heart output and peripheral pressure timing depend on transit and interactions; the lecture’s simplified arrows should not be applied instantaneously to every phase.",
+          "ECG lab · compare seated, standing and breathing recordings (slide 13). Calculate rate from each recording before explaining the change. On standing, transient venous pooling lowers venous return and can trigger a reflex rise in heart rate. With respiratory sinus arrhythmia, R–R intervals tend to shorten during inspiration and lengthen during expiration. Compare clear beats and keep the measured response separate from the expected mechanism."
+        ],
+        "references": "cvp-w3-p12:28;cvp-w3-p12:29;cvp-w3-p12:30;cvp-w3-p12:31"
+      }
+    }
+  },
+  "CVP-A5": {
+    "sections": {
+      "CVP-A5:week1-1": {
+        "body": [
+          "The LA receives pulmonary veins and forms most of the posterior base. Its main chamber is comparatively smooth, with pectinate muscle largely in its auricle. Blood crosses the two-cusp mitral valve into LV. The LV wall is much thicker than RV because it generates the higher pressures of systemic circulation.",
+          "LV has two main papillary muscles, each supplying chordae to both mitral leaflets. The smooth aortic vestibule leads to the aortic valve. The ventricular septum has a large muscular part and a small membranous part; the latter lies close to the AV bundle, so anatomy links septal defects and conduction relationships.",
+          "Echocardiography practical (slides 3–8). In a four-chamber image, find the septa before naming the chambers. The interatrial septum separates the two atria and the interventricular septum separates the two ventricles. Trace each atrium through its AV valve: right atrium → tricuspid → right ventricle; left atrium → mitral → left ventricle. Confirm the view before using screen position. Echogenicity means the brightness produced by returning echoes; it depends on how the tissues interact with sound, as well as on the imaging angle and settings."
+        ],
+        "references": "cvp-slides-a5:12;cvp-slides-a5:13;cvp-slides-a5:14;cvp-slides-a5:15;cvp-slides-a5:16;cvp-slides-a5:17"
+      }
+    }
+  },
+  "CVP-A22": {
+    "sections": {
+      "CVP-A22:ivc": {
+        "body": [
+          "Read the IVC from liver downward. The hepatic segment uses the right vitelline-derived hepatocardiac channel. The prerenal segment chiefly uses the right subcardinal vein. The renal segment forms through anastomoses around the kidneys. The postrenal segment chiefly uses the right supracardinal vein. The IVC is assembled from several channels with different drainage territories.",
+          "The renal-level connections explain why knowing “right supracardinal” alone is inadequate. If an infrarenal channel persists on both sides, the result can be a duplicated IVC. If continuity toward the hepatic portion fails, azygos continuation can carry lower-body venous return toward the SVC.",
+          "Venous System lecture, slides 23–29. Trace the IVC upward rather than memorizing a single embryonic vessel: caudal right posterior cardinal contribution near the iliac end, right supracardinal below the kidneys, the subcardinal–supracardinal connection at the renal level, right subcardinal above that, and the hepatic segment joining the liver channel. Slide 29 uses a persistent left supracardinal channel to explain how two infrarenal caval channels can coexist."
+        ],
+        "references": "cvp-booklet:218;cvp-booklet:219"
+      },
+      "CVP-A22:fetal-veins": {
+        "body": [
+          "Start by naming the tissue being drained. Cardinal veins drain the embryo itself. Vitelline veins drain the yolk sac and are remodeled around the gut and liver, contributing to the portal system and hepatic IVC connection. Umbilical veins return oxygenated blood from the placenta. These pathways converge centrally, but their origins and developmental fates are different.",
+          "The left umbilical vein persists during fetal life. Some of its flow enters the hepatic circulation, and some can reach the IVC through the ductus venosus. After birth, the left umbilical vein becomes the ligamentum teres of the liver, while the ductus venosus becomes the ligamentum venosum.",
+          "Venous System lecture, slides 16–21. Follow the vitelline channels around the duodenum to understand the portal vein, then follow the separate systemic return route to the sinus venosus. Rightward remodeling brings the right sinus horn into the smooth right atrial wall, while the smaller left horn contributes to the coronary sinus. Keep the liver portal route and coronary venous drainage separate."
+        ],
+        "references": "cvp-booklet:216;cvp-booklet:217;cvp-booklet:219"
+      }
+    },
+    "guide": {
+      "overview": "Trace the major embryonic venous channels and their adult derivatives using the supplied Venous System lecture.",
+      "sourceNotes": [
+        "Full lecture slides are available in the Material Library."
+      ]
+    }
+  },
+  "CVP-P26": {
+    "sections": {
+      "CVP-P26:gradient": {
+        "body": [
+          "Estimate alveolar oxygen tension with PAO₂ ≈ FIO₂ × (barometric pressure − water vapor pressure) − PaCO₂/R. The A–a difference is PAO₂ minus measured arterial PaO₂. State the assumptions, especially inspired oxygen and barometric pressure. At sea level on room air, using 760 mmHg, 47 mmHg and R = 0.8 with PaCO₂ 40 mmHg gives PAO₂ near 100 mmHg.",
+          "Shams P26 slides 4–6 and 13. Compare two patients whose arterial PO₂ is 55 mmHg. If their calculated alveolar PO₂ values are 60 and 100 mmHg, their A–a differences are 5 and 45 mmHg. A small difference fits a problem lowering alveolar oxygen, such as pure hypoventilation. A widened difference points toward a gas-transfer problem such as V/Q mismatch, shunt or diffusion limitation. Use the patient’s inspired oxygen and barometric pressure before calculating."
+        ],
+        "references": "cvp-booklet:126;cvp-booklet:127"
+      }
+    },
+    "guide": {
+      "overview": "Use the supplied Shams lecture to distinguish the mechanisms of hypoxemia and interpret the alveolar–arterial oxygen difference.",
+      "sourceNotes": [
+        "Full lecture slides are available in the Material Library."
+      ]
+    }
+  },
+  "CVP-P27": {
+    "sections": {
+      "CVP-P27:gravity": {
+        "body": [
+          "In an upright lung, ventilation and perfusion generally both increase toward the base, but perfusion changes more. The ratio is therefore higher at the apex and lower at the base. A high apical V/Q does not mean the apex receives the greatest absolute ventilation; it means ventilation is high relative to its blood flow.",
+          "As V/Q rises, alveolar gas approaches inspired gas with relatively higher oxygen and lower CO₂. As V/Q falls, alveolar gas approaches mixed venous values. Always compare ventilation and perfusion together before predicting the gas composition.",
+          "Compare two simplified units. One receives 0.5 units of ventilation and 0.25 of perfusion, giving V/Q = 2. Another receives 1.5 ventilation and 2.5 perfusion, giving V/Q = 0.6. The second receives more absolute ventilation but has the lower ratio. The blood leaving it also contributes more to the mixed arterial sample. That is why interpreting a whole-lung number requires both regional ratios and their blood-flow weighting.",
+          "Shams P27 slides 7–10. The upright diagram shows both absolute ventilation and perfusion rising toward the base, with perfusion changing more steeply. Before reading the regional gas values, predict the direction: high apical V/Q pushes alveolar gas toward inspired values (higher PO₂ and lower PCO₂), while lower basal V/Q shifts it toward mixed venous values. A lower basal ratio does not mean the base receives less total ventilation."
+        ],
+        "references": "cvp-booklet:128;cvp-booklet:129"
+      }
+    },
+    "guide": {
+      "overview": "Read the regional ventilation and perfusion diagrams, then apply them to low V/Q, shunt and dead space.",
+      "sourceNotes": [
+        "Full lecture slides are available in the Material Library."
+      ]
+    }
+  },
+  "CVP-P28": {
+    "sections": {
+      "CVP-P28:0": {
+        "body": [
+          "When PaCO₂ rises, CO₂ diffuses into the brain and generates hydrogen ions. A fall in local pH increases ventilatory drive. Over time, buffering and bicarbonate adjustment modify the sustained stimulus, so acute and chronic changes need not have the same effect. Arterial hydrogen ions themselves do not cross as freely as CO₂.",
+          "Shams P28 slide 14. The graph distinguishes the immediate response to increased arterial CO₂ from the response after sustained exposure. Initially, CO₂ entering the CSF raises H⁺ and drives ventilation. During sustained hypercapnia, bicarbonate compensation blunts the pH stimulus, so the later response is smaller for the same CO₂ rise. This comparison concerns ventilatory control; it is not a rule for withholding oxygen."
+        ],
+        "references": "cvp-booklet:129;cvp-booklet:130"
+      }
+    },
+    "guide": {
+      "overview": "Use the supplied Shams lecture to connect respiratory centers, reflexes and chemoreceptor responses.",
+      "sourceNotes": [
+        "Full lecture slides are available in the Material Library."
+      ]
+    }
+  },
+  "CVP-P22": {
+    "sections": {
+      "CVP-P22:resp26-alveolar": {
+        "body": [
+          "O2 is removed from alveolar gas while CO2 enters from pulmonary blood. The simplified alveolar gas equation isPAO2=PIO2−PaCO2/R, using the approximationPACO2≈PaCO2. IfPIO2=147,PaCO2=40 andR=0.8,PAO2=97 mmHg. Do not subtract40×0.8.",
+          "PACO2=863×V̇CO2/V̇A when both flows use the same volume units (CO2 atSTPD and ventilation atBTPS). Equivalently use0.863 when CO2 is in mL/min and ventilation inL/min. Rearranging givesV̇A=863×V̇CO2/PACO2. At fixed metabolism, doublingV̇A halvesCO2; if metabolism doubles too,CO2 can stay normal.",
+          "Use the alveolar gas equation with the stated inspired oxygen fraction, barometric pressure and respiratory quotient. At sea level on room air, humidified inspired oxygen is about 150 mmHg. With PaCO₂ 40 and R 0.8, estimated PAO₂ is about 100 mmHg. Compare this with measured PaO₂ only after checking the assumptions.",
+          "Pulmonary Quiz 2, questions 1–4. At barometric pressure 247 mmHg, breathing room air gives inspired PO₂ = 0.21 × (247 − 47) = 42 mmHg after humidification. Using the simplified alveolar equation with PaCO₂ = 40 mmHg and R = 1 gives an alveolar PO₂ of about 2 mmHg, illustrating why hyperventilation matters. In the separate ventilation calculation, use R × oxygen uptake to find CO₂ output: 0.8 × 250 = 200 mL/min. Then 863 × 200 ÷ 52 gives alveolar ventilation of about 3.32 L/min."
+        ],
+        "references": "new-p22:11;new-p22:12;new-p22:13;new-p22:14;new-p22:15;new-p22:16;new-p22:17"
+      }
+    }
+  },
+  "CVP-P23": {
+    "sections": {
+      "CVP-P23:resp26-dlco": {
+        "body": [
+          "DL is gas uptake per minute divided by the alveolar-to-capillary partial-pressure difference, with unitsmL/min/mmHg. At very low diagnosticCO concentration, strong hemoglobin binding keeps dissolved capillaryPCO near zero, soDLCO≈V̇CO/PACO.",
+          "For50 mLCO/min uptake withPACO2 mmHg,DLCO=25 mL/min/mmHg. Exercise recruits/distends capillaries; supine posture and larger lungs can increase measured transfer. Hemoglobin availability also affectsCO uptake, so a lowDLCO does not identify one unique membrane lesion.",
+          "Pulmonary Quiz 2, question 8. With carbon monoxide uptake of 20 mL/min and alveolar CO pressure of 0.5 mmHg, estimate DLCO as 20 ÷ 0.5 = 40 mL/min/mmHg, treating pulmonary capillary CO pressure as negligible. Check the unit: the result is uptake per pressure difference, not a pressure."
+        ],
+        "references": "new-p2324:4;new-p2324:5;new-p2324:6"
+      }
+    }
+  }
+}

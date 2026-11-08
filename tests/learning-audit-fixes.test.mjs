@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {withMaterialLectureLinks} from '../lib/material-lecture-links.ts';
 import {assembledLearning} from '../scripts/assembled-learning.mjs';
 
 const load = name => fs.readFileSync('public/' + name, 'utf8');
@@ -138,18 +139,18 @@ test('supplemental questions defer past Dashboard and load once for learning and
  const ctx = {
   view:'dashboard',render(){paints++},esc:String,
   document:{getElementById:()=>content,addEventListener(){}},
-  LEARNING:{questions:[]},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
-  fetch:async()=>{requests++;return {ok:true,json:async()=>({questions:[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]})}},
+  LEARNING:{questions:[]},TEACHING:{guides:{}},applyLessonExpansion(){},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
+  fetch:async path=>{requests++;return {ok:true,json:async()=>path.includes('supplemental-objective-questions') ? {questions:[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]} : {}}},
  };
  vm.runInNewContext(load('supplemental-objectives.js'),ctx);
  ctx.render();
  assert.equal(requests,0);
  ctx.view='learning';ctx.render();ctx.render();
- assert.equal(requests,1);
+ assert.equal(requests,4);
  assert.match(content.innerHTML,/Loading your question bank/);
  await new Promise(resolve=>setImmediate(resolve));
  ctx.view='practice';ctx.render();
- assert.equal(requests,1);
+ assert.equal(requests,4);
  assert.equal(ctx.LEARNING.questions.length,1);
  assert.equal(paints,3);
 });
@@ -207,4 +208,12 @@ test('supplemental questions have valid answer keys, choice-specific feedback an
   assert.equal(q.explanation,q.reasons[q.answer],q.id);
   assert.ok(q.references.length && q.references.every(r=>sources.get(r.source)?.has(r.page)),q.id);
  }
+});
+
+test('combined uploaded pulmonary slides appear in both lecture rows with the correct start page',()=>{
+ const materials=vm.runInNewContext(load('library-list.js')+';libraryMaterials');
+ const source=withMaterialLectureLinks({id:'shared',lectureId:'CVP-P26',name:'7. Shams_P26 and P27_Hypoxemia and V-Q mismatch_(2h) (1).pdf'});
+ assert.equal(materials({id:'CVP-P26'},null,[source]).slides[0].page,1);
+ assert.equal(materials({id:'CVP-P27'},null,[source]).slides[0].page,7);
+ assert.equal(materials({id:'CVP-P28'},null,[source]).slides.length,0);
 });

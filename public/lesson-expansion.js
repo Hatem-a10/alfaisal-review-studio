@@ -3,6 +3,7 @@ function applyLessonExpansion(learning,teaching,checks,pack){
  const questionIds=new Set(learning.questions.map(q=>q.id));
  for(const [id,entry] of Object.entries(pack)){
   const guide=teaching.guides[id];
+  if(entry.guide)Object.assign(guide,entry.guide);
   for(const [sectionId,expansion] of Object.entries(entry.sections)){
    const section=guide?.sections.find(s=>s.id===sectionId);
    if(!section)throw Error('Missing expansion target '+sectionId);
