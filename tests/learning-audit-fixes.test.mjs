@@ -229,4 +229,19 @@ test('topic score uses the full core question count and retains checked-answer a
  assert.equal(score.fullPercent,20);
  assert.equal(score.total,2);
  assert.equal(score.percent,50);
+ const restored=calculate({id:'lesson'},questions,record,{graded:{2:true,3:true,5:true},answers:{2:1,3:0,5:0}});
+ assert.equal(restored.total,4);
+ assert.equal(restored.available,5);
+});
+
+test('checking a mapped topic question records it under the open lesson',()=>{
+ const items=[{id:'first'},{id:'open'}], state={first:{},open:{}};
+ const context={state,DATA:{items},rec:x=>state[x.id],today:()=> '2026-11-08',
+  etEligibleQuestion:()=>false,persist(){},LEARNING:{lessons:[]},
+  Learn:{record:(r,q,choice)=>({results:{[q.id]:{ok:choice===q.answer}}})}};
+ const record=vm.runInNewContext(load('exam-tools.js').split('\n').find(line=>line.startsWith('function etRecordSet'))+';etRecordSet',context);
+ const q={id:'mapped',lectureIds:['first','open'],concept:'legacy-concept',objectiveId:'open-topic',answer:2};
+ record([q],[2],'Lesson topic questions',{lessonId:'open'});
+ assert.equal(state.open.learning.results.mapped.ok,true);
+ assert.equal(state.first.learning,undefined);
 });
