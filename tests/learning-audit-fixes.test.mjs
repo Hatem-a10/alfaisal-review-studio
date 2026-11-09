@@ -294,17 +294,26 @@ test('renamed cardiac slide originals are batch matched and shown as slides',()=
 test('cardiac teaching figures are linked to their source pages and render on the concept cards',()=>{
  const {learning,teaching}=assembledLearning();
  const context={rec:()=>({}),esc:String,sourceById:id=>learning.sources.find(s=>s.id===id),
-  guideParagraphs:()=>'',guideList:()=>'',conceptSourceDisclosure:()=>''};
- const render=vm.runInNewContext(load('learning-ui.js').split('\n')
-  .filter(line=>/^function (guideFigure|sectionCard)\(/.test(line)).join('\n')+';sectionCard',context);
+  guideParagraphs:()=>'',guideList:()=>'',conceptSourceDisclosure:()=>'',
+  guideFor:id=>teaching.guides[id],topicCardFacts:()=>[]};
+ const source=load('learning-ui.js').split('\n')
+  .filter(line=>/^function (guideFigure|lectureFigureStrip|sectionCard)\(/.test(line)).join('\n');
+ const card=load('inline-topics.js').split('\n').find(line=>line.startsWith('function topicConceptCard('));
+ const render=vm.runInNewContext(source+'\n'+card+';topicConceptCard',context);
  for(const id of ['CVP-A6','CVP-A7','CVP-A8','CVP-P6','CVP-P11','CVP-P14']){
-  const sections=teaching.guides[id].sections.filter(s=>s.figure);
+  const cards=teaching.guides[id].sections;
+  const sections=cards.filter(s=>s.figure);
+  const strip=render({id},{id},cards,cards.findIndex(s=>!s.figure));
+  assert.match(strip,/Figures from this lecture/);
   assert.equal(sections.length,2,id);
   for(const section of sections){
    const {source,page,image,width,height}=section.figure;
    assert.ok(context.sourceById(source)?.pages.some(row=>row.page===page),section.id);
    assert.ok(width>0&&height>0&&fs.existsSync('public'+image));
-   assert.ok(render({id},section,0).includes('src="'+image+'"'),section.id);
+   const html=render({id},{id},cards,cards.indexOf(section));
+   assert.ok(html.includes('src="'+image+'"'),section.id);
+   assert.ok(strip.includes('src="'+image+'"'),id);
+   assert.doesNotMatch(html,/Figures from this lecture/);
   }
  }
 });
