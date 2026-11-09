@@ -1,10 +1,4 @@
 let selected = '19';
-const cvpFinalMock = {
- id: 'cvp-final-repeat-mock',
- batch: '19',
- title: 'CVP Final · Repeated Questions Mock',
-};
-
 export function batchFor(set) {
  if (set.category === 'topic') return 'topics';
  if (set.id === 'mol-academic-aid-mock-2026') return '19';
@@ -19,23 +13,12 @@ function titleFor(id) {
 }
 
 function paperCard(s) {
- if (s.id === cvpFinalMock.id) {
-  return `<article>
-   <span class="pill">47 practice questions</span>
-   <h3>${esc(s.title)}</h3>
-   <p>Adapted from the 16th–18th batch papers, with color labels for repeats and reworked concepts mixed in.</p>
-   <div class="source-links">
-    <a href="/cvp-repeat/index.html">Open mock exam →</a>
-    <a href="/cvp-repeat/CVP-Repeated-16-18.apkg" download>Download the 47-card Anki deck</a>
-   </div>
-  </article>`;
- }
- const qs=s.ids.map(originalQuestionById),figures=qs.filter(q=>q.figures.length).length;return `<article><span class="pill">${qs.length} original question${qs.length===1?'':'s'}</span><div class="original-set-title"><h3>${esc(examSetTitle(s))}</h3><button class="rename-set-button" data-rename-set="${esc(s.id)}" aria-label="Rename ${esc(examSetTitle(s))}">✎ Rename</button></div>${settings.examNames?.[s.id]?`<small>Source: ${esc(s.title)}</small>`:''}<p>${esc(s.note||'Original wording and supplied answer key.')}</p><small>${figures} question${figures===1?'':'s'} with source figures · ${qs.filter(q=>q.type==='short').length} short answers</small><button class="primary" data-original-start="${esc(s.id)}">${originalRuns[s.id]?originalRuns[s.id].finishedAt?'View saved results':'Resume saved set':'Open original set'}</button><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${s.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a></article>` 
+ const qs=s.ids.map(originalQuestionById),figures=qs.filter(q=>q.figures.length).length;return `<article><span class="pill">${qs.length} ${s.adapted?"practice":"original"} question${qs.length===1?'':'s'}</span><div class="original-set-title"><h3>${esc(examSetTitle(s))}</h3><button class="rename-set-button" data-rename-set="${esc(s.id)}" aria-label="Rename ${esc(examSetTitle(s))}">✎ Rename</button></div>${settings.examNames?.[s.id]?`<small>Source: ${esc(s.title)}</small>`:''}<p>${esc(s.note||'Original wording and supplied answer key.')}</p><small>${figures} question${figures===1?'':'s'} with source figures · ${qs.filter(q=>q.type==='short').length} short answers</small><button class="primary" data-original-start="${esc(s.id)}">${originalRuns[s.id]?originalRuns[s.id].finishedAt?'View saved results':'Resume saved set':s.adapted?'Open mock exam':'Open original set'}</button>${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${s.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:""}</article>`
 }
 
 export function catalog() {
  const grouped = new Map(['19','18','17'].map(id=>[id,[]]));
- for(const set of [...ORIGINAL_EXAMS.sets, cvpFinalMock]) {
+ for(const set of ORIGINAL_EXAMS.sets) {
   const id=batchFor(set);
   if(!grouped.has(id))grouped.set(id,[]);
   grouped.get(id).push(set);

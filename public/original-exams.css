@@ -11,3 +11,17 @@
 .batch-index{display:flex;flex-wrap:wrap;gap:.45rem;margin:1rem 0 1.7rem}
 .batch-index [aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 15%,var(--white));font-weight:700}
 .batch-papers{scroll-margin-top:5rem}
+
+.cvp-repeat-badge {
+ display: inline-block;
+ border-radius: .5rem;
+ padding: .2rem .55rem;
+ background: #eceff1;
+ color: #25333a;
+ font-size: .85rem;
+ font-weight: 650;
+}
+.cvp-repeat-badge[data-repeat="all"] { background: #d5f4de; color: #17562e; }
+.cvp-repeat-badge[data-repeat="blue"] { background: #dcecff; color: #174d87; }
+.cvp-repeat-badge[data-repeat="yellow"] { background: #fff0b7; color: #664b00; }
+.cvp-repeat-badge[data-repeat="red"] { background: #ffe0dc; color: #8e2e29; }
