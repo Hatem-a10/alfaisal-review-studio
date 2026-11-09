@@ -419,7 +419,7 @@ const cvpMock = {
       "sourceExplanation": "Pulmonary C fibers respond to interstitial congestion and can trigger rapid shallow breathing.",
       "repeat": "yellow",
       "repeatLabel": "16th · 18th",
-      "sourceRefs": "16th Q43 p13; 18th Q52 p14"
+      "sourceRefs": "16th Q43 p13; 18th Q52 p14; Shams Quiz 2 Q30 p10"
     },
     {
       "id": "cvp-final-repeat-mock-17",
@@ -497,7 +497,7 @@ const cvpMock = {
       "sourceExplanation": "Lung inflation activates slowly adapting stretch receptors, which can inhibit inspiratory activity through vagal afferents.",
       "repeat": "blue",
       "repeatLabel": "17th · 18th",
-      "sourceRefs": "17th p26; 18th Q3 p1"
+      "sourceRefs": "17th p26; 18th Q3 p1; Shams Quiz 2 Q31 p11 (transplant application)"
     },
     {
       "id": "cvp-final-repeat-mock-20",
@@ -627,7 +627,7 @@ const cvpMock = {
       "sourceExplanation": "Widespread alveolar hypoxia constricts pulmonary arterioles and can increase pulmonary arterial pressure.",
       "repeat": "blue",
       "repeatLabel": "17th · 18th · also 15th",
-      "sourceRefs": "15th Q52 p16; 17th p23; 18th Q64 p18"
+      "sourceRefs": "15th Q52 p16; 17th p23; 18th Q64 p18; Shams Quiz 2 Q15 p5"
     },
     {
       "id": "cvp-final-repeat-mock-25",
@@ -653,7 +653,7 @@ const cvpMock = {
       "sourceExplanation": "Inspired PO2 = 0.21 × (247 − 47) = 42 mmHg. If alveolar CO2 is 28 and R is 1, alveolar PO2 is about 14 mmHg, not 56.",
       "repeat": "variant",
       "repeatLabel": "Concept variant",
-      "sourceRefs": "16th Q18 pp6–7; 18th Q66 p18"
+      "sourceRefs": "16th Q18 pp6–7; 18th Q66 p18; Shams Quiz 2 Q1 p1"
     },
     {
       "id": "cvp-final-repeat-mock-26",
@@ -705,7 +705,7 @@ const cvpMock = {
       "sourceExplanation": "Active expiration raises pleural pressure; forced inspiration lowers it. The 17th paper's key for the lowest pressure is questionable.",
       "repeat": "variant",
       "repeatLabel": "Concept variant",
-      "sourceRefs": "17th p10; 18th Q59 p16"
+      "sourceRefs": "17th p10; 18th Q59 p16; Shams Quiz 1 Q15 p5"
     },
     {
       "id": "cvp-final-repeat-mock-28",
@@ -1460,6 +1460,110 @@ const cvpMock = {
       "repeat": "red",
       "repeatLabel": "16th · 17th · also 15th (ambiguous key)",
       "sourceRefs": "15th Q38 p13 (ambiguous key); 16th Q53 p16; 17th p21"
+    },
+    {
+      "id": "cvp-final-repeat-mock-57",
+      "source": "cvp-final-repeat-mock",
+      "number": "57",
+      "type": "mcq",
+      "question": "All four breathing patterns produce 6 L/min of minute ventilation. If dead space is 0.15 L per breath, which pattern gives the greatest alveolar ventilation?",
+      "options": [
+        "0.25 L × 24/min",
+        "0.5 L × 12/min",
+        "1.0 L × 6/min",
+        "2.0 L × 3/min"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 3,
+      "printedAnswer": "D",
+      "figures": [],
+      "sourceExplanation": "Alveolar ventilation is (tidal volume − dead space) × rate. At equal minute ventilation, the lowest rate wastes the least ventilation in dead space. Here it gives 5.55 L/min. The 15th reconstruction does not specify dead space.",
+      "repeat": "review",
+      "repeatLabel": "Key review · Shams",
+      "sourceRefs": "Shams Quiz 1 Q3 p2; 15th Q26 p10"
+    },
+    {
+      "id": "cvp-final-repeat-mock-58",
+      "source": "cvp-final-repeat-mock",
+      "number": "58",
+      "type": "mcq",
+      "question": "At which lung volume is the combined lung and chest-wall system generally most compliant during quiet breathing?",
+      "options": [
+        "Functional residual capacity",
+        "Residual volume",
+        "Total lung capacity",
+        "Minimal lung volume below residual volume"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 0,
+      "printedAnswer": "A",
+      "figures": [],
+      "sourceExplanation": "The static pressure–volume curve of the combined respiratory system is steepest near functional residual capacity. Compliance is the slope, change in volume divided by change in pressure.",
+      "repeat": "review",
+      "repeatLabel": "Key review · Shams",
+      "sourceRefs": "Shams Quiz 1 Q9 p4; 17th p9"
+    },
+    {
+      "id": "cvp-final-repeat-mock-59",
+      "source": "cvp-final-repeat-mock",
+      "number": "59",
+      "type": "mcq",
+      "question": "Which alveolar cells proliferate after injury and can replenish the type I cells of the gas-exchange surface?",
+      "options": [
+        "Club cells",
+        "Alveolar macrophages",
+        "Type II pneumocytes",
+        "Ciliated epithelial cells"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 2,
+      "printedAnswer": "C",
+      "figures": [],
+      "sourceExplanation": "Type II pneumocytes act as alveolar epithelial progenitors. They proliferate and can differentiate into type I pneumocytes, which form most of the thin gas-exchange surface.",
+      "repeat": "review",
+      "repeatLabel": "Key review · Shams",
+      "sourceRefs": "Shams Quiz 1 Q12 pp4–5; 18th Q46 p13"
+    },
+    {
+      "id": "cvp-final-repeat-mock-60",
+      "source": "cvp-final-repeat-mock",
+      "number": "60",
+      "type": "mcq",
+      "question": "In what form is most carbon dioxide transported in blood from tissues to the lungs?",
+      "options": [
+        "Dissolved CO₂",
+        "Bicarbonate",
+        "Carbonic acid",
+        "Carbaminohemoglobin"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 1,
+      "printedAnswer": "B",
+      "figures": [],
+      "sourceExplanation": "Most CO₂ is transported as bicarbonate. Carbonic anhydrase in red blood cells accelerates bicarbonate formation. Smaller fractions travel dissolved or bound to proteins.",
+      "repeat": "review",
+      "repeatLabel": "Key review · Shams",
+      "sourceRefs": "Shams Quiz 2 Q22 p8; 16th Q20 p7"
     }
   ],
   "set": {
@@ -1524,10 +1628,14 @@ const cvpMock = {
       "cvp-final-repeat-mock-28",
       "cvp-final-repeat-mock-30",
       "cvp-final-repeat-mock-32",
-      "cvp-final-repeat-mock-51"
+      "cvp-final-repeat-mock-51",
+      "cvp-final-repeat-mock-57",
+      "cvp-final-repeat-mock-58",
+      "cvp-final-repeat-mock-59",
+      "cvp-final-repeat-mock-60"
     ],
     "adapted": true,
-    "note": "56 adapted MCQs. Confirmed repeats come first by number of matching batches, with the 16th–18th color groups used to break ties. Concept variants and key reviews follow."
+    "note": "60 adapted MCQs. Confirmed repeats appear first by batch count, then concept variants and key reviews, including four Shams matches."
   }
 };
 export function registerCvpMock(ORIGINAL_EXAMS) {
