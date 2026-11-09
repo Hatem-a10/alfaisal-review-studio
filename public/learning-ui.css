@@ -11,8 +11,3 @@
 .retention-check { margin-top: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
 .retention-check h3 { margin: 0 0 6px; }
 .retention-check label { display: block; margin: 8px 0; }
-
-.card-figure-strip{margin:.8rem 0 1rem}
-.card-figure-strip>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:.7rem}
-.card-figure-strip .lesson-figure{margin:0;min-width:0}
-.card-figure-strip img{height:clamp(7rem,18vw,12rem);width:100%;object-fit:contain;background:#fff}

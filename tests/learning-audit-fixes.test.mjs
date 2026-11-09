@@ -294,26 +294,25 @@ test('renamed cardiac slide originals are batch matched and shown as slides',()=
 test('cardiac teaching figures are linked to their source pages and render on the concept cards',()=>{
  const {learning,teaching}=assembledLearning();
  const context={rec:()=>({}),esc:String,sourceById:id=>learning.sources.find(s=>s.id===id),
-  guideParagraphs:()=>'',guideList:()=>'',conceptSourceDisclosure:()=>'',
-  guideFor:id=>teaching.guides[id],topicCardFacts:()=>[]};
+  guideParagraphs:()=>'<p>Teaching text</p>',guideList:()=>'',conceptSourceDisclosure:()=>'',topicCardFacts:()=>[]};
  const source=load('learning-ui.js').split('\n')
-  .filter(line=>/^function (guideFigure|lectureFigureStrip|sectionCard)\(/.test(line)).join('\n');
+  .filter(line=>/^function (guideFigure|sectionCard)\(/.test(line)).join('\n');
  const card=load('inline-topics.js').split('\n').find(line=>line.startsWith('function topicConceptCard('));
  const render=vm.runInNewContext(source+'\n'+card+';topicConceptCard',context);
  for(const id of ['CVP-A6','CVP-A7','CVP-A8','CVP-P6','CVP-P11','CVP-P14']){
   const cards=teaching.guides[id].sections;
   const sections=cards.filter(s=>s.figure);
-  const strip=render({id},{id},cards,cards.findIndex(s=>!s.figure));
-  assert.match(strip,/Figures from this lecture/);
-  assert.equal(sections.length,2,id);
+  const unrelated=render({id},{id},cards,cards.findIndex(s=>!s.figure));
+  assert.doesNotMatch(unrelated,/<img\b/);
+  assert.ok(sections.length,id);
   for(const section of sections){
    const {source,page,image,width,height}=section.figure;
    assert.ok(context.sourceById(source)?.pages.some(row=>row.page===page),section.id);
    assert.ok(width>0&&height>0&&fs.existsSync('public'+image));
    const html=render({id},{id},cards,cards.indexOf(section));
    assert.ok(html.includes('src="'+image+'"'),section.id);
-   assert.ok(strip.includes('src="'+image+'"'),id);
-   assert.doesNotMatch(html,/Figures from this lecture/);
+   assert.ok(html.indexOf('src="'+image+'"')>html.indexOf('<p>Teaching text</p>'),section.id);
+   assert.equal((html.match(/<img\b/g)||[]).length,1,section.id);
   }
  }
 });
