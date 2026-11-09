@@ -273,3 +273,20 @@ test('P2 Topic 7 updates the displayed count after a checked correction even wit
  assert.equal(next.total,3);
  assert.equal(next.complete,true);
 });
+
+test('renamed cardiac slide originals are batch matched and shown as slides',()=>{
+ const {match,materials}=vm.runInNewContext(load('library-list.js')+';({match:suppliedLectureForFile,materials:libraryMaterials})');
+ const files={
+  'A6 - Blood_Supply_of_the_Heart_2026-27_Dr. Akef (2).pdf':'CVP-A6',
+  'A7 - Blood Vessel Histology 2026 Fall Dr Ani (4).pptx':'CVP-A7',
+  'A8 - Thoracic Wall - Dr. Olena.pdf':'CVP-A8',
+  'P6 - Dr Moni Nader 11102026 (3).pptx':'CVP-P6',
+  'P11 - Cardiac output Venous return and their regulation- Dr Moni Nader- 18102026 (2).pptx':'CVP-P11',
+  'P14 - Cardiac Failure- Dr Moni Nader-21102026 (2).pptx':'CVP-P14',
+ };
+ for(const [name,id] of Object.entries(files)){
+  assert.equal(match(name),id);
+  const source={id:'test-original',name,lectureId:id};
+  assert.equal(materials({id},null,[source]).slides[0].source,source);
+ }
+});

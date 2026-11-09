@@ -11,6 +11,12 @@ function libraryDocumentURL(source, page = 1) {
 function suppliedLectureForFile(name) {
  const file = name.replace(/ \(\d+\)(?=\.[^.]+$)/, '');
  return {
+  'A6 - Blood_Supply_of_the_Heart_2026-27_Dr. Akef.pdf': 'CVP-A6',
+  'A7 - Blood Vessel Histology 2026 Fall Dr Ani.pptx': 'CVP-A7',
+  'A8 - Thoracic Wall - Dr. Olena.pdf': 'CVP-A8',
+  'P6 - Dr Moni Nader 11102026.pptx': 'CVP-P6',
+  'P11 - Cardiac output Venous return and their regulation- Dr Moni Nader- 18102026.pptx': 'CVP-P11',
+  'P14 - Cardiac Failure- Dr Moni Nader-21102026.pptx': 'CVP-P14',
   'Thoracic Wall - Dr. Olena.pdf': 'CVP-A8',
   'Lecture 2 Blood Vessel Histology 2026 Fall Dr Ani.pptx': 'CVP-A7',
   'A7. Blood Vessel Histology Transcription.pdf': 'CVP-A7',
