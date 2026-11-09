@@ -146,5 +146,161 @@
         "references": "new-p2324:4;new-p2324:5;new-p2324:6"
       }
     }
+  },
+  "CVP-A6": {
+    "sections": {
+      "CVP-A6:expanded-0": {
+        "references": "cvp-w2-a6:6;cvp-w2-slides-1:5;cvp-w2-slides-1:6;cvp-w2-slides-1:7;cvp-w2-slides-1:8;cvp-w2-slides-1:10",
+        "figure": {
+          "source": "cvp-w2-slides-1",
+          "page": 7,
+          "image": "/cardiac-slide-crops/a6-lad.webp",
+          "width": 947,
+          "height": 771,
+          "caption": "Follow the LAD down the anterior interventricular groove toward the apex. Distinguish the diagonal branches heading onto the ventricular wall from septal branches heading inward."
+        }
+      },
+      "CVP-A6:expanded-1": {
+        "references": "cvp-w2-a6:3;cvp-w2-slides-1:11;cvp-w2-slides-1:12;cvp-w2-slides-1:13;cvp-w2-slides-1:14",
+        "figure": {
+          "source": "cvp-w2-slides-1",
+          "page": 12,
+          "image": "/cardiac-slide-crops/a6-posterior.webp",
+          "width": 1048,
+          "height": 805,
+          "caption": "Find the crux on the diaphragmatic surface. In this right-dominant example, the posterior interventricular artery (PDA) branches from the RCA. Identify dominance by the PDA origin."
+        }
+      }
+    }
+  },
+  "CVP-A7": {
+    "sections": {
+      "CVP-A7:expanded-1": {
+        "references": "cvp-w2-a7:4;depth-t-4:23;depth-t-4:24;cvp-w2-slides-7:16;cvp-w2-slides-7:17;cvp-w2-slides-7:18;cvp-w2-slides-7:19;cvp-w2-slides-7:20;cvp-w2-slides-7:22;cvp-w2-slides-7:25;cvp-w2-slides-7:13;cvp-w2-slides-7:21",
+        "figure": {
+          "source": "cvp-w2-slides-7",
+          "page": 17,
+          "image": "/cardiac-slide-crops/a7-elastic.webp",
+          "width": 1060,
+          "height": 520,
+          "caption": "In this elastic artery, follow the repeated wavy elastic lamellae across the media. The smooth muscle lies between the elastic sheets."
+        }
+      },
+      "CVP-A7:w2-0": {
+        "references": "cvp-w2-a7:4;cvp-w2-slides-7:11;cvp-w2-slides-7:12;cvp-w2-slides-7:16;cvp-w2-slides-7:17;cvp-w2-slides-7:18",
+        "figure": {
+          "source": "cvp-w2-slides-7",
+          "page": 18,
+          "image": "/cardiac-slide-crops/a7-muscular.webp",
+          "width": 857,
+          "height": 669,
+          "caption": "In this muscular artery, find the wavy internal elastic lamina (IEL) bordering the lumen and the external elastic lamina (EEL) outside the muscle-rich media."
+        }
+      }
+    }
+  },
+  "CVP-A8": {
+    "sections": {
+      "CVP-A8:expanded-1": {
+        "references": "cvp-w2-a8:4;cvp-w2-slides-8:4;cvp-w2-slides-8:6",
+        "figure": {
+          "source": "cvp-w2-slides-8",
+          "page": 4,
+          "image": "/cardiac-slide-crops/a8-arteries.webp",
+          "width": 705,
+          "height": 790,
+          "caption": "Trace the posterior intercostal branches from the thoracic aorta and compare them with the anterior branches entering from the internal thoracic and musculophrenic pathways."
+        }
+      },
+      "CVP-A8:expanded-2": {
+        "references": "cvp-w2-a8:12;cvp-w2-slides-8:8;cvp-w2-slides-8:9;cvp-w2-slides-8:10;cvp-w2-slides-8:11;cvp-w2-slides-8:12;cvp-w2-slides-8:13",
+        "figure": {
+          "source": "cvp-w2-slides-8",
+          "page": 11,
+          "image": "/cardiac-slide-crops/a8-lymph.webp",
+          "width": 807,
+          "height": 810,
+          "caption": "Trace the green thoracic duct from the cisterna chyli through the thorax to the left venous angle. Compare its route with the nearby blue veins."
+        }
+      }
+    }
+  },
+  "CVP-P6": {
+    "sections": {
+      "CVP-P6:expanded-0": {
+        "references": "cvp-w2-p6:13;cvp-w2-slides-0:12;cvp-w2-slides-0:13;cvp-w2-slides-0:16;cvp-w2-slides-0:17;cvp-w2-slides-0:20",
+        "figure": {
+          "source": "cvp-w2-slides-0",
+          "page": 15,
+          "image": "/cardiac-slide-crops/p6-valves.webp",
+          "width": 1060,
+          "height": 785,
+          "caption": "Compare valve positions across the cycle. Find the two phases with both sets of valves closed, then use the direction of pressure change to distinguish contraction from relaxation."
+        }
+      },
+      "CVP-P6:expanded-3": {
+        "references": "cvp-w2-p6:9;cvp-w2-slides-0:9;cvp-w2-slides-0:11;cvp-w2-slides-0:20;cvp-w2-slides-0:21;cvp-w2-slides-0:22;cvp-w2-slides-0:19",
+        "figure": {
+          "source": "cvp-w2-slides-0",
+          "page": 20,
+          "image": "/cardiac-slide-crops/p6-timing.webp",
+          "width": 558,
+          "height": 900,
+          "caption": "Read the chart from top to bottom at one instant. Match each pressure crossing to a valve event, then compare ventricular volume, ECG and heart sounds. Figure from the lecture, credited to McGraw Hill."
+        }
+      }
+    }
+  },
+  "CVP-P11": {
+    "sections": {
+      "CVP-P11:w3-return-curve": {
+        "references": "cvp-w3-p11:17;cvp-w3-p11:18;cvp-w3-p11:19;cvp-w3-p11:20;cvp-w3-p11:21;cvp-w3-p11:22;cvp-transcript-p11:21;cvp-transcript-p11:24",
+        "figure": {
+          "source": "cvp-w3-p11",
+          "page": 19,
+          "image": "/cvp-week3-figures/p11-venous-return.webp",
+          "width": 722,
+          "height": 334,
+          "caption": "Find the right atrial pressure where venous return falls to zero. Then follow the curve leftward until further lowering right atrial pressure no longer increases return."
+        }
+      },
+      "CVP-P11:w3-equilibrium": {
+        "references": "cvp-w3-p11:23;cvp-w3-p11:24;cvp-w3-p11:25",
+        "figure": {
+          "source": "cvp-w3-p11",
+          "page": 24,
+          "image": "/cvp-week3-figures/p11-sympathetic.webp",
+          "width": 716,
+          "height": 619,
+          "caption": "Locate the intersection before and after sympathetic stimulation. At each intersection cardiac output equals venous return. Check the new pressure and flow by reading both axes."
+        }
+      }
+    }
+  },
+  "CVP-P14": {
+    "sections": {
+      "CVP-P14:w3-chronic-compensation": {
+        "references": "cvp-w3-p14:9;cvp-w3-p14:10;cvp-w3-p14:11;cvp-w3-p14:12;cvp-w3-p14:13;cvp-w3-p14:14;cvp-w3-p14:15;cvp-transcript-p14:8;cvp-transcript-p14:9;cvp-transcript-p14:11;cvp-transcript-p14:13;cvp-transcript-p14:26",
+        "figure": {
+          "source": "cvp-w3-p14",
+          "page": 30,
+          "image": "/cvp-week3-figures/p14-compensation.webp",
+          "width": 708,
+          "height": 338,
+          "caption": "Track the acute fall in output and the later compensated state. Compare right atrial pressure at the new operating point with the original point."
+        }
+      },
+      "CVP-P14:w3-decompensation": {
+        "references": "cvp-w3-p14:16;cvp-w3-p14:17;cvp-w3-p14:18;cvp-w3-p14:31;cvp-w3-p14:32;cvp-transcript-p14:17;cvp-transcript-p14:30;cvp-transcript-p14:31",
+        "figure": {
+          "source": "cvp-w3-p14",
+          "page": 31,
+          "image": "/cvp-week3-figures/p14-decompensation.webp",
+          "width": 712,
+          "height": 482,
+          "caption": "Follow the labeled sequence along the failing-heart curve. Ask whether the added fluid restores output or mostly raises filling pressure as failure progresses."
+        }
+      }
+    }
   }
 }

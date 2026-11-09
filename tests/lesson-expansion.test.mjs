@@ -43,7 +43,7 @@ test('CVP source walkthroughs attach to existing topics with valid references',(
  for(const [id,{sections}] of Object.entries(lab)){
   for(const sectionId of Object.keys(sections)){
    const section=teaching.guides[id].sections.find(item=>item.id===sectionId);
-   assert.ok(section.body.some(paragraph=>paragraph === sections[sectionId].body.at(-1)),sectionId);
+   if(sections[sectionId].body)assert.ok(section.body.some(paragraph=>paragraph === sections[sectionId].body.at(-1)),sectionId);
    for(const {source,page} of section.references)assert.ok(sources.get(source)?.pages.some(item=>item.page===page));
   }
  }

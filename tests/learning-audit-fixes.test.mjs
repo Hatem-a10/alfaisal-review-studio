@@ -290,3 +290,21 @@ test('renamed cardiac slide originals are batch matched and shown as slides',()=
   assert.equal(materials({id},null,[source]).slides[0].source,source);
  }
 });
+
+test('cardiac teaching figures are linked to their source pages and render on the concept cards',()=>{
+ const {learning,teaching}=assembledLearning();
+ const context={rec:()=>({}),esc:String,sourceById:id=>learning.sources.find(s=>s.id===id),
+  guideParagraphs:()=>'',guideList:()=>'',conceptSourceDisclosure:()=>''};
+ const render=vm.runInNewContext(load('learning-ui.js').split('\n')
+  .filter(line=>/^function (guideFigure|sectionCard)\(/.test(line)).join('\n')+';sectionCard',context);
+ for(const id of ['CVP-A6','CVP-A7','CVP-A8','CVP-P6','CVP-P11','CVP-P14']){
+  const sections=teaching.guides[id].sections.filter(s=>s.figure);
+  assert.equal(sections.length,2,id);
+  for(const section of sections){
+   const {source,page,image,width,height}=section.figure;
+   assert.ok(context.sourceById(source)?.pages.some(row=>row.page===page),section.id);
+   assert.ok(width>0&&height>0&&fs.existsSync('public'+image));
+   assert.ok(render({id},section,0).includes('src="'+image+'"'),section.id);
+  }
+ }
+});
