@@ -28,8 +28,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "The right main bronchus is wider and more vertical; individual anatomy and patient position can alter the destination.",
       "repeat": "all",
-      "repeatLabel": "16th · 17th · 18th",
-      "sourceRefs": "16th Q9 p4; 17th p14; 18th Q74 p21"
+      "repeatLabel": "14th · 16th · 17th · 18th",
+      "sourceRefs": "14th Q21 p12; OSPE station 2 p2; 16th Q9 p4; 17th p14; 18th Q74 p21"
     },
     {
       "id": "cvp-final-repeat-mock-2",
@@ -53,7 +53,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "The specialized ventricular conduction network lies mainly beneath the endocardium.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "16th · 17th · 18th",
       "sourceRefs": "16th Q24 p8; 17th p22; 18th Q75 p21"
     },
@@ -79,7 +79,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "Preganglionic cardiac sympathetic neurons originate in the upper thoracic intermediolateral cell column; postganglionic neurons lie in sympathetic ganglia.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "16th · 17th · 18th",
       "sourceRefs": "16th Q44 pp13–14; 17th p29; 18th Q55 p15"
     },
@@ -106,8 +106,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "Insufficient amniotic fluid can restrict fetal lung growth, producing pulmonary hypoplasia.",
       "repeat": "all",
-      "repeatLabel": "16th · 17th · 18th",
-      "sourceRefs": "16th Q8 p4; 17th p14; 18th Q69 p19"
+      "repeatLabel": "14th · 16th · 17th · 18th",
+      "sourceRefs": "14th Q8 p10; 16th Q8 p4; 17th p14; 18th Q69 p19"
     },
     {
       "id": "cvp-final-repeat-mock-5",
@@ -131,7 +131,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "Vital capacity decreases as residual volume tends to rise; the change is not equivalent to saying that TLC always markedly decreases.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "16th · 17th · 18th",
       "sourceRefs": "16th Q60 p17; 17th pp8–9; 18th Q57 p16"
     },
@@ -158,8 +158,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "The left umbilical vein brings oxygenated blood from the placenta; the ductus venosus provides the partial hepatic bypass. The student papers sometimes call the umbilical vein the bypass itself.",
       "repeat": "all",
-      "repeatLabel": "16th · 17th · 18th",
-      "sourceRefs": "16th Q32 p10; 17th p13; 18th Q41 p12"
+      "repeatLabel": "14th · 16th · 17th · 18th",
+      "sourceRefs": "14th Q6 p10; 16th Q32 p10; 17th p13; 18th Q41 p12"
     },
     {
       "id": "cvp-final-repeat-mock-7",
@@ -184,8 +184,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "Bronchioles lack cartilage and submucosal glands. Respiratory bronchioles have alveoli opening into their walls; terminal bronchioles do not.",
       "repeat": "all",
-      "repeatLabel": "16th · 17th · 18th",
-      "sourceRefs": "16th Q7 p4; 17th OSPE pp52–53; 18th Q78 p22"
+      "repeatLabel": "14th · 16th · 17th · 18th",
+      "sourceRefs": "14th Q2 p10; OSPE station 12 p5; 16th Q7 p4; 17th OSPE pp52–53; 18th Q78 p22"
     },
     {
       "id": "cvp-final-repeat-mock-8",
@@ -209,7 +209,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "Beta-2 stimulation relaxes airway smooth muscle. Parasympathetic stimulation and histamine constrict airways; lower lung volume reduces radial traction.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "16th · 17th · 18th",
       "sourceRefs": "16th Q59 p17; 17th p25; 18th Q63 p17"
     },
@@ -235,7 +235,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "The phrenic nerve passes anterior to the lung root; the vagus passes posterior to it.",
-      "repeat": "yellow",
+      "repeat": "red",
       "repeatLabel": "16th · 17th",
       "sourceRefs": "16th Q26 p9; 17th p8"
     },
@@ -261,7 +261,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "Posterior ethmoidal air cells drain into the superior meatus; the other listed sinuses drain into the middle meatus.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "15th · 16th · 17th",
       "sourceRefs": "15th Q7 p5; 16th Q21 p7; 17th p12"
     },
@@ -287,7 +287,7 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "The right upper lobe contains apical, posterior and anterior bronchopulmonary segments.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "15th · 16th · 17th",
       "sourceRefs": "15th Q32 p11; 16th Q22 p8; 17th p12"
     },
@@ -313,7 +313,7 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "Primary somatic sensory neuron cell bodies are in dorsal root ganglia, including those traveling in intercostal or phrenic nerves.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "15th · 16th · 17th",
       "sourceRefs": "15th Q36 p12; 16th Q72 p20; 17th pp13–14"
     },
@@ -339,9 +339,9 @@ const cvpMock = {
       "printedAnswer": "B",
       "figures": [],
       "sourceExplanation": "Persistence of the relevant left anterior cardinal pathway can produce a left SVC, often with a right SVC.",
-      "repeat": "yellow",
-      "repeatLabel": "16th · 17th",
-      "sourceRefs": "16th Q50 p15; 17th p13"
+      "repeat": "blue",
+      "repeatLabel": "14th · 16th · 17th",
+      "sourceRefs": "14th Q7 p10; 16th Q50 p15; 17th p13"
     },
     {
       "id": "cvp-final-repeat-mock-14",
@@ -365,7 +365,7 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "Elevation of the lateral portions of the ribs increases transverse diameter; pump-handle movement chiefly increases the anteroposterior dimension.",
-      "repeat": "yellow",
+      "repeat": "red",
       "repeatLabel": "16th · 17th",
       "sourceRefs": "16th Q4 p3; 17th pp11–12; 18th Q27 p8"
     },
@@ -391,7 +391,7 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "Low arterial oxygen and increased carbon dioxide both stimulate peripheral chemoreceptors. The 16th reconstruction duplicates this combination among its choices.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "16th · 18th",
       "sourceRefs": "16th Q16 p6; 18th Q72 p21"
     },
@@ -417,7 +417,7 @@ const cvpMock = {
       "printedAnswer": "B",
       "figures": [],
       "sourceExplanation": "Pulmonary C fibers respond to interstitial congestion and can trigger rapid shallow breathing.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "16th · 18th",
       "sourceRefs": "16th Q43 p13; 18th Q52 p14; Shams Quiz 2 Q30 p10"
     },
@@ -443,7 +443,7 @@ const cvpMock = {
       "printedAnswer": "B",
       "figures": [],
       "sourceExplanation": "The two elastic components act in series, so their elastances, the reciprocals of compliance, add.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "16th · 18th",
       "sourceRefs": "16th Q36 p11; 18th Q60 p16"
     },
@@ -470,8 +470,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "Persistence of the left postrenal supracardinal vein can produce a left-sided IVC alongside the normal right IVC.",
       "repeat": "all",
-      "repeatLabel": "15th · 16th · 18th",
-      "sourceRefs": "15th Q33 p12; 16th Q49 p15; 18th Q42 p12"
+      "repeatLabel": "14th · 15th · 16th · 18th",
+      "sourceRefs": "14th Q5 p10; 15th Q33 p12; 16th Q49 p15; 18th Q42 p12"
     },
     {
       "id": "cvp-final-repeat-mock-19",
@@ -495,7 +495,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "Lung inflation activates slowly adapting stretch receptors, which can inhibit inspiratory activity through vagal afferents.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p26; 18th Q3 p1; Shams Quiz 2 Q31 p11 (transplant application)"
     },
@@ -522,8 +522,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "The right nerve loops under the right subclavian artery; the left loops under the aortic arch near the ligamentum arteriosum.",
       "repeat": "all",
-      "repeatLabel": "15th · 17th · 18th",
-      "sourceRefs": "15th Q21 pp8–9; 17th pp27–28; 18th Q6 p2"
+      "repeatLabel": "14th · 15th · 17th · 18th",
+      "sourceRefs": "14th Q13 and Q20 pp11–12; 15th Q21 pp8–9; 17th pp27–28; 18th Q6 p2"
     },
     {
       "id": "cvp-final-repeat-mock-21",
@@ -547,7 +547,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "The septomarginal trabecula carries part of the right bundle branch toward the right ventricular anterior papillary muscle.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p22; 18th Q25 p8"
     },
@@ -573,7 +573,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "Pulmonary blood flow and left atrial return increase after birth, pushing the septum primum against the septum secundum.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p34; 18th Q26 p8"
     },
@@ -599,7 +599,7 @@ const cvpMock = {
       "printedAnswer": "B",
       "figures": [],
       "sourceExplanation": "Dead-space ventilation equals dead-space volume per breath multiplied by respiratory frequency. Alveolar ventilation increases under these assumptions.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p3; 18th Q68 p19"
     },
@@ -625,7 +625,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "Widespread alveolar hypoxia constricts pulmonary arterioles and can increase pulmonary arterial pressure.",
-      "repeat": "all",
+      "repeat": "blue",
       "repeatLabel": "15th · 17th · 18th",
       "sourceRefs": "15th Q52 p16; 17th p23; 18th Q64 p18; Shams Quiz 2 Q15 p5"
     },
@@ -755,7 +755,7 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "Poiseuille’s law predicts flow proportional to radius to the fourth power. Real stenoses may violate its ideal assumptions.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p27; 18th Q29 p9"
     },
@@ -859,7 +859,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "Interruption of the sympathetic pathway produces Horner syndrome.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th p6 and OSPE pp50–51; 18th OSPE p26"
     },
@@ -885,7 +885,7 @@ const cvpMock = {
       "printedAnswer": "B",
       "figures": [],
       "sourceExplanation": "Alveolar vessel resistance rises at high lung volume; extra-alveolar vessels behave differently.",
-      "repeat": "blue",
+      "repeat": "yellow",
       "repeatLabel": "17th · 18th",
       "sourceRefs": "17th pp36–37; 18th Q79 p22"
     },
@@ -1275,7 +1275,7 @@ const cvpMock = {
       "printedAnswer": "A",
       "figures": [],
       "sourceExplanation": "Calcium binds troponin C, moving tropomyosin to uncover myosin-binding sites on actin.",
-      "repeat": "yellow",
+      "repeat": "red",
       "repeatLabel": "15th · 17th",
       "sourceRefs": "15th Q1 p4; 17th p28"
     },
@@ -1302,8 +1302,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "Aortic narrowing reduces pressure and delays pulses distal to the obstruction.",
       "repeat": "blue",
-      "repeatLabel": "15th · 18th",
-      "sourceRefs": "15th Q37 pp12–13; 18th Q53 p15"
+      "repeatLabel": "14th · 15th · 18th",
+      "sourceRefs": "14th SAQ Q1 p9; 15th Q37 pp12–13; 18th Q53 p15"
     },
     {
       "id": "cvp-final-repeat-mock-51",
@@ -1354,8 +1354,8 @@ const cvpMock = {
       "figures": [],
       "sourceExplanation": "Stratified squamous epithelium protects the true vocal folds from repeated mechanical friction.",
       "repeat": "blue",
-      "repeatLabel": "15th · 18th",
-      "sourceRefs": "15th Q13 pp6–7; 18th Q14 p5"
+      "repeatLabel": "14th · 15th · 18th",
+      "sourceRefs": "14th Q28 p13; 15th Q13 pp6–7; 18th Q14 p5"
     },
     {
       "id": "cvp-final-repeat-mock-53",
@@ -1405,9 +1405,9 @@ const cvpMock = {
       "printedAnswer": "D",
       "figures": [],
       "sourceExplanation": "The diaphragm contracts and descends, increasing the vertical dimension of the thorax.",
-      "repeat": "red",
-      "repeatLabel": "15th · 16th",
-      "sourceRefs": "15th Q19 p8; 16th Q57 p17"
+      "repeat": "blue",
+      "repeatLabel": "14th · 15th · 16th",
+      "sourceRefs": "14th Q14 p11; 15th Q19 p8; 16th Q57 p17"
     },
     {
       "id": "cvp-final-repeat-mock-55",
@@ -1457,7 +1457,7 @@ const cvpMock = {
       "printedAnswer": "C",
       "figures": [],
       "sourceExplanation": "In the classic double arch, the right fourth arch pathway persists alongside the left. The 15th paper keys left fifth arch for “double aorta,” a less specific phrase.",
-      "repeat": "yellow",
+      "repeat": "red",
       "repeatLabel": "16th · 17th · 15th key ambiguous",
       "sourceRefs": "15th Q38 p13 (ambiguous key); 16th Q53 p16; 17th p21"
     },
@@ -1511,7 +1511,7 @@ const cvpMock = {
       "sourceExplanation": "The static pressure–volume curve of the combined respiratory system is steepest near functional residual capacity. Compliance is the slope, change in volume divided by change in pressure.",
       "repeat": "review",
       "repeatLabel": "Key review · Shams",
-      "sourceRefs": "Shams Quiz 1 Q9 p4; 17th p9"
+      "sourceRefs": "14th Q24 p13; Shams Quiz 1 Q9 p4; 17th p9"
     },
     {
       "id": "cvp-final-repeat-mock-59",
@@ -1564,6 +1564,110 @@ const cvpMock = {
       "repeat": "review",
       "repeatLabel": "Key review · Shams",
       "sourceRefs": "Shams Quiz 2 Q22 p8; 16th Q20 p7"
+    },
+    {
+      "id": "cvp-final-repeat-mock-61",
+      "source": "cvp-final-repeat-mock",
+      "number": "61",
+      "type": "mcq",
+      "question": "Which alveolar cell type covers most of the gas-exchange surface?",
+      "options": [
+        "Type II pneumocyte",
+        "Type I pneumocyte",
+        "Alveolar macrophage",
+        "Club cell"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 1,
+      "printedAnswer": "B",
+      "figures": [],
+      "sourceExplanation": "Thin type I pneumocytes cover most of the alveolar surface; type II cells produce surfactant and help regenerate epithelium.",
+      "repeat": "red",
+      "repeatLabel": "14th · 17th",
+      "sourceRefs": "14th MCQ Q1 p10; 17th MCQ p15"
+    },
+    {
+      "id": "cvp-final-repeat-mock-62",
+      "source": "cvp-final-repeat-mock",
+      "number": "62",
+      "type": "mcq",
+      "question": "Where is the pulmonary valve best heard?",
+      "options": [
+        "Second right intercostal space at the sternal border",
+        "Fifth left intercostal space at the midclavicular line",
+        "Second left intercostal space at the sternal border",
+        "Lower left sternal border"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 2,
+      "printedAnswer": "C",
+      "figures": [],
+      "sourceExplanation": "The pulmonary auscultation area lies at the second left intercostal space adjacent to the sternum.",
+      "repeat": "red",
+      "repeatLabel": "14th · 17th",
+      "sourceRefs": "14th Q19 p12; 17th pp28–29"
+    },
+    {
+      "id": "cvp-final-repeat-mock-63",
+      "source": "cvp-final-repeat-mock",
+      "number": "63",
+      "type": "mcq",
+      "question": "Which cell produces pulmonary surfactant?",
+      "options": [
+        "Type I pneumocyte",
+        "Alveolar macrophage",
+        "Type II pneumocyte",
+        "Goblet cell"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 2,
+      "printedAnswer": "C",
+      "figures": [],
+      "sourceExplanation": "Type II pneumocytes synthesize and secrete pulmonary surfactant, lowering surface tension.",
+      "repeat": "blue",
+      "repeatLabel": "14th · 16th · 17th",
+      "sourceRefs": "14th OSPE station 4 p3; 16th OSPE station 6 p26; 17th OSPE station 16 pp51–52"
+    },
+    {
+      "id": "cvp-final-repeat-mock-64",
+      "source": "cvp-final-repeat-mock",
+      "number": "64",
+      "type": "mcq",
+      "question": "Closure of the mitral valve contributes to which heart sound?",
+      "options": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "letters": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": 0,
+      "printedAnswer": "A",
+      "figures": [],
+      "sourceExplanation": "The first heart sound results from closure of the mitral and tricuspid valves at the start of ventricular systole.",
+      "repeat": "red",
+      "repeatLabel": "14th · 17th",
+      "sourceRefs": "14th OSPE station 10 p5; 17th OSPE station 8 p47 and MCQ p37"
     }
   ],
   "set": {
@@ -1574,19 +1678,24 @@ const cvpMock = {
     "category": "exam",
     "ids": [
       "cvp-final-repeat-mock-1",
-      "cvp-final-repeat-mock-2",
-      "cvp-final-repeat-mock-3",
       "cvp-final-repeat-mock-4",
-      "cvp-final-repeat-mock-5",
       "cvp-final-repeat-mock-6",
       "cvp-final-repeat-mock-7",
-      "cvp-final-repeat-mock-8",
       "cvp-final-repeat-mock-20",
-      "cvp-final-repeat-mock-24",
       "cvp-final-repeat-mock-18",
+      "cvp-final-repeat-mock-2",
+      "cvp-final-repeat-mock-3",
+      "cvp-final-repeat-mock-5",
+      "cvp-final-repeat-mock-8",
+      "cvp-final-repeat-mock-24",
       "cvp-final-repeat-mock-10",
       "cvp-final-repeat-mock-11",
       "cvp-final-repeat-mock-12",
+      "cvp-final-repeat-mock-50",
+      "cvp-final-repeat-mock-52",
+      "cvp-final-repeat-mock-13",
+      "cvp-final-repeat-mock-54",
+      "cvp-final-repeat-mock-63",
       "cvp-final-repeat-mock-19",
       "cvp-final-repeat-mock-21",
       "cvp-final-repeat-mock-22",
@@ -1597,17 +1706,16 @@ const cvpMock = {
       "cvp-final-repeat-mock-15",
       "cvp-final-repeat-mock-16",
       "cvp-final-repeat-mock-17",
-      "cvp-final-repeat-mock-50",
-      "cvp-final-repeat-mock-52",
       "cvp-final-repeat-mock-9",
-      "cvp-final-repeat-mock-13",
       "cvp-final-repeat-mock-14",
       "cvp-final-repeat-mock-56",
       "cvp-final-repeat-mock-49",
       "cvp-final-repeat-mock-48",
       "cvp-final-repeat-mock-53",
-      "cvp-final-repeat-mock-54",
       "cvp-final-repeat-mock-55",
+      "cvp-final-repeat-mock-61",
+      "cvp-final-repeat-mock-62",
+      "cvp-final-repeat-mock-64",
       "cvp-final-repeat-mock-25",
       "cvp-final-repeat-mock-26",
       "cvp-final-repeat-mock-27",
@@ -1635,7 +1743,7 @@ const cvpMock = {
       "cvp-final-repeat-mock-60"
     ],
     "adapted": true,
-    "note": "60 adapted MCQs. Green: 3–4 batches. Blue: two including the 18th. Yellow: other pairs. Red: 15th + 16th only. Gray: concept variants and key reviews."
+    "note": "64 adapted MCQs. Green: 4–5 batches. Blue: 3. Yellow: 2 including the 18th. Red: other two-batch matches. Gray: concept variants and key reviews."
   }
 };
 export function registerCvpMock(ORIGINAL_EXAMS) {
