@@ -316,3 +316,18 @@ test('cardiac teaching figures are linked to their source pages and render on th
   }
  }
 });
+
+test('lecture practice offers a whole-lecture set alongside individual topics',()=>{
+ const questions=[{id:'a',lectureIds:['P2'],concept:'a'},{id:'b',lectureIds:['P2'],concept:'b'},
+  {id:'c',lectureIds:['P3'],concept:'b'},{id:'invalid',lectureIds:['P2'],concept:'a'}];
+ const ctx={etLecture:'P2',etConcept:'',etScope:'CVP',etSet:null,etBank:()=>questions,
+  ExamEngine:{usable:q=>q.id!=='invalid'},etLectureOptions:()=>[{id:'P2',code:'P2'}],
+  etConceptOptions:()=>[{id:'a',name:'A'},{id:'b',name:'B'}],esc:String,title:x=>x.code,
+  etCourseOptions:()=>'',mixControls:()=>''};
+ const lines=load('exam-tools.js').split('\n').filter(line=>/^function et(SetQuestions|ConceptPanel)\(/.test(line));
+ vm.runInNewContext(lines.join('\n'),ctx);
+ assert.match(ctx.etConceptPanel(),/<option value="">All topics<\/option>/);
+ assert.equal(ctx.etSetQuestions().map(q=>q.id).join(','),'a,b');
+ ctx.etConcept='b';
+ assert.equal(ctx.etSetQuestions().map(q=>q.id).join(','),'b');
+});
