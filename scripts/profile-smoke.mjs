@@ -17,14 +17,16 @@ try{
  await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
  await boot('guest');await waitFor("!!document.querySelector('#profileSignInNotice[open]')");
  await check('fresh guest has a clear sign-in invitation',"!!document.querySelector('#profileSignInNotice a[href^=\"/signin-with-chatgpt\"]')");
+ await check('fresh guest has no owner academic group',"document.querySelector('#mainSidebar .student strong').textContent==='Made by Hatem'");
  await check('fresh guest does not inherit personal profile',"document.querySelector('.profile-name').textContent==='Your profile'&&document.querySelector('#profilePhotoMark').textContent==='?'");
  let png=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(path.join(out,'guest.png'),Buffer.from(png.data,'base64'));
  await evaluate("document.querySelector('[data-profile-browse]').click();true");
  await boot('new');await waitFor("!!document.querySelector('#studentProfileSetup[open]')");
  await check('no cloud write before profile is entered',"window.__profileWrites.length===0");
  await check('new profile inputs start empty',"document.querySelector('[name=name]').value===''&&document.querySelector('[name=number]').value===''");
- await evaluate("document.querySelector('[name=name]').value='Maya Student';document.querySelector('[name=number]').value='123456789';document.querySelector('#studentProfileForm').requestSubmit();true");
+ await evaluate("document.querySelector('[name=name]').value='Maya Student';document.querySelector('[name=number]').value='123456789';document.querySelector('[name=group]').value='F2';document.querySelector('[name=section]').value='B';document.querySelector('#studentProfileForm').requestSubmit();true");
  await waitFor("window.__profileWrites.length>0");
+ await check('chosen academic group replaces owner group',"document.querySelector('#mainSidebar .student strong').textContent==='F2-B'&&JSON.parse(localStorage.getItem('qa-profile-cloud:new')).settings.studentGroup==='F2'");
  await check('new profile is visible and saved to own cloud snapshot',"document.querySelector('.profile-name').textContent.includes('Maya Student')&&document.querySelector('.student-number').textContent==='#123456789'&&JSON.parse(localStorage.getItem('qa-profile-cloud:new')).settings.profileName==='Maya Student'");
  await evaluate('window.__profileReloadMarker=true');await call('Page.reload');await waitFor("!window.__profileReloadMarker&&typeof settings!=='undefined'&&document.documentElement.dataset.boot==='ready'&&document.querySelector('.profile-name').textContent.includes('Maya Student')");
  await check('profile persists across refresh without another setup',"!document.querySelector('#studentProfileSetup[open]')&&settings.studentNumber==='123456789'");
@@ -33,6 +35,12 @@ try{
  await check('legacy user retains original identity and completion',"settings.studentNumber===''&&state['CVP-P1'].done[0]==='2026-11-01T12:00:00Z'&&!document.querySelector('#studentProfileSetup[open]')");
  await boot('returning',{...legacy,settings:{profileName:'Returning Student',studentNumber:'222',profileCreatedAt:'2026-11-11T10:00:00Z'}});await waitFor("document.querySelector('.profile-name').textContent.includes('Returning Student')");
  await check('returning account restores its profile on a new device',"settings.studentNumber==='222'&&!document.querySelector('#studentProfileSetup[open]')");
+ await check('no academic group selected shows a credit rather than owner group',"document.querySelector('#mainSidebar .student strong').textContent==='Made by Hatem'");
+ await evaluate("document.querySelector('#openSiteAdmin').click();true");await waitFor("!!document.querySelector('#studentGroupSettings')");
+ await evaluate("document.querySelector('#studentGroupSettings [name=group]').value='M2';document.querySelector('#studentGroupSettings [name=section]').value='A';document.querySelector('#studentGroupSettings').requestSubmit();true");
+ await waitFor("JSON.parse(localStorage.getItem('qa-profile-cloud:returning')||'{}').settings?.studentGroup==='M2'");
+ await check('optional group can be changed and synced in Site Settings',"document.querySelector('#mainSidebar .student strong').textContent==='M2-A'");
+ await evaluate("document.querySelector('#closeSiteAdmin').click();true");
  for(const [name,width,height] of [['desktop',1440,1000],['phone',390,844]]){
   await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:name==='phone'});
   await evaluate(`document.querySelector('#content').insertAdjacentHTML('afterbegin','<figure class="lesson-figure" id="qaFigure"><a href="/ospe-figures/mock-1.webp" target="_blank"><img src="/ospe-figures/mock-1.webp" alt="QA figure"></a></figure>');document.querySelector('#qaFigure a').click();true`);

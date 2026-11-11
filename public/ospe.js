@@ -1,6 +1,6 @@
 import {OspeCore as Core} from './ospe-core.mjs';
 export async function mount(){
- const response=await fetch('/ospe-curriculum.json?v=3',{credentials:'same-origin'});if(!response.ok)throw Error('OSPE material could not load. Please retry.');const pack=await response.json();
+ const response=await fetch('/ospe-curriculum.json?v=4',{credentials:'same-origin'});if(!response.ok)throw Error('OSPE material could not load. Please retry.');const pack=await response.json();
  if(pack.version!==1||!Array.isArray(pack.stations)||pack.stations.some(s=>!s.figure||!s.imageTask?.width||!s.imageTask?.height))throw Error('Invalid OSPE curriculum.');
  let category='all',week='all',mock=false,query='',stationId=null,revealed=false,marks={},answers={},run=null,reviewIndex=0,lastIndex=-1;
  const lookup=id=>pack.stations.find(s=>s.id===id), data=()=>LabCore.merge({},storeOptions().practical||{}),save=d=>saveOptions({...storeOptions(),practical:d});
@@ -11,7 +11,7 @@ export async function mount(){
  const filtered=()=>Core.select(pack.stations,category,week,mock).filter(s=>!query||(s.title+' '+s.remember).toLowerCase().includes(query.toLowerCase()));
  const cat=id=>pack.categories.find(c=>c.id===id);
  const svg=(type)=>'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="'+({dry:'M5 4h5v5H5zM14 15h5v5h-5zM8 8l8 8',wet:'M12 21S2 15 2 8a5 5 0 0 1 10-2A5 5 0 0 1 22 8c0 7-10 13-10 13',histology:'M7 3h5v8H7zM9 11v3M15 7a7 7 0 0 1 0 14H4m0-7h9',physiology:'M2 12h5l3-8 4 16 3-8h5'}[type]||'M12 3v18M3 12h18')+'"/></svg>';
- function nav(){return '<div class="learning-kind-switch" aria-label="Learning area"><button data-view="learning">Lessons</button><button data-view="labs">Labs & practicals</button><button class="selected" data-view="ospe">'+svg('histology')+'OSPE</button></div>'}
+ function nav(){return learningAreaTabs('ospe')}
  function ref(s){if(!s.source)return '<span>'+esc(s.origin||'Existing practical')+' · '+(s.references||[]).map(r=>esc(r.source)+' p'+esc(r.page)).join(', ')+'</span>';const src=pack.sources.find(x=>x.id===s.source);return '<span>'+esc(src.title)+' · '+(src.title.endsWith('.pptx')?'slide ':'p')+s.page+(s.mockNumber?' · Q'+s.mockNumber:'')+'</span>'}
  function stationFigure(s,showLabels=false,zoom=false){
   const t=s.imageTask,w=t.width,h=t.height,n=x=>Number(x)||0;

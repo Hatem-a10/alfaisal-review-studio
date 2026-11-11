@@ -34,6 +34,9 @@ export async function PUT(request:Request){
 
 function validSnapshot(s: any): boolean {
  if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,any][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
+ if(s.settings?.studentGroup!==undefined&&!['','M1','M2','F1','F2'].includes(s.settings.studentGroup))return false;
+ if(s.settings?.studentSection!==undefined&&!['','A','B'].includes(s.settings.studentSection))return false;
+ if(s.settings?.groupConfigured!==undefined&&typeof s.settings.groupConfigured!=='boolean')return false;
  if(s.settings?.profileName!==undefined&&(typeof s.settings.profileName!=='string'||s.settings.profileName.length>100))return false;
  if(s.settings?.studentNumber!==undefined&&(typeof s.settings.studentNumber!=='string'||s.settings.studentNumber.length>30))return false;
  if(s.settings?.profileCreatedAt!==undefined&&s.settings.profileCreatedAt!==null&&(typeof s.settings.profileCreatedAt!=='string'||!Number.isFinite(Date.parse(s.settings.profileCreatedAt))))return false;

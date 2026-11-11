@@ -5,7 +5,7 @@
  const data=()=>LabCore.merge({},storeOptions().practical||{});
  function save(next){saveOptions({...storeOptions(),practical:next})}
  const current=()=>pack?.modules.find(m=>m.id===moduleId),topic=()=>current()?.topics[topicIndex];
- function tabs(selected){return '<div class="learning-kind-switch" aria-label="Learning area"><button data-view="learning" class="'+(selected==='lessons'?'selected':'')+'">'+(typeof uiIcon==='function'?uiIcon('book'):'')+'Lessons</button><button data-view="labs" class="'+(selected==='labs'?'selected':'')+'">'+icon+'Labs & practicals</button><button data-view="ospe">'+icon+'OSPE</button></div>'}
+ function tabs(selected){return learningAreaTabs(selected==='lessons'?'learning':selected)}
  async function load(){if(pack||loading)return;error='';loading=fetch('/lab-curriculum.json?v=5',{credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('Could not load the lab curriculum.');return r.json()}).then(p=>{if(p.version!==1||!Array.isArray(p.modules))throw Error('Invalid lab curriculum.');pack=p;for(const s of p.sources)if(!LEARNING.sources.some(v=>v.id===s.id))LEARNING.sources.push(s);const last=p.modules.find(m=>m.id===data().lastView?.module);if(last){moduleId=last.id;course=last.course}moduleId??=p.modules.find(m=>m.course===course)?.id;restore()}).catch(e=>error=e.message).finally(()=>{loading=null;if(view==='labs')render()})}
  function fresh(t){return {id:crypto.randomUUID(),topic:t.id,answers:{},at:new Date().toISOString(),submitted:false}}
  function restoreRun(topic) {

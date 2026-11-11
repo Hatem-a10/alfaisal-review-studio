@@ -173,3 +173,16 @@ GET progress responses include an opaque SHA-256 accountKey derived server-side 
 Linked lesson/lab/practice image clicks, including the link around the image, use the same-page image dialog. The raw new-page image link has been removed; Fit, zoom and X remain available, and Escape/backdrop close the viewer. Examplify and masked OSPE retain their dedicated image tools.
 
 Focused checks: `node --test tests/student-profile.test.mjs tests/startup-sync.test.mjs tests/sync-assessment.test.mjs`. `node scripts/profile-smoke.mjs http://127.0.0.1:5174/` uses an isolated browser and mocked account responses to verify first visit, onboarding, cloud save, refresh, legacy progress, returning profile and desktop/mobile image close controls without changing production data.
+
+
+## Sidebar, release badge and academic group polish
+
+Desktop navigation now contains Learn, Schedule, Practice, Countdowns, 3D Anatomy, Anki and Other. `studio-navigation.js` moves the actual Anatomy entry above Anki and replaces the expandable Extras menu with one Other workspace. Grade Calculator, Study Activity and Material Library retain their existing renderers/data and can be switched through tabs. `#other/<tool>` links survive refresh and browser navigation, while existing direct tool links continue to work. Mobile uses the same single horizontal dock with Other and 3D entries; sync/settings remains accessible. Expanded sidebar width is 282px with larger targets; compact/collapsed states remain supported.
+
+All three Learning-area tabs share the same book/flask/microscope icon switch. OSPE still requires a source-located question image for each of its147 stations. Full rendered-station audit loads the actual image pixels, not just metadata, using `scripts/studio-polish-smoke.mjs`. No external images were needed: all104 distinct question images are available from supplied materials. Answer masks and reveal semantics remain unchanged.
+
+New-profile setup offers optional M1/M2/F1/F2 and A/B selections; Site Settings allows changes later. The same label is used in profile/dashboard/course introductions. No selection shows Made by Hatem; legacy owner profile/group remains unchanged unless explicitly reconfigured. Settings and cloud validation now retain studentGroup, studentSection and groupConfigured. First restore copies an existing cloud group before local automatic-planning defaults can displace it. This profile selection does not invent alternate group timetable events.
+
+The remaining caption-link enlargement bug is fixed: both linked images and their text-only enlargement links resolve the same figure and open the existing closeable in-page viewer. Guide caption controls explicitly use data-image-src.
+
+Release numbers are tracked in public/site-release.json, rendered in the sync widget's corner, and included in site-build-info.json. Before each publication read latest_version_number from native get_site, run `node scripts/set-site-version.mjs <latest+1>` before the build, and verify the returned saved version number agrees. Do not derive the native version from Git or silently increment on a deployment retry.
