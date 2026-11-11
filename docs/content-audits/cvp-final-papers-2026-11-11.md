@@ -1,5 +1,8 @@
 # CVP final papers and Accurate practice — 2026-11-11
 
+> Current selection policy: v1.45 replaces the equal-four / 52-question rule with the user’s category ranges; see cvp-accurate-ranges-2026-11-12.md. This document retains the earlier implementation audit.
+
+
 ## Completed scope
 
 Read every page of the five supplied originals (148 PDF pages), including all MCQs, written cases and OSPE recalls. Reviewed all 112 extracted image crops in seven contact sheets; excluded covers and decorative material, matched the useful figures to their questions, and masked answer-bearing labels in question views. Exact source files were hash-compared with the existing asset manifests; none of these five full originals was already registered there. Existing partial booklets and the 64-question adapted mock were retained.

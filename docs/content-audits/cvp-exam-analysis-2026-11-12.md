@@ -1,5 +1,8 @@
 # CVP exam analysis — v1.44
 
+> Current selection policy: v1.45 replaces the equal-four / 52-question rule with the user’s category ranges; see cvp-accurate-ranges-2026-11-12.md. This document retains the earlier implementation audit.
+
+
 - Added K.01–K.13 exactly as supplied, with reference averages in the displayed order: 69.86, 75.57, 75.03, 86.14, 67.48, 63.73, 61.66, 88.82, 71.86, 69.40, 68.54, 69.92, 48.19 percent.
 - The supplied images show a narrow crop of scores, not a complete report layout. The responsive report uses category titles, own score, correct/total, wrong/unanswered counts, reference average and percentage-point difference. It does not claim an exact recreation of an unseen full layout or an official class ranking.
 - Reports are added only to submitted CVP/mixed mock and previous-paper results. Categories without scored questions say Not tested, not 0%. Unanswered scored items count as incorrect. Written responses and uncertain keys remain excluded; unknown classifications are disclosed rather than silently guessed. Existing frozen answer receipts provide the submitted key and selected response.

@@ -14,17 +14,23 @@ const expansion=JSON.parse(load('lesson-expansion-data.json'));
 test('lesson expansion keeps existing topics, opens new guides with teaching, and is idempotent', () => {
   const lecture = learning.lessons.find(item => item.id === 'CVP-A22');
   const guide = teaching.guides[lecture.id];
-  assert.match(guide.overview, /Provisional guide/);
+  assert.match(guide.overview, /embryonic venous channels/i);
   assert.equal(guide.sections[0].id, 'CVP-A22:cardinal');
   for (const fact of lecture.facts) assert.ok(guide.sections.some(section => section.id === fact.id));
-  const length = learning.questions.length;
-  const teachingBefore = JSON.stringify(teaching);
-  const sourcesBefore = learning.sources.length;
-  apply(learning, teaching, {}, {}, pack);
-  applyExpansion(learning, teaching, {}, expansion);
-  assert.equal(learning.questions.length, length);
-  assert.equal(JSON.stringify(teaching), teachingBefore);
-  assert.equal(learning.sources.length, sourcesBefore);
+  // Reapplying an early expansion after later transcript enrichments is not the runtime order.
+  // Test stage idempotence on isolated copies, without mutating the assembled bank used below.
+  const l=JSON.parse(JSON.stringify(learning)),t=JSON.parse(JSON.stringify(teaching));
+  const length=l.questions.length,sourcesBefore=l.sources.length;
+  apply(l,t,{}, {},pack);
+  const afterDepth=JSON.stringify(t);
+  apply(l,t,{}, {},pack);
+  assert.equal(JSON.stringify(t),afterDepth);
+  applyExpansion(l,t,{},expansion);
+  const afterExpansion=JSON.stringify(t);
+  applyExpansion(l,t,{},expansion);
+  assert.equal(l.questions.length,length);
+  assert.equal(JSON.stringify(t),afterExpansion);
+  assert.equal(l.sources.length,sourcesBefore);
 });
 
 test('new teaching and question citations resolve to a page and questions retain choice feedback', () => {

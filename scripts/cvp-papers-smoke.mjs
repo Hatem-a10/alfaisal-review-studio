@@ -27,9 +27,9 @@ try{
  await add('original answer restored after refresh without expiring',"originalRun?.answers['cvp-final-b18-mcq-1']===4&&!originalRun.finishedAt");
  await evaluate("originalRun=null;etPracticeTab='mock';etExam=null;etAccurate=false;go('practice');true");
  await evaluate("document.querySelector('#etAccurate').click();true");
- await add('Accurate sets CVP and a safe minimum',"etMockScope==='CVP'&&document.querySelector('#etMockCount').min==='6'");
+ await add('Accurate sets CVP and a safe minimum',"etMockScope==='CVP'&&document.querySelector('#etMockCount').min==='76'");
  await evaluate("document.querySelector('#xpModePreference').click();document.querySelector('#etStartMock').click();true");for(let i=0;i<60;i++){if(await evaluate("!!etExam"))break;await new Promise(r=>setTimeout(r,100))}
- await add('Accurate produces 50 with all six green repeats',"etExam?.questions.length===50&&etExam.accurate.mandatoryIds.length===6&&etExam.accurate.mandatoryIds.every(id=>etExam.questions.some(q=>q.id===id))");
+ await add('Accurate produces 100 with all six green repeats',"etExam?.questions.length===100&&etExam.accurate.mandatoryIds.length===6&&etExam.accurate.mandatoryIds.every(id=>etExam.questions.some(q=>q.id===id))");
  await add('Accurate supports the existing Examplify presentation',"!!document.querySelector('#xpExam')&&document.querySelectorAll('.xp-question').length===1");
  await evaluate("document.querySelector('[data-xp-answer=\"'+etExam.questions[0].answer+'\"]').click();true");
  await add('Accurate Examplify answer uses the shuffled canonical key',"etExam.answers[0]===etExam.questions[0].answer");

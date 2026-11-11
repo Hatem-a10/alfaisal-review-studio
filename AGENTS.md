@@ -15,3 +15,5 @@ Before building each publication, read the latest native Sites version and run `
 In active Examplify exams, render only the question/case, necessary media and answer choices alongside exam controls. Never show recurrence/color tags, batch-match counts, source classifications, lecturer priority, study hints, keys or explanations before submission. These learning metadata belong in study/review views. Keep a focused regression guard for the Examplify renderer when changing exam presentation.
 
 Routine updates use focused checks for the affected behavior plus build/publication integrity. Reserve broad regression runs for major changes, five-version milestones (v1.45, v1.50, v1.55, etc.), or explicit user requests.
+
+Accurate / realistic CVP generation follows the user-provided K.01–K.13 ranges in `public/cvp-accurate-engine.mjs` and `docs/content-audits/cvp-accurate-ranges-2026-11-12.md`. They supersede the equal-four floor and 52-question rule. Apply the counts literally (76–143, practice default 100) until the user supplies a scaling baseline; do not call them an official blueprint. Keep all six mandatory green repeat families.
