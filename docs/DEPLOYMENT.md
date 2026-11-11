@@ -162,3 +162,14 @@ Labs now contains 16 modules, 69 topics and 198 MCQs. New cardiac-cycle, echocar
 ### Question image placement correction
 
 Every OSPE image renders within the station question before the written responses, including recall and timed circuits. Answer reveal uncovers that same image in place; the rubric contains marking text without a duplicate image. Covers now target reviewed answer-bearing labels only, retaining orientation, numbered pins, non-answer context, acquisition settings and graph legends/axes. Source data and progress IDs are unchanged.
+
+
+## New-student profile setup and image viewer
+
+The static shell uses a neutral profile label and avatar. `profile-entry.js` paints account-specific name/number and loads the small setup dialog only for a new authenticated account without an existing snapshot/profile. Signed-out new-device visitors see a prominent sign-in invitation, with an option to browse. Existing snapshots preserve their legacy identity and completed records; returning named profiles restore from cloud without repeating setup. Settings sanitize and sync profileName, studentNumber and profileCreatedAt through the existing snapshot store. Examplify reads the same display name.
+
+GET progress responses include an opaque SHA-256 accountKey derived server-side from the authenticated ID. Before any merge/upload, the client checks the device binding. Changing accounts archives the previous device stores and restores the selected account's local copy or a clean workspace, then reloads. This never rewrites another account's cloud row or creates a replacement database. The first unbound revision check fetches a full snapshot so legacy devices are not misclassified by a small unchanged response.
+
+Linked lesson/lab/practice image clicks, including the link around the image, use the same-page image dialog. The raw new-page image link has been removed; Fit, zoom and X remain available, and Escape/backdrop close the viewer. Examplify and masked OSPE retain their dedicated image tools.
+
+Focused checks: `node --test tests/student-profile.test.mjs tests/startup-sync.test.mjs tests/sync-assessment.test.mjs`. `node scripts/profile-smoke.mjs http://127.0.0.1:5174/` uses an isolated browser and mocked account responses to verify first visit, onboarding, cloud save, refresh, legacy progress, returning profile and desktop/mobile image close controls without changing production data.

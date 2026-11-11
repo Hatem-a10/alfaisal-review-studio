@@ -5,15 +5,16 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache
 export async function GET(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
+ const accountKey=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('review-studio:'+id)))).map(v=>v.toString(16).padStart(2,'0')).join('');
  // Small authenticated revision check avoids loading unchanged multi-megabyte snapshots from D1/R2.
  const since=new URL(request.url).searchParams.get('since');
  if(since!==null&&/^\d+$/.test(since)&&Number.isSafeInteger(Number(since))){
   const head=await env.DB.prepare('SELECT revision, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;updated_at:string}>();
-  if(head&&head.revision===Number(since))return json({revision:head.revision,updatedAt:head.updated_at,unchanged:true,acceptsPatch:true});
+  if(head&&head.revision===Number(since))return json({revision:head.revision,updatedAt:head.updated_at,unchanged:true,acceptsPatch:true,accountKey});
  }
  const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
  let snapshot=row?JSON.parse(row.snapshot):null;if(snapshot?.r2Snapshot){if(!env.BUCKET)return json({error:'Cloud file storage is unavailable.'},503);const obj=await env.BUCKET.get(snapshot.r2Snapshot);if(!obj)return json({error:'Cloud snapshot is unavailable. Your device copy is retained.'},503);snapshot=await new Response(obj.body).json()}
- return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at,acceptsPatch:true}:{revision:0,snapshot:null,acceptsPatch:true});
+ return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at,acceptsPatch:true,accountKey}:{revision:0,snapshot:null,acceptsPatch:true,accountKey});
 }
 export async function PUT(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
@@ -33,6 +34,10 @@ export async function PUT(request:Request){
 
 function validSnapshot(s: any): boolean {
  if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,any][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
+ if(s.settings?.profileName!==undefined&&(typeof s.settings.profileName!=='string'||s.settings.profileName.length>100))return false;
+ if(s.settings?.studentNumber!==undefined&&(typeof s.settings.studentNumber!=='string'||s.settings.studentNumber.length>30))return false;
+ if(s.settings?.profileCreatedAt!==undefined&&s.settings.profileCreatedAt!==null&&(typeof s.settings.profileCreatedAt!=='string'||!Number.isFinite(Date.parse(s.settings.profileCreatedAt))))return false;
+ if(s.settings?.legacyProfile!==undefined&&typeof s.settings.legacyProfile!=='boolean')return false;
  if(s.settings?.englishEnabled!==undefined&&typeof s.settings.englishEnabled!=='boolean')return false;
  if(s.settings?.examNames!==undefined&&(!s.settings.examNames||typeof s.settings.examNames!=='object'||Array.isArray(s.settings.examNames)||Object.keys(s.settings.examNames).length>64||Object.entries(s.settings.examNames).some(([k,v])=>!/^[a-z0-9][a-z0-9-]{0,119}$/i.test(k)||typeof v!=='string'||!v.trim()||v.length>100)))return false;
  if(s.settings?.calendarColors!==undefined&&(!s.settings.calendarColors||typeof s.settings.calendarColors!=='object'||Array.isArray(s.settings.calendarColors)||Object.entries(s.settings.calendarColors).some(([k,v])=>!['anatomy','physiology','mol','lab','assessment','break','other','english'].includes(k)||typeof v!=='string'||!/^#[0-9a-f]{6}$/i.test(v))))return false;
