@@ -16,7 +16,7 @@ New IDs use `cvp-final-b{batch}-{section}-{original-number}`. Registration is id
 
 ## Accurate selection
 
-The timed mock's optional Accurate control selects all six green repeat families in the existing reviewed 64-question comparison, plus a variable sample of the thirteen three-batch repeats. Those nineteen candidates have four individually explained options. Remaining slots use the existing explained CVP lesson bank, with broad strata deficits guiding selection. The six green families are mandatory, so the minimum is six questions. Existing ordinary custom lesson mixes remain available when Accurate is off.
+The timed mock's optional Accurate control selects all six green repeat families in the existing reviewed 64-question comparison, plus a variable sample of the thirteen three-batch repeats. Those nineteen candidates have four individually explained options. Remaining slots use the existing explained CVP lesson bank, with broad strata deficits guiding selection. The six green families are mandatory. As of v1.44, all thirteen K categories also require four questions each, so the minimum is 52; see cvp-exam-analysis-2026-11-12.md for the updated selection method. Existing ordinary custom lesson mixes remain available when Accurate is off.
 
 The provisional 325-MCQ mapping classifies 324 questions: anatomy 72, embryology 42, histology 39, cardiac physiology 81, pulmonary physiology 90; one unknown is omitted. These are approximate weights from incomplete student reconstructions, not official exam proportions, validated lecture yield, recurrence probabilities or exam predictions. Mandatory repeats take precedence over proportions. All selected questions and choices are shuffled by the existing tested exam engine.
 
