@@ -16,11 +16,16 @@ try{
   const check=async(label,expression)=>{const passed=await evaluate(expression);checks.push({name,label,passed});if(!passed)throw Error(label)};
   await check('no horizontal overflow',"document.documentElement.scrollWidth<=innerWidth+1");
   await check('hero does not overlap categories',"document.querySelector('.ospe-hero').getBoundingClientRect().bottom<=document.querySelector('.ospe-category-grid').getBoundingClientRect().top+1");
-  await check('114 stations visible',"document.querySelectorAll('[data-ospe-open]').length===114");
+  await check('147 stations visible',"document.querySelectorAll('[data-ospe-open]').length===147");
   await evaluate("document.querySelector('[data-ospe-open=\"cvp-ospe-mock-1\"]').click();true");
   await evaluate("document.querySelector('[data-ospe-repeat]')?.click();true");
-  await check('rubric initially hidden',"!document.querySelector('.ospe-rubric') && !!document.querySelector('.ospe-image')");
+  await check('rubric initially hidden',"!document.querySelector('.ospe-rubric') && !!document.querySelector('.ospe-station-image')");
+  await check('answer labels are initially covered',"document.querySelectorAll('.ospe-image-mask').length>0");
+  await evaluate("document.querySelector('[data-ospe-zoom]').click();true");
+  await check('enlarging keeps labels hidden',"!!document.querySelector('#ospeImageDialog[open]')&&document.querySelectorAll('#ospeImageDialog .ospe-image-mask').length>0");
+  await evaluate("document.querySelector('[data-ospe-close]').click();true");
   await evaluate("document.querySelector('[data-ospe-answer]').value='Small muscular artery';document.querySelector('[data-ospe-answer]').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-ospe-reveal]').click();true");
+  await check('revealing removes the label covers',"document.querySelectorAll('.ospe-station-image .ospe-image-mask').length===0");
   await check('answer survives reveal',"document.querySelector('[data-ospe-answer]').value==='Small muscular artery'&&!!document.querySelector('.ospe-rubric')");
   let png=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(path.join(out,name+'-ospe-drill.png'),Buffer.from(png.data,'base64'));
   await evaluate("document.querySelector('[data-ospe-back]').click();document.querySelector('[data-ospe-start]').click();true");
