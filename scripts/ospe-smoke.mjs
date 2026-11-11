@@ -21,6 +21,8 @@ try{
   await evaluate("document.querySelector('[data-ospe-repeat]')?.click();true");
   await check('rubric initially hidden',"!document.querySelector('.ospe-rubric') && !!document.querySelector('.ospe-station-image')");
   await check('answer labels are initially covered',"document.querySelectorAll('.ospe-image-mask').length>0");
+  await check('image appears in the question before answering',"!!document.querySelector('.ospe-question .ospe-station-image')&&!document.querySelector('.ospe-rubric figure')");
+  const initialPng=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(path.join(out,name+'-ospe-question.png'),Buffer.from(initialPng.data,'base64'));
   await evaluate("document.querySelector('[data-ospe-zoom]').click();true");
   await check('enlarging keeps labels hidden',"!!document.querySelector('#ospeImageDialog[open]')&&document.querySelectorAll('#ospeImageDialog .ospe-image-mask').length>0");
   await evaluate("document.querySelector('[data-ospe-close]').click();true");

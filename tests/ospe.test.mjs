@@ -13,3 +13,12 @@ test('OSPE route is lazy, survives refresh and is directly beside lessons and la
 
 test('every OSPE station has a real relevant image, original locator and valid normalized label covers',()=>{for(const s of pack.stations){assert.ok(s.figure?.startsWith('/ospe-figures/'));assert.ok(fs.existsSync('public'+s.figure),s.id);assert.ok(s.imageTask.width>=100&&s.imageTask.height>=50);assert.ok(s.figureReference?.source&&s.figureReference?.page);for(const m of s.imageTask.masks||[]){assert.ok([m.x,m.y,m.w,m.h].every(Number.isFinite));assert.ok(m.x>=0&&m.y>=0&&m.w>0&&m.h>0&&m.x+m.w<=1.02&&m.y+m.h<=1.02,s.id)} }assert.match(js,/stationFigure\(s,revealed\)/);assert.match(js,/stationFigure\(s,false\)/);assert.match(js,/stationFigure\(s,true\)/);assert.match(js,/stationFigure\(s,show,true\)/);assert.ok(pack.stations.some(s=>s.imageTask.arrows?.length));});
 test('new labs have five fully explained MCQs per topic while all old module IDs are retained',()=>{const labs=JSON.parse(fs.readFileSync('public/lab-curriculum.json'));for(const id of ['CVP-LAB-cycle','CVP-LAB-radiology','CVP-LAB-echo']){const m=labs.modules.find(m=>m.id===id);assert.equal(m.topics.length,3);for(const t of m.topics){assert.equal(t.questions.length,5);assert.ok(t.body.length>=2);assert.ok(t.figure.image);for(const q of t.questions){assert.equal(q.options.length,4);assert.equal(q.reasons.length,4);assert.ok(q.reasons.every(r=>r.length>25));}}}for(const id of ['CVP-LAB-pft','MOL-LAB-dna','CVP-LAB-internal','CVP-LAB-coronary'])assert.ok(labs.modules.some(m=>m.id===id))});
+
+
+test('station images belong to the question, never only to the explanation',()=>{
+ const rubric=js.slice(js.indexOf('function rubric('),js.indexOf('function deck('));
+ assert.doesNotMatch(rubric,/fig\(|teachingFigure|<figure|<img/);
+ assert.equal((js.match(/class="ospe-question"/g)||[]).length,3);
+ for(const id of ['cvp-ospe-cycle-as','cvp-ospe-cycle-ms','cvp-ospe-cycle-ar','cvp-ospe-pft-forced'])assert.equal(pack.stations.find(s=>s.id===id).imageTask.masks.length,0,'Keep graph axes and legends visible');
+ const mock=pack.stations.find(s=>s.mockNumber===1);assert.equal(mock.imageTask.masks.length,1,'Only the answer-bearing IEL label is covered');
+});

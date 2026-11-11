@@ -157,3 +157,8 @@ All 147 OSPE stations have a source-located focused image, with 33 added station
 The nine additional sources were read, including all 32 Keynote slides and image-only PDF pages using OCR plus visual inspection. Three exact duplicates reuse existing originals. Crops are shared across stations; no large raw originals were added to the publisher package. Their local extraction/coverage ledger is under `work/ospe-images/`. Originals have not been uploaded by this update. The reviewed cardiac-cycle source contains reversed systole/diastole wording in its aortic-regurgitation questions; teaching uses diastolic aortic runoff. A radiograph labelled hemothorax is presented as a pleural-effusion pattern because blood cannot be established from that radiograph alone.
 
 Labs now contains 16 modules, 69 topics and 198 MCQs. New cardiac-cycle, echocardiography and radiology modules add nine topics and 45 four-option questions, with individual option explanations. Existing IDs, question banks and progress schema are preserved. Twelve existing lab topics also receive relevant visual source material. These changes remain deferred until the relevant tab opens.
+
+
+### Question image placement correction
+
+Every OSPE image renders within the station question before the written responses, including recall and timed circuits. Answer reveal uncovers that same image in place; the rubric contains marking text without a duplicate image. Covers now target reviewed answer-bearing labels only, retaining orientation, numbered pins, non-answer context, acquisition settings and graph legends/axes. Source data and progress IDs are unchanged.
