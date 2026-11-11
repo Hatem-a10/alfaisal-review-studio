@@ -7,7 +7,7 @@ function hydrateStudyStores(){
  const w=StudyVault.read('wrongBank');if(w&&Array.isArray(w.entries)&&Array.isArray(w.exams))wrongBank={entries:w.entries.filter(x=>ExamEngine.usable(x?.question)),exams:w.exams.filter(x=>typeof x==='string'),clearedAt:w.clearedAt};
  const h=StudyVault.read('history',[]);etHistory=Array.isArray(h)?h.filter(x=>x&&resultMeetsMinimum(x.correct,x.total)).slice(-20):[];
  const e=StudyVault.read('mock');etExam=e&&Array.isArray(e.questions)&&e.questions.every(ExamEngine.usable)&&typeof e.id==='string'&&Number.isFinite(e.deadline)&&e.answers&&(!e.finishedAt||!e.excludedLowScore)?e:null;
- const r=StudyVault.read('originals',{});originalRuns=r&&typeof r==='object'&&!Array.isArray(r)?Object.fromEntries(Object.entries(r).filter(([,v])=>v&&Array.isArray(v.ids)&&v.answers&&v.ids.every(id=>!!originalQuestionById(id))&&!originalLowScore(v))):{};
+ const r=StudyVault.read('originals',{});originalRuns=r&&typeof r==='object'&&!Array.isArray(r)?Object.fromEntries(Object.entries(r).filter(([,v])=>v&&Array.isArray(v.ids)&&v.answers&&v.ids.every(id=>!!originalQuestionById(id)||/^cvp-final-(?:b1[4-8]-(?:mcq|saq|ospe)-\d+|repeat-mock-\d+)$/.test(id))&&!originalLowScore(v))):{};
  originalRun=originalRun&&originalRuns[originalRun.setId]||null;try{if(originalRun)localStorage.setItem(originalRunKey,JSON.stringify(originalRun));else localStorage.removeItem(originalRunKey)}catch{}inlineTopicSessions.clear();inlineLessonCache.clear();
  const p=StudyVault.read('practice');etSet=p?.set&&Array.isArray(p.set.questions)&&p.set.questions.every(ExamEngine.usable)?p.set:null;repairRun=p?.repair||null;
  restoreStudyPlace();
