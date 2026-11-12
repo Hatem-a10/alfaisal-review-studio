@@ -9,6 +9,7 @@ export function allocateCategories(count,rng=Math.random){
  let assigned=sizeRange[0];while(assigned<count){const candidates=categories.filter(c=>quotas[c.id]<categoryRanges[c.id][1]);candidates.sort((a,b)=>(targets[b.id]/sum*count-quotas[b.id])-(targets[a.id]/sum*count-quotas[a.id]));quotas[candidates[0].id]++;assigned++}return quotas;
 }
 export function subject(q){const id=q.lectureIds?.find(id=>id.startsWith('CVP-'))||'',n=Number(id.match(/\d+$/)?.[0]);if(id.includes('-P'))return n<=15?'cardiac':'pulmonary';if(!n)return null;return [3,7,10,13,17].includes(n)?'histology':[1,9,14,18,20,22,23].includes(n)?'embryology':'anatomy'}
+export const hasQuestionImage=q=>!!(q.image||q.figures?.some(f=>f.image));
 export function chooseAccurate(bank,repeats,count,weights,rng=Math.random){
  const quotas=allocateCategories(count,rng),mandatory=repeats.filter(q=>q.mandatory);
  const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -18,7 +19,11 @@ export function chooseAccurate(bank,repeats,count,weights,rng=Math.random){
  if(categories.some(c=>(categoryCounts[c.id]||0)>quotas[c.id]))throw Error('The mandatory repeat families exceed a category target; the question bank needs review.');
  const candidates=shuffle([...repeats,...bank].filter(q=>subject(q)&&classify(q))),available=()=>candidates.filter(q=>!seen.has(signature(q))&&!ids.has(q.id));
  const sum=Object.values(weights).reduce((a,b)=>a+b,0),common=new Set(repeats.map(q=>q.id));
+ const imageTarget=10+Math.min(6,Math.floor(rng()*7));let imageCount=selected.filter(hasQuestionImage).length;
  const broadDeficit=q=>(weights[subject(q)]||0)/sum*count-(counts[subject(q)]||0);
- for(const c of categories)while((categoryCounts[c.id]||0)<quotas[c.id]){const pool=available().filter(q=>classify(q)===c.id).sort((a,b)=>Number(common.has(b.id))-Number(common.has(a.id))||broadDeficit(b)-broadDeficit(a));if(!pool.length)throw Error(c.id+' does not have '+quotas[c.id]+' distinct questions in this question source. Include concept checks or use a broader CVP bank.');add(pool[0])}
- return {questions:selected,counts,categoryCounts,categoryTargets:quotas,mandatoryIds:mandatory.map(q=>q.id),source:'Your approximate K.01–K.13 category ranges, with all green repeat families. Practice targets, not an official blueprint or prediction.'};
+ // Reserve actual question figures before filling text questions, without exceeding any category quota.
+ while(imageCount<imageTarget){const images=available().filter(q=>hasQuestionImage(q)&&(categoryCounts[classify(q)]||0)<quotas[classify(q)]);if(!images.length)throw Error('There are not enough eligible image questions for an Accurate exam. Include more source types.');images.sort((a,b)=>((categoryCounts[classify(a)]||0)/quotas[classify(a)])-((categoryCounts[classify(b)]||0)/quotas[classify(b)]));add(images[0]);imageCount++}
+ for(const c of categories)while((categoryCounts[c.id]||0)<quotas[c.id]){const pool=available().filter(q=>classify(q)===c.id&&!hasQuestionImage(q)).sort((a,b)=>Number(common.has(b.id))-Number(common.has(a.id))||broadDeficit(b)-broadDeficit(a));if(!pool.length)throw Error(c.id+' does not have enough distinct text questions for this image-balanced exam. Include more source types.');add(pool[0])}
+
+ return {questions:selected,counts,categoryCounts,categoryTargets:quotas,imageCount,mandatoryIds:mandatory.map(q=>q.id),source:'Your approximate K.01–K.13 category ranges, with 10–16 image questions and all green repeat families. Practice targets, not an official blueprint or prediction.'};
 }

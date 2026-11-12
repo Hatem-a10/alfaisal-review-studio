@@ -17,3 +17,5 @@ In active Examplify exams, render only the question/case, necessary media and an
 Routine updates use focused checks for the affected behavior plus build/publication integrity. Reserve broad regression runs for major changes, five-version milestones (v1.45, v1.50, v1.55, etc.), or explicit user requests.
 
 Accurate / realistic CVP generation follows the user-provided K.01–K.13 ranges in `public/cvp-accurate-engine.mjs` and `docs/content-audits/cvp-accurate-ranges-2026-11-12.md`. They supersede the equal-four floor and 52-question rule. Apply the counts literally (76–143, practice default 100) until the user supplies a scaling baseline; do not call them an official blueprint. Keep all six mandatory green repeat families.
+
+Accurate CVP mocks must contain 10–16 actual question-image items while retaining the user category ranges and mandatory green repeat families. Explanation-only figures do not satisfy this quota. Derive Examplify mock course titles from selected question courses rather than exact scope-label strings. Learning practice uses canonical inline topic/core groups for both its labels and actual question sets.

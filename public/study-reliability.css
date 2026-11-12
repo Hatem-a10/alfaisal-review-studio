@@ -18,3 +18,4 @@ html[data-ui=modern] .home-text-link,html[data-ui=modern] .intro .eyebrow,html[d
  body:has(.mobile-dock-shell) main{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 146px)!important}
  html[data-ui=modern] #timerBar,#etExamDock,.jump-first-wrong{bottom:calc(env(safe-area-inset-bottom,0px) + 124px)!important}
 }
+@media(max-width:760px){.mobile-dock-shell .ui-mobile-nav{position:relative!important;overflow-anchor:none;scroll-snap-type:none!important;overscroll-behavior-x:none}.mobile-dock-shell .ui-mobile-nav>button{scroll-snap-align:none!important}}
