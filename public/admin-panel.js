@@ -3,6 +3,17 @@
  const widget=document.querySelector('#syncWidget .sync-widget-body');if(!widget)return;
  const open=document.createElement('button');open.type='button';open.id='openSiteAdmin';open.textContent='Site settings';widget.appendChild(open);
  const dialog=document.createElement('dialog');dialog.id='siteAdmin';dialog.innerHTML='<div class="admin-frame"><div class="section-head"><div><span class="eyebrow muted">YOUR PRIVATE SITE</span><h2>Site settings</h2></div><button id="closeSiteAdmin" aria-label="Close site settings">✕</button></div><div class="admin-recovery"><h3>Recovery</h3><p class="muted">Download the recovery copy saved before a restore or merge.</p></div><div id="adminBody" aria-live="polite">Loading site information…</div></div>';document.body.appendChild(dialog);const recovery=document.getElementById('exportRecoveryCopy');if(recovery)dialog.querySelector('.admin-recovery').appendChild(recovery);
+ // Relocate the existing backup controls without replacing their event handlers.
+ const backup=document.createElement('section');backup.className='panel admin-backup';backup.innerHTML='<h3>Import & export</h3><p class="muted">Save a backup or restore your study progress.</p>';
+ const actions=widget.querySelector('.backup-actions');if(actions)backup.append(actions);
+ const file=document.getElementById('file');if(file)backup.append(file);
+ dialog.querySelector('.admin-recovery').before(backup);
+ const quick=document.createElement('div');quick.className='sync-quick-actions';
+ const sync=document.getElementById('syncNow');
+ for(const [button,label,path] of [[sync,'Sync now','M20 7v5h-5 M4 17v-5h5 M6 7a7 7 0 0 1 11-2l3 3 M4 16l3 3a7 7 0 0 0 11-2'],[open,'Site settings','M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M9 3h6l1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1z']]){
+  if(!button)continue;button.type='button';button.setAttribute('aria-label',label);button.title=label;button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+path+'"/></svg>';quick.append(button);
+ }
+ widget.append(quick);
  let busy=false,data=null,build=null,storage;const fmt=n=>Number.isFinite(n)?(n/1048576).toFixed(n<10485760?2:1)+' MiB':'Unavailable';
  async function read(){try{const [a,b]=await Promise.all([fetch('/api/admin-assets',{cache:'no-store'}),fetch('/site-build-info.json',{cache:'no-store'})]);const result=await a.json();if(!a.ok)throw Error(result.error||'Storage information unavailable');if(!b.ok)throw Error('Build information unavailable');data=result;build=await b.json();if(!storage){storage=await import('/site-storage.mjs?v=2');storage.bindMigration(dialog)}paint()}catch(e){document.querySelector('#adminBody').innerHTML='<p class="notice">'+esc(e.message)+'</p><button id="refreshAdmin">Retry</button>'}}
  function localBytes(){let n=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k?.startsWith(KEY))n+=new TextEncoder().encode(k+(localStorage.getItem(k)||'')).length}}catch{}return n}

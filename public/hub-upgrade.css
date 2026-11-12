@@ -98,9 +98,9 @@ html[data-ui=modern] .catalog-head :is(input,select){width:100%;min-width:0;box-
  #hubTopControls > summary { min-width: 44px; min-height: 44px; }
  #hubTopControls > .hub-top-body,
  body[data-sidebar-stage] #hubTopControls > .hub-top-body {
-  right: 0; top: calc(100% + 6px); height: auto; max-width: calc(100vw - 36px);
-  padding: 8px; background: var(--paper,var(--bg)); border: 1px solid var(--line);
-  border-radius: 10px; box-shadow: 0 6px 22px #0003;
+  right: calc(100% + 6px); top: 0; height: 44px; max-width: calc(100vw - 82px);
+  padding: 0; background: transparent; border: 0;
+  border-radius: 0; box-shadow: none; align-items: center;
  }
 }
 .material-list { margin: 24px 0; }
