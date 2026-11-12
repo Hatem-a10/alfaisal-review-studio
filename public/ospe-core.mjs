@@ -1,7 +1,7 @@
 export const OspeCore={
  select(stations,category='all',week='all',mock=false){return stations.filter(s=>(category==='all'||s.category===category)&&(week==='all'||String(s.week)===String(week))&&(!mock||s.mockNumber));},
  circuit(stations,count=20,seconds=90,random=Math.random){
-  const pools=new Map();for(const s of stations){if(!pools.has(s.category))pools.set(s.category,[]);pools.get(s.category).push(s)}
+  stations=stations.filter(s=>!s.practiceOnly);const pools=new Map();for(const s of stations){if(!pools.has(s.category))pools.set(s.category,[]);pools.get(s.category).push(s)}
   for(const rows of pools.values())for(let i=rows.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[rows[i],rows[j]]=[rows[j],rows[i]]}
   const chosen=[],seen=new Set();while(chosen.length<Math.min(stations.length,Math.max(1,count-2))){let added=false;for(const rows of pools.values())if(rows.length&&chosen.length<count-2){let s;while(rows.length&&!s){const candidate=rows.pop();if(!seen.has(candidate.concept||candidate.id))s=candidate}if(s){seen.add(s.concept||s.id);chosen.push({station:s.id});added=true}}if(!added)break}
   if(chosen.length>=3){chosen.splice(Math.floor(chosen.length/3),0,{rest:true});chosen.splice(Math.floor(chosen.length*2/3)+1,0,{rest:true})}

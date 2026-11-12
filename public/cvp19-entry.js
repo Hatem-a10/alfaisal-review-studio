@@ -1,0 +1,2 @@
+'use strict';
+(()=>{let loaded=false,pending;const before=render;render=function(){if(!loaded&&['learning','practice'].includes(view)){document.getElementById('content').innerHTML='<section class="panel"><h2>Loading questions…</h2></section>';pending??=import('/cvp19-runtime.mjs?v=149').then(m=>{m.install();loaded=true;render()}).catch(e=>{pending=null;console.error('Corrected booklet initialization failed',e);toast('Loading failed. Reopen this section to retry.');});return}return before()}})();

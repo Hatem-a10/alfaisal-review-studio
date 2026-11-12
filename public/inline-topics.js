@@ -45,7 +45,7 @@ function inlineSession(l) {
   const order = appended ? [...priorOrder, priorOrder.length] : priorOrder;
   const valid = Array.isArray(order) && order.length === q.options.length && new Set(order).size === order.length
     && order.every(n=>Number.isInteger(n)&&n>=0&&n<order.length);
-  if (!valid) return ExamEngine.shuffle(q.options.map((_,n)=>n));
+  if (!valid) return (q.preserveOptionOrder?q.options.map((_,n)=>n):ExamEngine.shuffle(q.options.map((_,n)=>n)));
   const answer = draft.answers?.[index];
   if (Number.isInteger(answer) && answer >= 0 && answer < order.length) {
    answers[i] = answer;

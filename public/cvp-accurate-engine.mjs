@@ -1,5 +1,6 @@
 /* User-supplied approximate category counts, not an official exam blueprint. */
 import {classify,categories} from './exam-analysis.mjs';
+import {paperLectures} from './cvp-exam-category-map.mjs';
 export const categoryRanges=Object.fromEntries(categories.map((c,i)=>[c.id,[[7,11],[13,20],[2,6],[1,5],[3,7],[7,12],[2,6],[2,6],[18,27],[14,23],[1,5],[5,11],[1,4]][i]]));
 export const sizeRange=[Object.values(categoryRanges).reduce((n,r)=>n+r[0],0),Object.values(categoryRanges).reduce((n,r)=>n+r[1],0)];
 export function allocateCategories(count,rng=Math.random){
@@ -11,13 +12,15 @@ export function allocateCategories(count,rng=Math.random){
 export function subject(q){const id=q.lectureIds?.find(id=>id.startsWith('CVP-'))||'',n=Number(id.match(/\d+$/)?.[0]);if(id.includes('-P'))return n<=15?'cardiac':'pulmonary';if(!n)return null;return [3,7,10,13,17].includes(n)?'histology':[1,9,14,18,20,22,23].includes(n)?'embryology':'anatomy'}
 export const hasQuestionImage=q=>!!(q.image||q.figures?.some(f=>f.image));
 export function chooseAccurate(bank,repeats,count,weights,rng=Math.random){
+ const permitted=q=>q.source==='cvp19-corrected'||/^cvp-final-b\d+$/.test(q.source||'')||q.source==='cvp-final-repeat-mock';
+ bank=bank.filter(q=>permitted(q)&&!q.curriculumExcluded&&q.options?.length>=4&&Number.isInteger(q.answer));repeats=repeats.filter(q=>permitted(q)&&!q.curriculumExcluded&&q.options?.length>=4&&Number.isInteger(q.answer));
  const quotas=allocateCategories(count,rng),mandatory=repeats.filter(q=>q.mandatory);
  const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
  const seen=new Set(),ids=new Set(),selected=[],counts={},categoryCounts={};
  const signature=q=>q.question.toLowerCase().replace(/[^a-z0-9]/g,'');
- const add=q=>{const key=signature(q);if(seen.has(key)||ids.has(q.id))return false;selected.push(q);seen.add(key);ids.add(q.id);const s=subject(q),c=classify(q);counts[s]=(counts[s]||0)+1;categoryCounts[c]=(categoryCounts[c]||0)+1;return true};mandatory.forEach(add);
+ const add=q=>{q={...q,kind:q.kind||'Past paper',explanation:q.explanation||q.sourceExplanation||('Source key: '+(q.printedAnswer||String.fromCharCode(65+q.answer))),reasons:q.reasons||q.options.map(()=>''),lectureIds:q.lectureIds?.length?q.lectureIds:[q.lectureId||paperLectures[q.id]].filter(Boolean)};const key=signature(q);if(seen.has(key)||ids.has(q.id))return false;selected.push(q);seen.add(key);ids.add(q.id);const s=subject(q),c=classify(q);counts[s]=(counts[s]||0)+1;categoryCounts[c]=(categoryCounts[c]||0)+1;return true};mandatory.forEach(add);
  if(categories.some(c=>(categoryCounts[c.id]||0)>quotas[c.id]))throw Error('The mandatory repeat families exceed a category target; the question bank needs review.');
- const candidates=shuffle([...repeats,...bank].filter(q=>subject(q)&&classify(q))),available=()=>candidates.filter(q=>!seen.has(signature(q))&&!ids.has(q.id));
+ const candidates=shuffle([...repeats,...bank].map(q=>q.lectureIds?.length?q:{...q,lectureIds:[q.lectureId||paperLectures[q.id]].filter(Boolean)}).filter(q=>subject(q)&&classify(q))),available=()=>candidates.filter(q=>!seen.has(signature(q))&&!ids.has(q.id));
  const sum=Object.values(weights).reduce((a,b)=>a+b,0),common=new Set(repeats.map(q=>q.id));
  const imageTarget=10+Math.min(6,Math.floor(rng()*7));let imageCount=selected.filter(hasQuestionImage).length;
  const broadDeficit=q=>(weights[subject(q)]||0)/sum*count-(counts[subject(q)]||0);
