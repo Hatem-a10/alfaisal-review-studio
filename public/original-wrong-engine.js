@@ -3,7 +3,7 @@
 const OriginalWrongEngine=(()=>{
  function adapt(run,lookup,source,clearedAt){
   if(!run?.finishedAt||run.excludedLowScore||!Array.isArray(run.ids)||!run.answers||!Number.isFinite(Date.parse(run.finishedAt))||Date.parse(run.finishedAt)<=(Date.parse(clearedAt)||0))return null;
-  const raw=run.ids.map(lookup).filter(Boolean),keyed=raw.filter(q=>q.type==='mcq'&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options?.length);
+  const raw=run.ids.map(lookup).filter(Boolean),keyed=raw.filter(q=>q.type==='mcq'&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options?.length&&Number.isInteger(run.answers[q.id])&&run.answers[q.id]>=0&&run.answers[q.id]<q.options.length);
   if(!keyed.length||keyed.filter(q=>run.answers[q.id]===q.answer).length*100<keyed.length*15)return null;
   const questions=[],answers={};
   for(const q of keyed){

@@ -3,8 +3,8 @@ const StudioReliability=(()=>{
  const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(16)};
  function receipt(id,kind,questions,answers,at=new Date().toISOString()){
   const rows=questions.map((q,i)=>({id:q.id,question:q.question,options:[...q.options],letters:q.letters||q.options.map((_,i)=>String.fromCharCode(65+i)),selected:answers[kind==='original'?q.id:i]??null,key:Number.isInteger(q.answer)?q.answer:null,keyNote:q.sourceIssue||q.printedAnswer||'Authored study key'}));
-  const keyed=rows.filter(q=>q.key!==null),correct=keyed.filter(q=>q.selected===q.key).length;
-  return {version:1,id,kind,at,keyVersion:hash(JSON.stringify(rows.map(q=>[q.id,q.options,q.key,q.keyNote]))),questions:rows,total:rows.length,keyed:keyed.length,correct,percent:keyed.length?correct/keyed.length*100:0};
+  const keyed=rows.filter(q=>q.key!==null),correct=keyed.filter(q=>q.selected===q.key).length,scored=keyed.filter(q=>Number.isInteger(q.selected)).length;
+  return {version:1,id,kind,at,keyVersion:hash(JSON.stringify(rows.map(q=>[q.id,q.options,q.key,q.keyNote]))),questions:rows,total:rows.length,keyed:keyed.length,correct,scored,percent:scored?correct/scored*100:0};
  }
  const luminance=hex=>{const c=hex.slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722};
  const contrast=(a,b)=>{const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};

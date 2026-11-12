@@ -4,7 +4,7 @@ let reviewFilter='all',wrongFilter='all',wrongCourse='all',repairRun=null,visual
 function storeOptions(){return StudyVault.read('options',{})}
 function saveOptions(v){StudyVault.set('options',v)}
 function hydrateStudyStores(){
- const w=StudyVault.read('wrongBank');if(w&&Array.isArray(w.entries)&&Array.isArray(w.exams))wrongBank={entries:w.entries.filter(x=>ExamEngine.usable(x?.question)),exams:w.exams.filter(x=>typeof x==='string'),clearedAt:w.clearedAt};
+ const w=StudyVault.read('wrongBank');if(w&&Array.isArray(w.entries)&&Array.isArray(w.exams))wrongBank={entries:w.entries.filter(x=>ExamEngine.usable(x?.question)&&Number.isInteger(x.choice)),exams:w.exams.filter(x=>typeof x==='string'),clearedAt:w.clearedAt};
  const h=StudyVault.read('history',[]);etHistory=Array.isArray(h)?h.filter(x=>x&&resultMeetsMinimum(x.correct,x.total)).slice(-20):[];
  const e=StudyVault.read('mock');etExam=e&&Array.isArray(e.questions)&&e.questions.every(ExamEngine.usable)&&typeof e.id==='string'&&Number.isFinite(e.deadline)&&e.answers&&(!e.finishedAt||!e.excludedLowScore)?e:null;
  const r=StudyVault.read('originals',{});originalRuns=r&&typeof r==='object'&&!Array.isArray(r)?Object.fromEntries(Object.entries(r).filter(([,v])=>v&&Array.isArray(v.ids)&&v.answers&&v.ids.every(id=>!!originalQuestionById(id)||/^cvp-final-(?:b1[4-8]-(?:mcq|saq|ospe)-\d+|repeat-mock-\d+)$/.test(id))&&!originalLowScore(v))):{};
