@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-11-15T10:23:28.349Z",
+  "lectureCount": 79,
+  "scopes": {
+    "normal_all": {
+      "questionCount": 4118,
+      "lectureCount": 79,
+      "uncovered": []
+    },
+    "normal_exam": {
+      "questionCount": 2147,
+      "lectureCount": 79,
+      "uncovered": [
+        {
+          "id": "MOL-23",
+          "title": "Alternative Pathway of Carbohydrate Metabolism"
+        },
+        {
+          "id": "MOL-24",
+          "title": "Alcohol Metabolism"
+        },
+        {
+          "id": "MOL-25",
+          "title": "Vitamins Part I"
+        },
+        {
+          "id": "MOL-26",
+          "title": "Vitamins Part II"
+        }
+      ]
+    },
+    "accurate_cvp": {
+      "questionCount": 1069,
+      "lectureCount": 51,
+      "uncovered": [
+        {
+          "id": "CVP-A23",
+          "title": "Clinical Embryology / Review"
+        }
+      ]
+    }
+  }
+}

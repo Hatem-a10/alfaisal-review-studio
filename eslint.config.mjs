@@ -7,6 +7,9 @@ const eslintConfig = defineConfig([
   ...nextTs,
   globalIgnores([
     "dist/**",
+    // Third-party distributions and the generated Three.js bundle; authored source remains checked.
+    "public/vendor/**",
+    "public/heart-viewer.mjs",
     ".vinext/**",
     ".wrangler/**",
     ".sites-runtime/**",

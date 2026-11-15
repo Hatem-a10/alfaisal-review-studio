@@ -8,3 +8,5 @@ function installMobileDock(){
  function update(){const max=limit();if(nav.scrollLeft>max+1||nav.scrollLeft<0)nav.scrollTo({left:Math.max(0,Math.min(max,nav.scrollLeft)),behavior:'instant'});left.disabled=nav.scrollLeft<=2;right.disabled=nav.scrollLeft>=max-2}
  nav.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',()=>requestAnimationFrame(update));new MutationObserver(()=>requestAnimationFrame(update)).observe(nav,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','aria-expanded','class','aria-current']});if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>requestAnimationFrame(update)).observe(nav);requestAnimationFrame(update);
 }
+
+window.installMobileDock=installMobileDock;installMobileDock();

@@ -18,8 +18,8 @@
    state=StudyAutopilot.mergeRecords(state,validateBackup(remote.snapshot),localAt,remoteAt,mergeRecords);
    settings=StudyAutopilot.mergeSettings(settings,cleanSettings(remote.snapshot.settings),localAt,remoteAt);
    StudyVault.apply(StudyVault.merge(StudyVault.snapshot(),remote.snapshot.extras));
-   baseline=structuredClone(state);settingsBaseline=structuredClone(settings);syncMeta={...syncMeta,revision:remote.revision,dirty:true};syncConflict=null;$('#syncConflict').hidden=true;storeLocalOnly();saveSyncMeta();planReady=true;scheduleSync();render();
-  }catch(e){syncConflict=null;syncMessage('Sync retry needed · device copy retained');console.error('Sync reconciliation failed',e.message)}
+   baseline=structuredClone(state);settingsBaseline=structuredClone(settings);syncMeta={...syncMeta,revision:remote.revision,dirty:true};syncConflict=null;$('#syncConflict').hidden=true;storeLocalOnly();saveSyncMeta();planReady=true;scheduleSync();render();return true;
+  }catch(e){syncConflict=null;syncMessage('Sync retry needed · device copy retained');console.error('Sync reconciliation failed',e.message);return false}
  };
  const baseMessage=syncMessage;syncMessage=function(message){baseMessage(message);if(/Cloud saved|Cloud ready|unavailable|Sign in|Offline/i.test(message)){planReady=true;queueMicrotask(()=>{if(runAutopilot())render()})}};
  const finalDate=()=>AssessmentPlan.cvpFinalDate(DATA.events);

@@ -1,3 +1,4 @@
+import {sharedUploadAccess} from '../../../lib/shared-upload-owner';
 import {env} from 'cloudflare:workers';
 import {PRIVATE_MEDIA,hashBytes,manifestHash,mediaKey,mediaPrefix} from '../../../lib/private-media';
 
@@ -12,7 +13,8 @@ export async function GET(request:Request){
  const stored=new Map<string,R2Object>();
  let cursor:string|undefined;
  do{
-  const page=await bucket.list({prefix:mediaPrefix,include:['customMetadata'],...(cursor?{cursor}:{})});
+  const options={prefix:mediaPrefix,include:['customMetadata'],...(cursor?{cursor}:{})};
+  const page=await bucket.list(options);
   for(const object of page.objects)stored.set(object.key,object);
   cursor=page.truncated?page.cursor:undefined;
  }while(cursor);
@@ -24,7 +26,7 @@ export async function GET(request:Request){
   cloudBytes:[...stored.values()].reduce((sum,object)=>sum+object.size,0),pending:pending.map(asset=>({path:asset.path,size:asset.size}))});
 }
 
-export async function POST(request:Request){
+export async function POST(request:Request){const denied=await sharedUploadAccess(request);if(denied)return denied;
  if(!authorized(request))return json({error:'Sign in required.'},401);
  if(request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable.'},503);

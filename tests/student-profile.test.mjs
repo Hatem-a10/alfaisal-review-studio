@@ -12,14 +12,14 @@ test('new profile fields are accepted by client sanitizer and validated by cloud
 test('enlargement intercepts linked figures as well as image clicks and provides close/fit instead of raw navigation',()=>{const src=read('public/workspace-refinements.js');assert.match(src,/link\?\.querySelector\('img'\)/);assert.match(src,/e.preventDefault\(\);e.stopPropagation\(\)/);assert.match(src,/\},true\);viewer.addEventListener/);assert.match(src,/uiCloseImage/);assert.match(src,/uiFitImage/);assert.doesNotMatch(src,/id="uiOpenImage"/);assert.match(src,/e.target===viewer/)});
 
 test('cloud accepts and returns the new profile fields and rejects oversized identifiers',async()=>{
- const ts=await import('typescript'),rows=new Map();const env={DB:{prepare(sql){let args;return {bind(...a){args=a;return this},async first(){const row=rows.get(args[0]);return row||null},async run(){rows.set(args[0],{revision:1,snapshot:args[1],updated_at:args[2]});return {meta:{changes:1}}}}}}};const module={exports:{}};
- new Function('require','module','exports',ts.default.transpileModule(read('app/api/progress/route.ts'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS,target:ts.default.ScriptTarget.ES2022}}).outputText)(()=>({env}),module,module.exports);
+ const ts=await import('typescript'),rows=new Map();const env={DB:{prepare(sql){let args;return {bind(...a){args=a;return this},async first(){const row=rows.get(args[0]);return row||null},async run(){rows.set(args[0],{revision:1,snapshot:args[1],updated_at:args[2]});return {meta:{changes:1}}}}}}};const loadedModule={exports:{}};
+ new Function('require','module','exports',ts.default.transpileModule(read('app/api/progress/route.ts'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS,target:ts.default.ScriptTarget.ES2022}}).outputText)(()=>({env}),loadedModule,loadedModule.exports);
  const snapshot={app:'alfaisal-review-studio',version:2,records:{},settings:{profileName:'New Student',studentNumber:'123456789',profileCreatedAt:'2026-11-11T12:00:00Z'}};
  const put=s=>new Request('https://example.test/api/progress',{method:'PUT',headers:{'oai-authenticated-user-id':'qa-student','Content-Type':'application/json'},body:JSON.stringify({revision:0,snapshot:s})});
- assert.equal((await module.exports.PUT(put(snapshot))).status,200);
- const response=await module.exports.GET(new Request('https://example.test/api/progress',{headers:{'oai-authenticated-user-id':'qa-student'}})),body=await response.json();assert.deepEqual(body.snapshot.settings,snapshot.settings);assert.match(body.accountKey,/^[a-f0-9]{64}$/);
- assert.equal((await module.exports.PUT(put({...snapshot,settings:{studentNumber:'1'.repeat(31)}}))).status,400);
- assert.equal((await module.exports.PUT(put({...snapshot,settings:{profileName:'A'.repeat(101)}}))).status,400);
+ assert.equal((await loadedModule.exports.PUT(put(snapshot))).status,200);
+ const response=await loadedModule.exports.GET(new Request('https://example.test/api/progress',{headers:{'oai-authenticated-user-id':'qa-student'}})),body=await response.json();assert.deepEqual(body.snapshot.settings,snapshot.settings);assert.match(body.accountKey,/^[a-f0-9]{64}$/);
+ assert.equal((await loadedModule.exports.PUT(put({...snapshot,settings:{studentNumber:'1'.repeat(31)}}))).status,400);
+ assert.equal((await loadedModule.exports.PUT(put({...snapshot,settings:{profileName:'A'.repeat(101)}}))).status,400);
 });
 
 test('academic groups are optional, sanitized and do not default new users to the owner group',()=>{for(const group of ['M1','M2','F1','F2']){const c=client({settings:{studentGroup:group,studentSection:'B',groupConfigured:true}});assert.equal(c.ctx.profile.groupLabel(),group+'-B')}assert.equal(client().ctx.profile.groupLabel(),'Made by Hatem');assert.equal(client({settings:{legacyProfile:true}}).ctx.profile.groupLabel(),'M1-A / Group 1.6');assert.equal(client({settings:{legacyProfile:true,groupConfigured:true}}).ctx.profile.groupLabel(),'Made by Hatem')});

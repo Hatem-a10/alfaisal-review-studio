@@ -32,14 +32,20 @@ export async function PUT(request:Request){
  return json({revision:data.revision+1,updatedAt:at});
 }
 
-function validSnapshot(s: any): boolean {
- if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,any][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
+type LearningEntry = {q:string;c:string;ok:boolean;choice:number;at:unknown};
+type ProgressRecord = {title?:string;notes?:string;confidence?:number;difficult?:boolean;dates?:unknown[];done?:Record<string,unknown>;learning?:{results?:Record<string,LearningEntry>;read?:unknown[];attempts?:LearningEntry[]};resources?:unknown[];mcqs?:{id:string;total:number;correct:number;date:unknown;createdAt:unknown;source:string}[];sessions?:{startedAt:unknown;endedAt:unknown;seconds:number}[]};
+type SnapshotWire = {extras?:{version:number;stores:Record<string,{at:string;value:unknown}>};settings?:{studentGroup:string;studentSection:string;groupConfigured:boolean;profileName:string;studentNumber:string;profileCreatedAt:string|null;labGroup:string;englishFrequency:number;onboardingDate:string|null;legacyProfile:boolean;englishEnabled:boolean;examNames:Record<string,unknown>;calendarColors:Record<string,unknown>;profilePhoto:string};records:Record<string,ProgressRecord>};
+function validSnapshot(s: SnapshotWire): boolean {
+ if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
  if(s.settings?.studentGroup!==undefined&&!['','M1','M2','F1','F2'].includes(s.settings.studentGroup))return false;
  if(s.settings?.studentSection!==undefined&&!['','A','B'].includes(s.settings.studentSection))return false;
  if(s.settings?.groupConfigured!==undefined&&typeof s.settings.groupConfigured!=='boolean')return false;
  if(s.settings?.profileName!==undefined&&(typeof s.settings.profileName!=='string'||s.settings.profileName.length>100))return false;
  if(s.settings?.studentNumber!==undefined&&(typeof s.settings.studentNumber!=='string'||s.settings.studentNumber.length>30))return false;
  if(s.settings?.profileCreatedAt!==undefined&&s.settings.profileCreatedAt!==null&&(typeof s.settings.profileCreatedAt!=='string'||!Number.isFinite(Date.parse(s.settings.profileCreatedAt))))return false;
+ if(s.settings?.labGroup!==undefined&&(typeof s.settings.labGroup!=='string'||s.settings.labGroup.length>30))return false;
+ if(s.settings?.englishFrequency!==undefined&&![2,3].includes(s.settings.englishFrequency))return false;
+ if(s.settings?.onboardingDate!==undefined&&s.settings.onboardingDate!==null&&(typeof s.settings.onboardingDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s.settings.onboardingDate)||!Number.isFinite(Date.parse(s.settings.onboardingDate))||new Date(s.settings.onboardingDate).toISOString().slice(0,10)!==s.settings.onboardingDate))return false;
  if(s.settings?.legacyProfile!==undefined&&typeof s.settings.legacyProfile!=='boolean')return false;
  if(s.settings?.englishEnabled!==undefined&&typeof s.settings.englishEnabled!=='boolean')return false;
  if(s.settings?.examNames!==undefined&&(!s.settings.examNames||typeof s.settings.examNames!=='object'||Array.isArray(s.settings.examNames)||Object.keys(s.settings.examNames).length>64||Object.entries(s.settings.examNames).some(([k,v])=>!/^[a-z0-9][a-z0-9-]{0,119}$/i.test(k)||typeof v!=='string'||!v.trim()||v.length>100)))return false;
@@ -49,17 +55,17 @@ function validSnapshot(s: any): boolean {
  const date=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&stamp(v)&&new Date(v).toISOString().slice(0,10)===v;
  for(const [id,record] of Object.entries(s.records)){
   const m=/^(CVP-([PA])|MOL-)(\d+)$/.exec(id);if(!m)return false;const n=Number(m[3]);if(n<1||n>(m[2]==='A'?23:28))return false;
-  const r=record as any;if(!r||typeof r!=='object'||Array.isArray(r))return false;
+  const r=record as ProgressRecord;if(!r||typeof r!=='object'||Array.isArray(r))return false;
   if(r.title!==undefined&&(typeof r.title!=='string'||r.title.length>300))return false;
   if(r.notes!==undefined&&(typeof r.notes!=='string'||r.notes.length>100000))return false;
   if(r.confidence!==undefined&&(!Number.isInteger(r.confidence)||r.confidence<0||r.confidence>5))return false;
   if(r.difficult!==undefined&&typeof r.difficult!=='boolean')return false;
   if(r.dates!==undefined&&(!Array.isArray(r.dates)||r.dates.length!==3||r.dates.some((d:unknown)=>!date(d))))return false;
   if(r.done!==undefined){if(!r.done||typeof r.done!=='object'||Array.isArray(r.done))return false;for(const [p,t] of Object.entries(r.done))if(!['0','1','2'].includes(p)||(t!==null&&!stamp(t)))return false}
-  if(r.learning!==undefined){const l=r.learning;if(l?.results!==undefined&&(!l.results||typeof l.results!=='object'||Array.isArray(l.results)||Object.keys(l.results).length>2000||Object.entries(l.results).some(([qid,t]:[string,any])=>!qid||qid.length>180||!t||typeof t.c!=='string'||t.c.length>180||typeof t.ok!=='boolean'||!stamp(t.at))))return false;if(!l||typeof l!=='object'||Array.isArray(l))return false;if(l.read!==undefined&&(!Array.isArray(l.read)||l.read.length>300||l.read.some((v:unknown)=>typeof v!=='string'||v.length>160)))return false;if(l.attempts!==undefined&&(!Array.isArray(l.attempts)||l.attempts.length>200||l.attempts.some((t:any)=>!t||typeof t.q!=='string'||t.q.length>180||typeof t.c!=='string'||t.c.length>180||typeof t.ok!=='boolean'||!Number.isInteger(t.choice)||t.choice<0||t.choice>8||!stamp(t.at))))return false;}
+  if(r.learning!==undefined){const l=r.learning;if(l?.results!==undefined&&(!l.results||typeof l.results!=='object'||Array.isArray(l.results)||Object.keys(l.results).length>2000||Object.entries(l.results).some(([qid,t]:[string,LearningEntry])=>!qid||qid.length>180||!t||typeof t.c!=='string'||t.c.length>180||typeof t.ok!=='boolean'||!stamp(t.at))))return false;if(!l||typeof l!=='object'||Array.isArray(l))return false;if(l.read!==undefined&&(!Array.isArray(l.read)||l.read.length>300||l.read.some((v:unknown)=>typeof v!=='string'||v.length>160)))return false;if(l.attempts!==undefined&&(!Array.isArray(l.attempts)||l.attempts.length>200||l.attempts.some((t:LearningEntry)=>!t||typeof t.q!=='string'||t.q.length>180||typeof t.c!=='string'||t.c.length>180||typeof t.ok!=='boolean'||!Number.isInteger(t.choice)||t.choice<0||t.choice>8||!stamp(t.at))))return false;}
   if(r.resources!==undefined&&(!Array.isArray(r.resources)||r.resources.length>30||r.resources.some((u:unknown)=>typeof u!=='string'||u.length>3000||!/^https?:\/\//i.test(u))))return false;
-  if(r.mcqs!==undefined&&(!Array.isArray(r.mcqs)||r.mcqs.length>5000||r.mcqs.some((q:any)=>!q||typeof q.id!=='string'||!Number.isInteger(q.total)||q.total<1||q.total>10000||!Number.isInteger(q.correct)||q.correct<0||q.correct>q.total||!date(q.date)||!stamp(q.createdAt)||typeof q.source!=='string'||q.source.length>200)))return false;
-  if(r.sessions!==undefined&&(!Array.isArray(r.sessions)||r.sessions.length>5000||r.sessions.some((t:any)=>!t||!stamp(t.startedAt)||!stamp(t.endedAt)||!Number.isInteger(t.seconds)||t.seconds<0||t.seconds>28800)))return false;
+  if(r.mcqs!==undefined&&(!Array.isArray(r.mcqs)||r.mcqs.length>5000||r.mcqs.some((q:NonNullable<ProgressRecord["mcqs"]>[number])=>!q||typeof q.id!=='string'||!Number.isInteger(q.total)||q.total<1||q.total>10000||!Number.isInteger(q.correct)||q.correct<0||q.correct>q.total||!date(q.date)||!stamp(q.createdAt)||typeof q.source!=='string'||q.source.length>200)))return false;
+  if(r.sessions!==undefined&&(!Array.isArray(r.sessions)||r.sessions.length>5000||r.sessions.some((t:NonNullable<ProgressRecord["sessions"]>[number])=>!t||!stamp(t.startedAt)||!stamp(t.endedAt)||!Number.isInteger(t.seconds)||t.seconds<0||t.seconds>28800)))return false;
  }
  return true;
 }

@@ -1,9 +1,10 @@
+import {sharedUploadAccess} from '../../../lib/shared-upload-owner';
 import {env} from 'cloudflare:workers';
 import {STUDY_ASSETS} from '../../../lib/study-asset-registry';
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
 const hash=async(v:Uint8Array<ArrayBuffer>)=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',v))].map(b=>b.toString(16).padStart(2,'0')).join('');
 export async function GET(request:Request){if(!request.headers.get('oai-authenticated-user-id'))return json({error:'Sign in required'},401);const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable'},503);let verified=0;for(let i=0;i<STUDY_ASSETS.length;i+=30){const rows=await Promise.all(STUDY_ASSETS.slice(i,i+30).map(a=>bucket.head('study-assets-v1/'+a.sha)));verified+=rows.filter(Boolean).length}return json({verified,total:STUDY_ASSETS.length})}
-export async function POST(request:Request){
+export async function POST(request:Request){const denied=await sharedUploadAccess(request);if(denied)return denied;
  if(!request.headers.get('oai-authenticated-user-id'))return json({error:'Sign in required'},401);
  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin'},403);
  const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable'},503);

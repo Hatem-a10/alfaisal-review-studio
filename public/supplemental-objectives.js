@@ -44,14 +44,10 @@ function applyTopicTakeaways(teaching, points) {
  let request, ready = false, error = '';
  const views = new Set(['learning','practice','original-exams','wrong-bank']);
  const priorRender = render;
- render = function() {
-  if (!views.has(view) || ready) return priorRender();
-  const content = document.getElementById('content');
-  if (error) {
-   content.innerHTML = '<div class="panel notice" role="status">'+esc(error)+' <button id="retryObjectivePack">Retry</button></div>';
-   return;
-  }
-  content.innerHTML = '<div class="panel notice" role="status">Loading your question bank…</div>';
+ window.ensureObjectivePack=function(){
+  if(ready)return Promise.resolve();
+  if(request)return request;
+  error='';
   const load=async path=>{
    const response=await fetch(path,{credentials:'same-origin'});
    if(!response.ok)throw Error('Could not load the lesson content.');
@@ -66,8 +62,16 @@ function applyTopicTakeaways(teaching, points) {
     inlineLessonCache.clear();
     ready = true;
    })
-   .catch(()=>{error='Could not load the question bank. Check your connection and retry.'})
-   .finally(()=>{request=null;render()});
+   .catch(e=>{error='Could not load the question bank. Check your connection and retry.';throw e})
+   .finally(()=>{request=null;if(views.has(view))render()});
+  return request;
+ };
+ render=function(){
+  if(!views.has(view)||ready)return priorRender();
+  const content=document.getElementById('content');
+  if(error){content.innerHTML='<div class="panel notice" role="status">'+esc(error)+' <button id="retryObjectivePack">Retry</button></div>';return}
+  content.innerHTML='<div class="panel notice" role="status">Loading your question bank…</div>';
+  window.ensureObjectivePack().catch(()=>{});
  };
  document.addEventListener('click',event=>{
   if (event.target.closest('#retryObjectivePack')) { error='';render(); }

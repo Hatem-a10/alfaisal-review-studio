@@ -1,0 +1,173 @@
+/* Phase 3 visual polish. Component scoped; uses the Phase 1 appearance tokens. */
+.admin-crown{
+  display:inline-block;
+  width:1em;
+  height:1em;
+  flex:none;
+  margin-inline-start:.32em;
+  vertical-align:-.1em;
+  color:#c99528;
+  fill:currentColor;
+  stroke:currentColor;
+  filter:drop-shadow(0 1px 1px #0002);
+}
+html[data-theme=amoled] .admin-crown{color:#f0c75e}
+
+:is(.phase3-anki-controls,.phase3-anki-background,.phase3-shared-decks,.phase3-context-links,.phase3-milestone){
+  min-width:0;
+  max-width:100%;
+  color:var(--ink,#20223a);
+}
+.phase3-anki-controls{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--white,#fff);
+}
+.phase3-anki-controls :is(label,button,select){min-height:40px}
+.phase3-anki-controls label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600}
+.phase3-anki-controls :is(input,select){max-width:100%;accent-color:var(--accent)}
+.phase3-anki-background{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.phase3-anki-background :is(button,[role=button]){
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:40px;
+  min-height:40px;
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--white,#fff);
+  color:var(--ink,#20223a);
+  cursor:pointer;
+}
+.phase3-anki-background :is([aria-pressed=true],[aria-checked=true],.selected){
+  border-color:var(--accent-border);
+  background:var(--accent-selected);
+  color:var(--accent-text,var(--accent));
+}
+.phase3-shared-decks{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));
+  gap:10px;
+  margin-block:12px;
+}
+.phase3-shared-decks>:is(article,li,.deck-card,[data-deck]){
+  min-width:0;
+  padding:13px 15px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--white,#fff);
+  overflow-wrap:anywhere;
+}
+.phase3-shared-decks :is(h3,h4){margin:0 0 5px;line-height:1.35}
+.phase3-shared-decks :is(p,small){color:var(--muted);line-height:1.55}
+.phase3-context-links{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-block:10px;
+}
+.phase3-context-links a,.phase3-context-links button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:36px;
+  max-width:100%;
+  padding:6px 11px;
+  border:1px solid var(--accent-border);
+  border-radius:999px;
+  background:var(--accent-bg);
+  color:var(--accent-text,var(--accent));
+  font-size:.9rem;
+  line-height:1.3;
+  text-decoration:none;
+  overflow-wrap:anywhere;
+}
+.phase3-context-links a:hover,.phase3-context-links button:hover{background:var(--accent-selected);border-color:var(--accent)}
+.phase3-milestone{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px 18px;
+  padding:14px 16px;
+  border:1px solid var(--accent-border);
+  border-inline-start:4px solid var(--accent);
+  border-radius:12px;
+  background:var(--accent-bg);
+}
+.phase3-milestone :is(h2,h3,h4,p){margin-block:0;overflow-wrap:anywhere}
+.phase3-milestone :is(small,.muted){color:var(--muted)}
+.phase3-milestone :is(button,a){justify-self:end;min-height:40px}
+.phase3-milestone :is(label,input,select){max-width:100%}
+
+/* Compact feedback states: transitions never animate dimensions or page position. */
+:is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion){--phase3-motion:160ms ease-out}
+.phase3-dropdown[hidden],.phase3-modal[hidden]{display:none!important}
+.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs :is(button,[role=tab]),.phase3-completion{
+  transition:opacity var(--phase3-motion),transform var(--phase3-motion),background-color var(--phase3-motion),border-color var(--phase3-motion),color var(--phase3-motion);
+}
+.phase3-dropdown{transform-origin:top center}
+.phase3-dropdown[aria-hidden=true]{opacity:0;transform:translateY(-3px)}
+.phase3-dropdown[aria-hidden=false]{opacity:1;transform:translateY(0)}
+.phase3-modal[open]{animation:phase3-enter 160ms ease-out both}
+.phase3-sidebar[aria-hidden=true]{opacity:.82;transform:translateX(-3px)}
+.phase3-sidebar[aria-hidden=false]{opacity:1;transform:translateX(0)}
+.phase3-tabs :is([aria-selected=true],[aria-current=page],.selected){color:var(--accent-text,var(--accent))}
+.phase3-completion[data-state=complete],.phase3-completion[aria-live=polite]{animation:phase3-complete 220ms ease-out both}
+@keyframes phase3-enter{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes phase3-complete{from{opacity:.82;transform:scale(.99)}to{opacity:1;transform:scale(1)}}
+
+.phase3-progress{display:grid;gap:6px;min-width:0}
+.phase3-progress :is(progress,[role=progressbar]){width:100%;min-height:8px;accent-color:var(--accent)}
+.phase3-progress progress{height:8px;border:0;border-radius:99px;overflow:hidden;background:var(--line)}
+.phase3-progress progress::-webkit-progress-bar{border-radius:99px;background:var(--line)}
+.phase3-progress progress::-webkit-progress-value{border-radius:99px;background:var(--accent)}
+.phase3-progress progress::-moz-progress-bar{border-radius:99px;background:var(--accent)}
+.phase3-loading{display:inline-flex;align-items:center;gap:8px;color:var(--muted)}
+.phase3-loading::before{content:"";width:14px;height:14px;flex:none;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:phase3-spin 800ms linear infinite}
+@keyframes phase3-spin{to{transform:rotate(360deg)}}
+
+html[data-theme=amoled] :is(.phase3-anki-controls,.phase3-shared-decks>:is(article,li,.deck-card,[data-deck])){background:#101211}
+html[data-theme=amoled] .phase3-anki-background :is(button,[role=button]){background:#111311;color:var(--ink)}
+html[data-theme=amoled] .phase3-context-links :is(a,button){background:#101d16}
+html[data-theme=amoled] .phase3-milestone{background:#101d16}
+
+@media(max-width:760px){
+  .phase3-anki-controls{align-items:stretch;padding:11px;gap:8px}
+  .phase3-anki-controls>:is(button,select){flex:1 1 130px}
+  .phase3-anki-background{gap:6px}
+  .phase3-anki-background :is(button,[role=button]){flex:1 1 105px;min-height:44px}
+  .phase3-shared-decks{grid-template-columns:minmax(0,1fr)}
+  .phase3-context-links :is(a,button){min-height:40px}
+  .phase3-milestone{grid-template-columns:minmax(0,1fr);gap:9px;padding:13px}
+  .phase3-milestone :is(button,a){justify-self:stretch}
+}
+
+html[data-reading-motion=reduce]{scroll-behavior:auto!important}
+html[data-reading-motion=reduce] :is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion,.phase3-loading),
+html[data-reading-motion=reduce] :is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion,.phase3-loading)::before{
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+}
+@media(prefers-reduced-motion:reduce){
+  :is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion,.phase3-loading),
+  :is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion,.phase3-loading)::before{
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
+}

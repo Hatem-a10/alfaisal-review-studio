@@ -28,5 +28,6 @@ export async function readPrivateMedia(request:Request,bucket:R2Bucket|undefined
   const cacheHeaders=new Headers(headers);cacheHeaders.delete('Content-Length');
   return new Response(null,{status:304,headers:cacheHeaders});
  }
- return new Response('body' in file?file.body:null,{headers});
+ const body='body' in file?(file as R2ObjectBody).body:null;
+ return new Response(body,{headers});
 }

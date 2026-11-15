@@ -1,3 +1,4 @@
+import * as academicConfig from '../lib/academic-config.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -10,21 +11,23 @@ const origin='https://studio.example';
 const auth={'oai-authenticated-user-id':'owner'};
 
 function setup(){
- const files=new Map(),env={BUCKET:{
+ const files=new Map(),env={REVIEW_STUDIO_OWNER_ACCOUNT_KEY:createHash('sha256').update('review-studio:owner').digest('hex'),BUCKET:{
   async put(key,bytes,metadata){files.set(key,{key,body:bytes,size:bytes.byteLength,arrayBuffer:async()=>bytes,...metadata});},
   async get(key){return files.get(key);},
   async head(key){const row=files.get(key);return row&&{size:row.size,customMetadata:row.customMetadata};},
   async list(){return {objects:[...files.values()],truncated:false};},
  }};
  const load=(file,dependencies)=>{
-  const module={exports:{}};
+  const loadedModule={exports:{}};
   new Function('require','module','exports','crypto',ts.transpileModule(readFileSync(file,'utf8'),{
    compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}
-  }).outputText)(name=>dependencies[name],module,module.exports,webcrypto);
-  return module.exports;
+  }).outputText)(name=>dependencies[name],loadedModule,loadedModule.exports,webcrypto);
+  return loadedModule.exports;
  };
  const media=load('lib/private-media.ts',{'./private-media-manifest.json':manifest});
- return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media}),env,files};
+ const ownerAccess=load('lib/owner-access.ts',{'cloudflare:workers':{env},'./academic-config.mjs':academicConfig});
+ const owner=load('lib/shared-upload-owner.ts',{'cloudflare:workers':{env},'./academic-config.mjs':academicConfig,'./owner-access':ownerAccess});
+ return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media,'../../../lib/shared-upload-owner':owner}),env,files};
 }
 
 const get=(path,headers=auth)=>new Request(origin+path,{headers});
@@ -38,6 +41,7 @@ test('migration rejects unauthenticated, cross-origin and checksum-mismatched wr
  const {api,files}=setup();
  assert.equal((await api.POST(post(body,{origin}))).status,401);
  assert.equal((await api.POST(post(body,{...auth,origin:'https://other.example'}))).status,403);
+ assert.equal((await api.POST(post(body,{'oai-authenticated-user-id':'classmate',origin}))).status,403);
  assert.equal((await api.POST(post('x'.repeat(body.length)))).status,400);
  assert.equal(files.size,0);
 });

@@ -142,6 +142,7 @@ test('supplemental questions defer past Dashboard and load once for learning and
   LEARNING:{questions:[]},TEACHING:{guides:{}},applyLessonExpansion(){},TOPIC_CHECKS:{},inlineLessonCache:new Map(),
   fetch:async path=>{requests++;return {ok:true,json:async()=>path.includes('supplemental-objective-questions') ? {questions:[{id:'q',objectiveId:'topic',options:['A','B','C','D']}]} : {}}},
  };
+ ctx.window=ctx;
  vm.runInNewContext(load('supplemental-objectives.js'),ctx);
  ctx.render();
  assert.equal(requests,0);
@@ -240,7 +241,7 @@ test('checking a mapped topic question records it under the open lesson',()=>{
   etEligibleQuestion:()=>false,persist(){},LEARNING:{lessons:[]},
   Learn:{record:(r,q,choice)=>({results:{[q.id]:{ok:choice===q.answer}}})}};
  const record=vm.runInNewContext(load('exam-tools.js').split('\n').find(line=>line.startsWith('function etRecordSet'))+';etRecordSet',context);
- const q={id:'mapped',lectureIds:['first','open'],concept:'legacy-concept',objectiveId:'open-topic',answer:2};
+ const q={id:'mapped',lectureIds:['first','open'],concept:'legacy-concept',objectiveId:'open-topic',options:['A','B','C'],answer:2};
  record([q],[2],'Lesson topic questions',{lessonId:'open'});
  assert.equal(state.open.learning.results.mapped.ok,true);
  assert.equal(state.first.learning,undefined);
