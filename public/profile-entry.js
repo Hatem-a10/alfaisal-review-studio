@@ -12,7 +12,7 @@ const StudentProfile=(()=>{
   if(bound&&bound!==key||!bound&&!value.snapshot&&initial){await (await ui()).switchAccount(key);return false}
   localStorage.setItem(KEY+'-account',key);if(ready)return true;
   const profile=value.snapshot?.settings;
-  if(profile?.profileName){settings.profileName=profile.profileName;settings.studentNumber=profile.studentNumber||'';if(!saved.settings?.profileName||!saved.settings?.groupConfigured&&profile.groupConfigured)for(const k of ['studentGroup','studentSection','groupConfigured','profileCreatedAt','legacyProfile','labGroup','englishFrequency','onboardingDate'])if(profile[k]!==undefined)settings[k]=profile[k];ready=true;paint();return true}
+  if(profile?.profileName){settings.profileName=profile.profileName;settings.studentNumber=profile.studentNumber||'';if(!saved.settings?.profileName||!saved.settings?.groupConfigured&&profile.groupConfigured)for(const k of ['studentGroup','studentSection','groupConfigured','profileCreatedAt','legacyProfile','labGroup','labGroupConfigured','englishFrequency','englishStartTime','onboardingDate'])if(profile[k]!==undefined)settings[k]=profile[k];ready=true;paint();return true}
   if(value.snapshot){legacy=true; // Accounts with existing snapshots retain the original legacy identity.
    if(!settings.profileName){settings.profileName='Hatem Alabrach';settings.studentNumber='';settings.legacyProfile=true}
    ready=true;paint();return true;

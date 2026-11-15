@@ -34,7 +34,7 @@ export async function PUT(request:Request){
 
 type LearningEntry = {q:string;c:string;ok:boolean;choice:number;at:unknown};
 type ProgressRecord = {title?:string;notes?:string;confidence?:number;difficult?:boolean;dates?:unknown[];done?:Record<string,unknown>;learning?:{results?:Record<string,LearningEntry>;read?:unknown[];attempts?:LearningEntry[]};resources?:unknown[];mcqs?:{id:string;total:number;correct:number;date:unknown;createdAt:unknown;source:string}[];sessions?:{startedAt:unknown;endedAt:unknown;seconds:number}[]};
-type SnapshotWire = {extras?:{version:number;stores:Record<string,{at:string;value:unknown}>};settings?:{studentGroup:string;studentSection:string;groupConfigured:boolean;profileName:string;studentNumber:string;profileCreatedAt:string|null;labGroup:string;englishFrequency:number;onboardingDate:string|null;legacyProfile:boolean;englishEnabled:boolean;examNames:Record<string,unknown>;calendarColors:Record<string,unknown>;profilePhoto:string};records:Record<string,ProgressRecord>};
+type SnapshotWire = {extras?:{version:number;stores:Record<string,{at:string;value:unknown}>};settings?:{studentGroup:string;studentSection:string;groupConfigured:boolean;profileName:string;studentNumber:string;profileCreatedAt:string|null;labGroup:string;labGroupConfigured:boolean;englishFrequency:number;englishStartTime:string;onboardingDate:string|null;legacyProfile:boolean;englishEnabled:boolean;examNames:Record<string,unknown>;calendarColors:Record<string,unknown>;profilePhoto:string};records:Record<string,ProgressRecord>};
 function validSnapshot(s: SnapshotWire): boolean {
  if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
  if(s.settings?.studentGroup!==undefined&&!['','M1','M2','F1','F2'].includes(s.settings.studentGroup))return false;
@@ -43,7 +43,9 @@ function validSnapshot(s: SnapshotWire): boolean {
  if(s.settings?.profileName!==undefined&&(typeof s.settings.profileName!=='string'||s.settings.profileName.length>100))return false;
  if(s.settings?.studentNumber!==undefined&&(typeof s.settings.studentNumber!=='string'||s.settings.studentNumber.length>30))return false;
  if(s.settings?.profileCreatedAt!==undefined&&s.settings.profileCreatedAt!==null&&(typeof s.settings.profileCreatedAt!=='string'||!Number.isFinite(Date.parse(s.settings.profileCreatedAt))))return false;
+ if(s.settings?.labGroupConfigured!==undefined&&typeof s.settings.labGroupConfigured!=='boolean')return false;
  if(s.settings?.labGroup!==undefined&&(typeof s.settings.labGroup!=='string'||s.settings.labGroup.length>30))return false;
+ if(s.settings?.englishStartTime!==undefined&&!['17:00','17:30'].includes(s.settings.englishStartTime))return false;
  if(s.settings?.englishFrequency!==undefined&&![2,3].includes(s.settings.englishFrequency))return false;
  if(s.settings?.onboardingDate!==undefined&&s.settings.onboardingDate!==null&&(typeof s.settings.onboardingDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s.settings.onboardingDate)||!Number.isFinite(Date.parse(s.settings.onboardingDate))||new Date(s.settings.onboardingDate).toISOString().slice(0,10)!==s.settings.onboardingDate))return false;
  if(s.settings?.legacyProfile!==undefined&&typeof s.settings.legacyProfile!=='boolean')return false;

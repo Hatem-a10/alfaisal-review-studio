@@ -6,3 +6,5 @@ if(requested&&!/^v\d+\.\d{2,3}$/.test(requested))throw Error('Display version mu
 const oldDisplay=Number(previous.displayVersion?.slice(1)),nextDisplay=previous.siteVersion===version?oldDisplay:previous.siteVersion+1===version?Math.floor(oldDisplay*100+1e-7)/100+.01:version/100;
 const display=requested||'v'+nextDisplay.toFixed(2);writeFileSync(file,JSON.stringify({siteVersion:version,displayVersion:display})+'\n');
 const html=new URL('../public/index.html',import.meta.url);writeFileSync(html,readFileSync(html,'utf8').replace(/(<span class="sync-version" id="siteVersion" title=")Site version \d+(">)[^<]+/,`$1Site version ${version}$2${display}`));console.log(display);
+
+const policy=new URL('../public/phase3-cache-policy.mjs',import.meta.url);writeFileSync(policy,readFileSync(policy,'utf8').replace(/review-studio-sw-v[0-9.]+/,'review-studio-sw-'+display));

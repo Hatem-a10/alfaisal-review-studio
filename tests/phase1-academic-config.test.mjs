@@ -5,9 +5,9 @@ import {groupsFromRows,isOwner,sameOrigin,validateGroups} from '../lib/academic-
 
 test('empty configuration yields only the verified default and returns a fresh copy',()=>{
  const groups=groupsFromRows([]);
- assert.deepEqual(groups,[{studentGroup:'M1',studentSection:'A',labGroups:['1.6']}]);
+ assert.equal(groups.length,8);assert.deepEqual(groups.find(g=>g.studentGroup==='M1'&&g.studentSection==='A').labGroups,['1.1','1.2','1.3','1.4','1.5','1.6']);
  groups[0].labGroups.push('fake');
- assert.deepEqual(groupsFromRows([])[0].labGroups,['1.6']);
+ assert.ok(!groupsFromRows([])[0].labGroups.includes('fake'));
 });
 test('valid rows round trip and malformed storage fails closed',()=>{
  const row={class_code:'M2',group_code:'B',configuration:JSON.stringify({labGroups:['2.1','2.2']})};
