@@ -21,8 +21,9 @@
  dialog.querySelector('.admin-frame').append(admin);
  const adminContent=admin.querySelector('#adminSettingsContent'),unlockForm=admin.querySelector('form'),adminToggle=admin.querySelector('#toggleAdminSettings');
  for(const el of [backup,dialog.querySelector('.admin-recovery'),dialog.querySelector('#adminBody')])adminContent.append(el);
+ const changeLogLabel=document.createElement('label');changeLogLabel.className='admin-changelog-toggle';const changeLogToggle=document.createElement('input');changeLogToggle.type='checkbox';changeLogToggle.id='adminLectureChanges';changeLogLabel.append(changeLogToggle,document.createTextNode('Lecture change log'));adminContent.prepend(changeLogLabel);changeLogToggle.onchange=()=>{if(!unlocked)return;saveOptions({...storeOptions(),adminLectureChanges:changeLogToggle.checked});window.dispatchEvent(new CustomEvent('lecture-changelog-preference'))};
  let unlocked=false;
- function announce(){window.reviewAdmin=unlocked;window.dispatchEvent(new CustomEvent('review-admin-role',{detail:{admin:unlocked}}))}
+ function announce(){changeLogToggle.checked=storeOptions().adminLectureChanges!==false;window.reviewAdmin=unlocked;window.dispatchEvent(new CustomEvent('review-admin-role',{detail:{admin:unlocked}}))}
  function expandAdmin(){const opened=adminToggle.getAttribute('aria-expanded')==='true';adminToggle.setAttribute('aria-expanded',String(!opened));adminContent.hidden=opened;unlockForm.hidden=true;if(!opened)read()}
  async function refreshAdminAuthorization(){try{const r=await fetch('/api/capabilities',{cache:'no-store',credentials:'same-origin'});if(!r.ok)return;const value=await r.json();unlocked=value.admin===true;if(!unlocked){adminContent.hidden=true;adminToggle.setAttribute('aria-expanded','false')}announce()}catch{}}
  window.refreshAdminAuthorization=refreshAdminAuthorization;

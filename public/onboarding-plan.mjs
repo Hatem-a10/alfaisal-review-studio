@@ -6,7 +6,8 @@ export function planStudent(items,records={},instant=new Date(),selected={},cons
  const start=riyadhDate(instant),stamp=new Date(instant).toISOString(),out=structuredClone(records),warnings=[],used={},budget=Math.max(0,Number.isFinite(+constraints.budget)?+constraints.budget:180),breaks=constraints.breaks||[],blocked=new Set(constraints.blockedDates||[]),finals=constraints.finals||{};
  const free=d=>!blocked.has(d)&&!breaks.some(([a,b])=>d>=a&&d<=b);
  for(const item of items){const old=records[item.id]||{},done={...(old.done||{})};for(const p of selected[item.id]||[])if([0,1,2].includes(+p)&&!done[p])done[p]=stamp;
-  if(old.dates){out[item.id]={...old,done};continue}const dates=[start,start,start];let prior=null;
+  const generated=constraints.bootstrapChanges?.filter(c=>c.id===item.id&&/^dates\.[012]$/.test(c.field))||[];const bootstrapDates=old.dates&&generated.length>0&&old.dates.every((date,p)=>date===item.dates?.[p]||generated.some(c=>c.field==='dates.'+p&&c.after===date));
+  if(old.dates&&!bootstrapDates){out[item.id]={...old,done};continue}const dates=[start,start,start];let prior=null;
   for(let p=0;p<3;p++){if(done[p]){prior=riyadhDate(done[p]);continue}let candidate=prior?[start,add(prior,p===1?1:2)].sort().at(-1):start,chosen=null;const final=finals[item.course];for(let i=0;i<366;i++,candidate=add(candidate,1)){if(final&&candidate>=final)break;if(free(candidate)&&(used[candidate]||0)+[40,30,20][p]<=budget){chosen=candidate;break}}
    if(chosen){dates[p]=chosen;prior=chosen;used[chosen]=(used[chosen]||0)+[40,30,20][p]}else{warnings.push({id:item.id,pass:p,reason:final?'No available capacity before the final.':'No available capacity in the planning horizon.'});prior=null}
   }out[item.id]={...old,dates,done};

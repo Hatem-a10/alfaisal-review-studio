@@ -1,0 +1,225 @@
+/* Precision release polish: welcome flow, readable timetable, profile crown, Examplify. */
+
+/* Admin identity remains legible without crowding the profile row. */
+.admin-name{display:inline-flex;flex-direction:column;align-items:flex-start;gap:0;min-width:0;overflow-wrap:anywhere}
+.admin-name .admin-crown,.admin-crown{display:inline-block;width:1.08em;height:1.08em;flex:none;margin:0;vertical-align:baseline;color:#bd8420;fill:currentColor;stroke:currentColor}
+html[data-theme=amoled] .admin-name .admin-crown,html[data-theme=amoled] .admin-crown{color:#f1c75b}
+
+/* The six-step welcome wizard gets a roomy, contained work area. */
+dialog.student-welcome:has(#studentProfileForm){
+  display:flex;
+  flex-direction:column;
+  width:min(900px,calc(100vw - 40px));
+  max-width:min(900px,calc(100vw - 40px));
+  height:min(700px,calc(100dvh - 40px));
+  max-height:calc(100dvh - 40px);
+  box-sizing:border-box;
+  padding:clamp(20px,3vw,32px);
+  overflow:hidden;
+  border-color:#d7e0da;
+  border-radius:22px;
+  background:#fff;
+  color:#1d2924;
+  box-shadow:0 28px 84px #0b201633;
+}
+dialog.student-welcome:has(#studentProfileForm):not([open]){display:none}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step][hidden]{display:none!important}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm){border-color:#343d37;background:#111412;color:#eef2ef}
+dialog.student-welcome:has(#studentProfileForm)::backdrop{background:#08120dc7;backdrop-filter:blur(5px)}
+dialog.student-welcome:has(#studentProfileForm) .student-welcome-mark{color:#236b4e}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) .student-welcome-mark{color:#8dcba4}
+dialog.student-welcome:has(#studentProfileForm)>h2{margin:8px 0 16px;padding-right:100px;font-size:clamp(23px,3vw,30px);line-height:1.2;letter-spacing:-.035em}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  flex:1 1 auto;
+  grid-template-rows:auto minmax(0,1fr) auto auto;
+  gap:10px;
+  min-height:0;
+  margin:0;
+}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>.student-wizard-progress,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]:not([hidden]),
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>.student-profile-error{grid-column:1/-1}
+dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:8px;
+  margin:0 0 8px;
+  padding:0 0 2px;
+}
+dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [data-step-indicator]{
+  display:grid;
+  place-items:center;
+  min-height:44px;
+  padding:7px 9px;
+  border:1px solid #d8e1db;
+  border-radius:11px;
+  background:#f7f9f7;
+  color:#526159;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.3;
+  text-align:center;
+}
+dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [aria-current=step]{border-color:#397958;background:#e8f2eb;color:#1f603f;box-shadow:inset 0 0 0 1px #397958}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [data-step-indicator]{border-color:#3b4640;background:#191e1a;color:#b9c5bd}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [aria-current=step]{border-color:#8dcba4;background:#1b2d20;color:#c7f0d4}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]:not([hidden]){
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-content:start;
+  align-items:start;
+  gap:4px 20px;
+  min-height:0;
+  overflow:auto;
+  padding:4px 4px 10px 1px;
+  overscroll-behavior:contain;
+}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="0"]{align-content:center;grid-template-columns:minmax(0,1fr);min-height:220px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="0"] p{max-width:52ch;margin:0;font-size:17px;line-height:1.65}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="1"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="2"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="4"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="5"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]>p{grid-column:1/-1}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]>h3{margin:2px 0 5px;font-size:18px;line-height:1.35}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]>p{margin:0 0 8px;line-height:1.6}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step] label{align-content:start;gap:7px;margin:9px 0;color:#36443b;font-size:13px;font-weight:650;line-height:1.4}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step] label{color:#d5dfd8}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm :is(input:not([type=checkbox]):not([type=radio]):not([type=color]),select){min-height:44px;padding:9px 11px;border:1px solid #aebbb1;border-radius:10px;background:#fff;color:#1d2924;font:inherit}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm :is(input:not([type=checkbox]):not([type=radio]):not([type=color]),select){border-color:#57645b;background:#191e1a;color:#eef2ef}
+dialog.student-welcome:has(#studentProfileForm) .student-group-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="2"] [data-appearance]{grid-column:1/-1;padding:10px 0}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row{grid-column:1/-1;grid-template-columns:minmax(0,1fr) repeat(3,minmax(90px,auto));gap:8px;padding:10px 4px;border-color:#e1e7e2}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>[data-progress]{grid-column:1/-1;min-width:0}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row{border-color:#343d37}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row>label{margin:0}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row input{width:18px;height:18px;min-height:18px;accent-color:#286c4d}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>h3,
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>p{order:-3}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>[data-skip-progress]{
+  order:-2;
+  position:sticky;
+  top:0;
+  z-index:3;
+  grid-column:1/-1;
+  width:auto;
+  justify-self:start;
+  align-self:start;
+  padding:8px 12px;
+  border:1px solid #abc0b0;
+  border-radius:9px;
+  background:#f1f7f2;
+  color:#24533a;
+  box-shadow:0 3px 10px #14291c16;
+}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>[data-skip-progress]{border-color:#536b59;background:#1a2a1e;color:#d4f0dc;box-shadow:0 3px 10px #0005}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="4"]>label{grid-column:1/-1;max-width:440px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="5"]{align-content:center;min-height:220px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="5"] p{max-width:56ch}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>.student-profile-error{min-height:1.3em;margin:0;color:#a22d2d;font-size:13px;line-height:1.4}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>.student-profile-error{color:#ffaaa5}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>button{width:auto;min-height:44px;margin:0;padding:10px 18px;border-radius:11px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-back]{grid-row:4;grid-column:1;justify-self:start}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-next]{grid-row:4;grid-column:2;justify-self:end;min-width:142px}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-next].primary{background:#246b4d;border-color:#246b4d;color:#fff}
+html[data-theme=amoled] dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-next].primary{background:#347956;border-color:#72b889;color:#fff}
+dialog.student-welcome:has(#studentProfileForm) #studentProfileForm :is(button,input,select):focus-visible{outline:3px solid #528766;outline-offset:2px}
+
+@media(max-width:760px){
+  dialog.student-welcome:has(#studentProfileForm){width:calc(100vw - 20px);max-width:calc(100vw - 20px);height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);padding:18px;border-radius:18px}
+  dialog.student-welcome:has(#studentProfileForm)>h2{margin:6px 0 12px;padding-right:82px;font-size:23px}
+  dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-bottom:6px}
+  dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [data-step-indicator]{min-height:38px;padding:5px 4px;font-size:11px}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm{grid-template-columns:repeat(2,minmax(0,1fr))}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]:not([hidden]){grid-template-columns:minmax(0,1fr);gap:2px 12px;padding-right:1px}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step]>:is(h3,p){grid-column:1}
+  dialog.student-welcome:has(#studentProfileForm) .student-group-fields{grid-column:1;grid-template-columns:minmax(0,1fr);gap:0}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row{grid-template-columns:minmax(0,1fr);gap:3px;padding:10px 0}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>[data-progress]{grid-column:1}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"] .student-progress-row>label{min-height:36px}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="3"]>[data-skip-progress]{width:100%;justify-self:stretch}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-step="4"]>label{max-width:none}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>button{min-width:0;padding-inline:10px}
+  dialog.student-welcome:has(#studentProfileForm) #studentProfileForm>[data-next]{min-width:112px}
+}
+@media(max-width:380px){
+  dialog.student-welcome:has(#studentProfileForm){padding:14px}
+  dialog.student-welcome:has(#studentProfileForm) .student-wizard-progress [data-step-indicator]{font-size:10px}
+}
+
+/* High contrast, restrained time-block colors in the light schedule. */
+html[data-theme=light] .schedule-panel{border-color:#cbd6ce;background:#fff}
+html[data-theme=light] .schedule-scroll{border:1px solid #dbe3dd;background:#fbfcfb}
+html[data-theme=light] .campus-board{gap:7px}
+html[data-theme=light] .campus-day-head{background:#174657;color:#fff;box-shadow:0 2px 5px #173e4c20}
+html[data-theme=light] .campus-day-head span{color:#e3f1f4}
+html[data-theme=light] .campus-day-head small{color:#c1dee4}
+html[data-theme=light] .campus-day-head.day-current{background:#226b4d;color:#fff}
+html[data-theme=light] .campus-time-head,html[data-theme=light] .campus-time-axis{background:#fff}
+html[data-theme=light] .campus-time-axis>span{color:#46564d;font-size:11px;font-weight:600}
+html[data-theme=light] .campus-day-column{background:repeating-linear-gradient(to bottom,#f8faf8 0,#f8faf8 calc(var(--hour-height) - 1px),#dce4de calc(var(--hour-height) - 1px),#dce4de var(--hour-height))}
+html[data-theme=light] .campus-day-column.column-current{outline-color:#30734f80}
+html[data-theme=light] .campus-event{border:1px solid currentColor;border-radius:9px;box-shadow:0 1px 3px #182e220d}
+html[data-theme=light] .campus-event strong{font-size:12.5px;line-height:1.35;font-weight:700}
+html[data-theme=light] .campus-event span{font-size:10.5px;line-height:1.35}
+html[data-theme=light] .campus-event small{font-size:10px;line-height:1.35;font-weight:650;opacity:1}
+html[data-theme=light] .campus-anatomy{background:#e8f5ef;color:#175a43}
+html[data-theme=light] .campus-physiology{background:#eaf1ff;color:#244f8f}
+html[data-theme=light] .campus-mol{background:#f2ecff;color:#5f3d98}
+html[data-theme=light] .campus-lab,html[data-theme=light] .campus-shared{background:#e5f5f7;color:#006675}
+html[data-theme=light] .campus-assessment{background:#fff0e6;color:#9a4017}
+html[data-theme=light] .campus-break,html[data-theme=light] .campus-other{background:#edf2f4;color:#435965}
+html[data-theme=light] .campus-english{background:#fff6dc;color:#765314}
+html[data-theme=light] .campus-agenda>button{color:#24332b}
+html[data-theme=light] .campus-agenda>button small{color:#536159}
+@media(max-width:760px){
+  .schedule-scroll{scroll-snap-type:x proximity;overscroll-behavior-inline:contain}
+  .campus-board{grid-template-columns:64px repeat(5,minmax(150px,1fr));min-width:840px;gap:6px}
+  .campus-day-head{padding:11px 9px}
+  .campus-day-head strong{font-size:13px}
+  .campus-day-column{scroll-snap-align:start}
+  .campus-event{padding:6px 7px}
+  .campus-event strong{font-size:12px}
+  .schedule-legend{font-size:12px;line-height:1.4}
+}
+
+/* Examplify: selected-answer check occupies the elimination icon's existing slot. */
+#xpExam .xp-option-mark{
+  order:3;
+  display:grid;
+  place-items:center;
+  flex:0 0 48px;
+  width:48px;
+  min-width:48px;
+  min-height:48px;
+  align-self:stretch;
+  margin:0;
+  padding:0;
+  border:0!important;
+  border-left:0!important;
+  border-radius:0 10px 10px 0;
+  background:transparent!important;
+  color:var(--xp-text);
+}
+#xpExam .xp-option-mark:hover{background:color-mix(in srgb,var(--xp-blue) 12%,transparent)!important}
+#xpExam .xp-option-mark-selected{color:#167348}
+#xpExam[data-exam-theme=dark] .xp-option-mark-selected{color:#8ce2b1}
+#xpExam .xp-option-mark-selected svg{width:24px;height:24px}
+#xpExam .xp-option.xp-selected>button[data-xp-eliminate]{border-left:0!important}
+#xpExam #xpNumbers .xp-current{
+  background:transparent!important;
+  border:2px solid #1776a5!important;
+  color:#126b96!important;
+  box-shadow:none!important;
+}
+#xpExam[data-exam-theme=dark] #xpNumbers .xp-current{border-color:#82d8fa!important;color:#a8e7ff!important}
+#xpExam .xp-pen[aria-pressed=true]{background:color-mix(in srgb,var(--xp-pen-color,#edff00) 22%,var(--xp-menu))!important;color:var(--xp-text)!important;border-color:var(--xp-pen-color,#edff00)!important}
+#xpExam .xp-pen[aria-pressed=true] svg{filter:drop-shadow(0 1px 1px #0003)}
+#xpExam .xp-notice-dialog{inset:clamp(18px,8vh,80px) max(16px,calc((100vw - 620px)/2)) auto;max-height:84dvh;overflow:auto}
+#xpExam .xp-notice-dialog h3{margin:18px 0 8px;font:700 15px/1.4 Arial,system-ui,sans-serif;color:var(--xp-text)}
+#xpExam .xp-notice-dialog ul{margin:0;padding-inline-start:22px;line-height:1.75}
+#xpExam .xp-notice-dialog kbd{display:inline-block;min-width:24px;padding:1px 5px;border:1px solid var(--xp-line);border-radius:4px;background:var(--xp-tool);font:600 12px/1.5 ui-monospace,monospace;text-align:center}
+@media(max-width:760px){#xpExam .xp-controls>div{max-width:min(300px,calc(100vw - 24px));min-width:min(250px,calc(100vw - 24px))}#xpExam .xp-option-mark{flex-basis:44px;width:44px;min-width:44px}}

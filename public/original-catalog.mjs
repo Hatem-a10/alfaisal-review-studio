@@ -1,4 +1,6 @@
-let selected = '19';
+let selected = '19', selectedKind='all';
+export function catalogKind(set){if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
+export function visibleCatalogSets(sets,kind='all'){return sets.filter(set=>!(/corrected\s+booklet\s+mcqs?/i.test(set.title||'')||/^cvp19-.*-mcq$/i.test(set.id||''))&&(kind==='all'||catalogKind(set)===kind))}
 export function batchFor(set) {
  if (set.category === 'topic') return 'topics';
  if (set.id === 'mol-academic-aid-mock-2026') return '19';
@@ -18,7 +20,7 @@ function paperCard(s) {
 
 export function catalog() {
  const grouped = new Map(['19','18','17'].map(id=>[id,[]]));
- for(const set of ORIGINAL_EXAMS.sets) {
+ for(const set of visibleCatalogSets(ORIGINAL_EXAMS.sets)) {
   const id=batchFor(set);
   if(!grouped.has(id))grouped.set(id,[]);
   grouped.get(id).push(set);
@@ -28,7 +30,7 @@ export function catalog() {
  return `<section class="original-library batch-library"><div class="batch-controls"><span class="eyebrow muted">BROWSE BY BATCH</span><div><button type="button" data-batch-step="-1" aria-label="Previous batch card">←</button> <button type="button" data-batch-step="1" aria-label="Next batch card">→</button></div></div>
  <div class="batch-track" tabindex="0" aria-label="Swipe or use arrow keys to browse batches">${ids.map(id=>`<button type="button" class="batch-card" data-batch-card="${id}"><span>${id==='19'?'CURRENT BATCH':id==='other'?'SOURCE BATCH UNKNOWN':id==='topics'?'BROWSE BY SUBJECT':'PAST BATCH'}</span><strong>${titleFor(id)}</strong><small>${grouped.get(id).length} available set${grouped.get(id).length===1?'':'s'}</small></button>`).join('')}</div>
  <div class="batch-index" aria-label="Jump to batch">${ids.map(id=>`<button type="button" data-batch-pick="${id}">${titleFor(id)}</button>`).join('')}</div>
- <div class="batch-papers"></div><p class="notice">Recalled papers may have missing choices or incorrect printed keys. Original mode preserves the supplied wording and order.</p>
+ <label>Show <select id="originalKindFilter">${[['all','All'],['past','Past Exam'],['tbl','TBL'],['other','Other']].map(([value,label])=>`<option value="${value}" ${selectedKind===value?'selected':''}>${label}</option>`).join('')}</select></label><div class="batch-papers"></div><p class="notice">Recalled papers may have missing choices or incorrect printed keys. Original mode preserves the supplied wording and order.</p>
  <div class="source-links"><a href="/api/site-assets/materials/mol-midterm-guide.pdf" target="_blank" rel="noopener noreferrer">MOL Midterm Guide ↗</a></div></section>`;
 }
 
@@ -41,7 +43,7 @@ function mount(ids, grouped) {
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  function show(id) {
   selected=id;
-  const sets=grouped.get(id);
+  const sets=visibleCatalogSets(grouped.get(id),selectedKind);
   papers.innerHTML=`<h2>${titleFor(id)} · Papers & TBLs</h2>`+(sets.length
    ? `<div class="original-set-grid">${sets.map(paperCard).join('')}</div>`
    : '<p class="notice">No sets have been identified for this batch yet.</p>');
@@ -55,6 +57,7 @@ function mount(ids, grouped) {
  }
  show(ids.includes(selected)?selected:ids[0]);
  move(ids.indexOf(selected),true);
+ panel.querySelector('#originalKindFilter').addEventListener('change',event=>{selectedKind=event.target.value;show(selected)});
  track.addEventListener('scroll',()=>{
   const nearest=cards.reduce((a,b)=>Math.abs(b.offsetLeft-track.scrollLeft)<Math.abs(a.offsetLeft-track.scrollLeft)?b:a);
   if(nearest.dataset.batchCard!==selected)show(nearest.dataset.batchCard);
