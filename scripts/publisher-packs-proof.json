@@ -204,10 +204,16 @@
       "path": "faculty/vlad-olena.pdf",
       "sha": "3ebf40f683ece87de46abafff7f787e5360b63ecf5fc38432fb22250b873d9fb",
       "size": 779110
+    },
+    {
+      "path": "_studio/client-a94c5971b0c757f6.js",
+      "sha": "a94c5971b0c757f6ebcc1f2fccba62129b832611ac5febb9e88b6db9857697cd",
+      "size": 7228962,
+      "type": "text/javascript"
     }
   ],
-  "bytes": 14343952,
+  "bytes": 21572914,
   "site": "https://hub.barcman2000.chatgpt.site",
-  "version": 154,
+  "version": 156,
   "verifiedAt": "2026-11-15T14:35:49Z"
 }
