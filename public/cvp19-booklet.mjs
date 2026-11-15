@@ -2,7 +2,7 @@
 export const normalize=t=>(t||'').toLowerCase().replace(/\(\s*repeated[^)]*\)/g,'').replace(/[^a-z0-9]/g,'');
 export function indexes(pack){const byId=new Map(pack.questions.map(q=>[q.id,q])),byStem=new Map();for(const q of pack.questions)if(q.type==='mcq')byStem.set(normalize(q.question),byId.get(q.canonicalId)||q);return {byId,byStem}}
 export function correctedQuestion(q,pack,index=indexes(pack)){
- if(q.bookletRevision===pack.revision)return q;
+ if(q.preservePrintedSource||q.bookletRevision===pack.revision)return q;
  const canonical=index.byId.get(pack.patches[q.id])||((q.lectureIds?.some(id=>id.startsWith('CVP-'))||q.lectureId?.startsWith('CVP-')||/^cvp|original-cvp/.test(q.source||''))&&index.byStem.get(normalize(q.question)));
  if(!canonical)return q;
  const result={...q,...canonical,id:q.id,priorSource:q.priorSource||q.source,bookletCanonicalId:canonical.canonicalId||canonical.id,legacyOptions:q.options,mandatory:q.mandatory,repeat:q.repeat,repeatLabel:q.repeatLabel,bookletRevision:pack.revision};

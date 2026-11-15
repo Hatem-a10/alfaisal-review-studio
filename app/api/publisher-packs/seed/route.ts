@@ -1,0 +1,4 @@
+import {ensurePack,PUBLISHER_PACKS} from '../../../../lib/publisher-packs';
+export const dynamic='force-dynamic';
+// Temporary fixed-content bootstrap; accepts no uploaded data or external object keys.
+export async function GET(request:Request){const batch=Number(new URL(request.url).searchParams.get('batch')||0);if(!Number.isSafeInteger(batch)||batch<0)return Response.json({error:'Invalid batch'},{status:400});const items=PUBLISHER_PACKS.slice(batch*4,batch*4+4);try{for(const asset of items)await ensurePack(asset);return Response.json({verified:items.map(a=>({path:a.path,sha:a.sha,size:a.size})),next:(batch+1)*4<PUBLISHER_PACKS.length?batch+1:null,total:PUBLISHER_PACKS.length},{headers:{'Cache-Control':'no-store'}})}catch(error){return Response.json({error:error instanceof Error?error.message:'Verification failed'},{status:503})}}

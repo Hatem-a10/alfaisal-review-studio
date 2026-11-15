@@ -13,7 +13,7 @@ export function allocateCategories(count,rng=Math.random){
 export function subject(q){const id=q.lectureIds?.find(id=>id.startsWith('CVP-'))||'',n=Number(id.match(/\d+$/)?.[0]);if(id.includes('-P'))return n<=15?'cardiac':'pulmonary';if(!n)return null;return [3,7,10,13,17].includes(n)?'histology':[1,9,14,18,20,22,23].includes(n)?'embryology':'anatomy'}
 export const hasQuestionImage=q=>!!(q.image||q.figures?.some(f=>f.image));
 function chooseAccurateOnce(bank,repeats,count,weights,rng,attempt){
- const permitted=q=>q.source==='cvp19-corrected'||/^cvp-final-b\d+$/.test(q.source||'')||q.source==='cvp-final-repeat-mock';
+ const permitted=q=>q.source==='cvp19-corrected'||/^cvp-final-b\d+$/.test(q.source||'')||q.source==='cvp-final-repeat-mock'||['shams','faculty','tbl','booklet','previous'].includes(q.verifiedMockSource);
  bank=bank.filter(q=>permitted(q)&&!q.curriculumExcluded&&q.options?.length>=4&&Number.isInteger(q.answer));repeats=repeats.filter(q=>permitted(q)&&!q.curriculumExcluded&&q.options?.length>=4&&Number.isInteger(q.answer));
  const quotas=allocateCategories(count,rng),mandatory=repeats.filter(q=>q.mandatory);
  const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};

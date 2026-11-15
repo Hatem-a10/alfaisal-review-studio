@@ -3,7 +3,7 @@ import {deriveAccent} from './phase1-accent.mjs';
 import {declutter} from './phase1-copy.mjs';
 import {mountAcademicAdmin} from './phase1-academic-admin.mjs';
 import {installSearch} from './phase1-search.mjs';
-await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498"),import("./mobile-dock.js?v=1498"),import("./studio-navigation.js?v=1498")]);
+await Promise.all([import("./faculty-questions.mjs"),import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498"),import("./mobile-dock.js?v=1498"),import("./studio-navigation.js?v=1498")]);
 let solver;
 function themes(){const old=applyTheme;applyTheme=function(...args){const result=old.apply(this,args);for(const[key,value]of Object.entries(deriveAccent(settings.accent,settings.theme==='amoled')))document.documentElement.style.setProperty(key,value);return result};applyTheme()}
 async function readingData(){await window.loadCvp19?.();await window.Cvp19?.ensure();await window.ensureObjectivePack?.();return {lectures:DATA.items.map(x=>({id:x.id,lecture:x.id,title:x.title||x.name||x.id,context:x.id})),objectives:LEARNING.lessons.flatMap(l=>inlineTopicsFor(l).map((t,i)=>({id:l.id+':'+i,lecture:l.id,topic:i,title:t.title||t.concept||'Objective',context:l.id}))),questions:allLearningQuestions().concat(Object.values(TOPIC_CHECKS).flat()).map(q=>({id:q.id,lecture:q.lessonId||q.lectureId||q.lectureIds?.[0],title:q.stem||q.question||q.prompt,context:q.lessonId||q.lectureId||q.lectureIds?.[0]||''})),materials:LEARNING.sources.concat(uploads).filter(s=>libraryDocumentURL(s)).map(s=>({id:s.id,title:s.displayName||s.name,context:'Material library'}))}}

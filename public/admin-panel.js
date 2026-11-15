@@ -32,7 +32,7 @@
  refreshAdminAuthorization();window.addEventListener('focus',refreshAdminAuthorization);
 
 
- let busy=false,data=null,build=null,storage,reportRenderer;const fmt=n=>Number.isFinite(n)?(n/1048576).toFixed(n<10485760?2:1)+' MiB':'Unavailable';
+ let busy=false,data=null,build=null,storage,reportRenderer;const fmt=n=>Number.isFinite(Number(n))?(Number(n)/1048576).toFixed(n<10485760?2:1)+' MiB':'Unavailable';
  async function read(){try{const [a,b]=await Promise.all([fetch('/api/admin-assets',{cache:'no-store'}),fetch('/site-build-info.json',{cache:'no-store'})]);const result=await a.json();if(!a.ok)throw Error(result.error||'Storage information unavailable');if(!b.ok)throw Error('Build information unavailable');data=result;build=await b.json();if(!storage){storage=await import('/site-storage.mjs?v=2');storage.bindMigration(dialog)}if(!reportRenderer)reportRenderer=(await import('/admin-report.mjs')).reportContent;paint()}catch(e){document.querySelector('#adminBody').innerHTML='<p class="notice">'+esc(e.message)+'</p><button id="refreshAdmin">Retry</button>'}}
  function localBytes(){let n=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k?.startsWith(KEY))n+=new TextEncoder().encode(k+(localStorage.getItem(k)||'')).length}}catch{}return n}
  function paint(message=''){if(!data||!build||!reportRenderer)return;document.querySelector('#adminBody').innerHTML=reportRenderer({data,build,storage,fmt,localBytes,busy,message})}

@@ -8,6 +8,7 @@ export function batchFor(set) {
 }
 
 function titleFor(id) {
+ if(id==='faculty')return 'Olena & Vlad';
  if(id==='other') return 'Batch unlabelled';
  if(id==='topics') return 'Topic collections';
  const n=Number(id);

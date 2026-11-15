@@ -13,7 +13,7 @@
 }
 html[data-theme=amoled] .admin-crown{color:#f0c75e}
 
-:is(.phase3-anki-controls,.phase3-anki-background,.phase3-shared-decks,.phase3-context-links,.phase3-milestone){
+:is(.phase3-anki-controls,.phase3-anki-background,.phase3-shared-decks,.phase3-context-links){
   min-width:0;
   max-width:100%;
   color:var(--ink,#20223a);
@@ -97,21 +97,6 @@ html[data-theme=amoled] .admin-crown{color:#f0c75e}
   overflow-wrap:anywhere;
 }
 .phase3-context-links a:hover,.phase3-context-links button:hover{background:var(--accent-selected);border-color:var(--accent)}
-.phase3-milestone{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  align-items:center;
-  gap:12px 18px;
-  padding:14px 16px;
-  border:1px solid var(--accent-border);
-  border-inline-start:4px solid var(--accent);
-  border-radius:12px;
-  background:var(--accent-bg);
-}
-.phase3-milestone :is(h2,h3,h4,p){margin-block:0;overflow-wrap:anywhere}
-.phase3-milestone :is(small,.muted){color:var(--muted)}
-.phase3-milestone :is(button,a){justify-self:end;min-height:40px}
-.phase3-milestone :is(label,input,select){max-width:100%}
 
 /* Compact feedback states: transitions never animate dimensions or page position. */
 :is(.phase3-dropdown,.phase3-modal,.phase3-sidebar,.phase3-tabs,.phase3-completion){--phase3-motion:160ms ease-out}
@@ -143,7 +128,6 @@ html[data-theme=amoled] .admin-crown{color:#f0c75e}
 html[data-theme=amoled] :is(.phase3-anki-controls,.phase3-shared-decks>:is(article,li,.deck-card,[data-deck])){background:#101211}
 html[data-theme=amoled] .phase3-anki-background :is(button,[role=button]){background:#111311;color:var(--ink)}
 html[data-theme=amoled] .phase3-context-links :is(a,button){background:#101d16}
-html[data-theme=amoled] .phase3-milestone{background:#101d16}
 
 @media(max-width:760px){
   .phase3-anki-controls{align-items:stretch;padding:11px;gap:8px}
@@ -152,8 +136,6 @@ html[data-theme=amoled] .phase3-milestone{background:#101d16}
   .phase3-anki-background :is(button,[role=button]){flex:1 1 105px;min-height:44px}
   .phase3-shared-decks{grid-template-columns:minmax(0,1fr)}
   .phase3-context-links :is(a,button){min-height:40px}
-  .phase3-milestone{grid-template-columns:minmax(0,1fr);gap:9px;padding:13px}
-  .phase3-milestone :is(button,a){justify-self:stretch}
 }
 
 html[data-reading-motion=reduce]{scroll-behavior:auto!important}
