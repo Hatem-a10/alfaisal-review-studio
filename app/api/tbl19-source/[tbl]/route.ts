@@ -1,0 +1,3 @@
+import {TBL_ASSETS,ensureTblAsset} from '../../../../lib/tbl19-import';
+export const dynamic='force-dynamic';
+export async function GET(request:Request){if(!request.headers.get('oai-authenticated-user-id'))return new Response('Sign in to open this paper',{status:401});const number=new URL(request.url).pathname.split('/').at(-1),asset=TBL_ASSETS.find(a=>a.path==='tbl19/original-'+number+'.pdf');if(!asset)return new Response('Not found',{status:404});try{return new Response(await ensureTblAsset(asset),{headers:{'Content-Type':'application/pdf','Cache-Control':'private, no-store'}})}catch{return new Response('Paper unavailable',{status:503})}}

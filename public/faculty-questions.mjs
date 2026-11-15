@@ -4,3 +4,5 @@ export function loadFacultyQuestions(){return pending??=fetch('/faculty-question
 window.loadFacultyQuestions=loadFacultyQuestions;
 await loadFacultyQuestions();
 if(typeof view!=='undefined'&&view==='practice')render();
+
+await import('./tbl19-runtime.mjs');

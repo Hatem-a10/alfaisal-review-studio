@@ -1,7 +1,9 @@
 let selected = '19', selectedKind='all';
-export function catalogKind(set){if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
-export function visibleCatalogSets(sets,kind='all'){return sets.filter(set=>!(/corrected\s+booklet\s+mcqs?/i.test(set.title||'')||/^cvp19-.*-mcq$/i.test(set.id||''))&&(kind==='all'||catalogKind(set)===kind))}
+export function catalogKind(set){if(/shams/i.test(set.id+' '+set.title))return 'other';if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
+export function visibleCatalogSets(sets,kind='all'){return sets.filter(set=>batchFor(set)!=='other'&&(kind==='all'||catalogKind(set)===kind))}
+export function catalogGroups(set){return /corrected\s+booklet/i.test(set.title||'')||/^cvp19-(?!tbl)/.test(set.id||'')?['topics','19']:[batchFor(set)]}
 export function batchFor(set) {
+ if(/shams/i.test(set.id+' '+set.title))return '19';
  if (set.category === 'topic') return 'topics';
  if (set.id === 'mol-academic-aid-mock-2026') return '19';
  return String(set.batch || set.title.match(/\b(\d+)(?:st|nd|rd|th) batch\b/i)?.[1] || 'other');
@@ -22,9 +24,7 @@ function paperCard(s) {
 export function catalog() {
  const grouped = new Map(['19','18','17'].map(id=>[id,[]]));
  for(const set of visibleCatalogSets(ORIGINAL_EXAMS.sets)) {
-  const id=batchFor(set);
-  if(!grouped.has(id))grouped.set(id,[]);
-  grouped.get(id).push(set);
+  for(const id of catalogGroups(set)){if(!grouped.has(id))grouped.set(id,[]);grouped.get(id).push(set)}
  }
  const ids=[...grouped.keys()].sort((a,b)=>(Number(b)||0)-(Number(a)||0));
  queueMicrotask(()=>mount(ids,grouped));

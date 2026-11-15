@@ -1,0 +1,29 @@
+{
+  "papers": [
+    {
+      "tbl": 1,
+      "questions": 16
+    },
+    {
+      "tbl": 2,
+      "questions": 19
+    },
+    {
+      "tbl": 3,
+      "questions": 15
+    },
+    {
+      "tbl": 4,
+      "questions": 18
+    },
+    {
+      "tbl": 5,
+      "questions": 16
+    }
+  ],
+  "mcqs": 58,
+  "short": 26,
+  "figures": 5,
+  "canceled": 1,
+  "unkeyed": 1
+}
