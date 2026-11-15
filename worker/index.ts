@@ -1,3 +1,4 @@
+import {PUBLISHER_PACKS,servePack} from "../lib/publisher-packs";
 import { readPrivateMedia } from "../lib/private-media";
 import handler from "vinext/server/fetch-handler";
 import { runWithConnectorBinding } from "../lib/connector-context";
@@ -5,6 +6,8 @@ import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 const worker = {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
+    const path=new URL(request.url).pathname.slice(1);
+    if((request.method==="GET"||request.method==="HEAD")&&PUBLISHER_PACKS.some(a=>a.path===path))return servePack(request);
     const media = await readPrivateMedia(request, env.BUCKET);
     if (media) return media;
     let binding = ctx.props?.CONNECTORS;

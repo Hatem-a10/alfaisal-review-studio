@@ -1,4 +1,17 @@
-import {readFileSync,readdirSync,statSync,writeFileSync,rmSync,existsSync,mkdirSync} from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';import {gzipSync} from 'node:zlib';
+import {readFileSync,rmSync,existsSync} from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
 const hash=b=>createHash('sha256').update(b).digest('hex');
-export function prunePacks(root){const file=path.join(root,'lib/publisher-packs-manifest.ts');const match=readFileSync(file,'utf8').match(/=([\s\S]*);/);const packs=match?JSON.parse(match[1]):[];for(const asset of packs){const file=path.join(root,'dist/client',asset.path);if(!existsSync(file))continue;const data=readFileSync(file);if(data.length!==asset.size||hash(data)!==asset.sha)throw Error('Publisher asset changed; stage its new R2 copy before pruning: '+asset.path);rmSync(file)}return packs.reduce((n,p)=>n+p.size,0)}
-if(process.argv.includes('--prepare')){const root=process.cwd(),base=path.join(root,'dist/client'),packs=[],seeds={};for(const name of readdirSync(base,{recursive:true})){const file=path.join(base,name);if(!statSync(file).isFile()||name.startsWith('_next/')||! /\.(?:js|mjs|json|gz|wasm|png|webp|jpe?g|svg)$/.test(name)||statSync(file).size<60000||name.includes('site-build-info'))continue;const data=readFileSync(file),sha=hash(data),ext=name.split('.').at(-1),type=({js:'text/javascript',mjs:'text/javascript',json:'application/json',wasm:'application/wasm',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',svg:'image/svg+xml',gz:'application/gzip'})[ext];packs.push({path:name,sha,size:data.length,type});seeds[sha]=gzipSync(data).toString('base64')}const original=readFileSync('/Users/hatemalabrach/Downloads/Vlad & Olena Questions.pdf'),sha=hash(original);packs.push({path:'faculty/vlad-olena.pdf',sha,size:original.length,type:'application/pdf',private:true});seeds[sha]=gzipSync(original).toString('base64');writeFileSync('lib/publisher-packs-manifest.ts','export const PUBLISHER_PACKS: {path:string;sha:string;size:number;type:string;private?:boolean}[]='+JSON.stringify(packs)+';\n');writeFileSync('lib/publisher-packs-seed.ts','export const PACK_SEEDS: Record<string,string>='+JSON.stringify(seeds)+';\n');mkdirSync('.sites-runtime/publisher-packs',{recursive:true});writeFileSync('.sites-runtime/publisher-packs/manifest.json',JSON.stringify(packs));console.log(JSON.stringify({files:packs.length,bytes:packs.reduce((n,a)=>n+a.size,0)}))}
+// Never omit a bundled asset until its exact existing R2 copy was verified.
+export function prunePacks(root){
+ const match=readFileSync(path.join(root,'lib/publisher-packs-manifest.ts'),'utf8').match(/=([\s\S]*);/),packs=match?JSON.parse(match[1]):[];
+ const proof=JSON.parse(readFileSync(path.join(root,'scripts/publisher-packs-proof.json'),'utf8'));
+ for(const asset of packs){
+  if(!proof.verified.some(a=>a.path===asset.path&&a.sha===asset.sha&&a.size===asset.size))throw Error('Missing verified R2 copy: '+asset.path);
+  const file=path.join(root,'dist/client',asset.path);if(!existsSync(file))continue;
+  const data=readFileSync(file);
+  if(data.length!==asset.size||hash(data)!==asset.sha)throw Error('Publisher asset changed; verify its new R2 copy before pruning: '+asset.path);
+  rmSync(file);
+ }
+ return packs.reduce((n,p)=>n+p.size,0);
+}
