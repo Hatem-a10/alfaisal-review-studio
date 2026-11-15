@@ -1,0 +1,680 @@
+{
+  "source": "CVP Physiology Formula Sheet.pdf",
+  "pages": 4,
+  "formulas": [
+    {
+      "id": "sv",
+      "title": "Stroke volume",
+      "lecture": "CVP-P6",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "SV",
+        "EDV",
+        "ESV"
+      ]
+    },
+    {
+      "id": "ef",
+      "title": "Ejection fraction",
+      "lecture": "CVP-P6",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "EF",
+        "SV",
+        "EDV"
+      ]
+    },
+    {
+      "id": "co",
+      "title": "Cardiac output",
+      "lecture": "CVP-P11",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "CO",
+        "HR",
+        "SV"
+      ]
+    },
+    {
+      "id": "co-chain",
+      "title": "Volumes → stroke volume → cardiac output",
+      "lecture": "CVP-P6",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "CO",
+        "EDV",
+        "ESV",
+        "HR"
+      ]
+    },
+    {
+      "id": "cycle",
+      "title": "Duration of one cardiac cycle",
+      "lecture": "CVP-P6",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "Time",
+        "HR"
+      ]
+    },
+    {
+      "id": "ecg-large",
+      "title": "ECG heart rate: large squares",
+      "lecture": "CVP-P3",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "HR",
+        "Squares"
+      ]
+    },
+    {
+      "id": "ecg-small",
+      "title": "ECG heart rate: small squares",
+      "lecture": "CVP-P3",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "HR",
+        "Squares"
+      ]
+    },
+    {
+      "id": "ecg-ten",
+      "title": "ECG rate: ten-second strip",
+      "lecture": "CVP-P3",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "HR",
+        "Beats"
+      ]
+    },
+    {
+      "id": "flow",
+      "title": "Flow, pressure gradient and resistance",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "Q",
+        "DeltaP",
+        "R"
+      ]
+    },
+    {
+      "id": "velocity",
+      "title": "Flow velocity and area",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "V",
+        "Q",
+        "A"
+      ]
+    },
+    {
+      "id": "series",
+      "title": "Resistance in series",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "RT",
+        "R1",
+        "R2",
+        "R3"
+      ]
+    },
+    {
+      "id": "parallel",
+      "title": "Resistance in parallel",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "RT",
+        "R1",
+        "R2",
+        "R3"
+      ]
+    },
+    {
+      "id": "poiseuille",
+      "title": "Poiseuille: changes in resistance",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "FactorR",
+        "FactorEta",
+        "FactorL",
+        "FactorRadius"
+      ]
+    },
+    {
+      "id": "pp",
+      "title": "Pulse pressure",
+      "lecture": "CVP-P9",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "PP",
+        "SBP",
+        "DBP"
+      ]
+    },
+    {
+      "id": "map",
+      "title": "Mean arterial pressure",
+      "lecture": "CVP-P9",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "MAP",
+        "SBP",
+        "DBP"
+      ]
+    },
+    {
+      "id": "tpr",
+      "title": "Systemic vascular resistance",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "SVR",
+        "MAP",
+        "RAP",
+        "CO"
+      ]
+    },
+    {
+      "id": "compliance",
+      "title": "Vascular compliance",
+      "lecture": "CVP-P9",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "C",
+        "DeltaV",
+        "DeltaP"
+      ]
+    },
+    {
+      "id": "pulse-compliance",
+      "title": "Stroke volume, pulse pressure and compliance",
+      "lecture": "CVP-P9",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "PP",
+        "SV",
+        "C"
+      ]
+    },
+    {
+      "id": "transmural",
+      "title": "Transmural pressure",
+      "lecture": "CVP-P9",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "Ptm",
+        "Pin",
+        "Pout"
+      ]
+    },
+    {
+      "id": "laplace-vessel",
+      "title": "Laplace: cylindrical wall tension",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "T",
+        "Ptm",
+        "Radius"
+      ]
+    },
+    {
+      "id": "laplace-sphere",
+      "title": "Laplace: spherical wall tension",
+      "lecture": "CVP-P8",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "T",
+        "Ptm",
+        "Radius"
+      ]
+    },
+    {
+      "id": "stress",
+      "title": "Wall stress",
+      "lecture": "CVP-P14",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "Stress",
+        "Ptm",
+        "Radius",
+        "Thickness"
+      ]
+    },
+    {
+      "id": "ci",
+      "title": "Cardiac index",
+      "lecture": "CVP-P11",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "CI",
+        "CO",
+        "BSA"
+      ]
+    },
+    {
+      "id": "fick-co",
+      "title": "Fick cardiac output",
+      "lecture": "CVP-P11",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "CO",
+        "VO2",
+        "CaO2",
+        "CvO2"
+      ]
+    },
+    {
+      "id": "vr",
+      "title": "Venous return",
+      "lecture": "CVP-P11",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "VR",
+        "Pms",
+        "RAP",
+        "Rvr"
+      ]
+    },
+    {
+      "id": "work",
+      "title": "Pressure–volume loop: work",
+      "lecture": "CVP-P7",
+      "sheetPage": 1,
+      "exercises": 3,
+      "variables": [
+        "Work",
+        "Pressure",
+        "Volume"
+      ]
+    },
+    {
+      "id": "nfp",
+      "title": "Net filtration pressure",
+      "lecture": "CVP-P9",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "NFP",
+        "Pc",
+        "Pi",
+        "OncC",
+        "OncI"
+      ]
+    },
+    {
+      "id": "filtration",
+      "title": "Starling filtration rate",
+      "lecture": "CVP-P9",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "Jv",
+        "Kf",
+        "Pc",
+        "Pi",
+        "OncC",
+        "OncI"
+      ]
+    },
+    {
+      "id": "ic",
+      "title": "Inspiratory capacity",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "IC",
+        "VT",
+        "IRV"
+      ]
+    },
+    {
+      "id": "frc",
+      "title": "Functional residual capacity",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "FRC",
+        "ERV",
+        "RV"
+      ]
+    },
+    {
+      "id": "vc",
+      "title": "Vital capacity",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "VC",
+        "ERV",
+        "VT",
+        "IRV"
+      ]
+    },
+    {
+      "id": "tlc",
+      "title": "Total lung capacity",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "TLC",
+        "RV",
+        "ERV",
+        "VT",
+        "IRV"
+      ]
+    },
+    {
+      "id": "helium",
+      "title": "Helium dilution: FRC",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "FRC",
+        "Vs",
+        "Fi",
+        "Ff"
+      ]
+    },
+    {
+      "id": "helium-rv",
+      "title": "Helium dilution → residual volume",
+      "lecture": "CVP-P17",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "RV",
+        "Vs",
+        "Fi",
+        "Ff",
+        "ERV"
+      ]
+    },
+    {
+      "id": "lung-c",
+      "title": "Lung compliance",
+      "lecture": "CVP-P18",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "C",
+        "DeltaV",
+        "DeltaP"
+      ]
+    },
+    {
+      "id": "chest-c",
+      "title": "Chest wall compliance",
+      "lecture": "CVP-P18",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "C",
+        "DeltaV",
+        "DeltaP"
+      ]
+    },
+    {
+      "id": "system-c",
+      "title": "Respiratory system compliance",
+      "lecture": "CVP-P18",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "C",
+        "DeltaV",
+        "DeltaP"
+      ]
+    },
+    {
+      "id": "alveolus",
+      "title": "Alveolar surface tension",
+      "lecture": "CVP-P18",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "P",
+        "T",
+        "Radius"
+      ]
+    },
+    {
+      "id": "fev",
+      "title": "FEV₁ / FVC",
+      "lecture": "CVP-P21",
+      "sheetPage": 2,
+      "exercises": 3,
+      "variables": [
+        "Ratio",
+        "FEV1",
+        "FVC"
+      ]
+    },
+    {
+      "id": "minute",
+      "title": "Minute ventilation",
+      "lecture": "CVP-P22",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "VE",
+        "VT",
+        "Rate"
+      ]
+    },
+    {
+      "id": "alveolar",
+      "title": "Alveolar ventilation",
+      "lecture": "CVP-P22",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "VA",
+        "VT",
+        "VD",
+        "Rate"
+      ]
+    },
+    {
+      "id": "co2",
+      "title": "PaCO₂ and alveolar ventilation",
+      "lecture": "CVP-P22",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "PaCO2",
+        "VCO2",
+        "VA"
+      ]
+    },
+    {
+      "id": "dead-space",
+      "title": "Physiological dead-space estimate",
+      "lecture": "CVP-P22",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "VD",
+        "VT",
+        "PaCO2",
+        "PECO2"
+      ]
+    },
+    {
+      "id": "partial",
+      "title": "Humidified inspired oxygen",
+      "lecture": "CVP-P23",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "PIO2",
+        "FiO2",
+        "PB",
+        "PH2O"
+      ]
+    },
+    {
+      "id": "gas",
+      "title": "Alveolar gas equation",
+      "lecture": "CVP-P26",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "PAO2",
+        "FiO2",
+        "PB",
+        "PH2O",
+        "PaCO2",
+        "R"
+      ]
+    },
+    {
+      "id": "r",
+      "title": "Respiratory exchange ratio",
+      "lecture": "CVP-P22",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "R",
+        "VCO2",
+        "VO2"
+      ]
+    },
+    {
+      "id": "aa",
+      "title": "Alveolar–arterial oxygen gradient",
+      "lecture": "CVP-P26",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "Gradient",
+        "PAO2",
+        "PaO2"
+      ]
+    },
+    {
+      "id": "diffusion",
+      "title": "Diffusing capacity and gas transfer",
+      "lecture": "CVP-P23",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "Transfer",
+        "DL",
+        "PA",
+        "PC"
+      ]
+    },
+    {
+      "id": "dlco",
+      "title": "Carbon monoxide diffusing capacity",
+      "lecture": "CVP-P23",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "DLCO",
+        "VCO",
+        "PACO"
+      ]
+    },
+    {
+      "id": "content",
+      "title": "Arterial oxygen content",
+      "lecture": "CVP-P25",
+      "sheetPage": null,
+      "exercises": 3,
+      "variables": [
+        "CaO2",
+        "Hb",
+        "SaO2",
+        "PaO2"
+      ]
+    },
+    {
+      "id": "delivery",
+      "title": "Oxygen delivery",
+      "lecture": "CVP-P25",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "DO2",
+        "CO",
+        "CaO2"
+      ]
+    },
+    {
+      "id": "dissolved",
+      "title": "Dissolved oxygen",
+      "lecture": "CVP-P25",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "Dissolved",
+        "PO2"
+      ]
+    },
+    {
+      "id": "vq",
+      "title": "Ventilation/perfusion ratio",
+      "lecture": "CVP-P27",
+      "sheetPage": 3,
+      "exercises": 3,
+      "variables": [
+        "Ratio",
+        "VA",
+        "Q"
+      ]
+    }
+  ],
+  "excluded": [
+    "Reynolds number and shock index: no existing lesson/question evidence found",
+    "SV = contractility × preload: not a dimensionally defined numerical formula",
+    "MAP = 60% systolic + 40% diastolic, and blood pressure = DBP + ½PP: replaced with lesson-supported MAP approximation"
+  ],
+  "clarified": [
+    "Helium dilution gives FRC before subtracting ERV for RV",
+    "Use oxygen content, not PaO2, for oxygen delivery",
+    "Starling flow is transcapillary filtration, not a direct lymph-flow equation",
+    "Simplified alveolar gas equation includes PaCO2/R",
+    "PCO2 units determine whether the constant is 863 or 0.863"
+  ],
+  "authorities": [
+    "https://iris.who.int/bitstream/handle/10665/352851/WHO-2019-nCoV-SARI-toolkit-2022.1-eng.pdf?sequence=1",
+    "https://journals.physiology.org/doi/full/10.1152/advan.00064.2019"
+  ]
+}

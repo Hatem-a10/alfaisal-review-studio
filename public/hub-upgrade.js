@@ -27,6 +27,7 @@
  const topToggle = top.querySelector('.hub-top-toggle');
  function setTopOpen(open) {
   top.open = open;
+  document.dispatchEvent(new CustomEvent('header-controls-visibility',{detail:{open}}));
   topToggle.setAttribute('aria-expanded', String(open));
   topToggle.setAttribute('aria-label', (open ? 'Close' : 'Open') + ' appearance and date controls');
  }
