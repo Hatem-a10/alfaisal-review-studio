@@ -210,10 +210,81 @@
       "sha": "a94c5971b0c757f6ebcc1f2fccba62129b832611ac5febb9e88b6db9857697cd",
       "size": 7228962,
       "type": "text/javascript"
+    },
+    {
+      "path": "tbl19/original-1.pdf",
+      "sha": "5833ee4080efb66d57a2db19450ed0499b7bb28ad5ce02ba34be0868432c0591",
+      "size": 300173,
+      "type": "application/pdf",
+      "private": true
+    },
+    {
+      "path": "tbl19/original-2.pdf",
+      "sha": "d3eef03ae841b6214e02e87339ae94b5dd8c69d8948dd1c535fbbe52b93d052b",
+      "size": 769082,
+      "type": "application/pdf",
+      "private": true
+    },
+    {
+      "path": "tbl19/original-3.pdf",
+      "sha": "7a6fd28c58952f1d976d8c43ced4ffa953bb5d81e2f982e48e640d3f6be8e24a",
+      "size": 201594,
+      "type": "application/pdf",
+      "private": true
+    },
+    {
+      "path": "tbl19/original-4.pdf",
+      "sha": "706b995cd22af5a33081551f37af71dc8d0f623349f36312e71638cbe06e4fd7",
+      "size": 1101889,
+      "type": "application/pdf",
+      "private": true
+    },
+    {
+      "path": "tbl19/original-5.pdf",
+      "sha": "e8532b77a63d70195647ef70c08a73d78ec1fece160440ec7194799fa3b93eff",
+      "size": 705322,
+      "type": "application/pdf",
+      "private": true
+    },
+    {
+      "path": "tbl19-figures/tbl1-q12.png",
+      "sha": "60158e181e0c454345d44895c09281711016b29b8c44ef77e61ed48dcdfda24a",
+      "size": 7681,
+      "type": "image/png"
+    },
+    {
+      "path": "tbl19-figures/tbl1-q2.png",
+      "sha": "4016e80b7539f145984a63d17277f53e45758c7d639f092ceb0307c515b761e7",
+      "size": 3669,
+      "type": "image/png"
+    },
+    {
+      "path": "tbl19-figures/tbl1-q9.png",
+      "sha": "991f05b6a6fb4402d68a139361dd0b6daa491613203f6a2f0df800f020bbc8e8",
+      "size": 11069,
+      "type": "image/png"
+    },
+    {
+      "path": "tbl19-figures/tbl2-case.png",
+      "sha": "d2cc2ff951a066ac1c5107b887b70ade2a9172363d7b3c63e648b9fe4f7a3fae",
+      "size": 309342,
+      "type": "image/png"
+    },
+    {
+      "path": "tbl19-figures/tbl3-case.png",
+      "sha": "8b222543af360e91c687eed0f5e797bde934be14bbeeb60afc1bbd1fa06b162c",
+      "size": 93207,
+      "type": "image/png"
+    },
+    {
+      "path": "tbl19-questions.json",
+      "sha": "114a9a6329216a700c6d8f23c731ecd8e229def0226fd5848036828c5b1696b6",
+      "size": 91721,
+      "type": "application/json"
     }
   ],
-  "bytes": 21572914,
+  "bytes": 25167663,
   "site": "https://hub.barcman2000.chatgpt.site",
-  "version": 156,
+  "version": 160,
   "verifiedAt": "2026-11-15T14:35:49Z"
 }
