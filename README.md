@@ -1,6 +1,8 @@
-# Hatem Alabrach · Study Command Center
+# Review Studio
 
-Alfaisal M 1-A Group 1.6 · CVP 112 and MOL 114 · Fall 2026
+Private application source · CVP 112 and MOL 114
+
+Latest source import: **v1.65**. See [GitHub source setup and safety](docs/github/SOURCE.md) and [known test baseline](docs/github/TEST-BASELINE.md). The guide below describes earlier study workflows; current source and release metadata are authoritative.
 
 ## Start studying
 

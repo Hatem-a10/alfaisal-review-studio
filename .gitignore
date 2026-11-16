@@ -45,3 +45,36 @@ yarn-error.log*
 .DS_Store
 
 /study_material/
+
+# Credentials, device caches and private exports
+*.key
+*.p12
+*.pfx
+*.keystore
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.db
+*.db-*
+*.dump
+*.bundle
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+/backups/
+/private-backups/
+/private-exports/
+/tmp/
+/temp/
+/test-results/
+/playwright-report/
+/review-studio-releases/
+/site-releases/
+/credentials*.json
+/secrets*.json
+
+# Also ignore symlinked dependency directories
+/node_modules
