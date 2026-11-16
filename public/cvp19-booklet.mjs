@@ -1,5 +1,7 @@
 /* Source corrections are applied by stable ID; active attempts keep their own snapshots. */
 export const normalize=t=>(t||'').toLowerCase().replace(/\(\s*repeated[^)]*\)/g,'').replace(/[^a-z0-9]/g,'');
+// Review-only overlay: never replace an attempt's choices, figures, or scoring key.
+export function reviewNotes(q,pack){const id=q.bookletCanonicalId||q.canonicalId||q.id;const current=pack.questions.find(x=>x.id===id);if(!current)return q;return {...q,...(current.type==='mcq'?{explanation:'Option letters follow booklet order.\n'+current.explanation}:{sourceExplanation:current.sourceExplanation})}}
 export function indexes(pack){const byId=new Map(pack.questions.map(q=>[q.id,q])),byStem=new Map();for(const q of pack.questions)if(q.type==='mcq')byStem.set(normalize(q.question),byId.get(q.canonicalId)||q);return {byId,byStem}}
 export function correctedQuestion(q,pack,index=indexes(pack)){
  if(q.preservePrintedSource||q.bookletRevision===pack.revision)return q;
@@ -18,7 +20,7 @@ export function integrateLearning(learning,checks,pack){const index=indexes(pack
  if(!learning.sources.some(s=>s.id===pack.source.id))learning.sources.push({...pack.source,name:pack.source.title,displayName:pack.source.title,unit:'page',readingURL:'/cvp19-source-pages.json',pages:Array.from({length:383},(_,i)=>({page:i+1,text:''}))});
  return represented.size;
 }
-export async function load(){const r=await fetch('/cvp19-booklet.json?v=149');if(!r.ok)throw Error('The corrected CVP booklet could not load. Please retry.');const p=await r.json();if(p.version!==1||p.questions.length!==1214)throw Error('Incomplete corrected booklet data');return p}
+export async function load(){const r=await fetch('/cvp19-booklet.json?v=162');if(!r.ok)throw Error('The corrected CVP booklet could not load. Please retry.');const p=await r.json();if(p.version!==1||p.questions.length!==1214)throw Error('Incomplete corrected booklet data');return p}
 
 // Migrate unfinished local drafts by option TEXT, never by assuming an old index still means the same thing.
 export function migrateDrafts(drafts,oldQuestions,pack){const next=structuredClone(drafts),index=indexes(pack),oldById=new Map(oldQuestions.map(q=>[q.id,q]));for(const draft of Object.values(next)){if(draft.bookletRevision===pack.revision||!Array.isArray(draft.ids))continue;for(let i=0;i<draft.ids.length;i++){const old=oldById.get(draft.ids[i]);if(!old)continue;const corrected=correctedQuestion(old,pack,index);if(corrected===old)continue;const map=old.options.map(o=>corrected.options.findIndex(n=>normalize(n)===normalize(o))),order=draft.orders?.[i];if(!Array.isArray(order))continue;if(map.every(n=>n>=0)&&old.options.length===corrected.options.length&&new Set(map).size===map.length){draft.orders[i]=order.map(n=>map[n]);if(Number.isInteger(draft.answers?.[i]))draft.answers[i]=map[draft.answers[i]]}else{draft.priorBookletAnswers??={};draft.priorBookletAnswers[draft.ids[i]]={options:old.options,selected:draft.answers?.[i]??null};draft.orders[i]=corrected.options.map((_,n)=>n);if(draft.answers)delete draft.answers[i];if(draft.graded)delete draft.graded[i]}}draft.bookletRevision=pack.revision}return next}
