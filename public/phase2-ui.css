@@ -97,3 +97,14 @@ html:has(#xpExam),body:has(#xpExam){overflow:hidden!important;scrollbar-width:no
 #xpExam .xp-answer-reveal p{margin:10px 0;font-size:15px;line-height:1.6}
 @media(max-width:760px){#xpExam>.xp-view-answer{right:10px;bottom:78px}#xpExam>.xp-shortcuts{left:78px;bottom:78px}#xpExam .xp-answer-reveal{right:10px;bottom:126px;width:calc(100vw - 94px)}}
 .phase2-heatmap [aria-current=date]{outline:3px solid var(--accent-ring);outline-offset:2px}
+
+/* Booklet uses the page scroll, with wrapping, touch-sized controls. */
+.booklet-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0 18px}
+.booklet-modes{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.booklet-modes label{display:inline-flex!important;align-items:center;gap:8px;min-height:44px;margin:0!important;cursor:pointer}
+.booklet-modes input[type=checkbox]{width:18px!important;height:18px!important;flex:0 0 18px;margin:0!important}
+.phase2-booklet{overflow:visible;touch-action:pan-y pinch-zoom}
+.phase2-booklet .panel{overflow:visible;max-height:none}
+.phase2-booklet .answer-option{white-space:normal;overflow-wrap:anywhere;min-height:44px;touch-action:manipulation}
+.phase2-booklet img{display:block;object-fit:contain;height:auto;max-width:100%}
+@media(max-width:760px){.phase2-booklet :is(textarea,select){font-size:16px}.booklet-filters{align-items:stretch}.booklet-modes{width:100%}.phase2-booklet .et-exam-actions button{min-height:44px}}
