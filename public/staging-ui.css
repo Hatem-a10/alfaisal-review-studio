@@ -1,0 +1,2 @@
+/* Bounded staging-only compatibility polish; the Sites stylesheet is unchanged. */
+@media(max-width:500px){#xpExam .xp-controls>div{left:0;right:auto;min-width:215px;max-width:calc(100vw - 24px)}}

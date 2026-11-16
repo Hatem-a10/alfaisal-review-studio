@@ -1,15 +1,37 @@
 {
- "$schema":"./node_modules/wrangler/config-schema.json",
- "name":"review-studio-staging-20261117",
- "main":"worker/staging.ts",
- "account_id":"972d1bab075877244042a87880a774a0",
- "compatibility_date":"2026-05-15",
- "compatibility_flags":["nodejs_compat"],
- "workers_dev":true,
- "preview_urls":true,
- "assets":{"binding":"ASSETS","run_worker_first":true},
- "vars":{"REVIEW_STUDIO_DEPLOYMENT":"staging"},
- "d1_databases":[{"binding":"DB","database_name":"review-studio-staging-20261117","database_id":"1540bad8-aa39-4c73-9484-28cfd5ea2a05","migrations_dir":"drizzle"}],
- "r2_buckets":[{"binding":"BUCKET","bucket_name":"review-studio-staging-20261117"}],
- "observability":{"enabled":true}
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "review-studio-staging-20261117",
+  "main": "worker/staging.ts",
+  "account_id": "972d1bab075877244042a87880a774a0",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "html_handling": "none"
+  },
+  "vars": {
+    "REVIEW_STUDIO_DEPLOYMENT": "staging"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "review-studio-staging-20261117",
+      "database_id": "1540bad8-aa39-4c73-9484-28cfd5ea2a05",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "review-studio-staging-20261117"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
 }
