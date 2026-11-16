@@ -1,0 +1,46 @@
+name: Cloudflare staging checks
+on:
+  pull_request:
+  push:
+    branches: [cloudflare-staging]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: vinext compatibility report
+        run: npx --no-install vinext check | tee vinext-compatibility.log
+      - name: Staging isolation and authentication tests
+        run: node --test tests/cloudflare-staging*.test.mjs
+      - name: Existing full test suite (known baseline failures retained)
+        id: existing
+        continue-on-error: true
+        run: node --test tests/*.test.mjs > existing-tests.log 2>&1
+      - name: Report existing-suite status
+        if: always()
+        run: |
+          if [ '${{ steps.existing.outcome }}' != 'success' ]; then
+            echo '::warning::Existing suite has failures; inspect existing-tests.log. No production deployment is configured.'
+            tail -40 existing-tests.log
+          fi
+      - name: Independent staging build
+        run: npm run build:staging
+      - name: Retain validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-validation
+          path: |
+            vinext-compatibility.log
+            existing-tests.log
+          retention-days: 7
+# This workflow never deploys or runs migrations. Staging deployment is a separate,
+# explicit operation; production hosting/data have no credentials in this workflow.

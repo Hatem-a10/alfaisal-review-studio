@@ -11,7 +11,12 @@
     "build": "node scripts/run-framework.mjs build",
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "check:cloudflare": "vinext check",
+    "build:staging": "node scripts/build-cloudflare-staging.mjs",
+    "dev:staging": "REVIEW_STUDIO_TARGET=staging node scripts/run-framework.mjs dev",
+    "deploy:staging": "node scripts/deploy-cloudflare-staging.mjs",
+    "check:staging": "node --test tests/cloudflare-staging*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

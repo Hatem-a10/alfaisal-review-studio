@@ -37,7 +37,9 @@ const localBindingConfig = {
     : [],
 };
 
-export default defineConfig(async ({ command }) => {
+export default defineConfig(async (configEnv) => {
+  const { command } = configEnv;
+  if(process.env.REVIEW_STUDIO_TARGET==='staging'){const {default:staging}=await import('./vite.cloudflare.config');return typeof staging==='function'?await staging(configEnv):staging;}
   configureToolEnvironment(process.cwd());
 
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
