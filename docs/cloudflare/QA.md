@@ -18,7 +18,7 @@ Date: 17 November 2026. This is a test deployment, not a production migration.
 | --- | --- |
 | Compatibility | vinext check supports all 2 Next imports and 5 recognized libraries; warnings concern browser-only vendored UMD globals. Independent Workers build passes. |
 | Required staging tests | 14 auth/config tests passed; separate deferred Anki startup regression added afterward. |
-| Existing full suite | 360 tests: 345 pass, 15 pre-existing failures locally. Previous Linux run had one additional Mac-only temporary-file read, corrected and focused test passed. Full suite is retained as a visible CI warning, not reported as clean. |
+| Existing full suite | Final Linux run on8dd2176:361 tests,346 pass,15 pre-existing failures. Local run before the new regression:360 tests,345 pass,15 failures. The additional Mac-only temporary-file read is corrected and its test passes. Full suite is retained as a visible CI warning, not reported as clean. |
 | Live API | 8 checks passed: forged headers rejected, synthetic roles, academic table response, distinct account keys, D1 progress write, account isolation, private media auth. |
 | Live R2/D1 | 14 checks passed: private/shared Anki uploads and exact downloads, student shared-upload rejection, private materials isolation, large progress overflow and roundtrip, encoded/raw private path guards. |
 | Curriculum | All 660 registered SITE_ASSETS uploaded from exact local Git blobs to staging R2 with server checksums. All 910 STUDY_ASSETS matched local files by SHA/size and uploaded with server readback verification; final status 910/910. No production bucket copied. |
@@ -27,8 +27,8 @@ Date: 17 November 2026. This is a test deployment, not a production migration.
 | Timed mock | Generated 20-question CVP mock, choices/navigation work; submitted synthetic exam shows review, category analysis, pacing and unanswered exclusion. |
 | Anki | Synthetic 3-card package downloaded, imported, revealed and rated; queue advances. |
 | Cloud sync | Browser reports Cloud saved / up to date. Repair Sync reports latest progress confirmed in cloud. |
-| Offline active study | Disconnected test tab, revealed/rated Anki card, then reconnected; automatic sync returned to up to date. Network override restored. Full cold offline reopening is a separate test. |
-| Appearance/responsiveness | Light/Dark toggles; 390x844 phone exam and 834x1112 / 1112x834 tablet schedule emulation. No page horizontal overflow in measured views. Phone Exam Controls menu fits x=9 to224 within390px. Physical Safari/iOS not tested. |
+| Offline active study | Disconnected test tab, revealed/rated Anki card, then reconnected; automatic sync returned to up to date. Network override restored. After the direct-Anki startup repair, reopening the cached app while disconnected also displayed the local Anki library with the remaining due count preserved. Shared cloud listings correctly remain unavailable offline. |
+| Appearance/responsiveness | Light/Dark toggles; 390x844 phone exam and 834x1112 / 1112x834 tablet schedule emulation. No page horizontal overflow in measured views. Phone Exam Controls menu fits x=9 to224 within390px. Physical Safari/iOS not tested. Temporary viewport overrides were reset. |
 | Onboarding | Synthetic setup wizard, review-progress Skip and completion exercised. Starting after the CVP final reports unschedulable reviews with today placeholders; this needs product review before real account migration. No real student onboarding forced. |
 
 ## Issues discovered and bounded repairs
@@ -48,7 +48,11 @@ Date: 17 November 2026. This is a test deployment, not a production migration.
 2. Actual production student records, uploaded personal materials/decks and database contents have not been migrated. Staging cannot demonstrate their live identity migration.
 3. Some Material Library entries depend on personal/shared document metadata in the production database. Registered files are present, but their existing production associations are deliberately absent from synthetic records.
 4. Resolve the 15 legacy failures before production cutover (old bundle assumptions, outdated accurate/catalog assertions and sync harness window stubs). Preserve the baseline evidence in ignored local logs and GitHub validation artifacts.
-5. Complete physical iPhone/iPad Safari, real cross-device sessions, cold offline startup and long offline exam/reconciliation tests. An active offline Anki rating/reconnect is verified; do not generalize this to all offline flows.
+5. Complete physical iPhone/iPad Safari, real cross-device sessions and long offline exam/reconciliation tests. Active offline Anki rating/reconnect and cached app reopening are verified; do not generalize this to every offline flow.
 6. Production needs encrypted backups/restore drill, identity collision checks, rollback, monitoring and cost limits, and explicit cutover approval. Porkbun/domain/hosting remain untouched.
 
 Local-only credentials and receipts are in ignored .sites-runtime/staging; never commit or paste passwords, cookies or Worker secrets. See PHASE1.md for architecture and commands.
+
+## Final code verification
+
+Code8dd2176 passed GitHub Actions and official Workers Builds; deployed Worker version56914510-0018-41fe-a57d-e17ce69541b0 was recorded by Wrangler. Later documentation commits do not change application code. Heart model loaded successfully after repair and private asset import; ascending-aorta selection, add-to-selection and isolation were verified in the browser. Direct Anki reload opens normally and retains the synthetic review results. Browser screenshots/receipts remain ignored under .sites-runtime/staging.
