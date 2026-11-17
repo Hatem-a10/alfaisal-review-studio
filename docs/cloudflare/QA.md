@@ -64,3 +64,16 @@ Code8dd2176 passed GitHub Actions and official Workers Builds; deployed Worker v
 ## Reliability repair verification
 
 The sync polling/upload failure was a missing-window test harness error, not an ordinary upload sequencing defect. Repair tests now use the current durable device adapter rather than the retired localStorage backup. A separately reproduced account-switch race is fixed. Inline bootstrap migration ordering now matches the canonical production adapter. No changes to academic question data, production resources, authentication or main.
+
+
+## Phase 2 final verification — fresh Clerk accounts
+
+Application commit `5341b99` passed GitHub Actions [run 44080079209](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/44080079209) and official Workers Builds. **396 tests passed, 0 failed, 0 skipped**, locally and in GitHub. All 369 baseline tests remain; 27 regressions were added. Focused managed-auth/Worker lint is clean. Production and independent staging builds pass; all Next imports and recognized libraries are supported by vinext. Local compatibility scanning also sees ignored npm CLI files and browser-only UMD globals, none imported into the Worker runtime.
+
+Workers Builds deployed version `33f2acdc-cdd3-48e7-8994-77bb819fe465` to the existing staging URL. The authenticated live shell contains the fresh-account guard. Its client bundle `_studio/client-2737f4e19912d825.js` matches the local build exactly (SHA-256 `2737f4e19912d82542c107c9e2fbbc99258493857b5c85da7421cf4648a3593a`). Health reports Clerk with D1/R2 bound.
+
+The verified new owner completed onboarding and the local Admin phrase bootstrap, unlocked Admin Settings and opened Registered students. A separate synthetic student registered through email-code verification, completed all six setup steps with review Skip, saw 0 overdue/0 completed reviews, synced, signed out and signed back in. Returning-account testing discovered and fixed an unchanged-response onboarding loop; the live repair restores M2-B / Group 2.9 without repeating setup. Phone 390x844 auth and tablet 834x1112 dashboard emulation showed no horizontal page overflow; no physical iOS hardware claim.
+
+All 14 live managed-auth API checks passed, including independent D1 progress and Anki uploads, unauthorized shared-upload/directory rejection, default-off analytics, exact curriculum SHA, spoofed-header denial and session revocation after the bounded cache. No production student record or storage was migrated. The existing 660 curriculum/910 study assets were retained without reupload. Repository remains private and `main` remains `0d9b88704732f3922f65f4d4b9bd7c1f0f6accaf`.
+
+See PHASE2.md for fresh-production prerequisites and the deliberately remaining physical-device, long-offline and production-provider checks. No old-to-new account mapping, historical imports or student-record merging is required or planned.
