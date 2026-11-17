@@ -20,3 +20,7 @@ Resume before any production migration:
 5. Obtain explicit production cutover approval. Do not change DNS/Porkbun or deploy staging auth into the current Site.
 
 Evidence scripts, synthetic fixtures, credentials, cookies, screenshots and import receipts stay local under ignored .sites-runtime/staging. Never commit them.
+
+## Reliability update — 17 November 2026
+
+The15 original failures are resolved; full suite369/369 passing with eight added regressions. See TEST-REPAIRS.md and updated QA.md. Fixes include source bootstrap migration ordering and Repair Sync account-switch isolation; academic content/progress schemas are unchanged. Complete suite now gates GitHub checks. Remaining production prerequisites above still apply.

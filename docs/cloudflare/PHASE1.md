@@ -28,7 +28,7 @@ Curriculum originals available in the source copy remain private to signed-in st
 
 ## GitHub and builds
 
-GitHub validation runs on cloudflare-staging pushes/PRs: staging security tests, independent build, compatibility report and the existing full suite. The full suite has15 known pre-existing failures, surfaced in an artifact/warning; the required staging security checks and build fail normally. No workflow contains deployment credentials or a production deployment. Main remains the stable source branch.
+GitHub validation runs on cloudflare-staging pushes/PRs: staging security tests, independent build, compatibility report and the existing full suite. The complete369-test suite now passes after the reliability audit in TEST-REPAIRS.md. Full-suite failures fail CI; logs are retained as artifacts. No workflow contains deployment credentials or a production deployment. Main remains the stable source branch.
 
 Connect Cloudflare Workers Builds only to this Worker and cloudflare-staging as its deployment branch. Build: npm run check:staging && npm run build:staging. Deploy: npm run deploy:staging. No automatic schema migration command. Keep additional branch builds disabled for Phase1. Updates are reviewed through a PR into cloudflare-staging, then previewed at the staging URL. Future production integration requires separate config/resources/approval and is not enabled here.
 

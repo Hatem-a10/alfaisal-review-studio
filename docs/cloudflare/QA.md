@@ -2,6 +2,8 @@
 
 Date: 17 November 2026. This is a test deployment, not a production migration.
 
+Full-suite repair update: **369 passed, 0 failed, 0 skipped** locally. All361 original tests remain, with eight additional regressions. See [the per-failure audit](TEST-REPAIRS.md). Production and staging builds and vinext compatibility are checked independently.
+
 ## Deployment and source isolation
 
 - Staging URL: https://review-studio-staging-20261117.hatema2169.workers.dev
@@ -17,8 +19,8 @@ Date: 17 November 2026. This is a test deployment, not a production migration.
 | Area | Evidence / outcome |
 | --- | --- |
 | Compatibility | vinext check supports all 2 Next imports and 5 recognized libraries; warnings concern browser-only vendored UMD globals. Independent Workers build passes. |
-| Required staging tests | 14 auth/config tests passed; separate deferred Anki startup regression added afterward. |
-| Existing full suite | Final Linux run on8dd2176:361 tests,346 pass,15 pre-existing failures. Local run before the new regression:360 tests,345 pass,15 failures. The additional Mac-only temporary-file read is corrected and its test passes. Full suite is retained as a visible CI warning, not reported as clean. |
+| Required staging tests | Auth, configuration and deferred-startup tests remain included in the complete passing suite. |
+| Existing full suite | 369/369 passing after repairing15 obsolete/broken test cases and adding eight regressions. No tests deleted or disabled. GitHub full-suite failures now fail the job. |
 | Live API | 8 checks passed: forged headers rejected, synthetic roles, academic table response, distinct account keys, D1 progress write, account isolation, private media auth. |
 | Live R2/D1 | 14 checks passed: private/shared Anki uploads and exact downloads, student shared-upload rejection, private materials isolation, large progress overflow and roundtrip, encoded/raw private path guards. |
 | Curriculum | All 660 registered SITE_ASSETS uploaded from exact local Git blobs to staging R2 with server checksums. All 910 STUDY_ASSETS matched local files by SHA/size and uploaded with server readback verification; final status 910/910. No production bucket copied. |
@@ -47,7 +49,7 @@ Date: 17 November 2026. This is a test deployment, not a production migration.
 1. ChatGPT Sites authentication is not portable. Current accounts are synthetic staging identities only. Choose a managed OIDC provider, implement verified immutable identity mapping, then separately approve controlled account/progress migration.
 2. Actual production student records, uploaded personal materials/decks and database contents have not been migrated. Staging cannot demonstrate their live identity migration.
 3. Some Material Library entries depend on personal/shared document metadata in the production database. Registered files are present, but their existing production associations are deliberately absent from synthetic records.
-4. Resolve the 15 legacy failures before production cutover (old bundle assumptions, outdated accurate/catalog assertions and sync harness window stubs). Preserve the baseline evidence in ignored local logs and GitHub validation artifacts.
+4. The15 legacy failures are resolved; retain the complete mandatory suite and review any future failures before production cutover. See TEST-REPAIRS.md for causes, two additional defect fixes and evidence.
 5. Complete physical iPhone/iPad Safari, real cross-device sessions and long offline exam/reconciliation tests. Active offline Anki rating/reconnect and cached app reopening are verified; do not generalize this to every offline flow.
 6. Production needs encrypted backups/restore drill, identity collision checks, rollback, monitoring and cost limits, and explicit cutover approval. Porkbun/domain/hosting remain untouched.
 
@@ -56,3 +58,7 @@ Local-only credentials and receipts are in ignored .sites-runtime/staging; never
 ## Final code verification
 
 Code8dd2176 passed GitHub Actions and official Workers Builds; deployed Worker version56914510-0018-41fe-a57d-e17ce69541b0 was recorded by Wrangler. Later documentation commits do not change application code. Heart model loaded successfully after repair and private asset import; ascending-aorta selection, add-to-selection and isolation were verified in the browser. Direct Anki reload opens normally and retains the synthetic review results. Browser screenshots/receipts remain ignored under .sites-runtime/staging.
+
+## Reliability repair verification
+
+The sync polling/upload failure was a missing-window test harness error, not an ordinary upload sequencing defect. Repair tests now use the current durable device adapter rather than the retired localStorage backup. A separately reproduced account-switch race is fixed. Inline bootstrap migration ordering now matches the canonical production adapter. No changes to academic question data, production resources, authentication or main.
