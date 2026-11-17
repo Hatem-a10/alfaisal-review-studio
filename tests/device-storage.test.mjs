@@ -15,10 +15,10 @@ function database(){
  }};
  return {stores,setFailure(fn){failPut=fn},indexedDB:{open(){const r={result:db};queueMicrotask(()=>{if(!stores.size)r.onupgradeneeded?.();r.onsuccess?.()});return r}}};
 }
-async function device(database,initial={}){
+async function device(database,initial={},overrides={}){
  const raw=new Map(Object.entries(initial));class Storage{get length(){return raw.size}key(i){return [...raw.keys()][i]??null}getItem(k){return raw.get(k)??null}setItem(k,v){raw.set(String(k),String(v))}removeItem(k){raw.delete(k)}}
- const storage=new Storage(),events=[],ctx={Storage,localStorage:storage,indexedDB:database.indexedDB,location:{reload(){}},document:{querySelectorAll:()=>[]},CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail}},dispatchEvent:e=>events.push(e)};
- ctx.window=ctx;await vm.runInNewContext(source,ctx);return {api:ctx.ReviewDevice,storage,raw,events};
+ const storage=new Storage(),events=[],ctx={Storage,localStorage:storage,indexedDB:database.indexedDB,location:{reload(){}},document:{querySelectorAll:()=>[],getElementById:()=>null},CustomEvent:class{constructor(type,init){this.type=type;this.detail=init?.detail}},dispatchEvent:e=>events.push(e)};
+ Object.assign(ctx,overrides);ctx.window=ctx;await vm.runInNewContext(source,ctx);return {api:ctx.ReviewDevice,storage,raw,events};
 }
 const key='alfaisal-review-studio-v1',account='a'.repeat(64),snapshot=JSON.stringify({records:{r:{done:{0:'2026-11-01'},notes:'keep'}},settings:{theme:'light'}});
 test('failed device migration stays retryable and preserves original progress',async()=>{
@@ -40,4 +40,19 @@ test('failed recovery writes are rejected while existing study data stays readab
 test('source HTML uses the same durable bootstrap as the production optimizer',()=>{
  const html=fs.readFileSync('public/index.html','utf8'),inline=html.match(/<script id="deviceBootstrap">([\s\S]*?)<\/script>/);
  assert.ok(inline);assert.equal(inline[1].trim(),source.trim());
+});
+
+test('fresh managed account binds before hydration and never inherits another device account',async()=>{
+ const db=database();await device(db,{[key+'-account']:account,[key]:snapshot});const next='b'.repeat(64);
+ const d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:next})})});
+ assert.equal(d.storage.getItem(key+'-account'),next);assert.equal(d.storage.getItem(key),null);assert.equal(db.stores.get('values').get(account+'|'+key),snapshot);
+});
+test('logged-out managed account cannot hydrate cached progress offline',async()=>{
+ const db=database(),redirects=[];const d=await device(db,{[key+'-account']:account,[key]:snapshot,'review-studio-managed-signed-out':'1'},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>{throw Error('offline')},location:{replace:url=>redirects.push(url)}});
+ assert.equal(d.api,undefined);assert.equal(db.stores.size,0);assert.deepEqual(redirects,['/auth/sign-in']);assert.equal(d.raw.get(key),snapshot);
+});
+
+test('managed account fails closed if durable device isolation is unavailable',async()=>{
+ const db=database();const d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:'b'.repeat(64)})}),indexedDB:{open(){throw Error('Unavailable')}}});
+ assert.equal(d.api,undefined);assert.equal(d.raw.get(key),snapshot);assert.equal(d.raw.get(key+'-account'),account);
 });

@@ -1,4 +1,6 @@
-# Cloudflare Phase 1 staging verification
+# Cloudflare staging verification
+
+Current Phase 2 results and fresh-account architecture: [PHASE2.md](PHASE2.md). The Phase 1 checks below are historical evidence; synthetic-password authentication has been superseded by Clerk.
 
 Date: 17 November 2026. This is a test deployment, not a production migration.
 
@@ -31,7 +33,7 @@ Full-suite repair update: **369 passed, 0 failed, 0 skipped** locally. All361 or
 | Cloud sync | Browser reports Cloud saved / up to date. Repair Sync reports latest progress confirmed in cloud. |
 | Offline active study | Disconnected test tab, revealed/rated Anki card, then reconnected; automatic sync returned to up to date. Network override restored. After the direct-Anki startup repair, reopening the cached app while disconnected also displayed the local Anki library with the remaining due count preserved. Shared cloud listings correctly remain unavailable offline. |
 | Appearance/responsiveness | Light/Dark toggles; 390x844 phone exam and 834x1112 / 1112x834 tablet schedule emulation. No page horizontal overflow in measured views. Phone Exam Controls menu fits x=9 to224 within390px. Physical Safari/iOS not tested. Temporary viewport overrides were reset. |
-| Onboarding | Synthetic setup wizard, review-progress Skip and completion exercised. Starting after the CVP final reports unschedulable reviews with today placeholders; this needs product review before real account migration. No real student onboarding forced. |
+| Onboarding | Synthetic setup wizard, review-progress Skip and completion exercised. Starting after the CVP final reports unschedulable reviews with today placeholders; this needs product review before production launch. No real student onboarding forced. |
 
 ## Issues discovered and bounded repairs
 
@@ -46,12 +48,12 @@ Full-suite repair update: **369 passed, 0 failed, 0 skipped** locally. All361 or
 
 ## Remaining limitations before production
 
-1. ChatGPT Sites authentication is not portable. Current accounts are synthetic staging identities only. Choose a managed OIDC provider, implement verified immutable identity mapping, then separately approve controlled account/progress migration.
-2. Actual production student records, uploaded personal materials/decks and database contents have not been migrated. Staging cannot demonstrate their live identity migration.
+1. ChatGPT Sites authentication is not portable. Staging now uses verified Clerk Development sessions. Production needs a separate Clerk Production configuration and fresh registration; no legacy identity mapping or account/progress migration.
+2. Existing student progress, personal uploads and decks will not be copied. Future production D1 starts empty; only academic assets/catalogs transfer to a separate private R2 bucket.
 3. Some Material Library entries depend on personal/shared document metadata in the production database. Registered files are present, but their existing production associations are deliberately absent from synthetic records.
 4. The15 legacy failures are resolved; retain the complete mandatory suite and review any future failures before production cutover. See TEST-REPAIRS.md for causes, two additional defect fixes and evidence.
 5. Complete physical iPhone/iPad Safari, real cross-device sessions and long offline exam/reconciliation tests. Active offline Anki rating/reconnect and cached app reopening are verified; do not generalize this to every offline flow.
-6. Production needs encrypted backups/restore drill, identity collision checks, rollback, monitoring and cost limits, and explicit cutover approval. Porkbun/domain/hosting remain untouched.
+6. Production needs encrypted backups/restore drill, fresh-account isolation checks, rollback, monitoring and cost limits, and explicit cutover approval. Porkbun/domain/hosting remain untouched.
 
 Local-only credentials and receipts are in ignored .sites-runtime/staging; never commit or paste passwords, cookies or Worker secrets. See PHASE1.md for architecture and commands.
 

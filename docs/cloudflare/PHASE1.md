@@ -1,5 +1,7 @@
 # Independent Cloudflare staging — Phase 1
 
+Historical implementation record. Phase 2 now uses Clerk and fresh accounts; see [PHASE2.md](PHASE2.md). No legacy account or progress migration is planned.
+
 ## Isolation
 
 Branch: cloudflare-staging. GitHub main and the ChatGPT Site remain unchanged. Independent Worker review-studio-staging-20261117, D1 review-studio-staging-20261117 (1540bad8-aa39-4c73-9484-28cfd5ea2a05), and private R2 bucket review-studio-staging-20261117. No custom domains or routes. No production database, bucket contents, identity tokens, student records or account secrets were read/copied. Database migrations are explicit staging-only operations, never part of a normal code deploy.
@@ -18,7 +20,7 @@ Staging uses exactly two synthetic accounts (staging-admin and staging-student, 
 
 Secrets: REVIEW_STUDIO_STAGING_ACCOUNTS, REVIEW_STUDIO_STAGING_SESSION_SECRET, REVIEW_STUDIO_OWNER_ACCOUNT_KEY. No production secret was copied. Generate locally with scripts/create-staging-secrets.mjs; output remains in ignored .sites-runtime/staging and .dev.vars. Upload only to the named staging Worker using Wrangler secret bulk. Do not paste credentials into GitHub or chat. This is test authentication, not a student-account migration solution.
 
-For production use a managed OIDC provider (or carefully configured Cloudflare Access if its account/lifecycle model fits). Use verified issuer/audience/signature checks and an immutable subject mapping. Migrate with a separate audited account-link table and explicit proof of both old and new identities, encrypted exports, dry-run counts, collision checks and rollback. Never match records merely by display name or silently bulk-copy identity IDs. Owner approval and live student/cross-device verification are required before a production migration.
+Phase 2 supersedes the original migration proposal: all users register new verified Clerk identities and start with empty personal records. Do not build identity mapping, historical imports, account linking or progress reconciliation with the original Site.
 
 ## Build and storage
 
@@ -34,4 +36,4 @@ Connect Cloudflare Workers Builds only to this Worker and cloudflare-staging as 
 
 ## Verification / next steps
 
-See QA.md for actual results, remaining gaps and the deployment receipt. Before any production move: choose real authentication, audit identity/data export mapping, transfer authorized R2 assets with hash checks, establish backups/rollback, resolve baseline test failures, verify real iPhone/iPad and cross-device sessions, configure monitoring/cost limits, and obtain explicit cutover approval. No Porkbun/DNS change is part of this phase.
+See QA.md for actual results, remaining gaps and the deployment receipt. Before any production move: configure the managed provider’s separate production instance, create new production D1/R2, transfer academic assets with hash checks, establish backups/rollback, verify real iPhone/iPad and cross-device sessions, configure monitoring/cost limits, and obtain explicit cutover approval. No Porkbun/DNS change is part of this phase.

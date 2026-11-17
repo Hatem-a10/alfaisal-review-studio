@@ -1,5 +1,19 @@
 /* Hydrate durable device data before executing the app's classic scripts. */
 (async()=>{
+ // Bind the device to the verified new account before any personal state loads.
+ // Offline study stays available to the last signed-in account; logout locks it.
+ let verifiedAccount=null;
+ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
+  const locked=localStorage.getItem('review-studio-managed-signed-out')==='1';
+  try{
+   if(typeof navigator!=='undefined'&&navigator.onLine===false)throw Error('Offline');
+   const r=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin'});
+   if(r.status===401||r.status===403){location.replace('/auth/sign-in');return}
+   if(!r.ok)throw Error('Account unavailable');
+   const value=await r.json();if(!/^[a-f0-9]{64}$/.test(value.accountKey))throw Error('Invalid account');verifiedAccount=value.accountKey;
+   localStorage.removeItem('review-studio-managed-signed-out');
+  }catch{if(locked){location.replace('/auth/sign-in');return}}
+ }
  const prefix='alfaisal-review-studio-v1',storage=localStorage,rawGet=Storage.prototype.getItem,rawSet=Storage.prototype.setItem,rawRemove=Storage.prototype.removeItem,accountKey=prefix+'-account';
  const managed=k=>k===prefix||k.startsWith(prefix+'-')&&k!==accountKey||k.startsWith('review-studio-account-copy:');
  const cache=new Map(),pending=new Map();let account=rawGet.call(storage,accountKey)||'guest',db,chain=Promise.resolve(),lastError;
@@ -9,7 +23,8 @@
  const id=k=>account+'|'+k;
  async function hydrate(){cache.clear();const [keys,values]=await Promise.all([tx('values','readonly',s=>s.getAllKeys()),tx('values','readonly',s=>s.getAll())]);keys.forEach((key,i)=>{if(String(key).startsWith(account+'|'))cache.set(String(key).slice(account.length+1),values[i])});if(!await tx('meta','readonly',s=>s.get('initialized:'+account))){for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key&&managed(key)&&!cache.has(key))cache.set(key,rawGet.call(storage,key))}for(const[k,v]of cache)await tx('values','readwrite',s=>s.put(v,id(k)));await tx('meta','readwrite',s=>s.put(true,'initialized:'+account))}}
  function queue(k,v){if(!db)return;pending.set(id(k),v);chain=chain.catch(()=>{}).then(async()=>{const items=[...pending];if(!items.length)return;await new Promise((resolve,reject)=>{const t=db.transaction('values','readwrite'),s=t.objectStore('values');for(const[key,value]of items)value===null?s.delete(key):s.put(value,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error)});for(const[key,value]of items)if(pending.get(key)===value)pending.delete(key);lastError=null}).catch(notify)}
- try{db=await open();account=await tx('meta','readonly',s=>s.get('active'))||account;await hydrate()}catch(error){notify(error);db=null}
+ try{db=await open();account=await tx('meta','readonly',s=>s.get('active'))||account;if(verifiedAccount){account=verifiedAccount;await tx('meta','readwrite',s=>s.put(account,'active'));await tx('meta','readwrite',s=>s.put(true,'initialized:'+account));try{rawSet.call(storage,accountKey,account)}catch{}}await hydrate()}catch(error){notify(error);db=null}
+ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS&&!db)throw Error('Secure device storage is unavailable. Enable device storage and retry; your saved copies are retained.');
  if(db){Storage.prototype.getItem=function(key){key=String(key);if(this===storage){if(key===accountKey)return account==='guest'?null:account;if(managed(key))return cache.has(key)?cache.get(key):null}return rawGet.call(this,key)};
  Storage.prototype.setItem=function(key,value){key=String(key);value=String(value);if(this===storage&&key===accountKey){if(account==='guest'&&value){account=value;for(const[k,v]of cache)queue(k,v)}chain=chain.then(()=>tx('meta','readwrite',s=>s.put(value,'active'))).catch(notify);try{rawSet.call(this,key,value)}catch{}return}if(this===storage&&managed(key)){cache.set(key,value);queue(key,value);return}return rawSet.call(this,key,value)};
  Storage.prototype.removeItem=function(key){key=String(key);if(this===storage&&managed(key)){cache.delete(key);queue(key,null);try{rawRemove.call(this,key)}catch{}return}return rawRemove.call(this,key)};}

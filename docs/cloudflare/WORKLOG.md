@@ -24,3 +24,14 @@ Evidence scripts, synthetic fixtures, credentials, cookies, screenshots and impo
 ## Reliability update — 17 November 2026
 
 The15 original failures are resolved; full suite369/369 passing with eight added regressions. See TEST-REPAIRS.md and updated QA.md. Fixes include source bootstrap migration ordering and Repair Sync account-switch isolation; academic content/progress schemas are unchanged. Complete suite now gates GitHub checks. Remaining production prerequisites above still apply.
+
+
+## Phase 2 — fresh managed accounts (17 November 2026)
+
+- User explicitly replaced the earlier migration plan with fresh registration and empty personal data. No old identity mapping/import tools were built.
+- Integrated Clerk Development through official CLI authorization, server-verified immutable identity, verified email/passwordless recovery, Google and logout. No production auth changes.
+- Applied additive managed-account tables to staging D1 only. Reused isolated staging bucket/catalog assets; no duplicate asset upload.
+- User completed verified owner registration and local phrase bootstrap. Owner-only Admin Settings unlock and Registered students directory were verified in Brave; ordinary-student denial verified via real staging requests.
+- Synthetic registration, six-step setup/Skip, 0 overdue, cloud save and logout exercised. Returning sign-in exposed an unchanged-response onboarding loop; repaired with same-account guards and regression tests. Storage-report null crash also repaired.
+- Full local suite: 396 passed, 0 failed, 0 skipped. Production and independent staging builds pass. Focused managed-auth/Worker lint passes. vinext supports all Next imports/libraries; static scan warnings concern browser UMD and ignored local CLI tooling.
+- 14 live managed-account API checks pass (progress/Anki isolation, role/privacy gates, asset SHA, forged headers, revoked sessions). See PHASE2.md for architecture and production prerequisites. Deployment receipts follow in QA.md.
