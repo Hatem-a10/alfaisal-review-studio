@@ -20,7 +20,14 @@ export function integrateLearning(learning,checks,pack){const index=indexes(pack
  if(!learning.sources.some(s=>s.id===pack.source.id))learning.sources.push({...pack.source,name:pack.source.title,displayName:pack.source.title,unit:'page',readingURL:'/cvp19-source-pages.json',pages:Array.from({length:383},(_,i)=>({page:i+1,text:''}))});
  return represented.size;
 }
-export async function load(){const r=await fetch('/cvp19-booklet.json?v=162');if(!r.ok)throw Error('The corrected CVP booklet could not load. Please retry.');const p=await r.json();if(p.version!==1||p.questions.length!==1214)throw Error('Incomplete corrected booklet data');return p}
+export async function load(){const r=await fetch('/cvp19-booklet.json?v=166');if(!r.ok)throw Error('The corrected CVP booklet could not load. Please retry.');const p=await r.json();if(p.version!==1||p.questions.length!==1214)throw Error('Incomplete corrected booklet data');return p}
 
 // Migrate unfinished local drafts by option TEXT, never by assuming an old index still means the same thing.
 export function migrateDrafts(drafts,oldQuestions,pack){const next=structuredClone(drafts),index=indexes(pack),oldById=new Map(oldQuestions.map(q=>[q.id,q]));for(const draft of Object.values(next)){if(draft.bookletRevision===pack.revision||!Array.isArray(draft.ids))continue;for(let i=0;i<draft.ids.length;i++){const old=oldById.get(draft.ids[i]);if(!old)continue;const corrected=correctedQuestion(old,pack,index);if(corrected===old)continue;const map=old.options.map(o=>corrected.options.findIndex(n=>normalize(n)===normalize(o))),order=draft.orders?.[i];if(!Array.isArray(order))continue;if(map.every(n=>n>=0)&&old.options.length===corrected.options.length&&new Set(map).size===map.length){draft.orders[i]=order.map(n=>map[n]);if(Number.isInteger(draft.answers?.[i]))draft.answers[i]=map[draft.answers[i]]}else{draft.priorBookletAnswers??={};draft.priorBookletAnswers[draft.ids[i]]={options:old.options,selected:draft.answers?.[i]??null};draft.orders[i]=corrected.options.map((_,n)=>n);if(draft.answers)delete draft.answers[i];if(draft.graded)delete draft.graded[i]}}draft.bookletRevision=pack.revision}return next}
+
+// Resolve explicit context dependencies only; never guess from adjacent PDF pages.
+export function withQuestionContext(question,pack){
+ const byId=new Map(pack.questions.map(q=>[q.id,q])),seen=new Set(),figures=new Map(),context=[];
+ function visit(q,includePrompt=false){if(!q||seen.has(q.id))return;seen.add(q.id);if(q.contextSourceId)visit(byId.get(q.contextSourceId));for(const id of q.contextQuestionIds||[])visit(byId.get(id),true);for(const f of q.figures||[])if(f.image)figures.set(f.image,f);if(q.caseText&&!context.includes(q.caseText))context.push(q.caseText);if(includePrompt&&q.question&&!context.includes(q.question))context.push(q.question)}
+ visit(question);return {...question,caseText:context.join('\n\n'),figures:[...figures.values()]};
+}

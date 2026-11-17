@@ -1,0 +1,44 @@
+{
+  "reviewedSAQs": 188,
+  "sourcePages": [
+    236,
+    269
+  ],
+  "changedIds": [
+    "cvp19-saq-119",
+    "cvp19-saq-123",
+    "cvp19-saq-124",
+    "cvp19-saq-125",
+    "cvp19-saq-126",
+    "cvp19-saq-127",
+    "cvp19-saq-133",
+    "cvp19-saq-134",
+    "cvp19-saq-135",
+    "cvp19-saq-136",
+    "cvp19-saq-142",
+    "cvp19-saq-143",
+    "cvp19-saq-144",
+    "cvp19-saq-145",
+    "cvp19-saq-146",
+    "cvp19-saq-147",
+    "cvp19-saq-163",
+    "cvp19-saq-164",
+    "cvp19-saq-165",
+    "cvp19-saq-166",
+    "cvp19-saq-167",
+    "cvp19-saq-168",
+    "cvp19-saq-169",
+    "cvp19-saq-170",
+    "cvp19-saq-171",
+    "cvp19-saq-172",
+    "cvp19-saq-173",
+    "cvp19-saq-175",
+    "cvp19-saq-176",
+    "cvp19-saq-177"
+  ],
+  "preserved": "All IDs, options, printed answers, scoring keys and explanations",
+  "sourceMissingFigure": [
+    "cvp19-saq-163"
+  ],
+  "note": "No radiograph exists on source p265; clinical prompt now stands alone."
+}
