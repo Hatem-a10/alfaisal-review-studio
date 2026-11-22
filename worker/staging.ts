@@ -1,4 +1,5 @@
 import handler from 'vinext/server/fetch-handler';
+import {allowProductionWrite,isProductionDatabase,mayUseProduction,productionPolicy} from '../lib/production-access.mjs';
 import {authenticateStaging} from '../lib/staging-auth.mjs';
 import {authenticateManaged,managedAuthConfig} from '../lib/managed-auth.mjs';
 import {managedPage,managedPublicConfig,privacyPage} from '../lib/managed-auth-pages.mjs';
@@ -18,7 +19,8 @@ const stagingWorker = {
   if (!production && environment !== 'staging') return new Response('Cloudflare configuration required',{status:503});
   const config = env as typeof env & Record<string,unknown>;
   const managed = config.REVIEW_STUDIO_AUTH_PROVIDER === 'clerk';
-  if (production && (!managed || managedAuthConfig(config)?.origin !== new URL(incoming.url).origin)) {
+  const policy=production?productionPolicy(config):null;
+  if (production && (!policy || !managed || managedAuthConfig(config)?.origin !== new URL(incoming.url).origin)) {
    return new Response('Managed authentication configuration unavailable',{status:503,headers:{'Cache-Control':'no-store'}});
   }
   // Cloudflare supplies this in deployed requests. Only loopback development gets a local value.
@@ -26,12 +28,16 @@ const stagingWorker = {
    const h=new Headers(incoming.headers);h.set('CF-Connecting-IP','127.0.0.1');incoming=new Request(incoming,{headers:h});
   }
   const originalPath=new URL(incoming.url).pathname;
+  let authPath;
+  try{authPath=decodeURIComponent(originalPath).replace(/\/+$/,'');}
+  catch{return adminResponse({error:'Invalid path.'},400);}
+  if(policy?.restricted&&authPath==='/auth/sign-up')return adminResponse({error:'Registration is closed.'},404);
   if(managed){
    if(['GET','HEAD'].includes(incoming.method)&&['/managed-auth-client.js','/managed-auth.css','/staging-runtime.js','/staging-ui.css'].includes(originalPath))return env.ASSETS.fetch(incoming);
    if(['/staging/signin','/signin-with-chatgpt','/staging/signout','/signout-with-chatgpt'].includes(originalPath))return Response.redirect(new URL(originalPath.includes('signout')?'/auth/sign-out':'/auth/sign-in',incoming.url),303);
    if(incoming.method==='GET'){
     try{
-     if(originalPath==='/auth/config')return Response.json(managedPublicConfig(config),{headers:{'Cache-Control':'no-store'}});
+     if(originalPath==='/auth/config')return Response.json({...managedPublicConfig(config),registrationClosed:policy?.restricted===true},{headers:{'Cache-Control':'no-store'}});
      if(originalPath==='/auth/privacy')return privacyPage();
      if(['/auth/sign-in','/auth/sign-up','/auth/sign-out'].includes(originalPath))return managedPage(config,originalPath.split('/').at(-1));
     }catch{return new Response('Managed authentication configuration unavailable',{status:503,headers:{'Cache-Control':'no-store'}})}
@@ -39,6 +45,10 @@ const stagingWorker = {
   }
   const auth=managed?await authenticateManaged(incoming,config):await authenticateStaging(incoming,env);if(auth.response)return auth.response;
   const finish=(response:Response)=>{if(!auth.headers)return response;const headers=new Headers(response.headers);for(const cookie of (typeof auth.headers.getSetCookie==='function'?auth.headers.getSetCookie():[auth.headers.get('Set-Cookie')].filter(Boolean)))headers.append('Set-Cookie',cookie);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
+  if(production&&auth.user){
+   if(!mayUseProduction(policy,auth.user))return finish(adminResponse({error:'This release is restricted to approved reviewers.'},403));
+   if(!await isProductionDatabase(env.DB))return finish(adminResponse({error:'Production database verification unavailable.'},503));
+  }
   return finish(await (async()=>{
 
   const request=auth.request;let path;try{path=decodeURIComponent(new URL(request.url).pathname).slice(1)}catch{return new Response('Invalid path',{status:400})}
@@ -78,6 +88,9 @@ const stagingWorker = {
     try{
      const blocked=adminWriteGate(canonical,request.method,await controls(env.DB));
      if(blocked)return adminResponse({error:blocked},503);
+     if(production&&!await allowProductionWrite(env.DB,auth.user.id,canonical,request.method)){
+      return adminResponse({error:'Write limit reached. Your device copy is retained. Try again later.'},429);
+     }
      if(canonical==='api/academic-config')return adminResponse({error:'Publish an academic revision in the Admin Control Center.'},owner?409:403);
      if(canonical==='api/shared-decks'||canonical.startsWith('api/admin-assets/')){
       if(!owner||row?.admin_panel_unlocked!==1)return adminResponse({error:'Owner authorization required.'},403);
@@ -106,7 +119,10 @@ const stagingWorker = {
   }
   if(path.startsWith('materials/')||assetFor(path)){if(!request.headers.has('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});if(assetFor(path)){const stored=await serveAsset(request,env.BUCKET,path,request.method==='HEAD');if(stored.status!==404)return stored;}return env.ASSETS.fetch(request);}
   if(['','index.html'].includes(path)&&!request.headers.has('oai-authenticated-user-id'))return Response.redirect(new URL(managed?'/auth/sign-in':'/staging/signin?return_to=%2F',request.url),303);
-  if(production && path==='health')return Response.json({environment,authentication:'clerk',database:!!env.DB,storage:!!env.BUCKET},{headers:{'Cache-Control':'no-store'}});
+  if(production && path==='health'){
+   if(!auth.user)return adminResponse({error:'Sign in required.'},401);
+   return adminResponse({environment,authentication:'clerk',database:true,storage:!!env.BUCKET,restricted:policy?.restricted});
+  }
   if(production && !auth.user)return new Response('Sign in required',{status:401,headers:{'Cache-Control':'no-store'}});
   if(path==='staging/health'&&!production)return Response.json({environment:'staging',authentication:managed?'clerk':'synthetic-signed-session',database:!!env.DB,storage:!!env.BUCKET},{headers:{'Cache-Control':'no-store'}});
   if((request.method==='GET'||request.method==='HEAD')&&PUBLISHER_PACKS.some(a=>a.path===path)){const served=await servePack(request);if(served.status!==503)return served;if(!PUBLISHER_PACKS.find(a=>a.path===path)?.private||request.headers.has('oai-authenticated-user-id'))return env.ASSETS.fetch(request);return served;}

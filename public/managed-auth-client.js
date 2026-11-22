@@ -8,7 +8,7 @@
  if(mode==='sign-out'){
   mount.replaceChildren();const button=document.createElement('button');button.textContent='Sign out on this device';button.onclick=async()=>{button.disabled=true;try{localStorage.setItem('review-studio-managed-signed-out','1')}catch{}await window.Clerk.signOut({redirectUrl:'/auth/sign-in'})};mount.append(button);return;
  }
- if(mode){mount.replaceChildren();const options={routing:'hash',forceRedirectUrl:'/#dashboard',signInUrl:'/auth/sign-in',signUpUrl:'/auth/sign-up'};if(mode==='sign-up')window.Clerk.mountSignUp(mount,options);else window.Clerk.mountSignIn(mount,options);return}
+ if(mode){mount.replaceChildren();const options={routing:'hash',forceRedirectUrl:'/#dashboard',signInUrl:'/auth/sign-in',...(cfg.registrationClosed?{}:{signUpUrl:'/auth/sign-up'})};if(mode==='sign-up')window.Clerk.mountSignUp(mount,options);else window.Clerk.mountSignIn(mount,options);return}
  installManagedApp();
  window.addEventListener('review-admin-role',installAccountTools);document.addEventListener('click',e=>{if(e.target.closest('#openSiteAdmin'))installAccountTools()});window.addEventListener('studio-ready',installAccountTools);
  let profileFingerprint='',profileSaving=false,installing=false;

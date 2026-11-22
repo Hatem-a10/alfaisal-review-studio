@@ -98,7 +98,11 @@ test('production rejects development credentials and accepts only the configured
   CLERK_PUBLISHABLE_KEY:'pk_live_'+Buffer.from('clerk.example.org$').toString('base64'),
   CLERK_SECRET_KEY:'sk_live_synthetic',
  };
- const f = fixtures({auth:{sessionClaims:{iss:issuer,sub:'user_owner',azp:origin}}});
+ const claims={iss:issuer,sub:'user_owner',azp:origin};
+ const denied = await authenticateManaged(new Request(origin),production,fixtures({auth:{sessionClaims:{...claims,fva:[0,-1]}}}).deps);
+ assert.equal(denied.response.status,403);
+ assert.equal(denied.request.headers.get('x-review-studio-owner'),null);
+ const f = fixtures({auth:{sessionClaims:{...claims,fva:[0,0]}}});
  const request = new Request(origin);
  for (const overrides of [
   {CLERK_SECRET_KEY:env.CLERK_SECRET_KEY}, {CLERK_PUBLISHABLE_KEY:env.CLERK_PUBLISHABLE_KEY},
@@ -111,6 +115,7 @@ test('production rejects development credentials and accepts only the configured
  const authorized = await authenticateManaged(request,production,f.deps);
  assert.ok(authorized.user);
  assert.deepEqual(f.options.authorizedParties,[origin]);
+ assert.equal(authorized.user.recentMfa,true);
  const staging = await authenticateManaged(req(),env,fixtures().deps);
  assert.notEqual(authorized.user.id,staging.user.id);
 });

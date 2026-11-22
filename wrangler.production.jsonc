@@ -13,7 +13,9 @@
   },
   "vars": {
     "REVIEW_STUDIO_DEPLOYMENT": "production",
-    "REVIEW_STUDIO_AUTH_PROVIDER": "clerk"
+    "REVIEW_STUDIO_AUTH_PROVIDER": "clerk",
+    "REVIEW_STUDIO_ACCESS": "restricted",
+    "REVIEW_STUDIO_OWNER_REQUIRE_MFA": "1"
   },
   "d1_databases": [{
     "binding": "DB",
@@ -25,5 +27,9 @@
     "binding": "BUCKET",
     "bucket_name": "review-studio-production"
   }],
-  "observability": {"enabled": true}
+  "observability": {
+    "enabled": true,
+    "logs": {"enabled": true, "invocation_logs": false},
+    "traces": {"enabled": false}
+  }
 }
