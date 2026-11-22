@@ -1,6 +1,6 @@
 import handler from 'vinext/server/fetch-handler';
 import {authenticateStaging} from '../lib/staging-auth.mjs';
-import {authenticateManaged} from '../lib/managed-auth.mjs';
+import {authenticateManaged,managedAuthConfig} from '../lib/managed-auth.mjs';
 import {managedPage,managedPublicConfig,privacyPage} from '../lib/managed-auth-pages.mjs';
 import {managedAccount,managedAccountRoute} from '../lib/managed-accounts.mjs';
 import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
@@ -9,12 +9,18 @@ import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
 
 const stagingWorker = {
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
-  if(env.REVIEW_STUDIO_DEPLOYMENT!=='staging')return new Response('Staging configuration required',{status:503});
+  const environment = env.REVIEW_STUDIO_DEPLOYMENT as string;
+  const production = environment === 'production';
+  if (!production && environment !== 'staging') return new Response('Cloudflare configuration required',{status:503});
+  const config = env as typeof env & Record<string,unknown>;
+  const managed = config.REVIEW_STUDIO_AUTH_PROVIDER === 'clerk';
+  if (production && (!managed || managedAuthConfig(config)?.origin !== new URL(incoming.url).origin)) {
+   return new Response('Managed authentication configuration unavailable',{status:503,headers:{'Cache-Control':'no-store'}});
+  }
   // Cloudflare supplies this in deployed requests. Only loopback development gets a local value.
   if(import.meta.env.DEV&&['127.0.0.1','localhost'].includes(new URL(incoming.url).hostname)){
    const h=new Headers(incoming.headers);h.set('CF-Connecting-IP','127.0.0.1');incoming=new Request(incoming,{headers:h});
   }
-  const config=env as typeof env & Record<string,unknown>,managed=config.REVIEW_STUDIO_AUTH_PROVIDER==='clerk';
   const originalPath=new URL(incoming.url).pathname;
   if(managed){
    if(['GET','HEAD'].includes(incoming.method)&&['/managed-auth-client.js','/managed-auth.css','/staging-runtime.js','/staging-ui.css'].includes(originalPath))return env.ASSETS.fetch(incoming);
@@ -45,7 +51,9 @@ const stagingWorker = {
   }
   if(path.startsWith('materials/')||assetFor(path)){if(!request.headers.has('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});if(assetFor(path)){const stored=await serveAsset(request,env.BUCKET,path,request.method==='HEAD');if(stored.status!==404)return stored;}return env.ASSETS.fetch(request);}
   if(['','index.html'].includes(path)&&!request.headers.has('oai-authenticated-user-id'))return Response.redirect(new URL(managed?'/auth/sign-in':'/staging/signin?return_to=%2F',request.url),303);
-  if(path==='staging/health')return Response.json({environment:'staging',authentication:managed?'clerk':'synthetic-signed-session',database:!!env.DB,storage:!!env.BUCKET},{headers:{'Cache-Control':'no-store'}});
+  if(production && path==='health')return Response.json({environment,authentication:'clerk',database:!!env.DB,storage:!!env.BUCKET},{headers:{'Cache-Control':'no-store'}});
+  if(production && !auth.user)return new Response('Sign in required',{status:401,headers:{'Cache-Control':'no-store'}});
+  if(path==='staging/health'&&!production)return Response.json({environment:'staging',authentication:managed?'clerk':'synthetic-signed-session',database:!!env.DB,storage:!!env.BUCKET},{headers:{'Cache-Control':'no-store'}});
   if((request.method==='GET'||request.method==='HEAD')&&PUBLISHER_PACKS.some(a=>a.path===path)){const served=await servePack(request);if(served.status!==503)return served;if(!PUBLISHER_PACKS.find(a=>a.path===path)?.private||request.headers.has('oai-authenticated-user-id'))return env.ASSETS.fetch(request);return served;}
   if(PRIVATE_MEDIA.some(a=>a.path===path)&&!request.headers.has('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});
   const media=await readPrivateMedia(request,env.BUCKET);if(media)return media;
@@ -53,8 +61,8 @@ const stagingWorker = {
   const assetResponse=!path.startsWith('api/')&&['GET','HEAD'].includes(request.method)?await env.ASSETS.fetch(request):null;
   const response=assetResponse&&assetResponse.status!==404?assetResponse:await handler.fetch(request,env,ctx);
   if(response.headers.get('content-type')?.includes('text/html')&&['','index.html'].includes(path)){
-   const headers=new Headers(response.headers);headers.delete('content-length');headers.set('Cache-Control','no-store');headers.set('X-Review-Studio-Environment','staging');
-   const html=(await response.text()).replace('</head>',(managed?'<script>window.REVIEW_STUDIO_FRESH_ACCOUNTS=true</script><script src="/managed-auth-client.js" defer></script>':'')+'<link rel="stylesheet" href="/staging-ui.css"><script src="/staging-runtime.js" defer></script></head>');
+   const headers=new Headers(response.headers);headers.delete('content-length');headers.set('Cache-Control','no-store');headers.set('X-Review-Studio-Environment',environment);
+   const html=(await response.text()).replace('</head>',(managed?'<script>window.REVIEW_STUDIO_FRESH_ACCOUNTS=true</script><script src="/managed-auth-client.js" defer></script>':'')+'<link rel="stylesheet" href="/staging-ui.css">'+(production?'':'<script src="/staging-runtime.js" defer></script>')+'</head>');
    return new Response(html,{status:response.status,headers});
   }
   return response;

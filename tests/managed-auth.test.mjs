@@ -89,3 +89,28 @@ test('actual Clerk SDK verifies RS256 session tokens before trusting identity',a
   assert.equal(result.request.headers.get('x-review-studio-owner')==='1',accepted,label);
  }
 });
+
+test('production rejects development credentials and accepts only the configured HTTPS origin', async () => {
+ const origin = 'https://study.example.org';
+ const issuer = 'https://clerk.example.org';
+ const production = {
+  ...env, REVIEW_STUDIO_DEPLOYMENT:'production', REVIEW_STUDIO_ORIGIN:origin, CLERK_ISSUER:issuer,
+  CLERK_PUBLISHABLE_KEY:'pk_live_'+Buffer.from('clerk.example.org$').toString('base64'),
+  CLERK_SECRET_KEY:'sk_live_synthetic',
+ };
+ const f = fixtures({auth:{sessionClaims:{iss:issuer,sub:'user_owner',azp:origin}}});
+ const request = new Request(origin);
+ for (const overrides of [
+  {CLERK_SECRET_KEY:env.CLERK_SECRET_KEY}, {CLERK_PUBLISHABLE_KEY:env.CLERK_PUBLISHABLE_KEY},
+  {CLERK_ISSUER:'https://other.example.org'}, {REVIEW_STUDIO_ORIGIN:'https://app.workers.dev'},
+  {REVIEW_STUDIO_ORIGIN:'https://app.chatgpt.site'}, {REVIEW_STUDIO_ORIGIN:''},
+ ]) {
+  assert.equal((await authenticateManaged(request,{...production,...overrides},f.deps)).response.status,503);
+ }
+ assert.equal((await authenticateManaged(req(),production,f.deps)).response.status,503);
+ const authorized = await authenticateManaged(request,production,f.deps);
+ assert.ok(authorized.user);
+ assert.deepEqual(f.options.authorizedParties,[origin]);
+ const staging = await authenticateManaged(req(),env,fixtures().deps);
+ assert.notEqual(authorized.user.id,staging.user.id);
+});

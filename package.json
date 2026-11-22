@@ -13,6 +13,7 @@
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "check:cloudflare": "vinext check",
+    "build:production-candidate": "node scripts/build-cloudflare-staging.mjs --production-candidate",
     "build:staging": "node scripts/build-cloudflare-staging.mjs",
     "dev:staging": "REVIEW_STUDIO_TARGET=staging node scripts/run-framework.mjs dev",
     "deploy:staging": "node scripts/deploy-cloudflare-staging.mjs",

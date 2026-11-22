@@ -28,6 +28,10 @@ jobs:
         run: tail -40 existing-tests.log
       - name: Independent staging build
         run: npm run build:staging
+      - name: Build isolated production candidate
+        run: npm run build:production-candidate
+      - name: Validate production bindings without deployment
+        run: npx --no-install wrangler deploy --dry-run --config dist/server/wrangler.json
       - name: Retain validation logs
         if: always()
         uses: actions/upload-artifact@v4
