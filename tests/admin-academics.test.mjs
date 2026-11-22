@@ -64,10 +64,18 @@ test('browser runtime replaces exact non-REN catalog rows and adds published exa
   {id:'replacement',replacesId:'old-lecture',title:'Updated A1',type:'lecture',date:'2026-12-01',startTime:'09:00',endTime:'10:00',studentGroup:'M1',studentSection:'A',labGroup:'1.6',course:'CVP',lecturer:'Dr. Olena'},
   {id:'exam-1',title:'CVP Final',type:'exam',date:'2026-12-02',startTime:'08:00',endTime:'11:00',studentGroup:'M1',studentSection:'A'}
  ]};
- const GroupSchedules={selected:()=>catalog.slice(),assigned:()=>true},DATA={events:[]},window={reviewManagedAssignment:{studentGroup:'M1',studentSection:'A',labGroup:'1.6'},dispatchEvent(){}};
+ let displayedSettings;
+ const GroupSchedules={selected:(week,profile)=>{displayedSettings=profile;return catalog.slice()},assigned:()=>true},DATA={events:[]},window={reviewManagedAssignment:{studentGroup:'M2',studentSection:'B',labGroup:'2.9'},dispatchEvent(){}};
  const context={GroupSchedules,DATA,window,settings,fetch:async()=>({ok:true,json:async()=>published}),CustomEvent:class{},setTimeout,view:'calendar',render(){},Date,URL,console};
  runInNewContext(source,context);await new Promise(resolve=>setTimeout(resolve,0));
  const rows=GroupSchedules.selected('2026-11-29',settings,{events:[]},[],false);
+ assert.equal(displayedSettings.studentGroup,'M2');
+ assert.equal(displayedSettings.labGroup,'2.9');
+ assert.equal(settings.studentGroup,'M1');
+ assert.equal(settings.labGroup,'1.6');
+ window.reviewManagedAssignment=null;
+ GroupSchedules.selected('2026-11-29',settings,{events:[]},[],false);
+ assert.equal(displayedSettings,settings);
  assert.ok(rows.some(row=>row.id==='ren-source'),'REN official source remains governing');
  assert.ok(rows.some(row=>row.id==='admin-replacement-2026-12-01'));
  assert.ok(rows.some(row=>row.id==='admin-exam-1-2026-12-02'));
