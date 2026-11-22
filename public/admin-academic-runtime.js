@@ -38,7 +38,9 @@
   if(GroupSchedules.__adminAcademicInstalled)return;
   const original=GroupSchedules.selected.bind(GroupSchedules);
   GroupSchedules.selected=(start,settings,catalog,legacy,shared)=>{
-   let existing=original(start,settings,catalog,legacy,shared);const extra=forWeek(start);
+   const assignment=window.reviewManagedAssignment;
+   const effective=assignment?{...settings,...assignment,groupConfigured:true,labGroupConfigured:!!assignment.labGroup}:settings;
+   let existing=original(start,effective,catalog,legacy,shared);const extra=forWeek(start);
    const replaced=new Set(extra.map(e=>e.replacesId).filter(Boolean));
    if(replaced.size)existing=existing.filter(event=>!replaced.has(event.id)||event.course==='REN'&&/^REN123_Fall 26-27 Weekly Time Table(?:[^/]*\.xlsx)?$/i.test(event.source||''));
    return existing.concat(extra).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start||a.id.localeCompare(b.id));
@@ -48,8 +50,6 @@
  }
  async function load(){
   try{const response=await fetch(api,{credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}});if(!response.ok)throw Error('Published schedule unavailable');published=await response.json();
-   const assignment=window.reviewManagedAssignment&&typeof window.reviewManagedAssignment==='object'?window.reviewManagedAssignment:published.profile;
-   try{if(typeof settings!=='undefined'&&assignment)Object.assign(settings,assignment)}catch{}
    install();replayCountdowns();window.dispatchEvent(new CustomEvent('review:academic-config',{detail:published}));
    try{if(typeof view!=='undefined'&&(view==='calendar'||view==='dashboard')&&typeof render==='function')render()}catch{}
    return published;
