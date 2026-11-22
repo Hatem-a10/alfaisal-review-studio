@@ -94,7 +94,7 @@ const stagingWorker = {
      if(canonical==='api/academic-config')return adminResponse({error:'Publish an academic revision in the Admin Control Center.'},owner?409:403);
      if(canonical==='api/shared-decks'||canonical.startsWith('api/admin-assets/')){
       if(!owner||row?.admin_panel_unlocked!==1)return adminResponse({error:'Owner authorization required.'},403);
-      if(!await verifiedAdminChallenge(env.DB,auth.user))return adminResponse({error:'Confirm the Admin phrase in the Admin Control Center first.'},428);
+      if(!await verifiedAdminChallenge(env.DB,auth.user,config))return adminResponse({error:'Confirm the Admin phrase in the Admin Control Center first.'},428);
       legacyAudit=auditWriter(env.DB,auth.user,'owner');
       await legacyAudit.mutate([],'legacy.write-requested',canonical);
      }

@@ -1,0 +1,97 @@
+name: Reviewed production release gate
+
+# This workflow is intentionally manual-only. It verifies a staged, CI-green
+# commit and performs a candidate build/dry run; it never deploys or migrates.
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Full SHA of the exact commit that passed staging CI
+        required: true
+        type: string
+      production_d1_id:
+        description: Verified production D1 UUID (leave blank for placeholder dry run)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: reviewed-production-gate
+  cancel-in-progress: false
+
+jobs:
+  verify-and-dry-run:
+    runs-on: ubuntu-latest
+    env:
+      APPROVED_SHA: ${{ inputs.commit_sha }}
+      PRODUCTION_D1_ID: ${{ inputs.production_d1_id }}
+    steps:
+      - name: Check out the exact approved commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit_sha }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch the staged branch
+        run: git fetch --no-tags origin refs/heads/cloudflare-staging:refs/remotes/origin/cloudflare-staging
+
+      - name: Verify exact staged commit and successful staging CI
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: >-
+          node scripts/verify-reviewed-release.mjs
+          --commit "$APPROVED_SHA"
+          --staging-ref origin/cloudflare-staging
+          --workflow .github/workflows/cloudflare-staging-check.yml
+
+      - name: Check source formatting
+        run: git diff --check
+
+      - name: Run lint and Cloudflare compatibility check
+        run: |
+          npm run lint
+          npm run check:cloudflare
+
+      - name: Build the isolated production candidate
+        run: npm run build:production-candidate
+
+      - name: Verify production access guard
+        run: node scripts/check-production-guard.mjs
+
+      - name: Prepare restricted production config for dry run
+        if: ${{ inputs.production_d1_id != '' }}
+        run: node scripts/prepare-production-config.mjs "$PRODUCTION_D1_ID" "$APPROVED_SHA"
+
+      - name: Dry-run the future production Worker (no deployment)
+        run: |
+          if [ -n "$PRODUCTION_D1_ID" ]; then
+            npx --no-install wrangler deploy --dry-run --config dist/server/wrangler.production.prepared.json
+          else
+            npx --no-install wrangler deploy --dry-run --config dist/server/wrangler.json
+          fi
+
+      - name: Write non-sensitive release receipt
+        env:
+          APPROVED_SHA: ${{ inputs.commit_sha }}
+        run: |
+          node --input-type=module -e 'import {writeFileSync} from "node:fs"; writeFileSync("reviewed-release-receipt.json", JSON.stringify({approvedCommit:process.env.APPROVED_SHA, productionDeployment:false, productionMigration:false}, null, 2)+"\n")'
+
+      - name: Upload gate receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-production-gate-${{ inputs.commit_sha }}
+          path: reviewed-release-receipt.json
+          retention-days: 14

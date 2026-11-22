@@ -13,7 +13,7 @@ const bindings={
  CLERK_PUBLISHABLE_KEY:'pk_live_'+Buffer.from('clerk.example.test$').toString('base64'),
  CLERK_SECRET_KEY:'sk_live_synthetic_fixture',
  REVIEW_STUDIO_ACCESS:'restricted',
- REVIEW_STUDIO_OWNER_REQUIRE_MFA:'1',
+ REVIEW_STUDIO_OWNER_REAUTH:'1',
  REVIEW_STUDIO_CLERK_OWNER_SUB:'user_ProductionFixture',
  REVIEW_STUDIO_PANEL_PASSWORD_HASH:'pbkdf2-sha256$100000$'+'0'.repeat(32)+'$'+'0'.repeat(64),
 };

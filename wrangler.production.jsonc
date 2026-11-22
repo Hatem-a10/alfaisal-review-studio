@@ -15,7 +15,7 @@
     "REVIEW_STUDIO_DEPLOYMENT": "production",
     "REVIEW_STUDIO_AUTH_PROVIDER": "clerk",
     "REVIEW_STUDIO_ACCESS": "restricted",
-    "REVIEW_STUDIO_OWNER_REQUIRE_MFA": "1"
+    "REVIEW_STUDIO_OWNER_REAUTH": "1"
   },
   "d1_databases": [{
     "binding": "DB",

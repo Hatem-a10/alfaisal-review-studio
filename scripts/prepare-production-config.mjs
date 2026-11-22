@@ -12,7 +12,7 @@ export function candidateConfig(config,databaseId){
  if(config.name!==productionName || config.workers_dev!==false || config.preview_urls!==false || config.route || config.routes?.length ||
     config.observability?.logs?.invocation_logs!==false ||
     config.vars?.REVIEW_STUDIO_DEPLOYMENT!=='production' || config.vars.REVIEW_STUDIO_AUTH_PROVIDER!=='clerk' ||
-    config.vars.REVIEW_STUDIO_ACCESS!=='restricted' || config.vars.REVIEW_STUDIO_OWNER_REQUIRE_MFA!=='1' ||
+    config.vars.REVIEW_STUDIO_ACCESS!=='restricted' || config.vars.REVIEW_STUDIO_OWNER_REAUTH!=='1' ||
     config.d1_databases?.length!==1 || config.d1_databases[0].binding!=='DB' ||
     config.d1_databases[0].database_name!==productionName || config.d1_databases[0].database_id!==placeholder ||
     config.r2_buckets?.length!==1 || config.r2_buckets[0].binding!=='BUCKET' || config.r2_buckets[0].bucket_name!==productionName){

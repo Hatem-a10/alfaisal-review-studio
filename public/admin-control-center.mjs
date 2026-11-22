@@ -24,7 +24,7 @@ function button(label, handler, cssClass) {
 async function request(path, options={}) {
  const response=await fetch(apiRoot+path,{cache:'no-store',credentials:'same-origin',...options});
  const data=await response.json().catch(()=>({}));
- if(!response.ok)throw Object.assign(new Error(data.error||'The request could not be completed.'),{status:response.status});
+ if(!response.ok)throw Object.assign(new Error(data.error||'The request could not be completed.'),{status:response.status,reauthenticate:data.reauthenticate===true});
  return data;
 }
 const json = payload => ({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -98,7 +98,14 @@ function openForm(title, fields, submitLabel='Save', submit) {
     const result=submit?await submit(values,form):values;
     resolve(result);
     dialog.close();
-   }catch(error){status.textContent=error.message;}
+   }catch(error){
+    status.textContent=error.message;
+    if(error.reauthenticate){
+     const link=node('a','Sign out to verify again',{href:'/auth/sign-out'});
+     status.append(' ',link);
+     link.focus();
+    }
+   }
    finally{save.disabled=false;}
   });
   dialog.addEventListener('close',()=>{dialog.remove();resolve(null);},{once:true});
@@ -326,7 +333,14 @@ export async function openAdminCenter(){
      cards([['Academic groups',candidate.groups?.length],['Events',events.length],['Categories',candidate.categories?.length]]),
      table(['Title','Type','Date or day','Time','Audience'],events.slice(0,50).map(e=>[e.title,e.type,e.date||e.day,[e.startTime,e.endTime].filter(Boolean).join('–'),[e.studentGroup,e.studentSection,e.labGroup].filter(Boolean).join(' / ')||'All']),'This draft has no additional events.'),
      rowAction('Publish draft',()=>put('academics','publish',{revisionId},'Publish academic changes?','The shared schedules and group options will update for matching students.')));
-   }catch(error){status.textContent=error.message;}
+   }catch(error){
+    status.textContent=error.message;
+    if(error.reauthenticate){
+     const link=node('a','Sign out to verify again',{href:'/auth/sign-out'});
+     status.append(' ',link);
+     link.focus();
+    }
+   }
    finally{save.disabled=false;}
   });
   panel.append(form,node('h4','Revision history'),table(['Revision','Status','Created','Action'],(current.revisions||[]).map(revision=>{
@@ -398,7 +412,7 @@ export async function openAdminCenter(){
   if(version!==viewVersion)return;
   panel.replaceChildren();
   panel.append(rowAction('Verify owner access',confirmOwner,{reload:false}));
-  if (window.Clerk?.openUserProfile)panel.append(button('Manage Clerk security & MFA',()=>{dialog.close();document.getElementById('siteAdmin')?.close();window.Clerk.openUserProfile();}));
+  if (window.Clerk?.openUserProfile)panel.append(button('Manage Clerk account security',()=>{dialog.close();document.getElementById('siteAdmin')?.close();window.Clerk.openUserProfile();}));
   panel.append(table(['When','Role','Action','Actor','Target'],data.entries.map(x=>[formatDate(x.created_at),x.role,x.action,x.actor.split(':').at(-1),x.target.replace(/^clerk:[a-f0-9]{64}:/,'')])));
   appendPager(page,data.more,n=>within(()=>audit(n,version)));
  }

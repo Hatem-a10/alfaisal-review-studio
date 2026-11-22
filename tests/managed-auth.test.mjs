@@ -99,10 +99,14 @@ test('production rejects development credentials and accepts only the configured
   CLERK_SECRET_KEY:'sk_live_synthetic',
  };
  const claims={iss:issuer,sub:'user_owner',azp:origin};
- const denied = await authenticateManaged(new Request(origin),production,fixtures({auth:{sessionClaims:{...claims,fva:[0,-1]}}}).deps);
- assert.equal(denied.response.status,403);
- assert.equal(denied.request.headers.get('x-review-studio-owner'),null);
- const f = fixtures({auth:{sessionClaims:{...claims,fva:[0,0]}}});
+ const ordinary = await authenticateManaged(new Request(origin),production,fixtures({auth:{sessionClaims:{...claims,fva:[0,-1]}}}).deps);
+ // Production owner sign-in is allowed without MFA. Sensitive actions apply
+ // the recent first-factor step-up separately in the admin-control route.
+ assert.ok(ordinary.user);
+ assert.equal(ordinary.request.headers.get('x-review-studio-owner'),'1');
+ assert.equal(ordinary.user.recentReauth,true);
+ assert.equal(ordinary.user.recentMfa,false);
+ const f = fixtures({auth:{sessionClaims:{...claims,fva:[0,-1]}}});
  const request = new Request(origin);
  for (const overrides of [
   {CLERK_SECRET_KEY:env.CLERK_SECRET_KEY}, {CLERK_PUBLISHABLE_KEY:env.CLERK_PUBLISHABLE_KEY},
@@ -115,7 +119,7 @@ test('production rejects development credentials and accepts only the configured
  const authorized = await authenticateManaged(request,production,f.deps);
  assert.ok(authorized.user);
  assert.deepEqual(f.options.authorizedParties,[origin]);
- assert.equal(authorized.user.recentMfa,true);
+ assert.equal(authorized.user.recentReauth,true);
  const staging = await authenticateManaged(req(),env,fixtures().deps);
  assert.notEqual(authorized.user.id,staging.user.id);
 });

@@ -88,6 +88,17 @@ test('owner changes need the verified session challenge, respect origin, protect
  assert.doesNotMatch(JSON.stringify(body),new RegExp(phrase+'|owner-session|student@example'));
 });
 
+test('production owner step-up requires recent first-factor reauthentication, not MFA at sign-in',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ h.env.REVIEW_STUDIO_OWNER_REAUTH='1';
+ assert.equal((await h.call('challenge',owner,{phrase})).status,428);
+ assert.ok(h.sqlite.prepare("SELECT id FROM control_audit WHERE action='security.reauth-required'").get());
+ const recent={...owner,recentReauth:true};
+ assert.equal((await h.call('challenge',recent,{phrase})).status,200);
+ assert.equal((await h.call('students/suspend',owner,{id:student.id,suspended:true})).status,428);
+ assert.equal((await h.call('students/suspend',recent,{id:student.id,suspended:true})).status,200);
+});
+
 test('session revocation uses the target’s immutable Clerk subject and never accepts a cross-account session',async t=>{
  const h=harness();t.after(()=>h.sqlite.close());
  await h.challenge();

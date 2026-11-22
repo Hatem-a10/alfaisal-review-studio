@@ -9,7 +9,7 @@ const env={
  REVIEW_STUDIO_DEPLOYMENT:'production',
  REVIEW_STUDIO_ACCESS:'restricted',
  REVIEW_STUDIO_CLERK_OWNER_SUB:'user_Owner',
- REVIEW_STUDIO_OWNER_REQUIRE_MFA:'1',
+ REVIEW_STUDIO_OWNER_REAUTH:'1',
  REVIEW_STUDIO_PANEL_PASSWORD_HASH:'pbkdf2-sha256$100000$'+'a'.repeat(32)+'$'+'b'.repeat(64),
 };
 const config=JSON.parse(readFileSync(new URL('../wrangler.production.jsonc',import.meta.url)));
@@ -21,7 +21,7 @@ test('restricted production grants access only to verified immutable subjects an
  assert.equal(mayUseProduction(policy,{subject:'user_Reviewer'}),true);
  assert.equal(mayUseProduction(policy,{subject:'user_Different',email:'owner@example.org',role:'owner'}),false);
  assert.equal(mayUseProduction(policy,null),false);
- for(const values of [{REVIEW_STUDIO_ACCESS:''},{REVIEW_STUDIO_OWNER_REQUIRE_MFA:'0'},
+ for(const values of [{REVIEW_STUDIO_ACCESS:''},{REVIEW_STUDIO_OWNER_REAUTH:'0'},
   {REVIEW_STUDIO_REVIEWER_SUBS:'["name@example.org"]'},{REVIEW_STUDIO_CLERK_OWNER_SUB:''},{REVIEW_STUDIO_PANEL_PASSWORD_HASH:''}]){
   assert.equal(productionPolicy({...env,...values}),null);
  }
