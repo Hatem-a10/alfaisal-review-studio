@@ -3,6 +3,10 @@ import {authenticateStaging} from '../lib/staging-auth.mjs';
 import {authenticateManaged,managedAuthConfig} from '../lib/managed-auth.mjs';
 import {managedPage,managedPublicConfig,privacyPage} from '../lib/managed-auth-pages.mjs';
 import {managedAccount,managedAccountRoute} from '../lib/managed-accounts.mjs';
+import {accountControl,adminResponse,adminWriteGate,auditWriter,controlRoute,controls,countControlEvent,verifiedAdminChallenge} from '../lib/admin-control.mjs';
+import {academicAdmin,academicStudent} from '../lib/admin-academics.mjs';
+import {contentAdmin,contentStudent} from '../lib/admin-content.mjs';
+import {resourceAdmin,resourceStudent} from '../lib/admin-resources.mjs';
 import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
 import {assetFor,serveAsset} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
@@ -38,16 +42,67 @@ const stagingWorker = {
   return finish(await (async()=>{
 
   const request=auth.request;let path;try{path=decodeURIComponent(new URL(request.url).pathname).slice(1)}catch{return new Response('Invalid path',{status:400})}
+  let observe: ((response:Response)=>void)|undefined;
+  let legacyAudit: ReturnType<typeof auditWriter>|undefined;
   if(managed){
    let row:Record<string,unknown>|null=null;
+   const owner=request.headers.get('x-review-studio-owner')==='1';
    if(auth.user){
-    try{row=await env.DB.prepare('SELECT * FROM review_accounts WHERE id=?').bind(auth.user.id).first();if(!row||['','index.html'].includes(path)||path.startsWith('auth/'))row=await managedAccount(env.DB,auth.user);}
-    catch{return new Response('Account database unavailable',{status:503,headers:{'Cache-Control':'no-store'}})}
-    if(row?.disabled)return new Response('This account is disabled. Contact the site owner.',{status:403,headers:{'Cache-Control':'no-store'}});
+    try{
+     row=await env.DB.prepare('SELECT * FROM review_accounts WHERE id=?').bind(auth.user.id).first();
+     if(row?.disabled&&!owner)return adminResponse({error:'This account is suspended.'},403);
+     if(!row||['','index.html'].includes(path)||path.startsWith('auth/'))row=await managedAccount(env.DB,auth.user);
+     else if(path==='api/progress'&&Date.now()-Date.parse(String(row?.last_seen_at))>3600000){
+      ctx.waitUntil(env.DB.prepare('UPDATE review_accounts SET last_seen_at=? WHERE id=? AND last_seen_at<?').bind(new Date().toISOString(),auth.user.id,new Date(Date.now()-3600000).toISOString()).run().catch(()=>{}));
+     }
+    }catch{return adminResponse({error:'Account database unavailable.'},503);}
    }
-   if(path==='auth/session'||path==='staging/session')return Response.json({authenticated:!!auth.user},{headers:{'Cache-Control':'no-store'}});
-   if(['auth/account','auth/admin/accounts','api/admin-auth'].includes(path))return await managedAccountRoute(request,config,auth.user,row||{});
-   if(path==='api/capabilities')return Response.json({admin:request.headers.get('x-review-studio-owner')==='1',adminSettingsUnlocked:request.headers.get('x-review-studio-owner')==='1'&&row?.admin_panel_unlocked===1},{headers:{'Cache-Control':'no-store'}});
+   if(path==='auth/session'||path==='staging/session')return adminResponse({authenticated:!!auth.user});
+   const canonical=path.replace(/\/+$/,'');
+   if(canonical.startsWith('api/control-center/')){
+    const student=canonical.startsWith('api/control-center/student/');
+    const response=await controlRoute({request,env:config,user:auth.user,row,owner,path:'/'+canonical,
+     handlers:student?[academicStudent,contentStudent,resourceStudent]:[academicAdmin,contentAdmin,resourceAdmin]});
+    const download=/^api\/control-center\/student\/resources\/([a-f0-9-]{36})\/download$/i.exec(canonical);
+    if(response?.ok&&download)ctx.waitUntil(countControlEvent(env.DB,'resource-open:'+download[1]).catch(()=>{}));
+    return response;
+   }
+   if(canonical==='auth/admin/accounts'){
+    if(!auth.user)return adminResponse({error:'Sign in required.'},401);
+    return owner&&row?.admin_panel_unlocked===1
+     ?adminResponse({error:'Use the Admin Control Center.'},410)
+     :adminResponse({error:'Administrator access required.'},403);
+   }
+   const write=!['GET','HEAD','OPTIONS'].includes(request.method);
+   if(write&&auth.user){
+    try{
+     const blocked=adminWriteGate(canonical,request.method,await controls(env.DB));
+     if(blocked)return adminResponse({error:blocked},503);
+     if(canonical==='api/academic-config')return adminResponse({error:'Publish an academic revision in the Admin Control Center.'},owner?409:403);
+     if(canonical==='api/shared-decks'||canonical.startsWith('api/admin-assets/')){
+      if(!owner||row?.admin_panel_unlocked!==1)return adminResponse({error:'Owner authorization required.'},403);
+      if(!await verifiedAdminChallenge(env.DB,auth.user))return adminResponse({error:'Confirm the Admin phrase in the Admin Control Center first.'},428);
+      legacyAudit=auditWriter(env.DB,auth.user,'owner');
+      await legacyAudit.mutate([],'legacy.write-requested',canonical);
+     }
+     const sync=canonical==='api/progress';
+     const upload=/^api\/(materials|decks|shared-decks)$/.test(canonical)&&request.method==='POST';
+     if(sync||upload)observe=response=>{
+      if(response.status>=500||(upload&&response.status>=400)){
+       ctx.waitUntil(countControlEvent(env.DB,sync?'sync-failed':'upload-failed').catch(()=>{}));
+      }
+     };
+    }catch{return adminResponse({error:'Site controls are unavailable.'},503);}
+   }
+   if(['auth/account','api/admin-auth'].includes(canonical)){
+    const result=await managedAccountRoute(request,config,auth.user,row||{});
+    if(canonical==='auth/account'&&request.method==='GET'&&auth.user&&result?.ok){
+     try {return adminResponse({...await result.json(),...await accountControl(env.DB,auth.user.id)});}
+     catch{return adminResponse({error:'Account settings are temporarily unavailable.'},503);}
+    }
+    return result;
+   }
+   if(canonical==='api/capabilities')return adminResponse({admin:owner,adminSettingsUnlocked:owner&&row?.admin_panel_unlocked===1});
   }
   if(path.startsWith('materials/')||assetFor(path)){if(!request.headers.has('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});if(assetFor(path)){const stored=await serveAsset(request,env.BUCKET,path,request.method==='HEAD');if(stored.status!==404)return stored;}return env.ASSETS.fetch(request);}
   if(['','index.html'].includes(path)&&!request.headers.has('oai-authenticated-user-id'))return Response.redirect(new URL(managed?'/auth/sign-in':'/staging/signin?return_to=%2F',request.url),303);
@@ -60,9 +115,11 @@ const stagingWorker = {
   // Post-build bundles/styles are not in vinext's build-time route snapshot.
   const assetResponse=!path.startsWith('api/')&&['GET','HEAD'].includes(request.method)?await env.ASSETS.fetch(request):null;
   const response=assetResponse&&assetResponse.status!==404?assetResponse:await handler.fetch(request,env,ctx);
+  observe?.(response);
+  if(legacyAudit)await legacyAudit.mutate([],response.ok?'legacy.write-completed':'legacy.write-failed',path);
   if(response.headers.get('content-type')?.includes('text/html')&&['','index.html'].includes(path)){
    const headers=new Headers(response.headers);headers.delete('content-length');headers.set('Cache-Control','no-store');headers.set('X-Review-Studio-Environment',environment);
-   const html=(await response.text()).replace('</head>',(managed?'<script>window.REVIEW_STUDIO_FRESH_ACCOUNTS=true</script><script src="/managed-auth-client.js" defer></script>':'')+'<link rel="stylesheet" href="/staging-ui.css">'+(production?'':'<script src="/staging-runtime.js" defer></script>')+'</head>');
+   const html=(await response.text()).replace('</head>',(managed?'<script>window.REVIEW_STUDIO_FRESH_ACCOUNTS=true</script><script src="/managed-auth-client.js" defer></script><script src="/admin-student-tools.js" defer></script><script src="/admin-academic-runtime.js" defer></script>':'')+'<link rel="stylesheet" href="/staging-ui.css">'+(production?'':'<script src="/staging-runtime.js" defer></script>')+'</head>');
    return new Response(html,{status:response.status,headers});
   }
   return response;

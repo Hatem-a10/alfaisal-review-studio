@@ -19,16 +19,49 @@
  const saveLabel=document.getElementById('saveLabel');if(saveLabel)saveLabel.hidden=true;
  const admin=document.createElement('section');admin.className='admin-tools';admin.innerHTML='<button type="button" id="toggleAdminSettings" aria-expanded="false" aria-controls="adminSettingsContent">Admin settings <span aria-hidden="true">⌄</span></button><form id="adminUnlockForm" hidden><label>Admin phrase<input id="adminPhrase" type="password" autocomplete="off" required></label><button type="submit">Unlock</button><p id="adminUnlockStatus" role="status"></p></form><div id="adminSettingsContent" hidden></div>';
  dialog.querySelector('.admin-frame').append(admin);
+ const managed=window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
+ if(managed){admin.hidden=true;admin.style.display='none'}
  const adminContent=admin.querySelector('#adminSettingsContent'),unlockForm=admin.querySelector('form'),adminToggle=admin.querySelector('#toggleAdminSettings');
  for(const el of [backup,dialog.querySelector('.admin-recovery'),dialog.querySelector('#adminBody')])adminContent.append(el);
+ if(managed){
+  dialog.querySelector('.admin-frame').append(backup,dialog.querySelector('.admin-recovery'));
+ }
+ let managedRole='student';
  const changeLogLabel=document.createElement('label');changeLogLabel.className='admin-changelog-toggle';const changeLogToggle=document.createElement('input');changeLogToggle.type='checkbox';changeLogToggle.id='adminLectureChanges';changeLogLabel.append(changeLogToggle,document.createTextNode('Lecture change log'));adminContent.prepend(changeLogLabel);changeLogToggle.onchange=()=>{if(!unlocked)return;saveOptions({...storeOptions(),adminLectureChanges:changeLogToggle.checked});window.dispatchEvent(new CustomEvent('lecture-changelog-preference'))};
  let unlocked=false;
  function announce(){changeLogToggle.checked=storeOptions().adminLectureChanges!==false;window.reviewAdmin=unlocked;window.dispatchEvent(new CustomEvent('review-admin-role',{detail:{admin:unlocked}}))}
  function expandAdmin(){const opened=adminToggle.getAttribute('aria-expanded')==='true';adminToggle.setAttribute('aria-expanded',String(!opened));adminContent.hidden=opened;unlockForm.hidden=true;if(!opened)read()}
- async function refreshAdminAuthorization(){try{const r=await fetch('/api/capabilities',{cache:'no-store',credentials:'same-origin'});if(!r.ok)return;const value=await r.json();unlocked=value.admin===true&&(!window.REVIEW_STUDIO_FRESH_ACCOUNTS||value.adminSettingsUnlocked===true);if(!unlocked){adminContent.hidden=true;adminToggle.setAttribute('aria-expanded','false')}announce()}catch{}}
+ async function refreshAdminAuthorization(){
+  try {
+   const r=await fetch(managed?'/api/control-center/access':'/api/capabilities',{cache:'no-store',credentials:'same-origin'});
+   if(!r.ok){
+    if(managed){admin.hidden=true;admin.style.display='none';managedRole='student';unlocked=false;unlockForm.hidden=true;if(r.status===401||r.status===403)window.reviewAdmin=false}
+    return;
+   }
+   const value=await r.json();
+   if(managed){
+    managedRole=value.role;admin.hidden=false;admin.style.removeProperty('display');unlocked=managedRole==='owner'&&value.unlocked===true;
+    adminContent.hidden=true;
+   } else {
+    unlocked=value.admin===true;
+    if(!unlocked){adminContent.hidden=true;adminToggle.setAttribute('aria-expanded','false')}
+   }
+   announce();
+  } catch {
+   if(managed){admin.hidden=true;admin.style.display='none';managedRole='student';unlocked=false}
+  }
+ }
  window.refreshAdminAuthorization=refreshAdminAuthorization;
- adminToggle.onclick=()=>{if(unlocked)expandAdmin();else{unlockForm.hidden=!unlockForm.hidden;if(!unlockForm.hidden)admin.querySelector('input').focus()}};
- unlockForm.onsubmit=async e=>{e.preventDefault();const input=admin.querySelector('input'),password=input.value,submit=unlockForm.querySelector('button'),status=admin.querySelector('#adminUnlockStatus');input.value='';submit.disabled=true;status.textContent='Verifying…';try{const response=await fetch('/api/admin-auth',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})}),value=await response.json();if(!response.ok||value.admin!==true)throw Error(value.error||'Admin access could not be verified.');unlocked=true;announce();status.textContent='';expandAdmin()}catch(error){status.textContent=error.message}finally{submit.disabled=false}};
+ async function openControlCenter(){
+  try {const {openAdminCenter}=await import('/admin-control-center.mjs');await openAdminCenter();}
+  catch {const status=admin.querySelector('#adminUnlockStatus');unlockForm.hidden=false;status.textContent='The Control Center could not open. Reconnect and try again.';}
+ }
+ adminToggle.onclick=()=>{
+  if(managed && (unlocked||['editor','moderator'].includes(managedRole))) {openControlCenter();return;}
+  if(unlocked)expandAdmin();
+  else{unlockForm.hidden=!unlockForm.hidden;if(!unlockForm.hidden)admin.querySelector('input').focus()}
+ };
+ unlockForm.onsubmit=async e=>{e.preventDefault();const input=admin.querySelector('input'),password=input.value,submit=unlockForm.querySelector('button'),status=admin.querySelector('#adminUnlockStatus');input.value='';submit.disabled=true;status.textContent='Verifying…';try{const response=await fetch('/api/admin-auth',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})}),value=await response.json();if(!response.ok||value.admin!==true)throw Error(value.error||'Admin access could not be verified.');unlocked=true;announce();status.textContent='';if(managed){unlockForm.hidden=true;await openControlCenter()}else expandAdmin()}catch(error){status.textContent=error.message}finally{submit.disabled=false}};
  refreshAdminAuthorization();window.addEventListener('focus',refreshAdminAuthorization);
 
 

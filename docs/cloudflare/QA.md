@@ -77,3 +77,11 @@ The verified new owner completed onboarding and the local Admin phrase bootstrap
 All 14 live managed-auth API checks passed, including independent D1 progress and Anki uploads, unauthorized shared-upload/directory rejection, default-off analytics, exact curriculum SHA, spoofed-header denial and session revocation after the bounded cache. No production student record or storage was migrated. The existing 660 curriculum/910 study assets were retained without reupload. Repository remains private and `main` remains `0d9b88704732f3922f65f4d4b9bd7c1f0f6accaf`.
 
 See PHASE2.md for fresh-production prerequisites and the deliberately remaining physical-device, long-offline and production-provider checks. No old-to-new account mapping, historical imports or student-record merging is required or planned.
+
+## Phase 3 Admin Control Center
+
+Phase 3 added 29 tests on top of the 399-test staging baseline (including the earlier 396 Phase 2 tests). The complete suite passes **428 tests, 0 failures, 0 skipped**. Tests cover server role checks and forged requests, owner step-up and protection, scoped session revocation, reversible scheduling and resources, announcements, question correction approval, storage boundaries, consent and progress preservation. Native application build, isolated staging build, production candidate build and production Worker dry run passed locally. Focused lint was clean. The vinext scan still reports CommonJS globals in browser vendor assets and ignored tooling, outside the Worker import path.
+
+The additive `staging/admin-*.sql` schemas were applied to the existing staging D1 database. GitHub main, the native Site and production bindings were outside the release. See [Admin Control Center](ADMIN-CONTROL.md) for role boundaries, operations and production prerequisites.
+
+The browser layout fixture is `scripts/check-admin-control-layout.mjs`. It uses Playwright Chromium with synthetic API responses. Set `REVIEW_STUDIO_PLAYWRIGHT_MODULE` and `REVIEW_STUDIO_BROWSER` if using an existing Playwright installation and browser binary. Run it from the repository root. Browser emulation does not verify physical iPhone or iPad Safari.
