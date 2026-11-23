@@ -44,7 +44,7 @@ function visibleOriginalRun(){
  if(scope==='CVP')return globalThis.reviewArchivedStudyItem?.(set)===true;
  return !globalThis.reviewArchivedStudyItem?.(set);
 }
-function originalWorkspace(){if(globalThis.reviewCourseScope==='REN'&&!visibleOriginalRun())return window.reviewRenalOriginalWorkspace();if((globalThis.reviewCourseScope==='MOL'||!globalThis.reviewCourseScope&&globalThis.reviewCvpArchived?.())&&!molAssessmentsStatus)loadMolAssessments();
+function originalWorkspace(){if((globalThis.reviewCourseScope==='MOL'||!globalThis.reviewCourseScope&&globalThis.reviewCvpArchived?.())&&!molAssessmentsStatus)loadMolAssessments();
  if(typeof originalCatalog!=='function'){
  originalCatalog??=Promise.all([import('/original-catalog.mjs?v=2'),import('/cvp-final-mock-data.mjs'),import('/cvp-past-papers.mjs')]).then(([catalog, mock, papers])=>{
   mock.registerCvpMock(ORIGINAL_EXAMS);

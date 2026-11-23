@@ -17,9 +17,6 @@
 .course-workspace-links { display:flex; gap:.55rem; flex-wrap:wrap; margin:0 0 .85rem; }
 .course-workspace-links button { min-height:44px; }
 .course-workspace-back { margin-block:.35rem .75rem; }
-.course-workspace-sessions { display:grid; gap:.5rem; margin:.75rem 0; padding:0; list-style:none; }
-.course-workspace-sessions li { padding:.65rem .75rem; border:1px solid var(--line); border-radius:.65rem; }
-.course-workspace-sessions small { display:block; margin-top:.25rem; color:var(--muted); }
 .cvp-archive-view .pass,.cvp-archive-view [data-spacing],.cvp-archive-view [data-restore-third] { display:none; }
 .renal-guide { margin-block:.75rem; }
 .renal-guide summary,.renal-source-index summary { cursor:pointer; min-height:36px; align-content:center; }

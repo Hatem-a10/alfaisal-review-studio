@@ -4,7 +4,7 @@ function libraryDocumentURL(source, page = 1) {
  if (!source) return null;
  const target = sourceTarget({source: source.id, page});
  if (!target || !/^(?:\/api\/(?:materials|study-assets)\/[\w-]+(?:[?#]|$)|\/(?:api\/site-assets\/)?(?:materials|study_material)\/|https:\/\/)/.test(target.url)) return null;
- if (!/\.(?:pdf|pptx?)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?)(?:$|[?#])/i.test(source.name)) return null;
+ if (!/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(source.name)) return null;
  return sourcePageURL(target);
 }
 
@@ -51,7 +51,7 @@ function libraryMaterials(item, lesson, sources) {
   const id = source.id;
   if (/not verified lecturer transcript/i.test(source.kind || '')) continue;
   const category = /transcri|\btranscript\b/i.test(source.kind || '') || /^cvp-t-|^cvp-transcript$/.test(id) ? 'transcript'
-   : /slide|supplied lecture$/i.test(source.kind || '') && !/notes|quiz|syllabus/i.test(source.kind || '') || /^cvp-w3-/.test(id) ? 'slides'
+   : /slide|(?:supplied|original) lecture$/i.test(source.kind || '') && !/notes|quiz|syllabus/i.test(source.kind || '') || /^cvp-w3-/.test(id) ? 'slides'
    : source.lectureId === item.id ? (/transcri|transcript|^A7\. Blood Vessel Histology\.pdf$|^P10\. Heart sounds\.pdf$|^A10\. Lecture 3 Microcirculation Histology|^A15\. Intercostal Space, Diaphragm - Dr\. Olena - by Merehan Soliman/i.test(source.name) ? 'transcript' : /slides|presentation|\.pptx?$/i.test(source.name) || suppliedLectureForFile(source.name) === item.id ? 'slides' : null) : null;
   if (!category || (source.lectureIds?.length && !source.lectureIds.includes(item.id))) continue;
   const reference = refs.find(ref => ref.source === id);
@@ -71,20 +71,60 @@ function libraryMaterials(item, lesson, sources) {
  return selections;
 }
 
-function libraryLectureLists() {
- const scope=globalThis.reviewCourseScope;
- const supportsScope=source=>{
-  if(!scope)return true;
+function librarySourceInCourse(source, scope=globalThis.reviewCourseScope) {
+  if(!scope)return !globalThis.reviewArchivedStudyItem?.(source);
+  if(source.course)return source.course===scope;
   const ranges=Array.isArray(source.lectureRanges)?source.lectureRanges:[];
   const mapped=[source.lectureId,...(source.lectureIds||[]),...ranges.map(range=>range.lectureId)].filter(Boolean);
   if(mapped.length)return mapped.some(id=>id.startsWith(scope+'-'));
   if(LEARNING.lessons.some(lesson=>lesson.id.startsWith(scope+'-')&&lesson.references?.some(ref=>ref.source===source.id)))return true;
   return new RegExp('(?:^|[^a-z])'+scope+'(?:[^a-z]|$)','i').test(source.id+' '+source.name);
- };
- const sources = LEARNING.sources.concat(uploads).filter(source => libraryDocumentURL(source)&&supportsScope(source));
+}
+
+let renalLibraryRequest, renalLibraryReady=false, renalLibraryError=false;
+function loadRenalLibrary() {
+ if(renalLibraryReady||renalLibraryRequest)return;
+ renalLibraryError=false;
+ renalLibraryRequest=fetch('/renal-materials.json').then(response=>{
+  if(!response.ok)throw Error('Could not load Renal documents.');
+  return response.json();
+ }).then(rows=>{
+  const urls=new Set(LEARNING.sources.map(s=>s.url));
+  for(const row of rows){
+   const url='/api/site-assets/'+row.path;
+   if(urls.has(url))continue;
+   const file=row.path.split('/').at(-1);
+   LEARNING.sources.push({id:'ren123-'+row.id,name:file,displayName:row.title,course:'REN',
+    kind:row.kind,unit:file.endsWith('.pptx')?'slide':'page',url,pages:[]});
+  }
+  renalLibraryReady=true;
+ }).catch(()=>renalLibraryError=true).finally(()=>{
+  renalLibraryRequest=null;
+  if(view==='library'&&globalThis.reviewCourseScope==='REN')render();
+ });
+}
+function libraryDocuments() {
+ return LEARNING.sources.concat(uploads).filter(source=>librarySourceInCourse(source)&&libraryDocumentURL(source));
+}
+
+function searchRenalDocuments() {
+ const terms=sourceSearch.toLowerCase().split(/\s+/).filter(Boolean);
+ const matches=libraryDocuments().filter(source=>{
+  const name=(source.name+' '+(source.displayName||'')).toLowerCase();
+  return terms.every(term=>name.includes(term));
+ });
+ if(!matches.length)return '<p>No matching document titles.</p>';
+ return '<ul class="material-extras">'+matches.map(source=>
+  '<li><a href="'+esc(libraryDocumentURL(source))+'" target="_blank" rel="noopener noreferrer">'+
+  esc(source.displayName||source.name)+' ↗</a></li>').join('')+'</ul>';
+}
+
+function libraryLectureLists() {
+ const scope=globalThis.reviewCourseScope;
+ const sources = libraryDocuments();
  const covered = new Set();
- const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine']];
- const lists = groups.filter(([prefix])=>!scope||prefix.startsWith(scope+'-')).map(([prefix,label]) => {
+ const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine'], ['REN-A','Renal Anatomy & Histology'], ['REN-P','Renal Physiology']];
+ const lists = groups.filter(([prefix])=>scope?prefix.startsWith(scope+'-'):!prefix.startsWith('REN-')&&(!prefix.startsWith('CVP-')||!globalThis.reviewCvpArchived?.())).map(([prefix,label]) => {
   const rows = DATA.items.filter(item => item.id.startsWith(prefix)).sort((a,b) => Number(a.id.slice(prefix.length)) - Number(b.id.slice(prefix.length)));
   return `<section class="material-list"><h2>${label}</h2><ol>${rows.map(item => {
    const selections = libraryMaterials(item, lessonById(item.id), sources);
@@ -101,5 +141,8 @@ function libraryLectureLists() {
    return `<li><div><small>${esc(item.id.replace('-', ' '))}</small><strong>${esc(title(item))}</strong></div><div class="material-actions"><div>${actions(selections.slides,'Slides')}</div><div>${actions(selections.transcript,'Transcription')}</div></div></li>`;
   }).join('')}</ol></section>`;
  }).join('');
- return lists + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
+ const status=scope==='REN'&&!renalLibraryReady?renalLibraryError
+  ? '<p role="status">Could not load additional Renal documents. <button data-retry-renal-library>Retry</button></p>'
+  : '<p role="status">Loading course documents…</p>':'';
+ return lists + status + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
 }

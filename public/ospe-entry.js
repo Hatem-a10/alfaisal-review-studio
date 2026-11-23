@@ -1,12 +1,48 @@
-function learningAreaTabs(selected){const icons={learning:navGlyph('book'),labs:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 3h6m-5 0v7L4 20h16l-6-10V3M8 15h8"/></svg>',ospe:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3h5v8H7zM9 11v3M15 7a7 7 0 0 1 0 14H4m0-7h9"/></svg>'};return '<div class="learning-kind-switch" aria-label="Learning area">'+[['learning','Lessons'],['labs','Labs & practicals'],['ospe','OSPE']].map(([id,label])=>'<button data-view="'+id+'" class="'+(selected===id?'selected':'')+'">'+icons[id]+label+'</button>').join('')+'</div>'}
+function learningAreaTabs(selected){const icons={learning:navGlyph('book'),labs:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 3h6m-5 0v7L4 20h16l-6-10V3M8 15h8"/></svg>',ospe:'<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 3h5v8H7zM9 11v3M15 7a7 7 0 0 1 0 14H4m0-7h9"/></svg>'};return '<div class="learning-kind-switch" aria-label="Learning area">'+[['learning','Lessons'],['labs','Labs & practicals'],['ospe','OSPE']].map(([id,label])=>'<button data-view="'+id+'" class="'+(selected===id?'selected':'')+'">'+icons[id]+label+'</button>').join('')+'</div>'+(window.reviewCourseSelector?.(selected)||'')}
 'use strict';
 (()=>{
- let ui=null,pending=null,labPending=null,failed='',labFailed='';
+ const workspaces=new Map();
+ const ospeCourse=()=>window.reviewCourseScope==='REN'?'REN':'CVP';
+ let labPending=null,labFailed='',paintedCourse;
  const oldLearning=learning;learning=function(){return learningAreaTabs('learning')+oldLearning()};
- const prev=render;render=function(){if(!['ospe','labs'].includes(view))return prev();if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return;applyTheme();paintProfile();if(view==='ospe'&&ui){ui.render();return}const isLab=view==='labs',error=isLab?labFailed:failed;document.querySelector('#content').innerHTML='<section class="panel" role="status">'+(error?esc(error)+' <button data-ospe-load>Retry</button>':isLab?'Opening your lab bench…':'Opening OSPE preparation…')+'</section>';if(isLab){if(!labPending&&!labFailed)labPending=import('/labs.js?v=5').then(()=>{if(view==='labs')render()}).catch(e=>{labFailed=e.message;if(view==='labs')render()});return}if(!pending&&!failed)pending=import('/ospe.js?v=4').then(m=>m.mount()).then(v=>{ui=v;if(view==='ospe')render()}).catch(e=>{failed=e.message;if(view==='ospe')render()}).finally(()=>pending=null)};
- const oldGo=go;go=function(v){if(!['ospe','labs'].includes(v))return oldGo(v);if(v==='ospe'&&view!==v)ui?.resume();view=v;history.pushState(null,'','#'+v);render()};
- for(const event of ['popstate','hashchange'])window.addEventListener(event,()=>{if(['ospe','labs'].includes(location.hash.slice(1))){if(location.hash==='#ospe'&&view!=='ospe')ui?.resume();view=location.hash.slice(1);render()}});
- document.addEventListener('click',e=>{if(e.target.closest('[data-ospe-load]')){failed=labFailed='';labPending=null;render()}});
+ const prev=render;
+ render=function(){
+  if(!['ospe','labs'].includes(view)){paintedCourse=null;return prev();}
+  if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return;
+  applyTheme();
+  paintProfile();
+  const content=document.querySelector('#content');
+  if(view==='labs'){
+   paintedCourse=null;
+   content.innerHTML=learningAreaTabs('labs')+'<section class="panel" role="status">'+(labFailed?esc(labFailed)+' <button data-ospe-load>Retry</button>':'Opening your lab bench…')+'</section>';
+   if(!labPending&&!labFailed)labPending=import('/labs.js?v=5').then(()=>{if(view==='labs')render()}).catch(error=>{labFailed=error.message;if(view==='labs')render()});
+   return;
+  }
+  const course=ospeCourse();
+  if(!workspaces.has(course))workspaces.set(course,{});
+  const workspace=workspaces.get(course);
+  if(workspace.ui){
+   if(paintedCourse!==course)workspace.ui.resume();
+   paintedCourse=course;
+   return workspace.ui.render();
+  }
+  content.innerHTML=learningAreaTabs('ospe')+'<section class="panel" role="status">'+(workspace.error?esc(workspace.error)+' <button data-ospe-load>Retry</button>':'Opening OSPE preparation…')+'</section>';
+  if(!workspace.pending&&!workspace.error)workspace.pending=import('/ospe.js?v=4').then(module=>module.mount(course)).then(ui=>workspace.ui=ui)
+   .catch(error=>workspace.error=error.message).finally(()=>{
+    workspace.pending=null;
+    if(view==='ospe'&&ospeCourse()===course)render();
+   });
+ };
+ const oldGo=go;
+ go=function(v){
+  if(!['ospe','labs'].includes(v))return oldGo(v);
+  view=v;history.pushState(null,'','#'+v);render();
+ };
+ for(const event of ['popstate','hashchange'])window.addEventListener(event,()=>{
+  const route=location.hash.slice(1);
+  if(['ospe','labs'].includes(route)){view=route;render();}
+ });
+ document.addEventListener('click',e=>{if(e.target.closest('[data-ospe-load]')){if(view==='labs'){labFailed='';labPending=null}else workspaces.delete(ospeCourse());render()}});
  const previousActivity=HubDomain.activity;HubDomain.activity=function(records){const out=previousActivity(records);for(const a of LabCore.merge({},storeOptions().practical||{}).attempts){const day=Study.localDate(a.at);out[day]??={reviews:0,practice:0,minutes:0};out[day].practice++}return out};
  if(['ospe','labs'].includes(location.hash.slice(1)))view=location.hash.slice(1);
 })();
