@@ -11,7 +11,8 @@ test('production release workflow is manual, scoped and verified', () => {
   assert.match(workflow, /environment: production/);
   assert.match(workflow, /contents: read/);
   assert.doesNotMatch(workflow, /(contents|actions|deployments): write/);
-  assert.match(workflow, /concurrency:\n  group: production-release\n  cancel-in-progress: false/);
+  assert.match(workflow, /concurrency:\n      group: production-release-job\n      cancel-in-progress: false/);
+  assert.doesNotMatch(workflow, /^concurrency:/m);
   assert.match(workflow, /verify-reviewed-release\.mjs --commit "\$SHA" --staging-ref origin\/cloudflare-staging/);
   assert.match(workflow, /build:production-candidate/);
   assert.match(workflow, /check-production-guard\.mjs/);
