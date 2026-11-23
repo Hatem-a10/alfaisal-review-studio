@@ -39,8 +39,9 @@
  function latestMastery(x){const l=lessonById(x.id);if(!l)return '';return [...inlineLatest(l).values()].map(v=>v.at).filter(validAt).sort().at(-1)||''}
  function capacity(d,after=0){if(typeof ACADEMIC_IMPORT!=='undefined'&&!storeOptions().allowBreakStudy&&ACADEMIC_IMPORT.breaks.some(([a,b])=>d>=a&&d<=b))return 0;const minute=v=>Number(v.slice(0,2))*60+Number(v.slice(3)),start=Math.max(after,minute(settings.start||'17:00')),end=minute(settings.end||'23:00'),events=campusWeekEvents(campusWeekStart(d),false).filter(e=>e.date===d).map(e=>[Math.max(start,e.start),Math.min(end,e.end)]).filter(([a,b])=>b>a).sort((a,b)=>a[0]-b[0]);let cursor=start,free=0;for(const[a,b]of events){free+=Math.max(0,a-cursor);cursor=Math.max(cursor,b)}free+=Math.max(0,end-cursor);const budget=Number(settings.budget)||180;let completedMinutes=0,timed=0;for(const r of Object.values(state)){completedMinutes+=Object.entries(r.done||{}).filter(([,at])=>at&&Study.localDate(at)===d).reduce((n,[p])=>n+[35,25,15][+p],0);timed+=(r.sessions||[]).filter(s=>Study.localDate(s.endedAt)===d).reduce((n,s)=>n+s.seconds/60,0)}const spent=Math.max(completedMinutes,Math.ceil(timed));return Math.max(0,after?Math.min(free,budget-spent):Math.min(free,budget)-spent)}
  function runAutopilot(){if(busy)return false;busy=true;let changed=false;try{
+  const scheduledItems=DATA.items.filter(item=>item.course!=='REN'||dates(item).some(Boolean));
   const final=finalDate(),current=today(),finalWindow=inFinalWindow(current,final);
-  for(const x of DATA.items){if(x.course==='CVP'&&final&&current>=final)continue;if(!finalWindow&&StudyAutopilot.restoreThird(rec(x),mastered(x),Study.mcq(rec(x)).accuracy)){state[x.id]={...rec(x),skipThird:false};changed=true}if(done(x,0)||!mastered(x))continue;const at=StudyAutopilot.firstStudyAt(rec(x),true,latestMastery(x));if(!at)continue;state[x.id]={...rec(x),done:{...rec(x).done,0:at},autoFirstAt:at,masteryHandledAt:at};changed=true}
+  for(const x of scheduledItems){if(x.course==='CVP'&&final&&current>=final)continue;if(!finalWindow&&StudyAutopilot.restoreThird(rec(x),mastered(x),Study.mcq(rec(x)).accuracy)){state[x.id]={...rec(x),skipThird:false};changed=true}if(done(x,0)||!mastered(x))continue;const at=StudyAutopilot.firstStudyAt(rec(x),true,latestMastery(x));if(!at)continue;state[x.id]={...rec(x),done:{...rec(x).done,0:at},autoFirstAt:at,masteryHandledAt:at};changed=true}
   const opts=storeOptions(),auto=opts.autopilot||{};
   const clock=assessmentClock(),cvp=DATA.items.filter(x=>x.course==='CVP');
   const cvpOverdue=cvp.reduce((n,x)=>n+[0,1].filter(p=>!done(x,p)&&dates(x)[p]<current).length,0);
@@ -51,9 +52,9 @@
   if(finalPlan&&!finalCatchup){if(!finalError)loadFinalCatchup();if(changed)persist();return changed}
   const balanced=planReady&&!finalWindow&&auto.assessmentPlanVersion!==1;
   const planSettings={...settings,hard:x=>Study.hard(rec(x)),canSkip:x=>{const m=Study.mcq(rec(x));return m.accuracy===null||m.accuracy>=85}};
-  const plan=finalPlan?finalCatchup(AssessmentPlan,DATA.items,state,current,DATA.events,d=>capacity(d,d===current?clock.minute:0)):
-   balanced?AssessmentPlan.spread(DATA.items,state,current,planSettings,DATA.events,mastered,capacity,clock.minute):
-   finalWindow?null:StudyAutopilot.automaticRebalance(DATA.items,state,current,planSettings,DATA.events,mastered,capacity,{...auto,ready:planReady});
+  const plan=finalPlan?finalCatchup(AssessmentPlan,scheduledItems,state,current,DATA.events,d=>capacity(d,d===current?clock.minute:0)):
+   balanced?AssessmentPlan.spread(scheduledItems,state,current,planSettings,DATA.events,mastered,capacity,clock.minute):
+   finalWindow?null:StudyAutopilot.automaticRebalance(scheduledItems,state,current,planSettings,DATA.events,mastered,capacity,{...auto,ready:planReady});
   if(plan){const at=new Date().toISOString(),applied=plan.changes.length>0;
    if(applied){state=plan.records;changed=true}
    saveOptions({...opts,autopilot:{...auto,...(balanced?{assessmentPlanVersion:1}:{}),...(finalPlan?{finalCatchupVersion:final+':3',requestFinalCatchup:false}:{}),lastAttemptDay:today(),...(applied||finalPlan||balanced?{lastPlanDay:today(),undoDay:null,lastPlan:{at,changes:plan.changes,unplaced:plan.unplaced,late:plan.late||[],assessmentBalanced:balanced,...(finalPlan?{final,firstPlaced:plan.firstPlaced,secondPlaced:plan.secondPlaced,focused:plan.focused}: {})},log:[{at,moved:plan.changes.filter(c=>c.field.startsWith('dates.')).length,optional:plan.omitted.length,unplaced:plan.unplaced.length},...(auto.log||[])].slice(0,8)}:{})}});

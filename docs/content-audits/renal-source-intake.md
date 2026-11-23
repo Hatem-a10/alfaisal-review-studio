@@ -4,15 +4,26 @@ The REN 123 timetable controls current dates and group assignments. The supplied
 
 | Current coverage | Source | Learner access |
 | --- | --- | --- |
-| A1 Posterior abdominal wall I | Dr. Olena, 28 pages | Original with three source-linked teaching and recall cards |
-| A2 Posterior abdominal wall II | Dr. Olena, 19 pages | Original with three source-linked teaching and recall cards |
-| A3 Kidney anatomy | Dr. Olena, 34 pages | Original with three source-linked teaching and recall cards |
-| A5 Kidney histology | Dr. Anikó, 24 slides | Original with three source-linked teaching and recall cards |
+| A1 Posterior abdominal wall I | Dr. Olena, 28 pages | Native Learn & Master lesson with source-linked topics and explained MCQs |
+| A2 Posterior abdominal wall II | Dr. Olena, 19 pages | Native Learn & Master lesson with source-linked topics and explained MCQs |
+| A3 Kidney anatomy | Dr. Olena, 34 pages | Native Learn & Master lesson with source-linked topics and explained MCQs |
+| A5 Kidney histology | Dr. Anikó, 24 slides | Native Learn & Master lesson with source-linked topics and explained MCQs |
 | Gross anatomy lab | Dr. Atif, 13 pages | Original handout, including figures |
 | Histology lab I | Dr. Anikó, 11 slides | Original handout, including micrographs |
 | Course orientation | Official syllabus (15 pages), block introduction (25 pages), student checklist (1 page) | Originals in the Renal Material Library |
-| Past-paper practice | Recalled booklet, 294 pages | Direct links to the original MCQ, SAQ, and OSPE sections. Preserves figures and printed answers. |
+| Past-paper practice | Recalled booklet, 294 pages | 946 interactive questions, with the complete PDF indexed by section. |
 
-The cards are introductory source-guided checks. The existing Booklet and Timed Mock interfaces use an initial private selection of 26 standalone recalled MCQs with their printed keys and original choice order. The complete PDF remains available by section, including SAQs and OSPEs. Full per-objective coverage and conversion of the remaining questions need editorial work. The recalled booklet was indexed using its contents page. Its individual printed keys, figures and question numbering were not independently audited or converted into a scoring bank. Image-dependent questions retain their original page context.
+## Expanded Renal coverage
 
-The ten staged objects were read back from private staging R2 and matched by SHA-256. Production requires checksum verification of the ten originals and the derived interactive question pack before release. Existing CVP files, IDs, results and review timestamps remain intact.
+| Lecture | Guided topics | Authored MCQs |
+| --- | ---: | ---: |
+| A1 Posterior abdominal wall I | 4 | 7 |
+| A2 Posterior abdominal wall II | 3 | 5 |
+| A3 Kidney anatomy | 4 | 8 |
+| A5 Kidney histology | 4 | 8 |
+
+These lessons use the same Learn & Master topic navigation, inline grading, explanations, and checkpoint as CVP and MOL. Objectives and teaching are linked to the verified slide/page ranges. Coverage is introductory and the original slide links support image interpretation. Other Renal sessions without supplied sources show as pending. Timetable and existing review dates remain separate from the new teaching records.
+
+The private Renal booklet pack includes 671 MCQs, 172 SAQs and 103 OSPE stations with source pages, spanning 281 PDF pages. It preserves the first 26 question records byte-for-byte at the field level, including their answer indexes. The expanded import uses the booklet’s printed answers and preserves item order within each type’s original run. It includes source crops for 139 image-bearing items, including figures carried forward with identified SAQ vignettes. The printed keys and all crops have not been manually reviewed item by item. Unclear delimiters, missing keys and unresolved figure links are reasons to leave material in the complete PDF instead of assuming a gradeable answer. Source links use physical PDF page numbers.
+
+The ten original files and the expanded pack were verified by SHA-256 in private staging storage. The source originals, derived booklet, and figures are outside the public repository. The staging release needs no database migration. Production needs the verified assets transferred under the reviewed release process.
