@@ -6,3 +6,21 @@ test('Renal class columns and section labs are isolated with no owner timetable 
 test('MOL lab subgroup and newest room mapping are exact and duplicates merge',()=>{const e=catalog.events.filter(e=>e.date==='2026-11-04'&&e.course==='MOL'&&core.assigned(e,{studentGroup:'F2',studentSection:'A',labGroup:'2.3'}));assert.equal(e.length,1);assert.equal(e[0].room,'SG 81');assert.equal(e[0].start,600);assert.equal(e[0].end,720);assert.ok(e[0].references.length>=2);assert.ok(!core.assigned(e[0],{studentGroup:'F2',studentSection:'A',labGroup:'2.1'}));const renal=catalog.events.find(e=>e.course==='MOL'&&e.date==='2026-12-01');assert.ok(core.assigned(renal,settings));assert.equal(renal.start,900);assert.equal(renal.end,1020)});
 test('selection preserves inputs, commitments and stable event identifiers',()=>{const before=JSON.stringify({catalog,settings}),record={done:{0:'2026-11-10'},dates:['2026-11-01'],mcqs:[{id:'keep'}]},history=JSON.stringify(record);core.selected('2026-11-22',settings,catalog,[]);assert.equal(JSON.stringify({catalog,settings}),before);assert.equal(JSON.stringify(record),history);assert.equal(new Set(catalog.events.map(e=>e.id)).size,catalog.events.length);assert.equal(catalog.groups.length,8);assert.ok(catalog.events.every(e=>e.start<e.end&&e.references.length&&e.date))});
 test('explicitly clearing lab preference does not inherit legacy owner lab',()=>{assert.equal(core.profile({legacyProfile:true,labGroup:'',labGroupConfigured:true}).lab,'');assert.equal(core.profile({legacyProfile:true}).lab,'1.6')});
+
+
+test('latest Renal PDF covers all four class groups and both lab sections',()=>{
+ const events=catalog.events.filter(e=>e.course==='REN');
+ assert.ok(events.length&&events.every(e=>e.source==='Renal Schedule.pdf'&&e.references[0].page));
+ for(const group of ['M1','M2','F1','F2'])for(const section of ['A','B']){
+  const selection={studentGroup:group,studentSection:section,englishEnabled:false};
+  const first=core.selected('2026-11-22',selection,catalog,[]);
+  assert.ok(first.some(e=>e.kind==='anatomy')&&first.some(e=>e.kind==='physiology'));
+  assert.equal(first.filter(e=>e.kind==='lab').length,1);
+  assert.equal(first.find(e=>e.kind==='lab').studentSection,section);
+  const second=core.selected('2026-11-29',selection,catalog,[],true);
+  assert.ok(second.some(e=>e.shared&&e.start===1020&&e.end===1200));
+  assert.ok(!core.selected('2026-11-29',selection,catalog,[]).some(e=>e.shared));
+ }
+ const renalP2=events.find(e=>e.title==='P2');
+ assert.equal(renalP2.doctor,'Dr. Anzhelika');
+});

@@ -1,11 +1,14 @@
+import {anatomyChecks} from './renal-anatomy-checks.mjs';
+import {renalPhysiology} from './renal-physiology.mjs';
+
 // Authored study aids. Page and slide numbers refer to the private REN 123 source decks.
-export const renalLessons = [
+const renalAnatomy = [
  {code:'A1',title:'Posterior abdominal wall I',source:'posterior-wall-1',file:'posterior-wall-1.pdf',unit:'page',group:'Anatomy',
   overview:'Build a map of the posterior wall from the muscles to the aorta and IVC. Use that map to work out what a lesion can compress and where blood returns.',
   objectives:['Describe the muscles and fasciae of the posterior abdominal wall.','Trace the abdominal aorta and distinguish its branch groups.','Localize a typical abdominal aortic aneurysm.','Trace the inferior vena cava and its asymmetric tributaries.'],
   topics:[
    {key:'muscles',title:'Posterior wall muscles and fascia',pages:[4,5,6,7],
-    body:['The quadratus lumborum spans the iliac crest and the 12th rib. It laterally flexes the trunk and stabilizes the 12th rib. Psoas major lies more medially, alongside the lumbar vertebrae. Iliacus fills the iliac fossa.','Psoas major and iliacus join distally at the lesser trochanter, where they act together to flex the hip. Trace the muscles back to their separate nerve supply: anterior rami to psoas major and the femoral nerve to iliacus. The diaphragm forms the superior partition.'],
+    body:['The quadratus lumborum spans the iliac crest and the 12th rib. It laterally flexes the trunk and stabilizes the 12th rib. Psoas major lies more medially, alongside the lumbar vertebrae. Iliacus fills the iliac fossa.','Psoas major and iliacus join distally at the lesser trochanter, where they act together to flex the hip. Trace the muscles back to their separate nerve supply: anterior rami to psoas major and the femoral nerve to iliacus. The diaphragm forms the superior partition and receives phrenic motor supply from C3–C5.'],
     remember:['Quadratus lumborum connects iliac crest to 12th rib.','Iliacus and psoas major share an insertion and action. Their nerve supplies differ.'],
     trap:'A shared tendon does not imply a shared nerve supply.',
     checks:[['Which component of iliopsoas receives the femoral nerve?',['Iliacus','Psoas major','Quadratus lumborum','Diaphragm'],['Iliacus receives the femoral nerve and joins psoas at the lesser trochanter.','Psoas major receives direct branches from lumbar anterior rami.','Quadratus lumborum is a posterior wall muscle outside iliopsoas.','The diaphragm is a respiratory muscle and is not part of iliopsoas.']],
@@ -41,7 +44,7 @@ export const renalLessons = [
     checks:[['Which nerve is most directly implicated by weak thigh adduction after injury near the obturator canal?',['Obturator','Femoral','Lateral femoral cutaneous','Genitofemoral'],['The obturator nerve passes through this canal and supplies most thigh adductors.','The femoral nerve passes beneath the inguinal ligament.','The lateral femoral cutaneous nerve is sensory.','The genitofemoral nerve crosses psoas anteriorly and does not innervate thigh adductors.']],
      ['What best distinguishes the femoral nerve from the obturator nerve?',['The femoral nerve continues under the inguinal ligament','Only the femoral nerve has L2 fibers','The femoral nerve enters the obturator canal','The femoral nerve supplies only lateral thigh skin'],['Their paths separate at the pelvic brim. The femoral nerve then passes under the inguinal ligament.','Both nerves can carry L2 fibers.','The obturator nerve enters that canal.','The femoral nerve has substantial motor supply to the anterior thigh.']]]},
    {key:'lymph',title:'Lumbar nodes and renal lymph drainage',pages:[12,13,14,15,16],
-    body:['Organize posterior abdominal lymph nodes by drainage territory. Lumbar nodes alongside the great vessels receive lymph from posterior wall structures and paired retroperitoneal organs. Pre-aortic groups associated with gut arteries drain parts of the gastrointestinal tract.','The kidney, suprarenal gland and abdominal ureter drain toward lumbar nodes. Follow the lymphatic route independently of the corresponding renal vein and its tributaries.'],
+    body:['Organize posterior abdominal lymph nodes by drainage territory. Lumbar nodes alongside the great vessels receive lymph from posterior wall structures and paired retroperitoneal organs. Pre-aortic groups associated with gut arteries drain parts of the gastrointestinal tract.','The kidney, suprarenal gland and abdominal ureter drain toward lumbar nodes. Follow this route independently of renal venous drainage. The lumbar trunks converge near the cisterna chyli at L1–L2, where the thoracic duct begins.'],
     remember:['Renal lymph goes to lumbar nodes. Gut drainage follows celiac and mesenteric territories.'],
     checks:[['Which nodes are the initial regional group for renal lymph?',['Lumbar nodes','Superficial inguinal nodes','Inferior mesenteric nodes','Axillary nodes'],['The lumbar nodes along the great vessels receive renal lymph.','Superficial inguinal nodes receive superficial drainage from other territories.','The inferior mesenteric group drains hindgut territory.','Axillary nodes are unrelated to renal lymph drainage.']]]},
   ]},
@@ -55,7 +58,7 @@ export const renalLessons = [
     checks:[['Which structure occupies the most posterior position at the typical renal hilum?',['Renal pelvis','Renal artery','Renal vein','Second part of the duodenum'],['The renal pelvis lies posterior to the artery.','The artery normally lies between vein and pelvis.','The renal vein is the anterior hilar structure.','The duodenum can be an anterior relation of the right kidney but is not a hilar content.']],
      ['Which organ is a typical anterior relation of the left kidney?',['Spleen','Liver','Second part of the duodenum','Right colic flexure'],['The spleen relates to the anterior surface on the left.','The right lobe of the liver relates to the right kidney.','The descending duodenum relates to the right kidney.','The right colic flexure relates to the right kidney.']]]},
    {key:'coverings',title:'How the renal coverings define the perinephric space',pages:[14,15,16,17,18],
-    body:['The fibrous capsule is directly on the kidney. Perirenal fat surrounds the capsule, and renal fascia encloses the perirenal compartment. Keep perirenal fat distinct from fat outside that fascia.','An ascending infection can reach the kidney and extend into the surrounding perirenal compartment, producing a perinephric abscess. On a cross-section, identify the fascia first and use it to decide whether the collection lies inside or outside that compartment.'],
+    body:['The fibrous capsule is directly on the kidney. Perirenal fat surrounds the capsule, and renal fascia encloses the perirenal compartment. Keep perirenal fat distinct from fat outside that fascia.','An ascending infection can reach the kidney and extend into the surrounding perirenal compartment, producing a perinephric abscess. On a cross-section, identify the fascia first. An abscess can track along psoas. Superior spread can irritate the diaphragm and refer pain to the shoulder through the phrenic nerve.'],
     remember:['From inside outward: capsule, perirenal fat, renal fascia.','Perinephric means around the kidney in its surrounding compartment.'],
     checks:[['Which layer directly contacts the renal parenchyma?',['Fibrous capsule','Renal fascia','Perirenal fat','Pararenal fat'],['The capsule closely invests the kidney surface.','The fascia is external to the perirenal fat.','Perirenal fat lies outside the capsule.','Pararenal fat lies outside the renal fascia.']],
      ['A collection surrounds the kidney within the renal fascia. Which space is involved?',['Perinephric space','Renal pelvis','Bowman space','Pararenal space outside the fascia'],['The renal fascia encloses the perinephric compartment.','The pelvis is the collecting funnel inside the sinus.','Bowman space receives filtrate in a renal corpuscle.','Pararenal tissue lies outside the fascia.']]]},
@@ -97,18 +100,32 @@ export const renalLessons = [
   ]},
 ];
 
+export const renalLessons=[...renalAnatomy,...renalPhysiology];
+const lessonChecks=(entry,topic)=>[...topic.checks,...(anatomyChecks[entry.code+'-'+topic.key]||[])];
+const bookletSource={
+ id:'ren123-booklet-source',name:'REN 123 Past Paper Booklet.pdf',kind:'Past questions',
+ unit:'page',url:'/api/site-assets/materials/ren123/past-paper-booklet.pdf',pages:[],
+};
 export function renalTeachingPack() {
- const items=[], sources=[], lessons=[], guides={}, questions=[];
+ const items=[], sources=[bookletSource], lessons=[], guides={}, questions=[];
  for(const entry of renalLessons){
-  const id='REN-'+entry.code,source='ren123-'+entry.source;
+  if(!entry.objectives.length||!entry.topics.length||entry.topics.some(section=>!section.body.length||!section.pages.length||lessonChecks(entry,section).length<5))continue;
+  const id='REN-'+entry.code,source='ren123-'+(entry.code==='P4'?'p4-':'')+entry.source;
   const cite=page=>({source,page});
   items.push({id,code:entry.code,course:'REN',title:entry.title,group:entry.group,dates:[]});
   sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],pages:[]});
   const sections=entry.topics.map(topic=>{
    const concept=id+'-'+topic.key, references=topic.pages.map(cite);
-   topic.checks.forEach(([question,options,reasons],i)=>{
-    const order=options.map((_,n)=>(n+i+topic.key.length)%options.length), answer=order.indexOf(0);
-    questions.push({id:concept+'-check-'+(i+1),lectureIds:[id],kind:'Application check · authored from slides',difficulty:'medium',concept,question,options:order.map(n=>options[n]),answer,explanation:reasons[0],reasons:order.map(n=>reasons[n]),references});
+   lessonChecks(entry,topic).forEach(([question,...choices],i)=>{
+    const original=Array.isArray(choices[0]);
+    const pairs=original?choices[0].map((choice,n)=>[choice,choices[1][n]]):choices.slice(0,4).map(choice=>choice.split('|'));
+    const fromBooklet=original?null:choices[4], sourcePage=fromBooklet?.match(/-p(\d+)-/)?.[1];
+    const order=pairs.map((_,n)=>(n+i+topic.key.length)%pairs.length), answer=order.indexOf(0);
+    const citations=sourcePage?[{source:bookletSource.id,page:Number(sourcePage)},...references]:references;
+    questions.push({id:concept+'-check-'+(i+1),lectureIds:[id],
+     kind:sourcePage?'Past paper · adapted from Renal Booklet':'Application check · authored from slides',
+     ...(sourcePage?{adaptedFromBookletId:fromBooklet,adaptationNote:'Adapted for guided practice from the Renal booklet, page '+sourcePage+'. The booklet retains the original item.'}:{}),
+     difficulty:'medium',concept,question,options:order.map(n=>pairs[n][0]),answer,explanation:pairs[0][1],reasons:order.map(n=>pairs[n][1]),references:citations});
    });
    return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references};
   });

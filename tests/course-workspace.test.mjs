@@ -36,25 +36,27 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
  const {bookletSections}=await import('../public/renal-study.mjs');
  const {renalLessons,renalTeachingPack}=await import('../public/renal-lessons.mjs');
  const resources=JSON.parse(read('public/renal-materials.json'));
- assert.equal(resources.length,10);
- assert.equal(new Set(resources.map(resource=>resource.sha)).size,10);
+ assert.equal(resources.length,15);
+ assert.equal(new Set(resources.map(resource=>resource.sha)).size,15);
  for(const source of resources){
-  assert.match(source.path,/^materials\/ren123\/[a-z0-9-]+\.(pdf|pptx)$/);
+  assert.match(source.path,/^materials\/ren123\/[a-z0-9-]+\.(pdf|pptx|docx)$/);
   assert.match(source.sha,/^[0-9a-f]{64}$/);
   assert.ok(source.size>0&&source.units>0);
  }
  const pack=renalTeachingPack();
- assert.deepEqual(pack.items.map(x=>x.id),['REN-A1','REN-A2','REN-A3','REN-A5']);
+ assert.deepEqual(pack.items.map(x=>x.id),['REN-A1','REN-A2','REN-A3','REN-A5','REN-P1','REN-P2','REN-P3','REN-P4']);
  assert.equal(new Set(pack.questions.map(q=>q.id)).size,pack.questions.length);
  for(const lesson of renalLessons){
   const asset=resources.find(item=>item.id===lesson.source),id='REN-'+lesson.code;
   assert.ok(asset.sessions.includes(lesson.code));
-  assert.equal(pack.sources.find(source=>source.lectureIds.includes(id)).url,'/api/site-assets/'+asset.path);
+  assert.equal(pack.sources.find(source=>source.lectureIds?.includes(id)).url,'/api/site-assets/'+asset.path);
   assert.ok(pack.guides[id].objectives.length&&pack.guides[id].summary.length);
   for(const topic of pack.guides[id].sections){
    assert.ok(topic.body.length>1&&topic.keyPoints.length);
    assert.ok(topic.references.every(ref=>ref.page>=1&&ref.page<=asset.units));
-   assert.ok(pack.questions.some(q=>q.concept===topic.id&&q.lectureIds.includes(id)));
+   const checks=pack.questions.filter(q=>q.concept===topic.id&&q.lectureIds.includes(id));
+   assert.ok(checks.length>=5);
+   assert.equal(new Set(checks.map(q=>q.question)).size,checks.length);
   }
  }
  for(const q of pack.questions){
@@ -62,6 +64,11 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.equal(new Set(q.options).size,4);
   assert.equal(q.options.length,q.reasons.length);
   assert.equal(q.explanation,q.reasons[q.answer]);
+ }
+ assert.ok(pack.questions.filter(q=>q.adaptedFromBookletId).length>=8);
+ for(const q of pack.questions.filter(q=>q.adaptedFromBookletId)){
+  assert.equal(q.references[0].source,'ren123-booklet-source');
+  assert.equal(q.references[0].page,Number(q.adaptedFromBookletId.match(/-p(\d+)-/)[1]));
  }
  const booklet=resources.find(source=>source.kind==='booklet');
  assert.equal(booklet.units,294);

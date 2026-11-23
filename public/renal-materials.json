@@ -106,5 +106,62 @@
     "path": "materials/ren123/past-paper-booklet.pdf",
     "size": 3095582,
     "sha": "df0a674c71a173b3299497f4de3fa916e15f522207c421ac0af5c5582bc6da41"
+  },
+  {
+    "id": "kidney-functions",
+    "title": "Kidney structure and functions · Dr. Anzhelika",
+    "kind": "lecture",
+    "sessions": [
+      "P1"
+    ],
+    "units": 21,
+    "path": "materials/ren123/kidney-functions.pdf",
+    "size": 2985069,
+    "sha": "c80b59105b9e84c8643ccc57a2659653db9fd5ccff625c8038b4f0c96876ddf6"
+  },
+  {
+    "id": "renal-clearance",
+    "title": "Mass balances and renal clearance · Dr. Anzhelika",
+    "kind": "lecture",
+    "sessions": [
+      "P2"
+    ],
+    "units": 18,
+    "path": "materials/ren123/renal-clearance.pdf",
+    "size": 1917844,
+    "sha": "3aca6f674901db3d1d897e85d9bd7f4c4e3b9f5aef21776ecb8ce5d270bad700"
+  },
+  {
+    "id": "gfr-renal-blood-flow",
+    "title": "Glomerular filtration and renal blood flow · Dr. Anzhelika",
+    "kind": "lecture",
+    "sessions": [
+      "P3",
+      "P4"
+    ],
+    "units": 29,
+    "path": "materials/ren123/gfr-renal-blood-flow.pdf",
+    "size": 3160677,
+    "sha": "222c5deebaeb7b4a7f2c36981c1d97753279fd5854f44d8feb888962c8d9401c"
+  },
+  {
+    "id": "olyvia-slides",
+    "title": "OlyVIA Renal slide links",
+    "kind": "lab",
+    "sessions": [],
+    "units": 1,
+    "path": "materials/ren123/olyvia-slides.docx",
+    "size": 13384,
+    "sha": "14d18b647e6fc9bba5f24c6d7458d6fec1a54b7a9ba71f2b5b95c41c3a29529e"
+  },
+  {
+    "id": "renal-schedule",
+    "title": "Official Renal Schedule · five weeks",
+    "kind": "overview",
+    "sessions": [],
+    "units": 5,
+    "path": "materials/ren123/schedule.pdf",
+    "size": 401183,
+    "sha": "b5aa18ed04ea058baf6549e3c542a6f15803486247572d57f16176ccce90c9e2"
   }
 ]
