@@ -116,21 +116,60 @@ html:root body:not(.xp-exam-active){
 
   /* ---------- Home ---------- */
   & .home-top h1::after{color:var(--rs-eosin)}
+  /* Eight histology stains. Each upcoming assessment (home) and countdown card (by position)
+     gets its own: a = deep base, b = mid tone, c = highlight. */
+  & :is(.assessment-theme-0,.stain-0){--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f} /* H&E */
+  & :is(.assessment-theme-1,.stain-1){--st-a:#0f2547;--st-b:#245796;--st-c:#c2414f} /* Masson trichrome */
+  & :is(.assessment-theme-2,.stain-2){--st-a:#3d0f33;--st-b:#8e2a6c;--st-c:#e07bb8} /* PAS */
+  & :is(.assessment-theme-3,.stain-3){--st-a:#0d2a44;--st-b:#226a8f;--st-c:#9a6ad6} /* Toluidine blue */
+  & :is(.assessment-theme-4,.stain-4){--st-a:#241a10;--st-b:#5c4428;--st-c:#d6a74f} /* Silver / reticulin */
+  & :is(.assessment-theme-5,.stain-5){--st-a:#0d2e25;--st-b:#246b52;--st-c:#8fd3a9} /* Light green SF */
+  & :is(.assessment-theme-6,.stain-6){--st-a:#1d1a52;--st-b:#4d3a99;--st-c:#e58fc0} /* Giemsa */
+  & :is(.assessment-theme-7,.stain-7){--st-a:#3b0f18;--st-b:#93302d;--st-c:#f08a4b} /* Oil red O */
+
   & .home-spotlight{
+    --st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f;
     position:relative;isolation:isolate;overflow:hidden;color:#fff;border:0;border-radius:var(--rs-r-lg);
     background:
-      radial-gradient(120% 90% at 92% 8%,rgb(217 84 127 / .55),transparent 58%),
-      linear-gradient(140deg,var(--rs-hema-deep) 0%,#3a2f86 52%,#5b3b98 100%);
+      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
+      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%);
     box-shadow:var(--rs-shadow-pop)
   }
-  & .home-spotlight::before{
+  & .home-spotlight[class*=assessment-theme]{
+    background:
+      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
+      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%)
+  }
+  & :is(.home-spotlight,.countdown-card)::before{
     /* Stained-slide texture: scattered nuclei, fading toward the text side. */
     content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='180' viewBox='0 0 220 180'%3E%3Cg fill='%23c9c2ff' fill-opacity='.38'%3E%3Cellipse cx='22' cy='30' rx='7' ry='5' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5' ry='4'/%3E%3Cellipse cx='150' cy='44' rx='8' ry='5.5' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='200' cy='20' rx='4.5' ry='3.5'/%3E%3Cellipse cx='54' cy='92' rx='6' ry='4.5' transform='rotate(40 54 92)'/%3E%3Cellipse cx='120' cy='104' rx='4' ry='3'/%3E%3Cellipse cx='182' cy='118' rx='7' ry='5' transform='rotate(10 182 118)'/%3E%3Cellipse cx='30' cy='156' rx='5' ry='3.6'/%3E%3Cellipse cx='96' cy='160' rx='7.5' ry='5' transform='rotate(-30 96 160)'/%3E%3Cellipse cx='160' cy='170' rx='4' ry='3'/%3E%3C/g%3E%3Cg fill='none' stroke='%23f3b6cb' stroke-opacity='.22'%3E%3Cpath d='M0 64c40-14 70 10 110-2s66-30 110-12'/%3E%3Cpath d='M0 132c36-10 72 12 112 0s70-24 108-6'/%3E%3C/g%3E%3C/svg%3E");
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='180' viewBox='0 0 220 180'%3E%3Cg fill='%23ffffff' fill-opacity='.28'%3E%3Cellipse cx='22' cy='30' rx='7' ry='5' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5' ry='4'/%3E%3Cellipse cx='150' cy='44' rx='8' ry='5.5' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='200' cy='20' rx='4.5' ry='3.5'/%3E%3Cellipse cx='54' cy='92' rx='6' ry='4.5' transform='rotate(40 54 92)'/%3E%3Cellipse cx='120' cy='104' rx='4' ry='3'/%3E%3Cellipse cx='182' cy='118' rx='7' ry='5' transform='rotate(10 182 118)'/%3E%3Cellipse cx='30' cy='156' rx='5' ry='3.6'/%3E%3Cellipse cx='96' cy='160' rx='7.5' ry='5' transform='rotate(-30 96 160)'/%3E%3Cellipse cx='160' cy='170' rx='4' ry='3'/%3E%3C/g%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.16'%3E%3Cpath d='M0 64c40-14 70 10 110-2s66-30 110-12'/%3E%3Cpath d='M0 132c36-10 72 12 112 0s70-24 108-6'/%3E%3C/g%3E%3C/svg%3E");
     background-size:220px 180px;
     -webkit-mask-image:linear-gradient(100deg,transparent 18%,#000 70%);mask-image:linear-gradient(100deg,transparent 18%,#000 70%)
   }
-  & .home-spotlight[class*=assessment-theme]{background:radial-gradient(120% 90% at 92% 8%,rgb(217 84 127 / .55),transparent 58%),linear-gradient(140deg,var(--rs-hema-deep) 0%,#3a2f86 52%,#5b3b98 100%)}
+
+  /* Countdown cards: same stain set, as a light wash so the digits stay readable. */
+  & .countdown-card[class*=stain-]{
+    position:relative;isolation:isolate;overflow:hidden;border-radius:var(--rs-r-lg);
+    border-color:color-mix(in srgb,var(--st-b) 28%,var(--rs-line));
+    background:
+      radial-gradient(85% 75% at 100% 0,color-mix(in srgb,var(--st-c) 34%,transparent),transparent 62%),
+      linear-gradient(165deg,color-mix(in srgb,var(--st-b) 30%,var(--rs-surface)) 0%,color-mix(in srgb,var(--st-b) 10%,var(--rs-surface)) 58%,var(--rs-surface) 100%)
+  }
+  & .countdown-card[class*=stain-]::before{filter:invert(1);opacity:.07;width:auto;inset:0;-webkit-mask-image:linear-gradient(100deg,transparent 35%,#000 85%);mask-image:linear-gradient(100deg,transparent 35%,#000 85%)}
+  & .countdown-card[class*=stain-] .course-token{background:color-mix(in srgb,var(--st-b) 16%,var(--rs-surface));color:color-mix(in srgb,var(--st-b) 80%,var(--rs-ink));border:0}
+  & .countdown-card[class*=stain-] .countdown-unit{background:color-mix(in srgb,var(--rs-surface) 82%,transparent);border-color:color-mix(in srgb,var(--st-b) 18%,var(--rs-line))}
+  & .countdown-card.countdown-featured[class*=stain-]{
+    color:#fff;border:0;
+    background:
+      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
+      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%)
+  }
+  & .countdown-card.countdown-featured[class*=stain-]::before{filter:none;opacity:.55}
+  & .countdown-card.countdown-featured[class*=stain-] :is(h2,p,span,strong,small,.countdown-date,.countdown-card-top,.countdown-card-bottom,.countdown-unit,.countdown-unit *){color:#fff}
+  & .countdown-card.countdown-featured[class*=stain-] .countdown-unit{background:rgb(255 255 255 / .1);border-color:rgb(255 255 255 / .18);backdrop-filter:blur(4px)}
+  & .countdown-card.countdown-featured[class*=stain-] .countdown-card-bottom{border-color:rgb(255 255 255 / .2)}
+  & .countdown-card.countdown-featured[class*=stain-] .course-token{background:rgb(255 255 255 / .16);color:#fff}
   & .home-spotlight :is(h1,h2,h3,p,strong,span,.home-countdown){color:#fff}
   & .home-spotlight :is(.home-overline,small,p){color:rgb(255 255 255 / .78)}
   & .home-spotlight .home-countdown{font-family:var(--rs-display);font-weight:800;letter-spacing:-.035em}
@@ -184,6 +223,9 @@ html:root body:not(.xp-exam-active){
   }
   & .mobile-dock-shell :is(button,a){color:var(--rs-muted);border-radius:var(--rs-r-md);font-weight:650}
   & .mobile-dock-shell :is(button,a).active{background:var(--rs-accent-tint);color:var(--accent-text,var(--accent))}
+  /* Fit exactly three tabs so the third label ("Practice") is never clipped by the scroller edge. */
+  & .mobile-dock-shell .ui-mobile-nav button:not([data-mobile-extra]){flex:0 0 calc((100% - 8px) / 3)!important;min-width:0!important}
+  & [data-profile-group][hidden]{display:none!important}
 
   /* ---------- Dialogs ---------- */
   & dialog:not([id^=xp]){background:var(--rs-surface);color:var(--rs-ink);border:1px solid var(--rs-line);border-radius:var(--rs-r-lg);box-shadow:var(--rs-shadow-pop)}
@@ -193,6 +235,14 @@ html:root body:not(.xp-exam-active){
 html:root[data-theme=amoled] body:not(.xp-exam-active) :is(.learning-tabs,.et-practice-tabs,.phase3-tabs,.learning-kind-switch) :is(button,a):is(.selected,.active,[aria-selected=true],[aria-pressed=true]){
   background:var(--rs-raised);box-shadow:0 0 0 1px var(--rs-line-strong)
 }
+
+html:root[data-theme=amoled] body:not(.xp-exam-active) .countdown-card[class*=stain-]:not(.countdown-featured){
+  background:
+    radial-gradient(85% 75% at 100% 0,color-mix(in srgb,var(--st-c) 30%,transparent),transparent 62%),
+    linear-gradient(165deg,color-mix(in srgb,var(--st-b) 62%,#000) 0%,color-mix(in srgb,var(--st-a) 55%,#000) 55%,#050507 100%);
+  border-color:color-mix(in srgb,var(--st-b) 45%,#000)
+}
+html:root[data-theme=amoled] body:not(.xp-exam-active) .countdown-card[class*=stain-] .course-token{color:color-mix(in srgb,var(--st-c) 75%,#fff)}
 
 @media (prefers-reduced-motion:reduce){
   html:root body:not(.xp-exam-active) *{transition:none!important}
