@@ -20,7 +20,7 @@
   };
  }
  window.addEventListener('review-profile-changed',syncProfile);window.addEventListener('studio-ready',syncProfile);
- async function syncProfile(){if(profileSaving||typeof settings==='undefined'||!settings.profileCreatedAt||!settings.profileName)return;profileSaving=true;try{const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency};const fingerprint=JSON.stringify(profile);if(fingerprint===profileFingerprint)return;const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});if(r.ok)profileFingerprint=fingerprint;}catch{}finally{profileSaving=false}}
+ async function syncProfile(){if(profileSaving||typeof settings==='undefined'||!settings.profileCreatedAt||!settings.profileName)return;profileSaving=true;try{const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime};const fingerprint=JSON.stringify(profile);if(fingerprint===profileFingerprint)return;const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});if(r.ok)profileFingerprint=fingerprint;}catch{}finally{profileSaving=false}}
  async function getAccount(){const r=await fetch('/auth/account',{cache:'no-store'});if(!r.ok)throw Error('Account preferences unavailable.');return await r.json()}
  function installManagedApp(){
   let currentStatus, appliedStatus, lastFetch=0, pending, lastError=0;
@@ -45,7 +45,17 @@
     if(result.ok)lastTotals=body;
    }catch{}
   }
+  document.addEventListener('review-analytics-changed',()=>status(true));
   setInterval(()=>{if(document.visibilityState==='visible')status();},300000);
+  let lastInteraction=-Infinity;
+  for(const event of ['pointerdown','keydown','scroll']){
+   window.addEventListener(event,()=>{lastInteraction=performance.now()},{passive:true});
+  }
+  setInterval(()=>{
+   if(!currentStatus?.analyticsOptIn||document.visibilityState!=='visible'||!document.hasFocus()||
+    !navigator.onLine||performance.now()-lastInteraction>60000)return;
+   fetch(api+'active-minute',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
+  },60000);
   function label(text){const el=document.createElement('p');el.textContent=text;return el;}
   async function resetProfile(btn){
    if(refreshProfile||typeof settings==='undefined'||!currentStatus?.resetId)return;
@@ -142,7 +152,7 @@
   const frame=document.querySelector('#siteAdmin .admin-frame');if(!frame)return;
   window.ReviewStudioReportTools?.mountSettings(frame);
   if(!document.getElementById('managedAccountPrivacy')){
-   const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share aggregate study activity with the site administrator'));const link=document.createElement('a');link.href='/auth/privacy';link.textContent='Privacy details';link.target='_blank';link.rel='noopener';const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,link,document.createTextNode(' · '),signout,status);frame.append(panel);
+   const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share study totals and estimated active time with the site owner'));const link=document.createElement('a');link.href='/auth/privacy';link.textContent='Privacy details';link.target='_blank';link.rel='noopener';const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,link,document.createTextNode(' · '),signout,status);frame.append(panel);
    if(window.Clerk.user&&typeof window.Clerk.openUserProfile==='function'){
     const methods=document.createElement('button');
     methods.type='button';
@@ -159,7 +169,7 @@
     };
     panel.insertBefore(methods,status);
    }
-   checkbox.onchange=async()=>{checkbox.disabled=true;try{const profile=typeof settings==='undefined'?{}:{name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency};const analytics=studyCounts();const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({analyticsOptIn:checkbox.checked,profile,analytics})});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
+   checkbox.onchange=async()=>{checkbox.disabled=true;try{const profile=typeof settings==='undefined'?{}:{name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime};const analytics=studyCounts();const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({analyticsOptIn:checkbox.checked,profile,analytics})});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';document.dispatchEvent(new Event('review-analytics-changed'));}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
   }
   }catch{console.error('Account controls unavailable.')}finally{installing=false}
  }

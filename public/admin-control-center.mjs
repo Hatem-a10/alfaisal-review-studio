@@ -5,8 +5,9 @@ const tabs = {
  analytics:'Analytics', storage:'Storage & Backups', audit:'Security & Audit Logs', site:'Site Controls',
 };
 const classes = ['M1','M2','F1','F2'];
+const sectionIcons={overview:'◈',students:'◎',roles:'◇',academics:'▤',resources:'▣',reports:'⊙',announcements:'◁',analytics:'▥',storage:'▱',audit:'◉',site:'⚙'};
 const css = '/admin-control-center.css';
-const formatDate = value => value && Number.isFinite(Date.parse(value)) ? new Date(value).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : '—';
+const formatDate = value => value && Number.isFinite(new Date(value).getTime()) ? new Date(value).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : '—';
 const bytes = value => value==null?'Unavailable':new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(value/1048576)+' MiB';
 
 function node(tag,text,attributes={}) {
@@ -74,6 +75,23 @@ function table(columns, rows, empty='Nothing to show yet.') {
  return container;
 }
 function actions(...items){const row=node('div',null,{class:'acc-actions'});row.append(...items.filter(Boolean));return row;}
+function initials(name){return (name||'Student').split(/\s+/).filter(Boolean).slice(0,2).map(word=>Array.from(word)[0]).join('').toUpperCase();}
+function studentIdentity(person,photo){
+ const root=node('div',null,{class:'acc-identity'});
+ const avatar=node('span',initials(person.name),{class:'acc-avatar','aria-hidden':'true'});
+ if(photo){
+  const image=node('img',null,{src:photo,alt:'',referrerpolicy:'no-referrer'});
+  image.addEventListener('error',()=>image.remove(),{once:true});
+  avatar.append(image);
+ }
+ const name=node('div');name.append(node('strong',person.name||'New student'),node('small',person.email));
+ root.append(avatar,name);
+ return root;
+}
+function minutes(value){
+ if(value==null)return 'No time recorded';
+ return value<60?value+' min':Math.floor(value/60)+' h '+value%60+' min';
+}
 function cards(entries) {
  const row=node('div',null,{class:'acc-metrics'});
  for(const [label,value] of entries){
@@ -125,7 +143,7 @@ export async function openAdminCenter(){
  active=dialog;
  const header=node('header',null,{class:'acc-head'});
  const title=node('div');
- title.append(node('h2','Admin Control Center',{id:'acc-title'}),node('p',({owner:'Owner',editor:'Content editor',moderator:'Moderator'})[access.role]));
+ title.append(node('h2','Admin Control Center',{id:'acc-title'}),node('p',({owner:'Owner',editor:'Content editor',moderator:'Moderator'})[access.role],{class:'acc-role'}));
  const close=button('Close',()=>dialog.close());close.autofocus=true;
  header.append(title,close);
  const layout=node('div',null,{class:'acc-layout'});
@@ -189,12 +207,59 @@ export async function openAdminCenter(){
   if(title&&!await confirm(title,message))return null;
   return mutation(section+'/'+action,data);
  }
- function editAssignment(student){
-  return openForm('Correct academic assignment',[
-   field('studentGroup','Class',{choices:classes,value:student.studentGroup||'M1'}),
-   field('studentSection','Section',{choices:['A','B'],value:student.studentSection||'A'}),
-   field('labGroup','Verified lab group',{value:student.labGroup,maxLength:30}),
-  ],'Apply correction',values=>mutation('students/assignment',{id:student.id,...values}));
+ async function editProfile(student,profile){
+  const config=await fetch('/api/academic-config',{cache:'no-store'}).then(response=>response.ok?response.json():null).catch(()=>null);
+  const classField=field('studentGroup','Class',{choices:[['','Not selected'],...classes],value:profile.studentGroup});
+  const sectionField=field('studentSection','Section',{choices:[['','Not selected'],'A','B'],value:profile.studentSection});
+  const labField=config?.groups?field('labGroup','Lab group',{choices:[]}):field('labGroup','Verified lab group',{value:profile.labGroup,maxLength:30});
+  if(config?.groups){
+   const group=classField.querySelector('select'),section=sectionField.querySelector('select'),lab=labField.querySelector('select');
+   const update=value=>{
+    const labs=config.groups.find(entry=>entry.studentGroup===group.value&&entry.studentSection===section.value)?.labGroups||[];
+    lab.replaceChildren(new Option('Not selected',''),...labs.map(code=>new Option(code,code)));
+    lab.value=labs.includes(value)?value:'';
+   };
+   for(const input of [group,section])input.addEventListener('change',()=>update(lab.value));
+   update(profile.labGroup);
+  }
+  return openForm('Edit student information',[
+   field('name','Display name',{value:profile.name||student.name,maxLength:100,required:true}),
+   field('studentNumber','Student number override',{value:profile.studentNumberOverride,maxLength:30}),
+   classField,sectionField,labField,
+   field('englishFrequency','English days',{choices:[['2','Monday and Wednesday'],['3','Sunday, Tuesday and Thursday']],value:String(profile.englishFrequency)}),
+   field('englishStartTime','English start',{choices:[['17:00','5:00 PM'],['17:30','5:30 PM']],value:profile.englishStartTime}),
+  ],'Save profile',values=>mutation('students/profile',{id:student.id,...values,englishFrequency:Number(values.englishFrequency)}));
+ }
+ async function studentDetails(person){
+  const result=await request('students/details'+query({id:person.id}));
+  const detail=node('dialog',null,{class:'acc-dialog acc-student-detail','aria-label':'Student details'});
+  const header=node('div',null,{class:'acc-detail-header'});
+  header.append(studentIdentity(person,result.photo),button('Close',()=>detail.close()));
+  const sessionRows=result.sessions?.map(session=>[
+   formatDate(session.createdAt),session.device||'Unavailable',session.browser||'Unavailable',formatDate(session.lastActiveAt),
+  ])||[];
+  const details=node('section',null,{class:'acc-detail-body'});
+  const {studentGroup,studentSection,labGroup,studentNumberOverride}=result.profile;
+  const group=[studentGroup,studentSection].filter(Boolean).join('-')+(labGroup?' · '+labGroup:'');
+  details.append(cards([['Account',person.suspended?'Suspended':'Active'],['Academic group',group||'Unset'],['Estimated active time',result.sharing?minutes(result.activeMinutes):'Sharing off'],
+   ...(studentNumberOverride?[['Student number override',studentNumberOverride]]:[])]),
+   node('h3','Recent sign-ins'),
+   table(['Signed in','Device','Browser','Last active'],sessionRows,result.sessions?'No recent sessions.':'Clerk session history is unavailable.'));
+  const note=node('p',null,{role:'status',class:'acc-status'});
+  if(person.role!=='owner'){
+   const edit=button('Edit information',async()=>{
+    edit.disabled=true;note.textContent='';
+    try{
+     if(await editProfile(person,result.profile)){detail.close();await load('students');status.textContent='Profile saved.';}
+    }catch(error){note.textContent=error.message;}
+    finally{edit.disabled=false;}
+   },'primary');
+   details.append(actions(edit));
+  }
+  detail.append(header,details,note);
+  detail.addEventListener('close',()=>detail.remove(),{once:true});
+  document.body.append(detail);
+  detail.showModal();
  }
  async function showStudentStorage(student){
   const record=await request('students/storage'+query({id:student.id}));
@@ -214,7 +279,7 @@ export async function openAdminCenter(){
    field('status','Account',{choices:[['','All accounts'],['active','Active'],['suspended','Suspended']],value:values.status}),
   ],p=>within(()=>students(roleOnly,p,0,version))));
   const rows=data.students.map(person=>{
-   const name=node('div');name.append(node('strong',person.name||'New student'),node('small',person.email));
+   const name=studentIdentity(person);
    if(roleOnly){
     const controls=person.role==='owner'?node('span','Protected'):rowAction('Change role',()=>openForm('Change role',[
      field('role','Role',{choices:[['student','Student'],['editor','Content Editor'],['moderator','Moderator']],value:person.role}),
@@ -229,16 +294,29 @@ export async function openAdminCenter(){
       const result=await put('students','revoke',{id:person.id},'Revoke Clerk sessions?','The student will need to sign in again.');
       return result&&{message:result.revoked+' sessions revoked.'+(result.partial?' Some sessions may remain.':'')};
      }),
-     rowAction('Correct group',()=>editAssignment(person)),
      rowAction('Clear group correction',()=>put('students','clear-assignment',{id:person.id},'Clear group correction?','The student’s own group selection will apply.')),
+     rowAction('Clear profile corrections',()=>put('students','clear-profile',{id:person.id},'Clear profile corrections?','The student’s own profile and schedule settings will apply.')),
      rowAction('Reset onboarding',()=>put('students','reset',{id:person.id,confirm:'RESET ONBOARDING'},'Request onboarding again?','The student will be asked to complete profile setup. Existing study progress is preserved.')),
     );
    }
-   const menu=node('details');menu.append(node('summary','Actions'),actions(...options));
-   return [name,[person.studentGroup,person.studentSection,person.labGroup].filter(Boolean).join(' / '),person.suspended?'Suspended':'Active',person.onboarding,formatDate(person.createdAt),formatDate(person.lastActive),menu];
+   const menu=node('details',null,{class:'acc-student-actions'});menu.append(node('summary','Actions'),actions(...options));
+   const card=node('article',null,{class:'acc-student-card'});
+   const chips=node('div',null,{class:'acc-chips'});
+   const group=[person.studentGroup,person.studentSection].filter(Boolean).join('-')+(person.labGroup?' · '+person.labGroup:'');
+   chips.append(node('span',person.suspended?'Suspended':'Active',{'data-suspended':person.suspended}),node('span',group||'Group unset'),
+    node('span',person.onboarding==='complete'?'Onboarded':person.onboarding==='reset requested'?'Profile reset requested':'Onboarding pending'));
+   const identity=node('div');identity.append(name,chips);
+   const controls=actions(rowAction('View account',()=>studentDetails(person),{reload:false}),menu);
+   const dates=node('small','Joined '+formatDate(person.createdAt)+' · Last active '+formatDate(person.lastActive));
+   card.append(identity,controls,dates);
+   return card;
   });
-  const columns=roleOnly?['Student','Role','Action']:['Student','Group','Account','Onboarding','Registered','Last active',''];
-  panel.append(table(columns,rows,'No accounts match these filters.'));
+  if(roleOnly)panel.append(table(['Student','Role','Action'],rows,'No accounts match these filters.'));
+  else if(rows.length){
+   const list=node('div',null,{class:'acc-student-list'});
+   list.append(...rows);
+   panel.append(list);
+  }else panel.append(node('p','No accounts match these filters.',{class:'acc-empty'}));
   appendPager(page,data.more,n=>within(()=>students(roleOnly,params,n,version)));
  }
  async function academics(version){
@@ -470,6 +548,7 @@ export async function openAdminCenter(){
  }
  for(const section of access.sections){
   const element=button(tabs[section],()=>load(section));
+  element.prepend(node('span',sectionIcons[section],{class:'acc-nav-icon','aria-hidden':'true'}));
   nav.set(section,element);navigation.append(element);
  }
  await load('overview');

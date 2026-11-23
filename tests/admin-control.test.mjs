@@ -166,3 +166,63 @@ test('study totals refresh only for the authenticated account and cannot re-enab
  assert.equal(read(student.id).analytics_opt_in,0);
  assert.deepEqual(JSON.parse(read(student.id).analytics_json),{});
 });
+
+test('student details are owner-only and return a scoped avatar and minimal session history',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const clerk={
+  users:{getUser:async id=>({id,hasImage:true,imageUrl:'https://img.clerk.com/example'})},
+  sessions:{getSessionList:async ({userId,limit})=>{
+   assert.equal(userId,'user_student');
+   assert.equal(limit,10);
+   return {data:[{id:'private-session',userId,createdAt:10,lastActiveAt:20,
+    latestActivity:{deviceType:'Tablet',browserName:'Safari',ipAddress:'192.0.2.10',city:'Private city'}}]};
+  }},
+ };
+ const route='students/details?id='+encodeURIComponent(student.id);
+ assert.equal((await h.call(route,student,undefined,{clerk})).status,403);
+ assert.equal((await h.call(route,editor,undefined,{clerk})).status,403);
+ const data=await (await h.call(route,owner,undefined,{clerk})).json();
+ assert.equal(data.photo,'https://img.clerk.com/example');
+ assert.equal(data.activeMinutes,null);
+ assert.deepEqual(data.sessions,[{createdAt:10,lastActiveAt:20,browser:'Safari',device:'Tablet'}]);
+ assert.doesNotMatch(JSON.stringify(data),/private-session|192\.0\.2\.10|Private city/);
+ assert.ok(h.sqlite.prepare("SELECT id FROM control_audit WHERE action='student.details-viewed' AND target=?").get(student.id));
+ clerk.sessions.getSessionList=async()=>({data:[{userId:'user_editor'}]});
+ assert.equal((await (await h.call(route,owner,undefined,{clerk})).json()).sessions,null);
+});
+
+test('profile corrections are validated, audited and reversible without changing the source profile',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const before=h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id);
+ const profile={id:student.id,name:'Corrected Student',studentNumber:'90001',studentGroup:'M2',studentSection:'A',labGroup:'2.1',englishFrequency:3,englishStartTime:'17:00'};
+ assert.equal((await h.call('students/profile',owner,profile)).status,428);
+ await h.challenge();
+ assert.equal((await h.call('students/profile',owner,{...profile,labGroup:'99.9'})).status,400);
+ assert.equal((await h.call('students/profile',owner,{...profile,id:owner.id})).status,403);
+ assert.equal((await h.call('students/profile',owner,profile)).status,200);
+ const list=await (await h.call('students/list?q=Corrected',owner)).json();
+ assert.equal(list.students[0].name,'Corrected Student');
+ assert.equal((await (await h.call('student/status',student)).json()).assignment.studentNumber,'90001');
+ assert.equal((await h.call('students/clear-assignment',owner,{id:student.id})).status,200);
+ const status=await (await h.call('student/status',student)).json();
+ assert.equal(status.assignment.studentGroup,undefined);
+ assert.equal(status.assignment.englishStartTime,'17:00');
+ assert.equal((await h.call('students/clear-profile',owner,{id:student.id})).status,200);
+ assert.equal((await (await h.call('student/status',student)).json()).assignment,null);
+ assert.deepEqual(h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id),before);
+});
+
+test('active minutes require consent and duplicate pulses and study totals retain one counted minute',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const pulse=()=>h.call('student/active-minute',student,{});
+ assert.equal((await (await pulse()).json()).accepted,false);
+ h.sqlite.prepare('UPDATE review_accounts SET analytics_opt_in=1 WHERE id=?').run(student.id);
+ await pulse();
+ await pulse();
+ await h.call('student/study-counts',student,{completedReviews:2,answeredQuestions:5});
+ const row=h.sqlite.prepare('SELECT analytics_json FROM review_accounts WHERE id=?').get(student.id);
+ const record=JSON.parse(row.analytics_json);
+ assert.equal(record.activeMinutes,1);
+ assert.equal(record.completedReviews,2);
+ assert.equal(record.answeredQuestions,5);
+});

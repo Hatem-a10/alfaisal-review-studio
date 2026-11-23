@@ -41,3 +41,11 @@ Apply the additive scripts in order to the existing staging database after the P
 4. `staging/admin-resources.sql`
 
 Roll back code through the staging Worker deployment history. Keep additive tables and archived R2 revisions for later investigation. Production uses its own Clerk instance, D1 and private R2. Its approved owner policy requires recent first-factor verification and the separate Admin phrase. Any change to that policy requires owner approval. See the [release runbook](PRODUCTION-READINESS.md) for recovery and production verification.
+
+### Student account details
+
+The Students view shows registration, onboarding and academic group. **View account** opens the Clerk profile photo and up to ten recent sign-ins with device and browser labels when supplied by Clerk. This owner-only, audited view excludes IP addresses, location, raw identifiers for sessions, private files and study answers.
+
+**Edit information** lets the verified owner correct a Review Studio display name, student-number override, class, section, verified lab group and English schedule. Corrections are a reversible overlay. Clerk email, identity and permissions stay separate. **Clear group correction** removes only the group fields. **Clear profile corrections** returns all fields to the student's selections.
+
+Estimated active time starts when a student opts in to study activity sharing. It counts minutes with recent input in a visible, focused tab while online. Concurrent tabs count at most one minute per account per clock minute. Opting out clears the reported time. Earlier time and offline sessions are outside this estimate. Existing D1 JSON fields support this update without a schema migration.
