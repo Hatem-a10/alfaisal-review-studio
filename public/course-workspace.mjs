@@ -1,18 +1,28 @@
 /* global DATA, GroupSchedules, campusTime, campusWeekEvents, officialGroupSchedule, groupScheduleError, groupTimetableReady, settings, tasks, go, view, render, lessonId, lessonCourse:writable, learnTab:writable, etExam, originalRun, etScope:writable, etMockScope:writable, etAccurate:writable, etLecture, esc, intro, today, libraryTab:writable, applyTheme, paintProfile */
 import {archiveViews,renalViews,renalSessions,workspaceRoute} from './course-workspace-core.mjs';
-import {bookletSections,renalGuides} from './renal-study.mjs';
+import {bookletSections} from './renal-study.mjs';
+import {renalTeachingPack} from './renal-lessons.mjs';
 
 const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
 const scopedViews=new Set(['practice','library','labs','booklet','ospe']);
 const enabled=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&window.reviewManagedFlags?.archiveCvp!==false;
 const legacyGo=go,legacyRender=render;
+const renalTeaching=renalTeachingPack();
+if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
+ DATA.items.push(...renalTeaching.items);
+ LEARNING.lessons.push(...renalTeaching.lessons);
+ LEARNING.sources.push(...renalTeaching.sources);
+ LEARNING.questions.push(...renalTeaching.questions);
+ Object.assign(TEACHING.guides,renalTeaching.guides);
+}
 window.reviewCvpArchived=enabled;
 window.reviewBookletCourse=()=>context?.course==='REN'?'REN':'CVP';
 window.reviewRenalOriginalWorkspace=()=>{
  if(!materials.length&&!materialError)loadMaterials();
  return '<section class="panel"><h2>Previous exams · REN 123</h2>'+bookletList(['MCQs','SAQs','OSPE'])+'</section>';
 };
-window.reviewActiveStudyItems=()=>enabled()?DATA.items.filter(item=>item.course!=='CVP'):DATA.items;
+const hasReviewDates=item=>item.course!=='REN'||dates(item).some(Boolean);
+window.reviewActiveStudyItems=()=>DATA.items.filter(item=>hasReviewDates(item)&&(!enabled()||item.course!=='CVP'));
 let context=null,renalLessonId='REN-A1',lastMOLLesson='MOL-1',materials=[],materialsPending,materialError='';
 function loadMaterials(){
  if(materials.length||materialsPending)return;
@@ -41,31 +51,18 @@ function bookletList(types){
   '<p>Recalled papers. Original figures and printed answers appear on the source pages.</p>'+
   bookletSections.filter(([kind])=>types.includes(kind)).map(([kind,sections])=>'<details class="renal-source-index" '+(types.length===1?'open':'')+'><summary>'+kind+'</summary><ul class="course-workspace-sessions">'+sections.map(([label,page])=>'<li>'+assetLink(booklet,label+' · p. '+page,page)+'</li>').join('')+'</ul></details>').join('');
 }
-function guideTopics(guide,source){
- if(!guide)return '';
- return guide.topics.map(topic=>'<article class="panel guide-section"><h3>'+esc(topic.title)+'</h3>'+'<p>'+esc(topic.text)+'</p>'+
-  '<p><strong>'+esc(topic.question)+'</strong></p><details><summary>Check answer</summary><p>'+esc(topic.answer)+'</p></details>'+
-  '<small>'+assetLink(source,(source?.path.endsWith('.pdf')?'Source page ':'Source slide ')+topic.page,topic.page)+'</small></article>').join('');
-}
 function renalCatalog(){
- const known=new Map(renalGuides.map(guide=>[guide.code,guide]));
  const topics=new Map(renalSessions(officialGroupSchedule?.events||[],()=>true,['anatomy','physiology'])
   .filter(event=>/^[AP]\d+$/.test(event.title)).map(event=>[event.title,event.detail?.replace(/ ?\([^)]+\)$/, '')||event.title]));
- const titles={'A1':'Posterior abdominal wall I','A2':'Posterior abdominal wall II','A3':'The anatomy of the kidney I','A5':'Histological organization of the kidney'};
- for(const [code,title] of Object.entries(titles))topics.set(code,title);
- return [...topics].map(([code,title])=>({code,id:'REN-'+code,title,hasGuide:known.has(code),chosen:context?.course==='REN'&&renalLessonId==='REN-'+code}));
+ for(const item of renalTeaching.items)topics.set(item.code,item.title);
+ return [...topics].filter(([code])=>!renalTeaching.guides['REN-'+code]).map(([code,title])=>({code,id:'REN-'+code,title,chosen:context?.course==='REN'&&renalLessonId==='REN-'+code}));
 }
 if(window.REVIEW_STUDIO_FRESH_ACCOUNTS)window.reviewRenalCatalog=()=>enabled()?renalCatalog():[];
-function renalLearning(){
- if(!materials.length&&!materialError)loadMaterials();
+function renalUnreleasedLesson(){
  const item=renalCatalog().find(item=>item.id===renalLessonId);
- const guide=renalGuides.find(guide=>guide.code===item?.code);
- const source=materials.find(source=>source.id===guide?.source);
- const heading='<section class="panel learning-heading"><div><span class="pill">'+esc(item?.code||'REN 123')+'</span><h2>'+esc(item?.title||'Renal lessons')+'</h2>'+
-  (source?'<div class="source-links">'+assetLink(source,'Original lecture material')+'</div>':'')+'</div></section>';
- return learningAreaTabs('learning')+'<div class="learning-layout">'+lessonCatalog()+'<div class="learning-main">'+heading+
-  (guide?guideTopics(guide,source):'<p class="panel">Teaching material for this session has yet to be added.</p>')+
-  (materialError?'<p role="status">'+esc(materialError)+' <button type="button" data-renal-retry>Retry sources</button></p>':'')+'</div></div>';
+ return learningAreaTabs('learning')+'<div class="learning-layout">'+lessonCatalog()+
+  '<div class="learning-main"><section class="panel learning-heading"><div><span class="pill">'+esc(item?.code||'REN 123')+'</span><h2>'+esc(item?.title||'Renal lessons')+'</h2></div></section>'+
+  '<p class="panel">Lecture source pending.</p></div></div>';
 }
 function courseSelector(route){
  if(!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
@@ -137,7 +134,7 @@ function show(route){
  if(route?.course==='CVP'&&route.view==='index'){view='dashboard';return;}
  if(route?.course==='REN'){
   view=route.view;
-  if(view==='learning')lessonCourse='REN';
+  if(view==='learning'){lessonCourse='REN';if(renalTeaching.guides[renalLessonId])lessonId=renalLessonId;}
   if(view==='practice'&&!((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))){etScope=etMockScope='REN';etAccurate=false;}
   return;
  }
@@ -164,7 +161,7 @@ function open(course,route){
  render();
 }
 const beforeTasks=tasks;
-tasks=function(items=DATA.items){return beforeTasks(enabled()?items.filter(item=>item.course!=='CVP'):items);};
+tasks=function(items=DATA.items){return beforeTasks(items.filter(item=>hasReviewDates(item)&&(!enabled()||item.course!=='CVP')));};
 const previousWeek=campusWeekEvents;
 campusWeekEvents=function(...args){
  const events=previousWeek(...args);
@@ -179,7 +176,7 @@ go=function(next){
  if(next==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))){
   show(null);return legacyGo(next);
  }
- if(next==='learning'&&view==='learning'&&context&&context.course!=='REN'&&lessonId.startsWith(context.course+'-'))return render();
+ if(next==='learning'&&view==='learning'&&context&&lessonId.startsWith(context.course+'-'))return render();
  if(next!=='dashboard'&&renalViews.includes(next))return open('renal',next);
  show(null);
  return legacyGo(next);
@@ -187,6 +184,14 @@ go=function(next){
 const selectLesson=window.chooseLesson;
 window.chooseLesson=function(id,...args){
  if(!enabled())return selectLesson(id,...args);
+ if(renalTeaching.guides[id]){
+  const filter=lessonCourse;
+  renalLessonId=id;
+  if(location.hash!=='#renal/learning')history.pushState(null,'','#renal/learning');
+  show({course:'REN',view:'learning'});
+  if(filter==='all')lessonCourse='all';
+  return selectLesson(id,...args);
+ }
  if(id.startsWith('MOL-'))lastMOLLesson=id;
  const course=id.startsWith('CVP-')?'archive':id.startsWith('MOL-')?'mol':null;
  if(!course)return selectLesson(id,...args);
@@ -211,11 +216,11 @@ render=function(...args){
  const content=document.getElementById('content');
  if(enabled()&&!context&&view!=='dashboard'&&renalViews.includes(view)&&!(view==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))))show({course:'REN',view});
  document.body.classList.toggle('cvp-archive-view',enabled()&&context?.course==='CVP');
- if((context?.course==='REN'&&!['practice','booklet'].includes(context.view))||context?.view==='index'){
+ if((context?.course==='REN'&&!['practice','booklet'].includes(context.view)&&(context.view!=='learning'||!renalTeaching.guides[renalLessonId]))||context?.view==='index'){
   applyTheme();
   paintProfile();
   document.body.classList.remove('schedule-expanded');
-  content.innerHTML=context.course==='REN'?(context.view==='learning'?renalLearning():renalPage(context.view)):archiveIndex();
+  content.innerHTML=context.course==='REN'?(context.view==='learning'?renalUnreleasedLesson():renalPage(context.view)):archiveIndex();
   mountNavigation();highlight();
   return;
  }

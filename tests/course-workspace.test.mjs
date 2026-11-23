@@ -33,7 +33,8 @@ test('question pack data are outside the startup initializer and awaited on entr
 });
 
 test('Renal guides and booklet links resolve to distinct protected sources and valid locators',async()=>{
- const {bookletSections,renalGuides}=await import('../public/renal-study.mjs');
+ const {bookletSections}=await import('../public/renal-study.mjs');
+ const {renalLessons,renalTeachingPack}=await import('../public/renal-lessons.mjs');
  const resources=JSON.parse(read('public/renal-materials.json'));
  assert.equal(resources.length,10);
  assert.equal(new Set(resources.map(resource=>resource.sha)).size,10);
@@ -42,10 +43,25 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.match(source.sha,/^[0-9a-f]{64}$/);
   assert.ok(source.size>0&&source.units>0);
  }
- for(const guide of renalGuides){
-  const source=resources.find(item=>item.id===guide.source);
-  assert.ok(source.sessions.includes(guide.code));
-  assert.ok(guide.topics.every(topic=>topic.page>=1&&topic.page<=source.units&&topic.question&&topic.answer));
+ const pack=renalTeachingPack();
+ assert.deepEqual(pack.items.map(x=>x.id),['REN-A1','REN-A2','REN-A3','REN-A5']);
+ assert.equal(new Set(pack.questions.map(q=>q.id)).size,pack.questions.length);
+ for(const lesson of renalLessons){
+  const asset=resources.find(item=>item.id===lesson.source),id='REN-'+lesson.code;
+  assert.ok(asset.sessions.includes(lesson.code));
+  assert.equal(pack.sources.find(source=>source.lectureIds.includes(id)).url,'/api/site-assets/'+asset.path);
+  assert.ok(pack.guides[id].objectives.length&&pack.guides[id].summary.length);
+  for(const topic of pack.guides[id].sections){
+   assert.ok(topic.body.length>1&&topic.keyPoints.length);
+   assert.ok(topic.references.every(ref=>ref.page>=1&&ref.page<=asset.units));
+   assert.ok(pack.questions.some(q=>q.concept===topic.id&&q.lectureIds.includes(id)));
+  }
+ }
+ for(const q of pack.questions){
+  assert.equal(q.options.length,4);
+  assert.equal(new Set(q.options).size,4);
+  assert.equal(q.options.length,q.reasons.length);
+  assert.equal(q.explanation,q.reasons[q.answer]);
  }
  const booklet=resources.find(source=>source.kind==='booklet');
  assert.equal(booklet.units,294);
