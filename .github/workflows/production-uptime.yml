@@ -1,0 +1,59 @@
+# Checks alfaisal.review every 15 minutes. On failure it opens (or updates) one GitHub issue,
+# which GitHub emails and pushes to the repository owner; it closes the issue on recovery.
+# Only public entry points are requested. No credentials, no student data.
+name: Production uptime
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-uptime
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SITE: https://alfaisal.review
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TITLE: 'alfaisal.review is not responding correctly'
+    steps:
+      - name: Check public entry points
+        id: probe
+        run: |
+          ok=0
+          for i in 1 2 3; do
+            ROOT=$(curl -s -o /dev/null -m 20 -w '%{http_code} %{redirect_url}' "$SITE/?uptime=$GITHUB_RUN_ID-$i" || echo "000")
+            SIGNIN=$(curl -s -o /dev/null -m 20 -w '%{http_code}' -L "$SITE/auth/sign-in?uptime=$GITHUB_RUN_ID-$i" || echo "000")
+            echo "attempt $i: root=$ROOT sign-in=$SIGNIN"
+            if [[ "$ROOT" == 303\ */auth/sign-in* ]] && [ "$SIGNIN" = "200" ]; then ok=1; break; fi
+            sleep 20
+          done
+          echo "detail=root $ROOT, sign-in $SIGNIN" >> "$GITHUB_OUTPUT"
+          echo "ok=$ok" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the outage issue
+        if: steps.probe.outputs.ok != '1'
+        run: |
+          NOW=$(date -u '+%Y-%m-%d %H:%M UTC')
+          N=$(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[0].number // empty')
+          BODY="Failed at $NOW: ${{ steps.probe.outputs.detail }} (expected \`/\` 303 to /auth/sign-in and sign-in 200). Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if [ -n "$N" ]; then gh issue comment "$N" --body "Still failing. $BODY"; else gh issue create --title "$TITLE" --assignee "$GITHUB_REPOSITORY_OWNER" --body "$BODY
+
+          Check Cloudflare → Workers → review-studio-production (Deployments, Logs). Roll back from the Deployments tab if a release caused it."; fi
+          exit 1
+
+      - name: Close the outage issue after recovery
+        if: steps.probe.outputs.ok == '1'
+        run: |
+          for N in $(gh issue list --state open --search "in:title \"$TITLE\"" --json number --jq '.[].number'); do
+            gh issue close "$N" --comment "Recovered at $(date -u '+%Y-%m-%d %H:%M UTC')."
+          done
