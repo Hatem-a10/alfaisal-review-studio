@@ -1,0 +1,18 @@
+# Dependency update PRs target the development branch, never main or production.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: cloudflare-staging
+    schedule: {interval: weekly, day: saturday, time: "06:00", timezone: Asia/Riyadh}
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    labels: [dependencies]
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: cloudflare-staging
+    schedule: {interval: monthly}
+    open-pull-requests-limit: 2
+    labels: [dependencies]
