@@ -64,11 +64,11 @@ test('lecture rows keep original slide and transcription actions and omit text r
  const item = {id:'CVP-A8'};
  const sources = [
   {id:'extract',name:'Thoracic Wall - Dr. Olena.pdf',kind:'Slides',lectureIds:[item.id],url:'#library'},
-  {id:'full-slide',name:'Thoracic Wall - Dr. Olena (3).pdf',lectureId:item.id},
+  {id:'full-slide',name:'Thoracic Wall - Dr. Olena (3).pdf',lectureId:item.id,lectureRanges:{[item.id]:[1,2]}},
   {id:'full-transcript',name:'A8. Thoracic Wall Transcript - Adam Elmorsy.pdf',lectureId:item.id},
  ];
  const ctx = {
-  DATA:{items:[item]}, LEARNING:{sources:sources.slice(0,1)}, uploads:sources.slice(1),
+  reviewCourseScope:'CVP', DATA:{items:[item]}, LEARNING:{sources:sources.slice(0,1)}, uploads:sources.slice(1),
   lessonById:()=>({}), title:()=> 'Thoracic wall', esc:String,
   sourceTarget:({source,page})=>({url:sources.find(x=>x.id===source).url || '/api/materials/'+source,page}),
   sourcePageURL:({url,page})=>url+'#page='+page,
