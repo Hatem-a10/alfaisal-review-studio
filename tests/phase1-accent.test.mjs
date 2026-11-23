@@ -40,3 +40,16 @@ test('site settings opens with its close control focused and preserves live sync
   assert.match(src, /\.dataset\.quickAction='sync'/);
   assert.match(src, /\.dataset\.quickAction='settings'/);
 });
+
+test('dark-mode text accent stays readable on tinted cards for every stain', async () => {
+  const {deriveAccent} = await import('../public/phase1-accent.mjs');
+  const rgb = h => h.slice(1).match(/../g).map(x => parseInt(x, 16));
+  const lin = v => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  const lum = c => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  for (const accent of ['#3a2f86', '#245796', '#8e2a6c', '#226a8f', '#5c4428', '#246b52', '#4d3a99', '#93302d']) {
+    const card = rgb(accent).map(c => c * 0.3); // card tinted 30% toward the accent on black
+    const text = rgb(deriveAccent(accent, true)['--accent-text']);
+    assert.ok(ratio(text, card) >= 4.5, `${accent} text accent ${ratio(text, card).toFixed(2)}:1`);
+  }
+});

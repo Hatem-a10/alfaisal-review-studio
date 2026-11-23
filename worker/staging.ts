@@ -55,6 +55,18 @@ const stagingWorker = {
   const request=auth.request;let path;try{path=decodeURIComponent(new URL(request.url).pathname).slice(1)}catch{return new Response('Invalid path',{status:400})}
   let observe: ((response:Response)=>void)|undefined;
   let legacyAudit: ReturnType<typeof auditWriter>|undefined;
+  // Client error reports: logged to Worker logs only. No account id, no database write, size-capped.
+  if(path==='api/client-error'&&request.method==='POST'){
+   if(!request.headers.has('oai-authenticated-user-id'))return adminResponse({error:'Sign in required.'},401);
+   try{
+    const raw=await request.text();
+    if(raw.length<=4000){
+     const e=JSON.parse(raw),clip=(v:unknown,n:number)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').slice(0,n):'';
+     console.error('[client-error]',JSON.stringify({message:clip(e.message,300),source:clip(e.source,200).replace(/[?#].*$/,''),line:Number(e.line)||0,col:Number(e.col)||0,stack:clip(e.stack,1200),view:clip(e.view,40),version:clip(e.version,12),environment}));
+    }
+   }catch{}
+   return new Response(null,{status:204,headers:{'Cache-Control':'no-store'}});
+  }
   if(managed){
    let row:Record<string,unknown>|null=null;
    const owner=request.headers.get('x-review-studio-owner')==='1';
