@@ -9,7 +9,8 @@ const end = source.indexOf('globalThis.reviewCourseClosed=courseClosed;');
 assert.ok(start > -1 && end > start, 'course closure helpers present in app.js');
 
 function load(events, items) {
-  const ctx = {DATA: {events, items}, Date, RegExp, Set, String};
+  const ctx = {DATA: {events, items}, Date, RegExp, Set, String, JSON, Object};
+  ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(source.slice(start, end) + ';this.courseClosed=courseClosed;this.courseEndDates=courseEndDates;', ctx);
   return ctx;
@@ -41,4 +42,15 @@ test('every scheduler skips closed courses', () => {
     ['public/schedule-ui.js', 'reviewCourseClosed'],
     ['public/profile-entry.js', 'reviewCourseClosed']
   ]) assert.ok(readFileSync(new URL('../' + file, import.meta.url), 'utf8').includes(needle), `${file} uses ${needle}`);
+});
+
+test('admin course end override wins over the calendar, in either direction', () => {
+  const ctx = load([
+    {date: '2026-11-19', title: 'CVP OSPE', course: 'CVP'},
+    {date: '2026-12-20', title: 'MOL Final', course: 'MOL'}
+  ], [{course: 'CVP'}, {course: 'MOL'}, {course: 'REN'}]);
+  ctx.reviewManagedFlags = {courseEnds: {CVP: '2026-11-30', REN: '2026-11-01', MOL: 'not-a-date'}};
+  assert.equal(ctx.courseClosed('CVP', '2026-11-25'), false);
+  assert.equal(ctx.courseClosed('REN', '2026-11-02'), true);
+  assert.equal(ctx.courseEndDates().MOL, '2026-12-20');
 });

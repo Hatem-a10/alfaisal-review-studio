@@ -12,7 +12,10 @@ function toast(t,undo=null){clearTimeout(toastTimer);const el=$('#toast');el.tex
 /* A course closes the day after its last assessment (final, OSPE or practical): its reviews are no longer
    scheduled or counted as due anywhere, while completed reviews stay in the student's history. */
 let courseEndCache={key:'',map:{}};
-function courseEndDates(){const events=DATA.events||[],key=events.length+':'+(events.at?.(-1)?.date||'');if(courseEndCache.key===key)return courseEndCache.map;const courses=[...new Set((DATA.items||[]).map(x=>x.course).filter(Boolean))],map={};for(const c of courses){const re=new RegExp('^\\s*'+c+'\\b','i');const last=events.filter(e=>(e.course===c||re.test(e.title||''))&&/\b(final|ospe|practical)\b/i.test((e.title||'')+' '+(e.kind||''))).map(e=>e.date).filter(Boolean).sort().at(-1);if(last)map[c]=last}courseEndCache={key,map};return map}
+function detectedCourseEnds(courses){const events=DATA.events||[],map={};for(const c of courses){const re=new RegExp('^\\s*'+c+'\\b','i');const last=events.filter(e=>(e.course===c||re.test(e.title||''))&&/\b(final|ospe|practical)\b/i.test((e.title||'')+' '+(e.kind||''))).map(e=>e.date).filter(Boolean).sort().at(-1);if(last)map[c]=last}return map}
+function courseList(){return [...new Set((DATA.items||[]).map(x=>x.course).filter(Boolean))]}
+function courseEndDates(){const events=DATA.events||[],overrides=globalThis.reviewManagedFlags?.courseEnds||{},key=events.length+':'+(events.at?.(-1)?.date||'')+':'+(DATA.items||[]).length+':'+JSON.stringify(overrides);if(courseEndCache.key===key)return courseEndCache.map;const map={...detectedCourseEnds(courseList())};for(const [c,d] of Object.entries(overrides))if(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d))map[c]=d;courseEndCache={key,map};return map}
+globalThis.reviewCourseEndInfo=()=>{const courses=courseList();return {courses,detected:detectedCourseEnds(courses),overrides:{...(globalThis.reviewManagedFlags?.courseEnds||{})}}};
 function courseClosed(course,date){const end=courseEndDates()[course];if(!end)return false;const d=date||(typeof assessmentClock==='function'?assessmentClock().date:new Date().toISOString().slice(0,10));return d>end}
 globalThis.reviewCourseClosed=courseClosed;
 /* Report uncaught errors (message, file, line, stack; no personal data) so problems are visible in Worker logs. */

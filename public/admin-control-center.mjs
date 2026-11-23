@@ -499,10 +499,26 @@ export async function openAdminCenter(){
   if(version!==viewVersion)return;
   const form=node('form',null,{class:'acc-editor'});
   for(const [key,label] of Object.entries(publicFlags))form.append(field(key,label,{type:'checkbox',value:data.flags[key]}));
-  form.append(field('maintenance','Maintenance announcement',{type:'textarea',value:data.flags.maintenance,maxLength:300}),node('button','Save site controls',{type:'submit',class:'primary'}));
+  form.append(field('maintenance','Maintenance announcement',{type:'textarea',value:data.flags.maintenance,maxLength:300}));
+  // Course end dates: after this day a course gets no scheduled reviews. Blank = use the last final/OSPE/practical on the calendar.
+  const ends=globalThis.reviewCourseEndInfo?.()||{courses:[],detected:{}};
+  if(ends.courses.length){
+   const box=node('fieldset',null,{class:'acc-course-ends'});
+   box.append(node('legend','Course end dates'),node('p','Reviews stop being scheduled after this date. Leave blank to use the last final, OSPE or practical on the calendar.',{class:'acc-empty'}));
+   for(const course of ends.courses){
+    const input=field('courseEnd:'+course,course+(ends.detected[course]?' (calendar: '+ends.detected[course]+')':' (no final on the calendar)'),{type:'date',value:data.flags.courseEnds?.[course]||''});
+    box.append(input);
+   }
+   form.append(box);
+  }
+  form.append(node('button','Save site controls',{type:'submit',class:'primary'}));
   form.addEventListener('submit',async event=>{
    event.preventDefault();
    const values=formValues(form);
+   if(ends.courses.length){
+    values.courseEnds={...(data.flags.courseEnds||{})};
+    for(const key of Object.keys(values).filter(k=>k.startsWith('courseEnd:'))){values.courseEnds[key.slice(10)]=values[key];delete values[key];}
+   }
    if(!await confirm('Apply site controls?','These controls take effect across this environment.'))return;
    event.submitter.disabled=true;
    try{if(await mutation('site/save',values)){status.textContent='Site controls saved.';window.dispatchEvent(new Event('review-managed-controls-refresh'));}}

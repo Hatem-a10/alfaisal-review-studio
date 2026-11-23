@@ -85,9 +85,9 @@
    if(!currentStatus||!document.querySelector('#content'))return;
    const {flags,assignment,resetId}=currentStatus;
    window.reviewManagedAssignment=assignment;
-   const previousArchive=window.reviewManagedFlags?.archiveCvp;
+   const previousArchive=window.reviewManagedFlags?.archiveCvp,previousEnds=JSON.stringify(window.reviewManagedFlags?.courseEnds||{});
    window.reviewManagedFlags=flags;
-   if(previousArchive!==flags.archiveCvp)window.dispatchEvent(new Event('review-course-controls'));
+   if(previousArchive!==flags.archiveCvp||previousEnds!==JSON.stringify(flags.courseEnds||{}))window.dispatchEvent(new Event('review-course-controls'));
    const key=JSON.stringify({flags,assignment,resetId});
    if(key!==appliedStatus){
     appliedStatus=key;

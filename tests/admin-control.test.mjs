@@ -243,3 +243,20 @@ test('the owner can disable and re-enable the course archive without rewriting p
  assert.equal((await (await h.call('student/status',student)).json()).flags.archiveCvp,true);
  assert.deepEqual(h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id),profile);
 });
+
+test('the owner can set, keep and clear course end dates, and students receive them',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const fields={readOnly:false,sharedUploads:true,reports:true,resourceLibrary:true,maintenance:''};
+ const ends=async()=>(await (await h.call('student/status',student)).json()).flags.courseEnds;
+ assert.deepEqual(await ends(),{});
+ assert.equal((await h.call('site/save',student,{...fields,courseEnds:{CVP:'2026-11-20'}})).status,403);
+ await h.challenge();
+ assert.equal((await h.call('site/save',owner,{...fields,courseEnds:{CVP:'2026-11-20',MOL:''}})).status,200);
+ assert.deepEqual(await ends(),{CVP:'2026-11-20'});
+ assert.equal((await h.call('site/save',owner,fields)).status,200);
+ assert.deepEqual(await ends(),{CVP:'2026-11-20'});
+ for(const bad of [{CVP:'20-11-2026'},{'cvp; drop':'2026-11-20'},['2026-11-20'],'CVP'])
+  assert.equal((await h.call('site/save',owner,{...fields,courseEnds:bad})).status,400);
+ assert.equal((await h.call('site/save',owner,{...fields,courseEnds:{CVP:''}})).status,200);
+ assert.deepEqual(await ends(),{});
+});
