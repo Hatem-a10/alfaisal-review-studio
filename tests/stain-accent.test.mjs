@@ -19,7 +19,7 @@ test('default accent follows the next assessment stain and matches the CSS palet
 
 test('one stain per assessment is shared by the home card and countdown cards', () => {
   assert.match(read('public/studio-redesign.js'), /window\.reviewStainFor=event=>/);
-  assert.match(read('public/hub-upgrade.js'), /stain-\$\{window\.reviewStainFor\?\.\(e\)\?\?/);
+  assert.match(read('public/hub-upgrade.js'), /stain-\$\{globalThis\.reviewStainFor\?\.\(e\)\?\?/);
 });
 
 test('no blocked third-party font requests remain', () => {
