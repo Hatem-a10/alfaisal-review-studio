@@ -6,6 +6,17 @@ const originalEtQuestionMarkup=etQuestionMarkup;etQuestionMarkup=function(q,i,a,
 let originalRun=null,originalCatalog;const originalRunKey=KEY+'-original-exam-run-v1';try{const r=JSON.parse(localStorage.getItem(originalRunKey)||'null');if(r&&Array.isArray(r.ids)&&r.ids.length<=800&&r.answers&&typeof r.answers==='object')originalRun=r}catch{}
 const originalRunsKey=KEY+'-original-exam-runs-v1';let originalRuns={};try{const a=JSON.parse(localStorage.getItem(originalRunsKey)||'{}');if(a&&typeof a==='object'&&!Array.isArray(a))originalRuns=a}catch{}if(originalRun)originalRuns[originalRun.setId]=originalRun;let originalSavedRun=originalRun;
 function saveOriginalRun(){if(originalRun)originalRun.updatedAt=new Date().toISOString();const excluded=!!originalRun&&originalLowScore(originalRun);if(originalRun?.finishedAt)originalRun.excludedLowScore=excluded;originalSavedRun=excluded?null:originalRun;if(originalRun){if(excluded)delete originalRuns[originalRun.setId];else originalRuns[originalRun.setId]=originalRun}try{localStorage.setItem(originalRunsKey,JSON.stringify(originalRuns));if(originalRun&&!excluded)localStorage.setItem(originalRunKey,JSON.stringify(originalRun));else localStorage.removeItem(originalRunKey)}catch{toast('This device could not save the exam. Keep the page open.')}}
+// Validate saved IDs before the private assessment pack is fetched.
+function deferredOriginalQuestion(setId,id){
+ if(typeof setId!=='string'||typeof id!=='string')return false;
+ if(/^ren-(?:14|16|17|18)-tbl-[1-3]$/.test(setId))return id.startsWith(setId+'-')&&/^(?:mcq|cs)-[1-9]\d*$/.test(id.slice(setId.length+1));
+ if(/^ren-18-collection(?:-saq|-ospe)?$/.test(setId)){
+  const part=setId==='ren-18-collection'?'mcq':setId.split('-').at(-1);
+  return id.startsWith('ren-18-collection-'+part+'-')&&/^[1-9]\d*$/.test(id.split('-').at(-1))&&id.split('-').length===5;
+ }
+ if(/^mol-(?:14|16|17|18)-final$/.test(setId))return id.startsWith(setId+'-')&&/^p[1-9]\d*-item[1-9]\d*$/.test(id.slice(setId.length+1));
+ return false;
+}
 function examSetTitle(set){return settings.examNames?.[set?.id]||set?.title||'Original question set'}
 function originalQuestionById(id){return ORIGINAL_EXAMS.questions.find(q=>q.id===id)}
 function originalGrade(run){const qs=run.ids.map(originalQuestionById).filter(Boolean),keyed=qs.filter(q=>q.type==='mcq'&&Number.isInteger(q.answer)),answered=keyed.filter(q=>Number.isInteger(run.answers[q.id])),correct=keyed.filter(q=>run.answers[q.id]===q.answer).length;return {total:qs.length,keyed:keyed.length,answered:answered.length,correct,percent:answered.length?Math.round(correct/answered.length*1000)/10:0,ungraded:qs.length-keyed.length}}
@@ -14,25 +25,29 @@ function repeatBadge(q) {
  return q.repeatLabel ? `<span class="cvp-repeat-badge" data-repeat="${esc(q.repeat)}">${esc(q.repeatLabel)}</span>` : '';
 }
 function originalQuestionMarkup(q,i){const run=originalRun,done=!!run.finishedAt,answer=Object.hasOwn(q,'receiptSelected')?q.receiptSelected:run.answers[q.id],source=ORIGINAL_EXAMS.sources.find(s=>s.id===q.source);let html=`<article class="original-question" data-question-id="${esc(q.id)}" data-question-context="${done?'review':'active-exam'}" id="original-question-${i}"><div class="section-head"><span class="pill">${i+1}${q.repeatLabel?"":" · Original "+esc(q.number)}</span><span class="question-kind">${q.type==='mcq'?(q.repeatLabel?'Adapted MCQ':'Original MCQ'):'Short answer · self-check'}</span></div>${repeatBadge(q)}${q.caseText?`<div class="original-case"><b>Original case context</b><p>${esc(q.caseText)}</p></div>`:''}<h3>${esc(q.question)}</h3>${q.figures.map(raw=>{const f={...raw,image:done&&raw.revealedImage?raw.revealedImage:raw.image};return `<figure class="original-question-figure"><a href="${esc(f.image)}" target="_blank" rel="noopener noreferrer"><img loading="lazy" src="${esc(f.image)}" alt="Original figure for this question · source page ${f.page}"></a><figcaption>${f.label?'Option '+esc(f.label):'Question figure'} · source p${f.page}</figcaption></figure>`}).join('')}${q.options.length?`<div class="answer-options">${q.options.map((o,j)=>`<label class="answer-option ${done&&Number.isInteger(q.answer)?j===q.answer?'correct':j===answer?'incorrect':'':''}"><input type="radio" name="original-answer-${i}" data-original-answer="${esc(q.id)}" value="${j}" ${answer===j?'checked':''} ${done?'disabled':''}><span class="option-letter">${esc(q.letters[j])}</span><span>${esc(o)}</span></label>`).join('')}</div>`:`<label>Your answer<textarea data-original-written="${esc(q.id)}" ${done?'readonly':''} rows="3">${esc(typeof answer==='string'?answer:'')}</textarea></label>`}${done?`<div class="answer-feedback ${Number.isInteger(q.answer)&&answer===q.answer?'success':Number.isInteger(answer)?'retry':'ungraded'}"><b>${Number.isInteger(q.answer)?!Number.isInteger(answer)?'Unanswered · not graded':answer===q.answer?(q.repeatLabel?'Correct':q.sourceIssue?.includes('printed key is incorrect')?'Matches the reviewed key':'Matches the printed key'):(q.repeatLabel?'Incorrect':q.sourceIssue?.includes('printed key is incorrect')?'Does not match the reviewed key':'Does not match the printed key'):'Self-check · no usable letter key'}</b>${q.sourceIssue?`<p class="notice">${esc(q.sourceIssue)}</p>`:''}${q.sourceIssue?.includes('printed key is incorrect')&&Number.isInteger(q.answer)?`<p><b>Reviewed answer:</b> ${esc(q.letters[q.answer])} · ${esc(q.options[q.answer])}</p>`:''}<p><b>${q.repeatLabel?"Reviewed answer":"Printed answer"}:</b> ${esc(q.printedAnswer||'No answer was supplied.')}</p>${q.sourceExplanation?`<p><b>${q.repeatLabel?"Explanation":"Source explanation"}:</b> ${esc(q.sourceExplanation)}</p>`:''}${q.reviewedExplanation?`<div class="reviewed-note"><b>Reviewed study note · separate from the original</b><p>${esc(q.reviewedExplanation)}</p>${q.reviewedAnswer?`<p><b>Reviewed answer:</b> ${esc(q.reviewedAnswer)}</p>`:''}</div>`:''}</div>`:''}${q.sourceRefs?(done?`<p class="source-links">Past-paper references: ${esc(q.sourceRefs)}</p>`:""):`<div class="source-links"><a href="${esc(source.url)}#page=${q.page}" target="_blank" rel="noopener noreferrer">${esc(source.linkLabel||'Original PDF')} · p${q.page}${q.endPage>q.page?'–'+q.endPage:''} ↗</a></div>`}</article>`;return decorateOptions(html,q)}
-let molAssessmentsStatus='',molAssessmentsRequest;
-function loadMolAssessments(){
- if(molAssessmentsRequest||molAssessmentsStatus==='ready')return;
- molAssessmentsStatus='loading';
- const existingMidterm=ORIGINAL_EXAMS.sets.find(set=>set.id==='mol-exam-1');
- if(existingMidterm){existingMidterm.batch=18;existingMidterm.title='18th batch · recalled MOL midterm';}
- for(const set of ORIGINAL_EXAMS.sets)if(['mol-exam-1','mol-exam-2','mol-exam-16'].includes(set.id))set.sourceInAssessment=true;
- molAssessmentsRequest=fetch('/api/site-assets/materials/mol114/interactive-assessments.json').then(response=>{
-  if(!response.ok)throw Error('MOL assessments could not load.');
+const assessmentLoads=new Map();
+function loadCourseAssessments(course){
+ const config=window.reviewCourseConfig?.(course);
+ if(!config?.assessmentPath||['loading','ready'].includes(assessmentLoads.get(course)))return;
+ assessmentLoads.set(course,'loading');
+ if(course==='MOL'){
+  const midterm=ORIGINAL_EXAMS.sets.find(set=>set.id==='mol-exam-1');
+  if(midterm){midterm.batch=18;midterm.title='18th batch · recalled MOL midterm';}
+  for(const set of ORIGINAL_EXAMS.sets)if(['mol-exam-1','mol-exam-2','mol-exam-16'].includes(set.id))set.sourceInAssessment=true;
+ }
+ fetch('/api/site-assets/'+config.assessmentPath).then(response=>{
+  if(!response.ok)throw Error('Assessments could not load.');
   return response.json();
  }).then(data=>{
-  if(data.version!==1||!data.sets?.length||!data.questions?.length||!data.sources?.length)throw Error('MOL assessments were incomplete.');
-  for(const [key,items] of Object.entries({sets:data.sets.map(set=>({...set,sourceInAssessment:true})),questions:data.questions,sources:data.sources})){
+  if(data.version!==1||!data.sets?.length||!data.questions?.length||!data.sources?.length)throw Error('Assessments were incomplete.');
+  for(const [key,items] of Object.entries({
+   sets:data.sets.map(set=>({...set,course,sourceInAssessment:true})),questions:data.questions,sources:data.sources,
+  })){
    const existing=new Set(ORIGINAL_EXAMS[key].map(item=>item.id));
    ORIGINAL_EXAMS[key].push(...items.filter(item=>!existing.has(item.id)));
   }
-  molAssessmentsStatus='ready';
- }).catch(()=>{molAssessmentsStatus='error';}).finally(()=>{
-  molAssessmentsRequest=null;
+  assessmentLoads.set(course,'ready');
+ }).catch(()=>assessmentLoads.set(course,'error')).finally(()=>{
   if(view==='practice'&&etPracticeTab==='original')render();
  });
 }
@@ -40,11 +55,16 @@ function visibleOriginalRun(){
  const set=ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun?.setId);
  if(!originalRun||!set)return false;
  const scope=globalThis.reviewCourseScope;
- if(scope==='REN')return false;
+ if(set.course==='REN'||scope==='REN')return scope===set.course;
  if(scope==='CVP')return globalThis.reviewArchivedStudyItem?.(set)===true;
  return !globalThis.reviewArchivedStudyItem?.(set);
 }
-function originalWorkspace(){if((globalThis.reviewCourseScope==='MOL'||!globalThis.reviewCourseScope&&globalThis.reviewCvpArchived?.())&&!molAssessmentsStatus)loadMolAssessments();
+function originalWorkspace(){
+ const course=globalThis.reviewCourseScope||(globalThis.reviewCvpArchived?.()?'MOL':null);
+ if(course&&!assessmentLoads.has(course))loadCourseAssessments(course);
+ const status=assessmentLoads.get(course);
+ if(course==='REN'&&status==='loading')return '<p role="status">Loading Renal assessments…</p>';
+ if(course==='REN'&&status==='error')return '<p role="status">Could not load Renal assessments. <button data-retry-assessments="REN">Retry</button></p>';
  if(typeof originalCatalog!=='function'){
  originalCatalog??=Promise.all([import('/original-catalog.mjs?v=2'),import('/cvp-final-mock-data.mjs'),import('/cvp-past-papers.mjs')]).then(([catalog, mock, papers])=>{
   mock.registerCvpMock(ORIGINAL_EXAMS);
@@ -54,7 +74,7 @@ function originalWorkspace(){if((globalThis.reviewCourseScope==='MOL'||!globalTh
   render();
  },()=>{originalCatalog=null});
  return '<p role="status">Loading exam sets…</p>';
- }if(visibleOriginalRun()){const set=ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId),grade=originalGrade(originalRun),qs=originalRun.ids.map(originalQuestionById).filter(Boolean),done=!!originalRun.finishedAt;return `<section class="panel original-run"><span class="eyebrow muted">${set?.adapted?"ADAPTED PRACTICE MOCK":"ORIGINAL WORDING · ORIGINAL ORDER"}</span><div class="section-head"><h2>${esc(examSetTitle(set))}</h2><button data-rename-set="${esc(set?.id||'')}">✎ Rename</button><button id="originalClose">${done?'Back to original sets':'Save & return to sets'}</button></div>${settings.examNames?.[set?.id]?`<p class="section-sub">Source: ${esc(set.title)}</p>`:''}<p class="muted">${set?.adapted?"Colors show matches in batches 14–18. References and answers appear after submission.":"Wording and options are preserved, including incomplete recalled questions. Line breaks are normalized. Source PDFs are authoritative."}</p>${done?`${grade.answered?scoreRing(Math.round(grade.correct*10000/grade.answered)/100,set?.adapted?'Mock score':'Printed-key score',grade.correct+' / '+grade.answered+' answered MCQs'):'<div class="notice">No answered, keyed MCQs · unanswered and written items are ungraded.</div>'}${originalRun.excludedLowScore?'<p class="notice">Below 15% · this result is shown for review only and was not saved.</p>':''}<p class="section-sub">${grade.ungraded} items need self-checking. ${grade.keyed-grade.answered} unanswered MCQs were not graded. This score follows the supplied printed key, which may contain mistakes. It does not change readiness or review completion.</p>`:`<p id="originalAnswered" class="muted">${Object.keys(originalRun.answers).length} / ${qs.length} responses saved on this device.</p>`}<div class="original-jumps">${qs.map((q,i)=>`<button type="button" data-original-jump="${i}" aria-label="Jump to question ${i+1}">${i+1}</button>`).join('')}</div>${qs.map(originalQuestionMarkup).join('')}<div class="original-submit">${done?'<button id="originalRetry" class="primary">Retry this original set</button>':'<button id="originalSubmit" class="primary">Finish & review answers</button>'}</div></section>`}const msg=globalThis.reviewCourseScope==='MOL'?(molAssessmentsStatus==='loading'?'<p role="status">Loading MOL assessments…</p>':molAssessmentsStatus==='error'?'<p role="status">Could not load the added MOL assessments. <button id="retryMolAssessments">Retry</button></p>':''):'';
+ }if(visibleOriginalRun()){const set=ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId),grade=originalGrade(originalRun),qs=originalRun.ids.map(originalQuestionById).filter(Boolean),done=!!originalRun.finishedAt;return `<section class="panel original-run"><span class="eyebrow muted">${set?.adapted?"ADAPTED PRACTICE MOCK":"ORIGINAL WORDING · ORIGINAL ORDER"}</span><div class="section-head"><h2>${esc(examSetTitle(set))}</h2><button data-rename-set="${esc(set?.id||'')}">✎ Rename</button><button id="originalClose">${done?'Back to original sets':'Save & return to sets'}</button></div>${settings.examNames?.[set?.id]?`<p class="section-sub">Source: ${esc(set.title)}</p>`:''}<p class="muted">${set?.adapted?"Colors show matches in batches 14–18. References and answers appear after submission.":"Wording and options are preserved, including incomplete recalled questions. Line breaks are normalized. Source PDFs are authoritative."}</p>${done?`${grade.answered?scoreRing(Math.round(grade.correct*10000/grade.answered)/100,set?.adapted?'Mock score':'Printed-key score',grade.correct+' / '+grade.answered+' answered MCQs'):'<div class="notice">No answered, keyed MCQs · unanswered and written items are ungraded.</div>'}${originalRun.excludedLowScore?'<p class="notice">Below 15% · this result is shown for review only and was not saved.</p>':''}<p class="section-sub">${grade.ungraded} items need self-checking. ${grade.keyed-grade.answered} unanswered MCQs were not graded. This score follows the supplied printed key, which may contain mistakes. It does not change readiness or review completion.</p>`:`<p id="originalAnswered" class="muted">${Object.keys(originalRun.answers).length} / ${qs.length} responses saved on this device.</p>`}<div class="original-jumps">${qs.map((q,i)=>`<button type="button" data-original-jump="${i}" aria-label="Jump to question ${i+1}">${i+1}</button>`).join('')}</div>${qs.map(originalQuestionMarkup).join('')}<div class="original-submit">${done?'<button id="originalRetry" class="primary">Retry this original set</button>':'<button id="originalSubmit" class="primary">Finish & review answers</button>'}</div></section>`}const msg=course==='MOL'?(status==='loading'?'<p role="status">Loading MOL assessments…</p>':status==='error'?'<p role="status">Could not load the added MOL assessments. <button data-retry-assessments="MOL">Retry</button></p>':''):'';
  return msg+originalCatalog()}
 etPracticeWorkspace=function(){return `<div class="et-practice-tabs"><button data-et-tab="mock" class="${etPracticeTab==='mock'?'selected':''}">Timed mock exam ${etExam&&!etExam.finishedAt?'· running':''}</button><button data-et-tab="sets" class="${etPracticeTab==='sets'?'selected':''}">Concept question sets</button><button data-et-tab="original" class="${etPracticeTab==='original'?'selected':''}">Previous exams & TBLs · original</button></div>${etPracticeTab==='original'?originalWorkspace():etPracticeTab==='mock'?etMockPanel():etConceptPanel()}`};
 const practiceBeforeOriginals=practice;practice=function(){return etPracticeTab==='original'?intro('Original papers · your uploads','Previous exams & TBLs','Practice the supplied wording and figures, then compare the printed keys with clearly labeled review notes.')+etPracticeWorkspace():practiceBeforeOriginals()};

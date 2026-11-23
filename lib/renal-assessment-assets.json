@@ -1,0 +1,57 @@
+[
+  {
+    "path": "materials/ren123/assessments/ren-14-tbl-1.pdf",
+    "size": 139806,
+    "sha": "e0f100766f6c48adde7acba53a18e95b06feb556e8c4d6e55346e5f7b81d2fd7"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-14-tbl-2.pdf",
+    "size": 460146,
+    "sha": "d9744a7b167d0919de6383388836ae604412204cee5275b7c5d214673b3cba6f"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-17-tbl-1.pdf",
+    "size": 82707,
+    "sha": "2b13bf8d28d267d4b881020dc3d2b17249ee50c46b5831fdf2bcd60600e5f125"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-17-tbl-2.pdf",
+    "size": 300525,
+    "sha": "08bec725a2d7dc47032a1169380a9fdf2676c92ee0b462d4aad4c930ad29b97e"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-17-tbl-3.pdf",
+    "size": 2203696,
+    "sha": "5d0488b54ba355f1cf3adf6af84dbe4c81f5ed4815c5861fe7798a9526a88614"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-16-tbl-1.pdf",
+    "size": 30080,
+    "sha": "f57957563c5c52756b5051fd62522e36fc117c5a70dbd87b165c235868636e7d"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-16-tbl-2.pdf",
+    "size": 88396,
+    "sha": "9588519c4950fc19b3d7a657e83e4fd93c50d2bdf0b1f0aba6dfaf49469d8367"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-18-tbl-1.pdf",
+    "size": 985403,
+    "sha": "8f33f07d6759ad6c645cd1546e0a00da661d217b35bccfc5de1a6ddbc3e3ace1"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-18-tbl-2.pdf",
+    "size": 838374,
+    "sha": "286346c17317003aff4ffc0850d6c9473caec628e9e3cae8e440acb4533be09a"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-18-collection.pdf",
+    "size": 9106760,
+    "sha": "f52501ad555c6c325a8369b31942949c887b6919c115ec29c83a0ba7bbdc17ee"
+  },
+  {
+    "path": "materials/ren123/interactive-assessments.json",
+    "size": 958194,
+    "sha": "a65315c5c4b2d3fc8e9094e82c2041ba3319105b71b1f266983d0e43e7f79004"
+  }
+]

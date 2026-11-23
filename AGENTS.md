@@ -25,6 +25,8 @@ For every production update, advance the last live site version by exactly 0.01.
 
 ## Academic changes
 
+For every new course, follow the [course integration checklist](docs/ADDING-A-COURSE.md). Register its stable lecture IDs and reuse the shared screens. Course-specific document-only pages and parallel navigation are outside the integration contract.
+
 Read [Lesson Content Standards](docs/LESSON-CONTENT-STANDARDS.md) for every lecture, MCQ, figure or source change. Start with `public/data.js`, assembled curriculum and inline topic grouping, source/library registries, and the current lesson audit. Generated `dist/` is build output. Course data may have overlays and deferred packs. Inspect the resulting runtime view before counting or editing content.
 
 1. Inspect the lesson, objectives, teaching and current inventory.

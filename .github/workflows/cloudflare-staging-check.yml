@@ -20,6 +20,8 @@ jobs:
         run: npx --no-install vinext check | tee vinext-compatibility.log
       - name: Staging isolation and authentication tests
         run: node --test tests/cloudflare-staging*.test.mjs
+      - name: Course integration and sync
+        run: node --test tests/registered-course-progress.test.mjs
       - name: Complete regression suite
         id: existing
         run: node --test tests/*.test.mjs > existing-tests.log 2>&1
