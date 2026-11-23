@@ -21,8 +21,9 @@ const modulesRoot=resolve('dist/server');
 const scripts=['index.js',...readdirSync(modulesRoot,{recursive:true}).filter(path=>path!=='index.js'&&/\.m?js$/.test(path))];
 for(const access of ['restricted','open']){
  const worker=new Miniflare({
-  modules:scripts.map(path=>({type:'ESModule',path:resolve(modulesRoot,path)})),modulesRoot,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],
-  bindings:{...bindings,REVIEW_STUDIO_ACCESS:access},d1Databases:{DB:'candidate-check'},r2Buckets:{BUCKET:'candidate-check'},host:'127.0.0.1',port:0,
+  host:'127.0.0.1',port:0,
+  workers:[{name:'candidate',modules:scripts.map(path=>({type:'ESModule',path:resolve(modulesRoot,path)})),modulesRoot,compatibilityDate:'2026-05-15',compatibilityFlags:['nodejs_compat'],
+   bindings:{...bindings,REVIEW_STUDIO_ACCESS:access},d1Databases:{DB:'candidate-check'},r2Buckets:{BUCKET:'candidate-check'}}],
  });
  try{
   if(access==='restricted')for(const path of ['/auth/sign-up','/auth/sign-up/','/auth/%73ign-up']){

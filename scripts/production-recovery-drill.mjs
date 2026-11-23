@@ -22,8 +22,9 @@ const objects={
 };
 function localWorker(){
  return new Miniflare({
-  modules:true,script:'export default { fetch(){ return new Response("Local recovery drill"); } }',
-  d1Databases:{DB:'recovery-synthetic'},r2Buckets:{BUCKET:'recovery-synthetic'},host:'127.0.0.1',port:0,
+  host:'127.0.0.1',port:0,
+  workers:[{name:'recovery-drill',modules:true,script:'export default { fetch(){ return new Response("Local recovery drill"); } }',
+   d1Databases:{DB:'recovery-synthetic'},r2Buckets:{BUCKET:'recovery-synthetic'}}],
  });
 }
 async function applySchema(db){
