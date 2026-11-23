@@ -1,5 +1,6 @@
 import {SITE_ASSETS} from './site-assets-manifest';
-const byPath=new Map<string,(typeof SITE_ASSETS)[number]>(SITE_ASSETS.map(x=>[x.path,x]));
+import RENAL_MATERIALS from '../public/renal-materials.json';
+const byPath=new Map<string,{path:string,size:number,sha:string}>([...SITE_ASSETS,...RENAL_MATERIALS].map(x=>[x.path,x]));
 export {SITE_ASSETS};
 export function assetFor(path:string){return byPath.get(path)}
 export function dataKey(sha:string){return 'site-assets/data/'+sha}

@@ -72,10 +72,18 @@ function libraryMaterials(item, lesson, sources) {
 }
 
 function libraryLectureLists() {
- const sources = LEARNING.sources.concat(uploads).filter(source => libraryDocumentURL(source));
+ const scope=globalThis.reviewCourseScope;
+ const supportsScope=source=>{
+  if(!scope)return true;
+  const mapped=[source.lectureId,...(source.lectureIds||[]),...(source.lectureRanges||[]).map(range=>range.lectureId)].filter(Boolean);
+  if(mapped.length)return mapped.some(id=>id.startsWith(scope+'-'));
+  if(LEARNING.lessons.some(lesson=>lesson.id.startsWith(scope+'-')&&lesson.references?.some(ref=>ref.source===source.id)))return true;
+  return new RegExp('(?:^|[^a-z])'+scope+'(?:[^a-z]|$)','i').test(source.id+' '+source.name);
+ };
+ const sources = LEARNING.sources.concat(uploads).filter(source => libraryDocumentURL(source)&&supportsScope(source));
  const covered = new Set();
  const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine']];
- const lists = groups.map(([prefix,label]) => {
+ const lists = groups.filter(([prefix])=>!scope||prefix.startsWith(scope+'-')).map(([prefix,label]) => {
   const rows = DATA.items.filter(item => item.id.startsWith(prefix)).sort((a,b) => Number(a.id.slice(prefix.length)) - Number(b.id.slice(prefix.length)));
   return `<section class="material-list"><h2>${label}</h2><ol>${rows.map(item => {
    const selections = libraryMaterials(item, lessonById(item.id), sources);

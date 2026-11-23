@@ -1,0 +1,110 @@
+[
+  {
+    "id": "checklist",
+    "title": "Student checklist",
+    "kind": "overview",
+    "sessions": [],
+    "units": 1,
+    "path": "materials/ren123/checklist.pdf",
+    "size": 24500,
+    "sha": "5049763e42109f88ce351e7cb637b1325c6c1d8caacba197f87066d9537ec6f6"
+  },
+  {
+    "id": "syllabus",
+    "title": "Official REN 123 syllabus",
+    "kind": "overview",
+    "sessions": [],
+    "units": 15,
+    "path": "materials/ren123/syllabus.pdf",
+    "size": 633388,
+    "sha": "a398b8197f4e537dbacee6ec80c958cefcd98da0523aad9cefff9824a114675f"
+  },
+  {
+    "id": "posterior-wall-atf-lab",
+    "title": "Posterior abdominal wall lab · Dr. Atif",
+    "kind": "lab",
+    "sessions": [],
+    "units": 13,
+    "path": "materials/ren123/posterior-wall-atf-lab.pdf",
+    "size": 3600148,
+    "sha": "681e453322aba2e7d23ab35c5ca0c63b8fcf812d153e954c019d094988536350"
+  },
+  {
+    "id": "block-introduction",
+    "title": "Block introduction · Dr. Olena",
+    "kind": "overview",
+    "sessions": [],
+    "units": 25,
+    "path": "materials/ren123/block-introduction.pdf",
+    "size": 392941,
+    "sha": "b27969f2013acedb563c3b3a6432bcfe0262feb8c5b953008a112484d356dd58"
+  },
+  {
+    "id": "posterior-wall-1",
+    "title": "Posterior abdominal wall I · Dr. Olena",
+    "kind": "lecture",
+    "sessions": [
+      "A1"
+    ],
+    "units": 28,
+    "path": "materials/ren123/posterior-wall-1.pdf",
+    "size": 1481608,
+    "sha": "f98f7b5dc5448fa6ed5771d9b951b80b5ae5314f1e7fc1423849816079bf6a12"
+  },
+  {
+    "id": "posterior-wall-2",
+    "title": "Posterior abdominal wall II · Dr. Olena",
+    "kind": "lecture",
+    "sessions": [
+      "A2"
+    ],
+    "units": 19,
+    "path": "materials/ren123/posterior-wall-2.pdf",
+    "size": 1134955,
+    "sha": "274acfa7b6074166200e1d7f10b2f45dc3ddc6195f896b2b0b81c4f7977f02af"
+  },
+  {
+    "id": "kidneys",
+    "title": "Kidneys · Dr. Olena",
+    "kind": "lecture",
+    "sessions": [
+      "A3"
+    ],
+    "units": 34,
+    "path": "materials/ren123/kidneys.pdf",
+    "size": 2417932,
+    "sha": "51b164dd858c153f535fc29aa5e46db5cc65197146cbca53b78740347fd5146e"
+  },
+  {
+    "id": "kidney-lab-1",
+    "title": "Kidney histology lab I · Dr. Anikó",
+    "kind": "lab",
+    "sessions": [],
+    "units": 11,
+    "path": "materials/ren123/kidney-lab-1.pptx",
+    "size": 13045758,
+    "sha": "8fc495bf55e21bc51741b2deed27877072274b7e81619c3d4d6f965d8b33c0c3"
+  },
+  {
+    "id": "kidney-histology-1",
+    "title": "Kidney histology I · Dr. Anikó",
+    "kind": "lecture",
+    "sessions": [
+      "A5"
+    ],
+    "units": 24,
+    "path": "materials/ren123/kidney-histology-1.pptx",
+    "size": 19911324,
+    "sha": "d77c58f8c369fae96cafa4b0867ef367239c54be911c511d3671dd5022bb7af3"
+  },
+  {
+    "id": "past-paper-booklet",
+    "title": "Renal past-question booklet",
+    "kind": "booklet",
+    "sessions": [],
+    "units": 294,
+    "path": "materials/ren123/past-paper-booklet.pdf",
+    "size": 3095582,
+    "sha": "df0a674c71a173b3299497f4de3fa916e15f522207c421ac0af5c5582bc6da41"
+  }
+]

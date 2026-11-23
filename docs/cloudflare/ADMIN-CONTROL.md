@@ -49,3 +49,9 @@ The Students view shows registration, onboarding and academic group. **View acco
 **Edit information** lets the verified owner correct a Review Studio display name, student-number override, class, section, verified lab group and English schedule. Corrections are a reversible overlay. Clerk email, identity and permissions stay separate. **Clear group correction** removes only the group fields. **Clear profile corrections** returns all fields to the student's selections.
 
 Estimated active time is recorded for all signed-in students. It counts minutes with recent input in a visible, focused tab while online. Concurrent tabs count at most one minute per account per clock minute. The study-totals preference applies to completed reviews and answered-question counts. Earlier time and offline sessions are outside this estimate. Existing D1 JSON fields support this update without a schema migration.
+
+### Course archive and active workspace
+
+**Site Controls → Archive CVP 112 and show REN 123 as the current course** is enabled by default during the Renal transition. It moves CVP study surfaces to **Archive** while retaining their original lesson, question, and material IDs. CVP has no active review due dates in archive mode. Turning the setting off restores the previous course navigation and scheduling. Existing review timestamps, booklet attempts, files, and grades are retained.
+
+REN 123 currently uses the verified autumn timetable, academic group rules, and official final and OSPE events already registered in the app. The first ten Renal sources are listed in [the source intake](../content-audits/renal-source-intake.md).

@@ -46,6 +46,7 @@
    }catch{}
   }
   document.addEventListener('review-analytics-changed',()=>status(true));
+  window.addEventListener('review-managed-controls-refresh',()=>status(true));
   setInterval(()=>{if(document.visibilityState==='visible')status();},300000);
   let lastInteraction=-Infinity;
   for(const event of ['pointerdown','keydown','scroll']){
@@ -84,7 +85,9 @@
    if(!currentStatus||!document.querySelector('#content'))return;
    const {flags,assignment,resetId}=currentStatus;
    window.reviewManagedAssignment=assignment;
+   const previousArchive=window.reviewManagedFlags?.archiveCvp;
    window.reviewManagedFlags=flags;
+   if(previousArchive!==flags.archiveCvp)window.dispatchEvent(new Event('review-course-controls'));
    const key=JSON.stringify({flags,assignment,resetId});
    if(key!==appliedStatus){
     appliedStatus=key;
