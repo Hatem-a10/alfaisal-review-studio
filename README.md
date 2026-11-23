@@ -1,5 +1,7 @@
 # Review Studio
 
+> **Branch note.** `main` keeps the original ChatGPT Sites source as a legacy reference (also frozen at the `legacy/chatgpt-sites` branch) and the GitHub workflows that release, monitor and back up production. Active development happens on [`cloudflare-staging`](https://github.com/Hatem-a10/alfaisal-review-studio/tree/cloudflare-staging); read its `AGENTS.md` and `README.md` before changing the live site. Do not develop on `main`.
+
 Private application source · CVP 112 and MOL 114
 
 Latest source import: **v1.65**. See [GitHub source setup and safety](docs/github/SOURCE.md) and [known test baseline](docs/github/TEST-BASELINE.md). The guide below describes earlier study workflows; current source and release metadata are authoritative.

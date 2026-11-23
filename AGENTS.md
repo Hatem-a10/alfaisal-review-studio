@@ -1,5 +1,7 @@
 # Review Studio project instructions
 
+> **Branch note.** `main` keeps the original ChatGPT Sites source as a legacy reference (also frozen at the `legacy/chatgpt-sites` branch) and the GitHub workflows that release, monitor and back up production. Active development happens on [`cloudflare-staging`](https://github.com/Hatem-a10/alfaisal-review-studio/tree/cloudflare-staging); read its `AGENTS.md` and `README.md` before changing the live site. Do not develop on `main`.
+
 This checkout belongs to the existing owner-private Site `appgprj_6ade126fa77081919dc24e7a87700a9f`, URL https://alfaisal-review-studio.barcman2000.chatgpt.site/ . Never create a replacement Site to publish updates. Preserve `.openai/hosting.json`, DB/BUCKET bindings, user data, access settings and runtime secrets.
 
 Source: `public/`, `app/`, `lib/`; generated `dist/` is not the editing source. Keep large lecture originals/media in existing private storage. Preserve stable question/topic IDs, saved answers, earned mastery and independent review passes.

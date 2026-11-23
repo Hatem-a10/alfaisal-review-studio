@@ -1,0 +1,28 @@
+name: Token expiry reminder
+# The Cloudflare release and backup tokens expire on 2027-11-23. From 30 days before,
+# this opens one issue for the owner. Update EXPIRES when tokens are rolled.
+on:
+  schedule:
+    - cron: '17 6 1,15 * *'
+  workflow_dispatch:
+permissions:
+  issues: write
+concurrency: token-expiry-reminder
+env:
+  EXPIRES: '2027-11-23'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Open a reminder when expiry is near
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          days=$(( ( $(date -ud "$EXPIRES" +%s) - $(date -u +%s) ) / 86400 ))
+          echo "Cloudflare tokens expire in $days days"
+          [ "$days" -gt 30 ] && exit 0
+          title="Cloudflare API tokens expire on $EXPIRES"
+          if gh issue list -R "$REPO" --state open --search "in:title \"$title\"" --json number --jq 'length' | grep -qv '^0$'; then exit 0; fi
+          gh issue create -R "$REPO" --assignee "${{ github.repository_owner }}" --title "$title" --body "The GitHub Actions tokens CLOUDFLARE_API_TOKEN (environment: production) and CLOUDFLARE_BACKUP_TOKEN (environment: backup) expire in $days days. Roll both in the Cloudflare dashboard, paste the new values into the GitHub environment secrets, then update EXPIRES in .github/workflows/token-expiry-reminder.yml."
