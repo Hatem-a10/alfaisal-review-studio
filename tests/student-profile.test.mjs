@@ -1,3 +1,4 @@
+import {lectureCourses} from '../public/course-registry.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const read=f=>fs.readFileSync(f,'utf8'),KEY='alfaisal-review-studio-v1';
 function client({saved={},settings={},account=null,revision=null}={}){let setup=0,switches=[],persisted=0;const storage=new Map(account?[[KEY+'-account',account]]:[]);const ctx={window:{},saved,settings,KEY,syncMeta:{revision},paintProfile(){},document:{querySelector:()=>null,querySelectorAll:()=>[],getElementById:()=>null},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},cleanSettings:s=>s,esc:s=>s,persist:()=>persisted++,profileUI:{setup:async()=>{setup++;return {profileName:'New Student',studentNumber:'123456789',profileCreatedAt:'2026-11-11T10:00:00Z'}},signedOut(){},switchAccount:async key=>switches.push(key)}};vm.createContext(ctx);vm.runInContext(read('public/profile-entry.js').replace("import('/student-profile.mjs?v=2')",'Promise.resolve(profileUI)')+';this.profile=StudentProfile',ctx);return {ctx,storage,setup:()=>setup,switches,persisted:()=>persisted}}
@@ -13,7 +14,7 @@ test('enlargement intercepts linked figures as well as image clicks and provides
 
 test('cloud accepts and returns the new profile fields and rejects oversized identifiers',async()=>{
  const ts=await import('typescript'),rows=new Map();const env={DB:{prepare(sql){let args;return {bind(...a){args=a;return this},async first(){const row=rows.get(args[0]);return row||null},async run(){rows.set(args[0],{revision:1,snapshot:args[1],updated_at:args[2]});return {meta:{changes:1}}}}}}};const loadedModule={exports:{}};
- new Function('require','module','exports',ts.default.transpileModule(read('app/api/progress/route.ts'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS,target:ts.default.ScriptTarget.ES2022}}).outputText)(()=>({env}),loadedModule,loadedModule.exports);
+ new Function('require','module','exports',ts.default.transpileModule(read('app/api/progress/route.ts'),{compilerOptions:{module:ts.default.ModuleKind.CommonJS,target:ts.default.ScriptTarget.ES2022}}).outputText)(name=>name.endsWith('course-registry.mjs')?{lectureCourses}:{env},loadedModule,loadedModule.exports);
  const snapshot={app:'alfaisal-review-studio',version:2,records:{},settings:{profileName:'New Student',studentNumber:'123456789',profileCreatedAt:'2026-11-11T12:00:00Z'}};
  const put=s=>new Request('https://example.test/api/progress',{method:'PUT',headers:{'oai-authenticated-user-id':'qa-student','Content-Type':'application/json'},body:JSON.stringify({revision:0,snapshot:s})});
  assert.equal((await loadedModule.exports.PUT(put(snapshot))).status,200);

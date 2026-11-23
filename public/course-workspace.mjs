@@ -1,5 +1,6 @@
 /* global DATA, campusWeekEvents, tasks, go, view, render, lessonId, lessonCourse:writable, learnTab:writable, etExam, originalRun, etScope:writable, etMockScope:writable, etAccurate:writable, etLecture, esc, intro, libraryTab:writable, documentId:writable, sourceSearch:writable, sourceLecture:writable, applyTheme, paintProfile */
 import {archiveViews,renalViews,workspaceRoute,isCvpStudyItem} from './course-workspace-core.mjs';
+import {courses} from './course-registry.mjs';
 import {renalTeachingPack} from './renal-lessons.mjs';
 
 const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
@@ -15,6 +16,8 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  LEARNING.questions.push(...renalTeaching.questions);
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
+window.reviewCourseConfig=id=>courses[id];
+window.reviewAllowsUnscheduledDates=id=>courses[id.split('-')[0]]?.unscheduled===true;
 window.reviewCvpArchived=enabled;
 window.reviewArchiveEnabled=archiveEnabled;
 window.reviewViewingArchive=()=>context?.course==='CVP';
@@ -27,8 +30,10 @@ let context=null,renalLessonId='REN-A1',lastMOLLesson='MOL-1';
 function courseSelector(route){
  if(!enabled()||!context||!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
  const active=context?.course||'REN';
- const options=active==='CVP'?[['CVP','CVP 112 · Archive']]:
-  [['REN','REN 123'],...(['booklet','practice','library','labs'].includes(route)?[['MOL','MOL 114']]:[])];
+ const options=Object.entries(courses)
+  .filter(([id,course])=>active==='CVP'?id==='CVP':!course.archived&&!(route==='ospe'&&course.noOspe))
+  .sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'))
+  .map(([id,course])=>[id,course.label+(course.archived?' · Archive':'')]);
  return '<label class="workspace-course-select">Course <select aria-label="Course" data-workspace-course="'+route+'">'+options.map(([key,label])=>
   '<option value="'+key+'" '+(key===active?'selected':'')+'>'+label+'</option>').join('')+'</select></label>'+
   (active==='CVP'?'<div class="course-workspace-links course-workspace-back">'+archiveLink()+'</div>':'');
@@ -90,6 +95,7 @@ go=function(next){
  if(next==='archive')return open('archive','index');
  if(context?.course==='CVP'&&['labs','ospe','library'].includes(next))return open('archive',next);
  if(context?.course==='MOL'&&['labs','library'].includes(next))return open('mol',next);
+ if(next==='practice'&&originalRun&&!originalRun.finishedAt&&originalRun.setId?.startsWith('ren-'))return open('renal','practice');
  if(next==='practice'&&((etExam&&!etExam.finishedAt&&!window.reviewArchivedStudyItem(etExam))||(originalRun&&!originalRun.finishedAt&&!window.reviewArchivedStudyItem(ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId))))){
   show(null);return legacyGo(next);
  }
@@ -168,7 +174,7 @@ document.addEventListener('change',event=>{
   open(target.value==='REN'?'renal':'mol','practice');
  }
  if(target.matches('[data-workspace-course]')){
-  const course={REN:'renal',MOL:'mol',CVP:'archive'}[target.value];
+  const course=courses[target.value]?.slug;
   if(course)open(course,target.dataset.workspaceCourse);
  }
  if(!enabled()||target.id!=='lessonCourse'||context?.course==='CVP')return;

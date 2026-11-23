@@ -1,15 +1,18 @@
+import {courses} from './course-registry.mjs';
+
 export const archiveViews=['learning','booklet','practice','labs','ospe','library'];
 export const renalViews=['dashboard',...archiveViews];
+const bySlug=new Map(Object.entries(courses).map(([id,course])=>[course.slug,[id,course]]));
 
 export function workspaceRoute(hash){
- const [course,view,...rest]=hash.replace(/^#/,'').split('/');
- if(rest.length)return null;
- if(course==='archive'&&(!view||archiveViews.includes(view)))return {course:'CVP',view:view||'index'};
- if(course==='renal'&&renalViews.includes(view))return {course:'REN',view};
- if(course==='mol'&&['learning','practice','library','labs','booklet'].includes(view))return {course:'MOL',view};
+ const [slug,view,...rest]=hash.replace(/^#/,'').split('/');
+ const entry=bySlug.get(slug);
+ if(rest.length||!entry)return null;
+ const [course,config]=entry;
+ if(config.archived&&!view)return {course,view:'index'};
+ if(archiveViews.includes(view)&&!(view==='ospe'&&config.noOspe)||view==='dashboard'&&course==='REN')return {course,view};
  return null;
 }
-
 export function renalSessions(events, matches, kinds){
  const seen=new Set();
  return events.filter(event=>{
