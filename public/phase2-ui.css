@@ -59,7 +59,7 @@ html[data-theme=amoled] .phase2-heatmap [data-band=unknown],html[data-theme=amol
 .phase2-question-card :is(.phase2-question-stem,.phase2-question-options){max-width:100%;overflow-wrap:anywhere}
 .phase2-question-options{display:grid;gap:8px}
 .phase2-question-options label{display:flex;align-items:flex-start;gap:10px;min-width:0;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:var(--white);cursor:pointer}
-.phase2-question-options input[type=checkbox]{flex:none;margin:2px 0;accent-color:var(--accent,#2f6c52)}
+.phase2-question-options input[type=checkbox]{flex:none;margin:2px 0;accent-color:var(--accent,#5b4bd0)}
 .phase2-question-options label>span{min-width:0;user-select:none}
 :is(.phase2-practice-card,.phase2-history-card,.phase2-question-card) :is(img,video,canvas){max-width:100%;height:auto;object-fit:contain}
 .phase2-figure-lightbox{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:clamp(12px,3vw,36px);background:#111d;color:#fff}

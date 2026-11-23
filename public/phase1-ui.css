@@ -1,6 +1,6 @@
 /* Phase 1 interface layer. Keep this file last in the stylesheet order. */
 :root{
-  --accent:var(--green,#2f6c52);
+  --accent:var(--green,#5b4bd0);
   --accent-fg:#fff;
   --accent-bg:#e8f1eb;
   --accent-border:#789786;
