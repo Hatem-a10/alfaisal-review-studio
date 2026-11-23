@@ -36,5 +36,6 @@ export function assembledLearning(){
  applySupplementalObjectives(learning,checks,supplemental);
  const takeaways=JSON.parse(readFileSync(root+'public/topic-takeaways.json','utf8'));
  applyTopicTakeaways(teaching,takeaways);
- return {learning,teaching,pack,checks};
+ const baseDiagrams=runInNewContext(readFileSync(root+'public/diagram-data.js','utf8')+';DIAGRAMS');
+ return {learning,teaching,pack,checks,diagrams:{...baseDiagrams,...pack.diagrams,...transcriptContext.DIAGRAMS}};
 }

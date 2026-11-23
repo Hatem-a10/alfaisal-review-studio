@@ -143,8 +143,38 @@
   window.ReviewStudioReportTools?.mountSettings(frame);
   if(!document.getElementById('managedAccountPrivacy')){
    const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share aggregate study activity with the site administrator'));const link=document.createElement('a');link.href='/auth/privacy';link.textContent='Privacy details';link.target='_blank';link.rel='noopener';const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,link,document.createTextNode(' · '),signout,status);frame.append(panel);
+   if(window.Clerk.user&&typeof window.Clerk.openUserProfile==='function'){
+    const methods=document.createElement('button');
+    methods.type='button';
+    methods.textContent='Manage sign-in methods';
+    methods.onclick=()=>{
+     const settingsDialog=document.getElementById('siteAdmin');
+     try{
+      if(settingsDialog?.open)settingsDialog.close();
+      window.Clerk.openUserProfile();
+     }catch{
+      if(settingsDialog&&!settingsDialog.open)settingsDialog.showModal();
+      status.textContent='Sign-in methods could not load. Try again.';
+     }
+    };
+    panel.insertBefore(methods,status);
+   }
    checkbox.onchange=async()=>{checkbox.disabled=true;try{const profile=typeof settings==='undefined'?{}:{name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency};const analytics=studyCounts();const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({analyticsOptIn:checkbox.checked,profile,analytics})});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
   }
   }catch{console.error('Account controls unavailable.')}finally{installing=false}
  }
-})().catch(error=>{const target=document.querySelector('#managedAuthMount [role=status]');if(target)target.textContent=error.message;else console.error('Account service unavailable.');});
+})().catch(()=>{
+ const mount=document.getElementById('managedAuthMount');
+ if(!mount){console.error('Account service unavailable.');return}
+ const message=document.createElement('p');
+ message.setAttribute('role','status');
+ message.textContent='Sign-in did not load. Try again, or return to sign-in to choose another method.';
+ const retry=document.createElement('button');
+ retry.type='button';
+ retry.textContent='Retry';
+ retry.onclick=()=>window.location.reload();
+ const signIn=document.createElement('a');
+ signIn.href='/auth/sign-in';
+ signIn.textContent='Back to sign-in';
+ mount.replaceChildren(message,retry,document.createTextNode(' '),signIn);
+});

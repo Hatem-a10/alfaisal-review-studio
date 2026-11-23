@@ -1,6 +1,6 @@
 # Admin Control Center
 
-Phase 3 is scoped to the existing Cloudflare staging Worker and its existing D1 and R2 bindings. Native ChatGPT Sites and the GitHub main branch use their existing release paths.
+The control center runs on independent Cloudflare deployments. Use synthetic accounts in staging and preserve the separate production D1 and R2 bindings.
 
 ## Roles and access
 
@@ -40,4 +40,4 @@ Apply the additive scripts in order to the existing staging database after the P
 3. `staging/admin-content.sql`
 4. `staging/admin-resources.sql`
 
-Roll back code through the staging Worker deployment history. Keep additive tables and archived R2 revisions for later investigation. For future production, provision the separate Clerk instance, D1 and private R2. Require explicit owner MFA enrollment, encrypted backup and restore verification, and owner approval before cutover.
+Roll back code through the staging Worker deployment history. Keep additive tables and archived R2 revisions for later investigation. Production uses its own Clerk instance, D1 and private R2. Its approved owner policy requires recent first-factor verification and the separate Admin phrase. Any change to that policy requires owner approval. See the [release runbook](PRODUCTION-READINESS.md) for recovery and production verification.

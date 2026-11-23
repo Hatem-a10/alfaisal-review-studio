@@ -1,8 +1,15 @@
 # Review Studio
 
-Private application source · CVP 112 and MOL 114
+Alfaisal Review Studio is a medical study planner and practice app for CVP 112 and MOL 114.
 
-Latest source import: **v1.65**. See [GitHub source setup and safety](docs/github/SOURCE.md) and [known test baseline](docs/github/TEST-BASELINE.md). The guide below describes earlier study workflows; current source and release metadata are authoritative.
+- [Production](https://alfaisal.review/) runs independently on Cloudflare Workers with Clerk.
+- [Staging](https://review-studio-staging-20261117.hatema2169.workers.dev/) uses separate Clerk Development, D1 and R2 resources.
+- Before editing, read [AGENTS.md](AGENTS.md). Start from `cloudflare-staging` and follow the [reviewed Cloudflare release workflow](docs/cloudflare/PRODUCTION-READINESS.md).
+- For academic work consult the [Lesson Content Standards](docs/LESSON-CONTENT-STANDARDS.md).
+
+## Historical study and native Sites notes
+
+The sections below are retained from earlier releases. Counts, authentication, source versions and study behavior may have changed. Use the current code, tests and deployed metadata for current behavior.
 
 ## Start studying
 
