@@ -56,7 +56,18 @@ function distinct(questions){
  return {items,duplicates};
 }
 const isVisualQuestion=q=>visualPattern.test([q.kind,q.sourceType,q.difficulty].filter(text).join(' '))||!!questionImage(q)&&visualPattern.test(q.question);
-const graded=q=>text(q.id)&&text(q.question)&&Array.isArray(q.options)&&q.options.length>=4&&q.options.every(text)&&new Set(q.options.map(normalize)).size===q.options.length&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length;
+function questionIssues(q){
+ const issues=[];
+ if(!text(q.id)||!text(q.question))issues.push('missing-id-or-stem');
+ if(!Array.isArray(q.options)||q.options.length<4||!q.options.every(text)){
+  issues.push('invalid-choice-set');
+ }else if(new Set(q.options.map(choice=>choice.normalize('NFKC').trim().toLowerCase())).size!==q.options.length){
+  issues.push('duplicate-choices');
+ }
+ if(!Number.isInteger(q.answer)||q.answer<0||q.answer>=(q.options?.length||0))issues.push('invalid-key-index');
+ return issues;
+}
+const graded=q=>questionIssues(q).length===0;
 const feedback=q=>text(q.explanation)&&q.reasons?.length===q.options?.length&&q.reasons.every(text);
 function subject(item){
  if(item.course==='MOL')return 'Molecular Medicine';
@@ -81,7 +92,7 @@ function auditQuestions(questions,inventory){
   visualInterpretation:valid.filter(isVisualQuestion).length,
   mediumReasoning:valid.filter(q=>/^(medium|intermediate)$/i.test(q.difficulty||'')&&applicationPattern.test(tagged(q))).length,
   missingDifficulty:valid.filter(q=>!text(q.difficulty)).map(q=>q.id),
-  invalidMcqs:items.filter(q=>!graded(q)).map(q=>q.id),
+  invalidMcqs:items.map(q=>({id:q.id,issues:questionIssues(q)})).filter(q=>q.issues.length),
   missingExplanations:valid.filter(q=>!feedback(q)).map(q=>q.id),
   missingCitations:valid.filter(q=>!q.references?.length).map(q=>q.id),
   invalidCitations:items.flatMap(q=>(q.references||[]).filter(r=>!inventory.validRef(r)).map(r=>({id:q.id,...r}))),

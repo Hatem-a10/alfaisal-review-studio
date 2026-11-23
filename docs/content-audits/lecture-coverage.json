@@ -936,7 +936,7 @@
           "sourceCount": 5,
           "validCitations": 5,
           "invalidCitations": [],
-          "distinctMcqs": 9,
+          "distinctMcqs": 11,
           "visualInterpretationMcqs": 1,
           "distinctCoreStems": 11,
           "targetMinimum": 2,
@@ -1041,14 +1041,15 @@
       "citedTopics": 7,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 50,
-        "application": 26,
+        "distinct": 52,
+        "application": 27,
         "visualInterpretation": 1,
         "mediumReasoning": 0,
         "missingDifficulty": [
           "drill-CVP-P3-0-0",
           "drill-CVP-P3-1-0",
           "drill-CVP-P3-2-0",
+          "cvp-booklet-36c8487225e8",
           "cvp-booklet-05ad7beb62e3",
           "cvp-booklet-f8eca00a8c87",
           "cvp-booklet-fc048881a655",
@@ -1076,6 +1077,7 @@
           "CVP-P3-week1-2-2",
           "CVP-P3-week1-3-1",
           "CVP-P3-week1-3-2",
+          "CVP-P3-week1-1-1",
           "CVP-P3-week1-1-2",
           "CVP-P3-week1-4-1",
           "CVP-P3-week1-4-2",
@@ -1097,10 +1099,7 @@
           "phys-added-P3-week1-6-2",
           "phys-added-P3-week1-6-3"
         ],
-        "invalidMcqs": [
-          "cvp-booklet-36c8487225e8",
-          "CVP-P3-week1-1-1"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -1119,10 +1118,11 @@
         ],
         "provenanceLabels": {
           "Concept check · authored study aid": 3,
-          "Lecture application · authored from supplied CVP slides": 13,
+          "Lecture application · authored from supplied CVP slides": 14,
           "Lecture application · source-figure interpretation": 1,
           "Past paper · adapted": 15,
           "Past paper · reviewed": 6,
+          "Past-paper question · reviewed explanation": 1,
           "Source-linked application": 12
         },
         "unassignedToInlineTopic": []
@@ -1196,7 +1196,6 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "question-integrity",
         "visual-practice-review"
       ],
       "meetsExistingCoreFloor": true,
@@ -8425,7 +8424,7 @@
       "citedTopics": 8,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 51,
+        "distinct": 52,
         "application": 38,
         "visualInterpretation": 2,
         "mediumReasoning": 0,
@@ -8440,6 +8439,7 @@
           "cvp-booklet-3dae317e711a",
           "cvp-booklet-e02fc7b98b8f",
           "cvp-booklet-a294ba1007f2",
+          "cvp-booklet-ec8b9f8adbe8",
           "cvp-booklet-97ec6fe24c7b",
           "CVP-P13:w3-demand-q1",
           "CVP-P13:w3-demand-q2",
@@ -8482,9 +8482,7 @@
           "phys-added-P13-w3-remodeling-1",
           "phys-added-P13-w3-remodeling-2"
         ],
-        "invalidMcqs": [
-          "cvp-booklet-ec8b9f8adbe8"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [
           "drill-CVP-P13-0-0",
@@ -8513,7 +8511,7 @@
           "Authored from supplied lecture · reviewed teaching practice": 23,
           "Authored from the supplied transcript": 2,
           "Concept check · authored study aid": 3,
-          "Past paper · adapted": 6,
+          "Past paper · adapted": 7,
           "Past paper · reviewed": 2,
           "Source-linked application": 15
         },
@@ -8531,6 +8529,7 @@
           "cvp-booklet-3dae317e711a",
           "cvp-booklet-e02fc7b98b8f",
           "cvp-booklet-a294ba1007f2",
+          "cvp-booklet-ec8b9f8adbe8",
           "cvp-booklet-97ec6fe24c7b"
         ]
       },
@@ -8591,8 +8590,7 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "citation-review",
-        "question-integrity"
+        "citation-review"
       ],
       "meetsExistingCoreFloor": true,
       "editorialStatus": "editorial-review-pending"
@@ -12305,7 +12303,7 @@
           "sourceCount": 6,
           "validCitations": 6,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -12410,8 +12408,8 @@
       "citedTopics": 5,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 36,
-        "application": 17,
+        "distinct": 39,
+        "application": 18,
         "visualInterpretation": 3,
         "mediumReasoning": 0,
         "missingDifficulty": [
@@ -12420,7 +12418,9 @@
           "drill-CVP-P18-2-0",
           "cvp-booklet-3037ad1a2873",
           "cvp-booklet-606defd4ca75",
+          "cvp-booklet-1d90e1bd3df6",
           "cvp-booklet-de2c9d09cb97",
+          "cvp-booklet-47a20cc15b0c",
           "cvp-booklet-cc3ce0a48bf9",
           "cvp-booklet-39fc6ded870a",
           "cvp-booklet-aaf7213aceee",
@@ -12428,6 +12428,7 @@
           "CVP-P18:pulm-compliance-q1",
           "CVP-P18:pulm-compliance-q2",
           "CVP-P18:pulm-compliance-q3",
+          "CVP-P18:pulm-pressures-q1",
           "CVP-P18:pulm-pressures-q2",
           "CVP-P18:pulm-pressures-q3",
           "CVP-P18:pulm-recoil-q1",
@@ -12452,11 +12453,7 @@
           "phys-added-P18-pulm-disease-1",
           "phys-added-P18-pulm-disease-2"
         ],
-        "invalidMcqs": [
-          "cvp-booklet-1d90e1bd3df6",
-          "cvp-booklet-47a20cc15b0c",
-          "CVP-P18:pulm-pressures-q1"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -12473,10 +12470,10 @@
           }
         ],
         "provenanceLabels": {
-          "Authored from supplied lecture · reviewed teaching practice": 14,
+          "Authored from supplied lecture · reviewed teaching practice": 15,
           "Concept check · authored study aid": 3,
-          "Past paper · adapted": 6,
-          "Past paper · reviewed": 1,
+          "Past paper · adapted": 7,
+          "Past paper · reviewed": 2,
           "Source-linked application": 8,
           "Supplied pulmonary quiz with individual reviewed explanations": 4
         },
@@ -12489,7 +12486,9 @@
           "drill-CVP-P18-2-1",
           "cvp-booklet-3037ad1a2873",
           "cvp-booklet-606defd4ca75",
+          "cvp-booklet-1d90e1bd3df6",
           "cvp-booklet-de2c9d09cb97",
+          "cvp-booklet-47a20cc15b0c",
           "cvp-booklet-cc3ce0a48bf9",
           "cvp-booklet-39fc6ded870a",
           "cvp-booklet-aaf7213aceee",
@@ -12550,8 +12549,7 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "question-integrity"
+        "difficulty-review"
       ],
       "meetsExistingCoreFloor": true,
       "editorialStatus": "editorial-review-pending"
@@ -15561,7 +15559,12 @@
           "CVP-P24:resp26-fluid:coverage-4"
         ],
         "invalidMcqs": [
-          "CVP-P24:resp26-zones:q1"
+          {
+            "id": "CVP-P24:resp26-zones:q1",
+            "issues": [
+              "duplicate-choices"
+            ]
+          }
         ],
         "missingExplanations": [],
         "missingCitations": [
@@ -16330,7 +16333,7 @@
           "sourceCount": 2,
           "validCitations": 2,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -16378,7 +16381,7 @@
           "sourceCount": 2,
           "validCitations": 2,
           "invalidCitations": [],
-          "distinctMcqs": 3,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -16405,8 +16408,8 @@
       "citedTopics": 6,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 27,
-        "application": 24,
+        "distinct": 30,
+        "application": 27,
         "visualInterpretation": 0,
         "mediumReasoning": 0,
         "missingDifficulty": [
@@ -16422,11 +16425,13 @@
           "phys-added-P26-0-1",
           "phys-added-P26-0-2",
           "phys-added-P26-1-1",
+          "phys-added-P26-1-2",
           "phys-added-P26-2-1",
           "phys-added-P26-2-2",
           "phys-added-P26-oxygen-levels-2",
           "phys-added-P26-oxygen-levels-3",
           "phys-added-P26-oxygen-levels-4",
+          "phys-added-P26-gradient-2",
           "phys-added-P26-gradient-3",
           "phys-added-P26-gradient-4",
           "phys-added-P26-oxygen-response-2",
@@ -16434,15 +16439,12 @@
           "phys-added-P26-oxygen-response-4",
           "phys-added-P26-0-3",
           "phys-added-P26-0-4",
+          "phys-added-P26-1-3",
           "phys-added-P26-1-4",
           "phys-added-P26-2-3",
           "phys-added-P26-2-4"
         ],
-        "invalidMcqs": [
-          "phys-added-P26-1-2",
-          "phys-added-P26-gradient-2",
-          "phys-added-P26-1-3"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -16454,7 +16456,7 @@
         "questionImages": [],
         "provenanceLabels": {
           "Concept check · authored study aid": 3,
-          "Source-linked application": 24
+          "Source-linked application": 27
         },
         "unassignedToInlineTopic": []
       },
@@ -16468,7 +16470,6 @@
         "objective-map-needs-editor",
         "difficulty-review",
         "revision-summary",
-        "question-integrity",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -21228,7 +21229,7 @@
           "sourceCount": 1,
           "validCitations": 1,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -21367,8 +21368,8 @@
       "citedTopics": 10,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 72,
-        "application": 28,
+        "distinct": 73,
+        "application": 29,
         "visualInterpretation": 2,
         "mediumReasoning": 0,
         "missingDifficulty": [
@@ -21429,6 +21430,7 @@
           "mol8-reviewed-extra-1",
           "mol8-reviewed-extra-2",
           "mol8-reviewed-extra-3",
+          "mol8-reviewed-extra-4",
           "mol8-reviewed-extra-5",
           "mol8-reviewed-extra-6",
           "mol8-reviewed-extra-7",
@@ -21445,9 +21447,7 @@
           "topic-check-MOL-8:guide-5-1",
           "topic-check-MOL-8:guide-5-2"
         ],
-        "invalidMcqs": [
-          "mol8-reviewed-extra-4"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -21482,7 +21482,7 @@
           "Past paper · adapted": 28,
           "Past paper · figure-based reviewed practice": 2,
           "Past-paper question · reviewed explanation": 2,
-          "Source-linked application": 15,
+          "Source-linked application": 16,
           "Topic check · authored study aid": 3
         },
         "unassignedToInlineTopic": [
@@ -21540,8 +21540,7 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "question-integrity"
+        "difficulty-review"
       ],
       "meetsExistingCoreFloor": true,
       "editorialStatus": "editorial-review-pending"
@@ -21621,7 +21620,7 @@
           "sourceCount": 1,
           "validCitations": 1,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -21733,7 +21732,7 @@
           "sourceCount": 1,
           "validCitations": 1,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -21816,8 +21815,8 @@
       "citedTopics": 10,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 64,
-        "application": 28,
+        "distinct": 66,
+        "application": 30,
         "visualInterpretation": 2,
         "mediumReasoning": 0,
         "missingDifficulty": [
@@ -21865,6 +21864,7 @@
           "diverse-v1-MOL-9-27",
           "image-practice-v1-11",
           "image-practice-v1-12",
+          "mol9-reviewed-extra-1",
           "mol9-reviewed-extra-2",
           "mol9-reviewed-extra-3",
           "mol9-reviewed-extra-4",
@@ -21873,6 +21873,7 @@
           "mol9-reviewed-extra-7",
           "mol9-reviewed-extra-8",
           "mol9-reviewed-extra-9",
+          "mol9-reviewed-extra-10",
           "mol9-reviewed-extra-11",
           "mol9-reviewed-extra-12",
           "mol9-reviewed-extra-13",
@@ -21886,10 +21887,7 @@
           "topic-check-MOL-9:guide-8-1",
           "topic-check-MOL-9:guide-8-2"
         ],
-        "invalidMcqs": [
-          "mol9-reviewed-extra-1",
-          "mol9-reviewed-extra-10"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -21924,7 +21922,7 @@
           "Past paper · adapted": 18,
           "Past paper · figure-based reviewed practice": 2,
           "Past-paper question · reviewed explanation": 2,
-          "Source-linked application": 15,
+          "Source-linked application": 17,
           "Topic check · authored study aid": 5
         },
         "unassignedToInlineTopic": [
@@ -22004,8 +22002,7 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "question-integrity"
+        "difficulty-review"
       ],
       "meetsExistingCoreFloor": true,
       "editorialStatus": "editorial-review-pending"
@@ -24230,7 +24227,7 @@
           "sourceCount": 1,
           "validCitations": 1,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -24433,8 +24430,8 @@
       "citedTopics": 12,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 61,
-        "application": 50,
+        "distinct": 62,
+        "application": 51,
         "visualInterpretation": 1,
         "mediumReasoning": 0,
         "missingDifficulty": [
@@ -24451,6 +24448,7 @@
           "MOL-14:0-met-classify",
           "MOL-14:0-met-branch",
           "MOL-14:1-met-pump",
+          "MOL-14:1-met-coupling",
           "MOL-14:met-compartments-met-locations",
           "MOL-14:met-compartments-met-purpose",
           "MOL-14:met-redox-met-direction",
@@ -24500,9 +24498,7 @@
           "MOL-14:met-pku:met-extra-1",
           "MOL-14:met-pku:met-extra-2"
         ],
-        "invalidMcqs": [
-          "MOL-14:1-met-coupling"
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -24523,7 +24519,7 @@
           }
         ],
         "provenanceLabels": {
-          "Authored from supplied course material · reviewed teaching practice": 22,
+          "Authored from supplied course material · reviewed teaching practice": 23,
           "Concept check · authored study aid": 3,
           "Lecture application": 29,
           "Past paper · adapted": 7
@@ -24580,7 +24576,6 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "question-integrity",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27324,7 +27319,12 @@
           "MOL-22:2:booklet-1"
         ],
         "invalidMcqs": [
-          "MOL-22:defense:depth-1"
+          {
+            "id": "MOL-22:defense:depth-1",
+            "issues": [
+              "duplicate-choices"
+            ]
+          }
         ],
         "missingExplanations": [],
         "missingCitations": [],
