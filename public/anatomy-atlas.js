@@ -87,7 +87,7 @@ const AnatomyAtlas=(()=>{
  const back='<button type="button" class="atlas-back" data-atlas-back>← All models</button>';
  const codes=items=>items.split(' ').map(code=>'<span>'+code+'</span>').join('');
  function gallery(){
-  return intro('CVP 112 · SPATIAL ANATOMY','3D Anatomy Lab','Choose a specimen to rotate, inspect and isolate structures.')+
+  return intro('CVP 112 · spatial anatomy','3D Anatomy Lab','Choose a specimen to rotate, inspect and isolate structures.')+
    '<section class="atlas-gallery" aria-label="Anatomy models">'+Object.entries(models).map(([id,[title,group,note,lessons,tone]],index)=>
    `<button class="atlas-card${id==='complete'?' atlas-featured':''}" type="button" style="--atlas-tone:${tone}" data-atlas-model="${id}">
     <span class="atlas-art"><span class="atlas-category">${group}</span><img src="${root+id}.webp?v=3" alt="" width="560" height="300" ${index>2?'loading="lazy"':''}></span>
@@ -148,7 +148,7 @@ const AnatomyAtlas=(()=>{
       <label class="heart-model-picker">Anatomy model<select id="atlasPreset" disabled><option value="all">Complete model</option><option value="custom" disabled>Custom layers</option></select></label>
       <fieldset class="atlas-layer-menu"><legend>Visible layers · select any combination</legend><div id="atlasLayers"></div></fieldset>
      </div>
-     <div id="atlasStage" class="heart-stage atlas-stage"><div id="atlasStatus" role="status">Loading model…</div><output id="atlasSelected" class="heart-picked" aria-live="polite" hidden></output><div class="heart-orientation" aria-hidden="true">ANATOMICAL MODEL · ILLUSTRATIVE COLORS</div></div>
+     <div id="atlasStage" class="heart-stage atlas-stage"><div id="atlasStatus" role="status">Loading model…</div><output id="atlasSelected" class="heart-picked" aria-live="polite" hidden></output><div class="heart-orientation" aria-hidden="true">Anatomical model · illustrative colors</div></div>
      ${exploreControls('atlas')}${gestures}
      <div id="atlasActivity" aria-live="polite" hidden></div>
     </section>
