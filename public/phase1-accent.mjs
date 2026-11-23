@@ -1,4 +1,4 @@
-const FALLBACK = '#2f6c52';
+const FALLBACK = '#5b4bd0';
 const WHITE = [255, 255, 255];
 const BLACK = [0, 0, 0];
 

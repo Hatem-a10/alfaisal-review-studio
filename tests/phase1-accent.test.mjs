@@ -25,7 +25,7 @@ test('semantic foreground, hover, text accent and borders meet contrast targets 
 
 test('invalid accents fall back safely and compatibility properties are returned', () => {
   const tokens = deriveAccent('not-a-color', false);
-  assert.equal(tokens['--accent'], '#2f6c52');
+  assert.equal(tokens['--accent'], '#5b4bd0');
   assert.equal(tokens['--green'], tokens['--accent-text']);
   assert.equal(tokens['--on-accent'], tokens['--accent-fg']);
 });
