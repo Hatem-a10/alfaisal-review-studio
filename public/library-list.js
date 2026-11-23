@@ -75,7 +75,8 @@ function libraryLectureLists() {
  const scope=globalThis.reviewCourseScope;
  const supportsScope=source=>{
   if(!scope)return true;
-  const mapped=[source.lectureId,...(source.lectureIds||[]),...(source.lectureRanges||[]).map(range=>range.lectureId)].filter(Boolean);
+  const ranges=Array.isArray(source.lectureRanges)?source.lectureRanges:[];
+  const mapped=[source.lectureId,...(source.lectureIds||[]),...ranges.map(range=>range.lectureId)].filter(Boolean);
   if(mapped.length)return mapped.some(id=>id.startsWith(scope+'-'));
   if(LEARNING.lessons.some(lesson=>lesson.id.startsWith(scope+'-')&&lesson.references?.some(ref=>ref.source===source.id)))return true;
   return new RegExp('(?:^|[^a-z])'+scope+'(?:[^a-z]|$)','i').test(source.id+' '+source.name);

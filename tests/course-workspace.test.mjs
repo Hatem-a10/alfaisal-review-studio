@@ -52,3 +52,16 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
  assert.deepEqual(bookletSections.map(([kind])=>kind),['MCQs','SAQs','OSPE']);
  assert.ok(bookletSections.flatMap(([,sections])=>sections).every(([,page])=>page>=3&&page<=booklet.units));
 });
+
+test('Renal and CVP booklet positions merge independently with stable answer IDs',async()=>{
+ const {mergePractice}=await import('../public/phase2-practice-core.mjs');
+ const older={navigationAt:'2026-11-20',position:8,filter:'all',booklet:{cvp19:{completed:true,at:'2026-11-20'}},
+  renalNavigation:{position:3,filter:'wrong',at:'2026-11-22'}};
+ const newer={navigationAt:'2026-11-23',position:12,filter:'completed',booklet:{'ren-booklet-p6-q11':{completed:true,at:'2026-11-23'}},
+  renalNavigation:{position:1,filter:'all',at:'2026-11-21'}};
+ const merged=mergePractice(older,newer);
+ assert.equal(merged.position,12);
+ assert.equal(merged.filter,'completed');
+ assert.deepEqual(merged.renalNavigation,older.renalNavigation);
+ assert.deepEqual(Object.keys(merged.booklet),['cvp19','ren-booklet-p6-q11']);
+});
