@@ -150,6 +150,8 @@ html[data-theme=light] :is(.muted,.section-sub,.source-note){color:var(--muted)}
  html[data-ui=modern] .lesson-catalog .catalog-list button :is(strong,span,small){position:static!important;display:block;line-height:1.45;white-space:normal;overflow-wrap:anywhere;margin:0}
 }
 #phase1SearchButton{width:46px;height:44px;display:grid;place-items:center;margin-right:auto;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--ink);flex:none}
+#hubTopBody #phase1SearchButton{position:sticky;left:0;z-index:1;margin:0 4px 0 0;height:36px;touch-action:manipulation}
+@media(max-width:760px){#hubTopBody #phase1SearchButton{height:44px}}
 #phase1Search{width:min(680px,calc(100vw - 24px));max-height:calc(100dvh - 32px)}
 #phase1SearchInput{width:100%;margin:8px 0 12px;font-size:16px}
 #phase1SearchResults{max-height:55dvh;overflow:auto;display:grid;gap:7px}
@@ -167,3 +169,12 @@ html[data-theme=amoled] :is(input,select,textarea){border-color:#7c8980}
 #mainSidebar .profile-upload-icon{width:28px!important;height:28px!important;min-height:28px!important;border-radius:50%;overflow:visible;background:#171827;color:#fff;border:1px solid #7c8980;display:grid;place-items:center}
 #mainSidebar .profile-upload-icon::after{content:"";position:absolute;inset:-8px;border-radius:50%}
 #themeToggle{width:44px!important;height:44px!important;min-width:44px}
+
+.student-progress-lesson{display:grid;gap:6px;min-width:0;overflow-wrap:anywhere}
+.student-progress-lesson label{margin:0}
+.student-progress-column-controls{position:sticky;top:0;z-index:1;background:var(--white)}
+@media(max-width:600px){
+ .student-progress-column-controls{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;position:static}
+ .student-progress-column-controls>strong{grid-column:1/-1}
+ .student-progress-column-controls>label{white-space:normal}
+}

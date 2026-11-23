@@ -4,7 +4,18 @@ function paintSyncSummary(message){const s=String(message||''),bad=!storageOK||/
 function campusTime(n){const h=Math.floor(n/60),m=n%60;return (h%12||12)+':'+String(m).padStart(2,'0')+(h>=12?' pm':' am')}
 function campusWeekStart(value){return add(value,-new Date(value+'T12:00:00Z').getUTCDay())}
 let officialGroupSchedule=null,groupScheduleError='';
-const groupTimetableReady=fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{officialGroupSchedule=value;if(view==='calendar'||view==='dashboard')render();return value}).catch(()=>{groupScheduleError='Official timetable could not load. Reconnect and refresh.';if(view==='calendar')render();return null});
+const groupTimetableReady=fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{officialGroupSchedule=value;applyRenalScheduleAssessments(value);if(view==='calendar'||view==='dashboard')render();return value}).catch(()=>{groupScheduleError='Official timetable could not load. Reconnect and refresh.';if(view==='calendar')render();return null});
+function applyRenalScheduleAssessments(timetable){
+ for(const row of timetable.events.filter(e=>e.source==='Renal Schedule.pdf'&&e.kind==='assessment'&&e.studentGroups.length===4)){
+  const course=row.title.match(/^(REN|MOL|COM)\b/i)?.[1]?.toUpperCase(),practical=/OSPE/i.test(row.title);
+  if(!course||!practical&&!/final/i.test(row.title))continue;
+  const event=DATA.events.find(e=>e.course===course&&e.date===row.date&&(practical?/ospe/i.test(e.title):/final/i.test(e.title)));
+  if(!event)continue;
+  const clock=minutes=>String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');
+  event.detail=clock(row.start)+'–'+clock(row.end);
+  event.source=row.source+' · page '+row.references[0].page;
+ }
+}
 function englishScheduleEvents(start){return GroupSchedules.english(start,settings)}
 function campusWeekEvents(start,shared=scheduleShared){return GroupSchedules.selected(start,settings,officialGroupSchedule,CAMPUS_SCHEDULE.events,shared)}
 function campusScheduleWeeks(){return [...CAMPUS_SCHEDULE.weeks,...(officialGroupSchedule?.weeks||[])].sort((a,b)=>a.start.localeCompare(b.start))}

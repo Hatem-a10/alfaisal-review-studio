@@ -42,7 +42,7 @@ function assetLink(source,label,page){
 function materialList(kinds){
  const items=materials.filter(source=>kinds.includes(source.kind));
  if(!items.length)return '';
- return '<ul class="course-workspace-sessions">'+items.map(source=>'<li><strong>'+esc(source.title)+'</strong><small>'+source.units+' '+(source.path.endsWith('.pdf')?'pages':'slides')+' · '+assetLink(source,source.path.endsWith('.pdf')?'Open PDF':'Download slides')+'</small></li>').join('')+'</ul>';
+ return '<ul class="course-workspace-sessions">'+items.map(source=>'<li><strong>'+esc(source.title)+'</strong><small>'+source.units+' '+(source.path.endsWith('.pptx')?'slides':'pages')+' · '+assetLink(source,source.path.endsWith('.pdf')?'Open PDF':source.path.endsWith('.docx')?'Open handout':'Download slides')+'</small></li>').join('')+'</ul>';
 }
 function bookletList(types){
  const booklet=materials.find(source=>source.kind==='booklet');
@@ -50,19 +50,6 @@ function bookletList(types){
  return '<p>'+assetLink(booklet,'Open full booklet')+' · '+assetLink(booklet,'Contents',2)+'</p>'+
   '<p>Recalled papers. Original figures and printed answers appear on the source pages.</p>'+
   bookletSections.filter(([kind])=>types.includes(kind)).map(([kind,sections])=>'<details class="renal-source-index" '+(types.length===1?'open':'')+'><summary>'+kind+'</summary><ul class="course-workspace-sessions">'+sections.map(([label,page])=>'<li>'+assetLink(booklet,label+' · p. '+page,page)+'</li>').join('')+'</ul></details>').join('');
-}
-function renalCatalog(){
- const topics=new Map(renalSessions(officialGroupSchedule?.events||[],()=>true,['anatomy','physiology'])
-  .filter(event=>/^[AP]\d+$/.test(event.title)).map(event=>[event.title,event.detail?.replace(/ ?\([^)]+\)$/, '')||event.title]));
- for(const item of renalTeaching.items)topics.set(item.code,item.title);
- return [...topics].filter(([code])=>!renalTeaching.guides['REN-'+code]).map(([code,title])=>({code,id:'REN-'+code,title,chosen:context?.course==='REN'&&renalLessonId==='REN-'+code}));
-}
-if(window.REVIEW_STUDIO_FRESH_ACCOUNTS)window.reviewRenalCatalog=()=>enabled()?renalCatalog():[];
-function renalUnreleasedLesson(){
- const item=renalCatalog().find(item=>item.id===renalLessonId);
- return learningAreaTabs('learning')+'<div class="learning-layout">'+lessonCatalog()+
-  '<div class="learning-main"><section class="panel learning-heading"><div><span class="pill">'+esc(item?.code||'REN 123')+'</span><h2>'+esc(item?.title||'Renal lessons')+'</h2></div></section>'+
-  '<p class="panel">Lecture source pending.</p></div></div>';
 }
 function courseSelector(route){
  if(!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
@@ -216,11 +203,11 @@ render=function(...args){
  const content=document.getElementById('content');
  if(enabled()&&!context&&view!=='dashboard'&&renalViews.includes(view)&&!(view==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))))show({course:'REN',view});
  document.body.classList.toggle('cvp-archive-view',enabled()&&context?.course==='CVP');
- if((context?.course==='REN'&&!['practice','booklet'].includes(context.view)&&(context.view!=='learning'||!renalTeaching.guides[renalLessonId]))||context?.view==='index'){
+ if((context?.course==='REN'&&!['practice','booklet','learning'].includes(context.view))||context?.view==='index'){
   applyTheme();
   paintProfile();
   document.body.classList.remove('schedule-expanded');
-  content.innerHTML=context.course==='REN'?(context.view==='learning'?renalUnreleasedLesson():renalPage(context.view)):archiveIndex();
+  content.innerHTML=context.course==='REN'?renalPage(context.view):archiveIndex();
   mountNavigation();highlight();
   return;
  }
@@ -236,15 +223,6 @@ render=function(...args){
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-workspace]');
  if(button)open(...button.dataset.workspace.split('/'));
- const renal=event.target.closest('[data-renal-lesson]');
- if(renal){
-  const filter=lessonCourse;
-  renalLessonId=renal.dataset.renalLesson;
-  if(context?.course!=='REN')show({course:'REN',view:'learning'});
-  if(filter==='all')lessonCourse='all';
-  history.replaceState(null,'','#renal/learning');
-  render();
- }
  if(event.target.closest('[data-renal-retry]')){materialError='';loadMaterials();render();}
 });
 document.addEventListener('change',event=>{
