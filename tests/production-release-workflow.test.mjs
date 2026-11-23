@@ -31,7 +31,8 @@ test('production release keeps the live access mode explicit and rolls back on f
   assert.match(workflow, /options: \[open, restricted\]/);
   assert.match(workflow, /default: open/);
   assert.match(workflow, /c\.vars\.REVIEW_STUDIO_ACCESS=process\.env\.ACCESS_MODE/);
-  assert.match(workflow, /production \$SHA/);
+  assert.match(workflow, /\[ "\$ACTIVE" = "\$VID" \]/);
+  assert.match(workflow, /auth\/sign-in/);
   assert.match(workflow, /wrangler rollback "\$\{\{ steps\.previous\.outputs\.version \}\}"/);
   assert.match(workflow, /if: \$\{\{ failure\(\) && inputs\.deploy/);
 });
