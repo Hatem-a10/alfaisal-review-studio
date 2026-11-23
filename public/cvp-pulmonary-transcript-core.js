@@ -34,7 +34,9 @@ function applyPulmonaryTranscripts(learning,teaching,checks,diagrams,pack){
   for(const id of exclusion.removeSectionIds||[])excludedSections.add(id);
   for(const id of exclusion.affectedQuestionIds||[])excludedQuestions.add(id);
  }
- for(const guide of Object.values(teaching.guides)){
+ // CVP guides only: exclusions name CVP items, and other courses' guides may load before or after this pack.
+ for(const [guideId,guide] of Object.entries(teaching.guides)){
+  if(!guideId.startsWith('CVP-'))continue;
   for(const section of guide.sections||[])if(excludedSections.has(section.id))for(const q of section.questions||[])excludedQuestions.add(q.id);
   guide.sections=(guide.sections||[]).filter(s=>!excludedSections.has(s.id));
   for(const section of guide.sections){section.questions=(section.questions||[]).filter(q=>!excludedQuestions.has(q.id));const curated=(checks[section.id]||[]).filter(q=>!excludedQuestions.has(q.id));
