@@ -1,5 +1,9 @@
 > Current native state verified November 15, 2026: existing project is unchanged; live URL is https://hub.barcman2000.chatgpt.site and audience is public. Preserve that audience with normal save/deploy. Earlier URL/private-state references below are historical. Runtime owner email allowlist and Admin verifier are native secrets, separate from source and backups.
 
+**Scope**
+The active [Cloudflare release runbook](cloudflare/PRODUCTION-READINESS.md) governs alfaisal.review. The following native ChatGPT Sites instructions preserve the original Site and apply only to explicitly requested legacy publication.
+
+
 # Review Studio: local checks + native Sites publishing
 
 Verified 2026-11-02. This is the existing Site, not a replacement:

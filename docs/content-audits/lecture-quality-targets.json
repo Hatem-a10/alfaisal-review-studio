@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "defaults": {
+    "questionsPerMajorTopic": {
+      "min": 2,
+      "aim": 4
+    },
+    "applicationQuestionsPerLecture": 1,
+    "mediumReasoningQuestionsPerLecture": 1,
+    "requireGuidedSummary": true,
+    "requiredDistinctCorePerTopic": 5,
+    "figuresPerConfiguredVisualTopic": 1,
+    "visualQuestionsPerConfiguredVisualTopic": 1
+  },
+  "subjects": {},
+  "lectures": {
+    "CVP-A10": {
+      "questionsPerMajorTopic": {
+        "min": 5,
+        "aim": 5
+      },
+      "basis": "Existing five-explained-questions regression in tests/lesson-expansion.test.mjs and tests/learning-audit-fixes.test.mjs.",
+      "visualTopics": [
+        "CVP-A10:w3-continuous",
+        "CVP-A10:w3-fenestrated",
+        "CVP-A10:w3-sinusoids"
+      ],
+      "visualBasis": "Microscopic comparison of capillary types."
+    },
+    "CVP-A11": {
+      "questionsPerMajorTopic": {
+        "min": 5,
+        "aim": 5
+      },
+      "basis": "Existing five-explained-questions regression in tests/lesson-expansion.test.mjs and tests/learning-audit-fixes.test.mjs."
+    },
+    "CVP-A12": {
+      "questionsPerMajorTopic": {
+        "min": 5,
+        "aim": 5
+      },
+      "basis": "Existing five-explained-questions regression in tests/lesson-expansion.test.mjs and tests/learning-audit-fixes.test.mjs."
+    },
+    "CVP-A13": {
+      "questionsPerMajorTopic": {
+        "min": 5,
+        "aim": 5
+      },
+      "basis": "Existing five-explained-questions regression in tests/lesson-expansion.test.mjs and tests/learning-audit-fixes.test.mjs.",
+      "visualTopics": [
+        "CVP-A13:w3-respiratory-cells",
+        "CVP-A13:w3-olfactory",
+        "CVP-A13:w3-tracheal-layers"
+      ],
+      "visualBasis": "Recognition of respiratory and olfactory epithelium and tracheal layers."
+    },
+    "CVP-P3": {
+      "visualTopics": [
+        "CVP-P3:week1-0",
+        "CVP-P3:week1-3"
+      ],
+      "visualBasis": "ECG wave and rate interpretation in the existing topic groups."
+    },
+    "CVP-P7": {
+      "visualTopics": [
+        "CVP-P7:expanded-0",
+        "CVP-P7:expanded-3"
+      ],
+      "visualBasis": "Pressure-volume loop landmarks and valve-lesion interpretation."
+    },
+    "CVP-A14": {
+      "visualTopics": [
+        "cvppa-a14-framework"
+      ],
+      "visualBasis": "Developmental arch relationships."
+    },
+    "CVP-A16": {
+      "visualTopics": [
+        "cvppa-a16-hilum",
+        "cvppa-a16-lobes"
+      ],
+      "visualBasis": "Recognition of spatial relationships in the lung hilum and lobes."
+    },
+    "MOL-15": {
+      "visualTopics": [
+        "MOL-15:met-transport",
+        "MOL-15:2"
+      ],
+      "visualBasis": "Transport and pathway interpretation in the current teaching."
+    },
+    "CVP-P22": {
+      "applicationQuestionsPerLecture": 2,
+      "basis": "The existing Bohr and alveolar ventilation topics support distinct worked calculations, subject to source review."
+    }
+  }
+}

@@ -105,3 +105,11 @@ Clerk Production is invite-only and passwordless. Provider configuration readbac
 The hosted encrypted recovery drill restored synthetic revision 17 into a separate remote D1 database and recovered its R2 object under a separate prefix in a disposable bucket. D1 integrity, missing-object rejection and SHA-256 readback matched. The actual production database was not used for restore testing. See [device acceptance](ACCEPTANCE.md) for physical iPhone and iPad checks.
 
 A rollback on the disposable unrouted recovery Worker restored the first of two synthetic versions to 100% traffic. The production Worker and database were outside the drill. The GitHub staging checks for the Clerk Hobby update passed, and the production candidate remains restricted and unrouted while registrar approval, Clerk verification and Google OAuth are pending.
+
+## Agent standards and Microsoft preparation
+
+Production baseline verified before changes was source `9fbb903d47a3a8d6ae340fbb92fd7cbfba50f1b6` on Worker version `f550dccc-a607-4c6c-9cb4-4b70dc3788a5`. No production change was made for this update.
+
+The [audit](../content-audits/lecture-coverage.md) covers 79 numbered lectures and 610 topics from the assembled repository curriculum. The local full suite passed 442 tests. The audit preserves the existing core floor and tracks editorial evidence separately. No course data, test answers, IDs or progress schemas were changed.
+
+Fresh signed-out browser sessions verified both Microsoft entry points on Clerk Development and the redirect to Microsoft. Google initiates OAuth in staging and production, email is present, Apple is absent, and Microsoft is absent in production. The full Microsoft callback and existing-account linking require approved test credentials. See the [Microsoft provider preflight](MICROSOFT-SIGN-IN.md).
