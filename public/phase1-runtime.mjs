@@ -13,6 +13,8 @@ const DEFAULT_ACCENTS=/^#(?:5b4bd0|2f6c52)$/i;
 function themes(){const old=applyTheme;applyTheme=function(...args){const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent));root.dataset.stain=String(stain);root.dataset.accent=auto?'auto':'solid';for(const[key,value]of Object.entries(deriveAccent(auto?STAIN_ACCENTS[stain]:settings.accent,settings.theme==='amoled')))root.style.setProperty(key,value);return result};applyTheme()}
 async function readingData({enrich=false}={}){
  const archived=item=>window.reviewArchivedStudyItem?.(item)===true;
+ // Course content loads on demand; search and reading need every active (non-archived) course.
+ await window.reviewEnsureCourses?.(Object.keys(globalThis.REVIEW_COURSE_PACKS||{}).filter(course=>!archived({course})));
  if(enrich)await Promise.allSettled([window.ensureObjectivePack?.(),...(!archived({course:'CVP'})?[window.loadCvp19?.(),window.Cvp19?.ensure()]:[])]);
  const archivedRefs=new Set(LEARNING.lessons.filter(archived).flatMap(l=>[
   ...(l.references||[]),...(l.facts||[]).flatMap(f=>f.references||[]),

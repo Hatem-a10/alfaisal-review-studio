@@ -41,7 +41,21 @@ function applyTopicTakeaways(teaching, points) {
 }
 
 (()=>{
- let request, ready = false, error = '';
+ let request, ready = false, error = '', packs = null;
+ // Course packs load on demand: apply only to loaded courses, and again whenever another course arrives.
+ // Every step below is idempotent (keyed by id), so repeating it for earlier courses changes nothing.
+ const loaded=id=>window.reviewCourseLoaded?.(String(id).split(/[-:]/)[0])??true;
+ const pick=object=>Object.fromEntries(Object.entries(object).filter(([id])=>loaded(id)));
+ function applyLoaded(){
+  if(!packs)return;
+  const {pack,expansion,takeaways,lab}=packs;
+  applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, pick(expansion));
+  applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, pick(lab));
+  applySupplementalObjectives(LEARNING, TOPIC_CHECKS, {...pack,questions:pack.questions.filter(q=>(q.lectureIds||[]).every(loaded))});
+  applyTopicTakeaways(TEACHING, takeaways);
+  inlineLessonCache.clear();
+ }
+ window.addEventListener?.('review-course-loaded',()=>{if(ready)applyLoaded()});
  const views = new Set(['learning','practice','original-exams','wrong-bank']);
  const priorRender = render;
  window.ensureObjectivePack=function(){
@@ -55,11 +69,8 @@ function applyTopicTakeaways(teaching, points) {
   };
   request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1'),load('/cvp-source-walkthroughs.json?v=2')])
    .then(([pack,expansion,takeaways,lab])=>{
-    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, expansion);
-    applyLessonExpansion(LEARNING, TEACHING, TOPIC_CHECKS, lab);
-    applySupplementalObjectives(LEARNING, TOPIC_CHECKS, pack);
-    applyTopicTakeaways(TEACHING, takeaways);
-    inlineLessonCache.clear();
+    packs={pack,expansion,takeaways,lab};
+    applyLoaded();
     ready = true;
    })
    .catch(e=>{error='Could not load the question bank. Check your connection and retry.';throw e})

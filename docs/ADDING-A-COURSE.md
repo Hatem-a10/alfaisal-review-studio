@@ -15,6 +15,15 @@ A course is content and configuration inside the existing app. Register it in `p
 
 Extend the existing renderer with course data. Keep the same navigation and controls. For areas awaiting source material, use the shared empty state. Source PDFs belong in the Library or behind an assessment’s source link. Keep private assets in approved storage and put only metadata and asset hashes in the public repository.
 
+## Startup size: course packs
+
+Course content loads only when a student opens that course (see `scripts/course-packs.mjs` and `public/course-packs.js`). The startup bundle has a hard budget (`scripts/performance-budget.mjs`). A large course stays out of it in one of two ways:
+
+- **ES modules loaded on demand**, as the Renal course does (`renal-*.mjs`, fetched assessment JSON).
+- **A course pack**, for courses built from classic startup scripts. Add the course code to `PACK_COURSES`, and list the course's own scripts in `COURSE_SCRIPTS`. A script qualifies only if no other script reads its globals. Shared data scripts (`LEARNING`, `TEACHING`, `TOPIC_CHECKS`, `ORIGINAL_EXAMS`, `LESSON_DEPTH`) are split automatically by lecture ID. The build fails if a split entry would reference another course's sources.
+
+Code that changes course content at startup must also handle a course loading later. Make it idempotent and re-run it on the `review-course-loaded` event, as `answer-protection.js` and `supplemental-objectives.js` do. It must not touch other courses' guides; `cvp-pulmonary-transcript-core.js` shows the guard. `tests/course-packs.test.mjs` checks that loading every pack, in either order, rebuilds the original data exactly. `REVIEW_COURSE_PACKS=off` builds the old single bundle for comparison, although it no longer fits the startup budget.
+
 Before merging a course update:
 
 - Check that registered lecture IDs match the lessons exposed to students and that existing IDs still resolve.
