@@ -17,3 +17,14 @@ test('verified owner unlocks the additional panel password; wrong attempts are r
  for(let i=0;i<3;i++)assert.equal((await managedAccountRoute(request('/api/admin-auth','POST',{password:'wrong'},true),env,owner,row)).status,403);
  assert.equal((await managedAccountRoute(request('/api/admin-auth','POST',{password:'wrong'},true),env,owner,row)).status,429);
 });
+
+test('turning off study totals preserves separately measured active time',async()=>{
+ const db=database();
+ const row=await managedAccount(db,user);
+ db.db.prepare("UPDATE review_accounts SET analytics_opt_in=1,analytics_json=? WHERE id=?").run(JSON.stringify({activeMinutes:8,lastActiveMinute:1234,completedReviews:12,answeredQuestions:34}),user.id);
+ const update=await managedAccountRoute(request('/auth/account','POST',{analyticsOptIn:false}),{DB:db},user,row);
+ assert.equal(update.status,200);
+ const stored=await managedAccount(db,user);
+ assert.equal(stored.analytics_opt_in,0);
+ assert.deepEqual(JSON.parse(stored.analytics_json),{activeMinutes:8,lastActiveMinute:1234});
+});

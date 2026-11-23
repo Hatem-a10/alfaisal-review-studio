@@ -39,7 +39,7 @@
   const original=GroupSchedules.selected.bind(GroupSchedules);
   GroupSchedules.selected=(start,settings,catalog,legacy,shared)=>{
    const assignment=window.reviewManagedAssignment;
-   const effective=assignment?{...settings,...assignment,groupConfigured:true,labGroupConfigured:!!assignment.labGroup}:settings;
+   const effective=assignment?{...settings,...assignment,groupConfigured:assignment.studentGroup?true:settings.groupConfigured,labGroupConfigured:assignment.labGroup==null?settings.labGroupConfigured:!!assignment.labGroup}:settings;
    let existing=original(start,effective,catalog,legacy,shared);const extra=forWeek(start);
    const replaced=new Set(extra.map(e=>e.replacesId).filter(Boolean));
    if(replaced.size)existing=existing.filter(event=>!replaced.has(event.id)||event.course==='REN'&&/^REN123_Fall 26-27 Weekly Time Table(?:[^/]*\.xlsx)?$/i.test(event.source||''));

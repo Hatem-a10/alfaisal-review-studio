@@ -10,6 +10,7 @@ const fixtures={
  access:{role:'owner',unlocked:true,sections},
  overview:{role:'owner',environment:'staging',summary:{registered:1,active7:1,onboarded:1},flags:{}},
  'students/list':{more:false,students:[{id:'synthetic',name:'Synthetic Student',email:'demo@example.test',studentGroup:'M2',studentSection:'A',labGroup:'2.1',onboarding:'complete',role:'student',suspended:false}]},
+ 'students/details':{activeMinutes:92,photo:null,sessions:[{createdAt:1763000000000,lastActiveAt:1763000001000,device:'Tablet',browser:'Safari'}],profile:{name:'Synthetic Student',studentGroup:'M2',studentSection:'A',labGroup:'2.1',englishFrequency:2,englishStartTime:'17:30'}},
  'roles/list':{more:false,students:[]},
  'academics/config':{active:null,draft:null,revisions:[]},
  'resources/list':{resources:[],total:0},
@@ -31,6 +32,9 @@ const server=createServer((req,res)=>{
   const section=pathname.split('/api/control-center/')[1];
   data=fixtures[section];
   if(section==='challenge'){authorized=true;data={expires:Date.now()+600000};}
+  if(section==='students/profile'&&req.method==='POST'){
+   fixtures['students/list'].students[0].name='Corrected Student';data={saved:true};
+  }
   if(section==='students/suspend'){
    if(!authorized){res.writeHead(428,{'content-type':'application/json'});res.end('{"error":"Challenge needed"}');return;}
    fixtures['students/list'].students[0].suspended=true;data={saved:true};
@@ -54,6 +58,15 @@ try{
   const box=await page.locator('.acc-center').boundingBox();
   assert.ok(box.width<=width&&box.height<=height);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.getByRole('button',{name:'View account',exact:true}).click();
+  const details=page.getByRole('dialog',{name:'Student details'});
+  await details.getByText('1 h 32 min').waitFor();
+  await details.getByText('Safari',{exact:true}).waitFor();
+  await details.getByRole('button',{name:'Edit information'}).click();
+  const edit=page.getByRole('dialog',{name:'Edit student information'});
+  await edit.getByLabel('Lab group').selectOption('2.1');
+  await edit.getByRole('button',{name:'Cancel'}).click();
+  await details.getByRole('button',{name:'Close'}).click();
   if(width===390&&theme==='amoled'){
    await page.getByText('Actions',{exact:true}).click();
    await page.getByRole('button',{name:'Suspend',exact:true}).click();
@@ -61,6 +74,12 @@ try{
    await page.getByLabel('Admin phrase').fill('synthetic-test-value');
    await page.getByRole('button',{name:'Verify',exact:true}).click();
    await page.getByText('Suspended',{exact:true}).last().waitFor();
+   await page.getByRole('button',{name:'View account',exact:true}).click();
+   await page.getByRole('button',{name:'Edit information'}).click();
+   await page.getByLabel('Display name').fill('Corrected Student');
+   await page.getByRole('button',{name:'Save profile'}).click();
+   await page.getByText('Corrected Student',{exact:true}).waitFor();
+   fixtures['students/list'].students[0].name='Synthetic Student';
   }
   for(const name of ['Roles & Permissions','Academic Management','Resource Library','Question Bank & Reports','Announcements','Analytics','Storage & Backups','Security & Audit Logs','Site Controls']){
    await page.locator('nav').getByRole('button',{name,exact:true}).click();
