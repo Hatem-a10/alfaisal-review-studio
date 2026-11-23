@@ -35,6 +35,7 @@ jobs:
       - name: Check configuration
         run: |
           [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || { echo "backup environment needs CLOUDFLARE_BACKUP_TOKEN and CLOUDFLARE_ACCOUNT_ID"; exit 1; }
+          case "$CLOUDFLARE_API_TOKEN" in *[[:space:]]*) echo "CLOUDFLARE_BACKUP_TOKEN contains a space or line break. Re-paste only the token, on one line."; exit 1;; esac
 
       - name: Export production D1
         working-directory: ${{ runner.temp }}
@@ -42,6 +43,15 @@ jobs:
           npx --yes "$WRANGLER" d1 export "$DATABASE" --remote --output dump.sql > /dev/null
           [ -s dump.sql ] || { echo "Export is empty"; exit 1; }
           grep -q "CREATE TABLE" dump.sql || { echo "Export has no schema"; exit 1; }
+          # Integrity: core tables present and student snapshots non-empty. Counts only; no content is printed.
+          echo "### Backup contents (row counts)" >> "$GITHUB_STEP_SUMMARY"
+          for t in $(grep -oE 'CREATE TABLE [`"]?[A-Za-z_0-9]+' dump.sql | awk '{print $3}' | tr -d '`"' | sort -u); do
+            n=$(grep -cE "^INSERT INTO [\`\"]?$t[\`\"]? " dump.sql || true)
+            echo "- $t: $n" | tee -a "$GITHUB_STEP_SUMMARY"
+          done
+          for t in study_snapshots study_materials; do grep -qE "CREATE TABLE [\`\"]?$t[\`\"]?" dump.sql || { echo "Missing table $t"; exit 1; }; done
+          [ "$(grep -cE '^INSERT INTO [`"]?study_snapshots[`"]? ' dump.sql || true)" -gt 0 ] || { echo "study_snapshots is empty: refusing to store a suspicious backup"; exit 1; }
+          tail -c 200 dump.sql | grep -q ";" || { echo "Export looks truncated"; exit 1; }
           gzip -9 dump.sql
           echo "Size: $(stat -c %s dump.sql.gz) bytes, sha256 $(sha256sum dump.sql.gz | cut -d' ' -f1)"
 
