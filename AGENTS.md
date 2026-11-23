@@ -15,6 +15,8 @@ Branch from the latest `cloudflare-staging`, use a focused feature PR, and check
 
 Owner approval is required for the exact production release, auth/provider/account-role or access changes affecting live users, DNS, public registration, paid services, production migrations, sensitive data exports, destructive actions and legacy publication. Keep secrets, student data, private academic originals and backups out of Git, chats, screenshots and logs. Use the approved provider secret store and signed-in operator workflows.
 
+For every production update, advance the last live site version by exactly 0.01. Run `node scripts/set-site-version.mjs` when the candidate still has the live build number. The production workflow checks the live version before upload and the new displayed version after deployment.
+
 ## Account and data invariants
 
 - Clerk verifies sessions server-side. Account ownership uses the issuer and immutable Clerk subject, with verified primary email. The configured owner subject controls ownership. D1 stores staff roles and app records. The Admin phrase and recent first-factor proof protect sensitive owner writes. Email, name and a browser flag never confer a role. See [Admin Control Center](docs/cloudflare/ADMIN-CONTROL.md).
