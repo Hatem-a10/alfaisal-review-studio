@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {renalSessions,workspaceRoute} from '../public/course-workspace-core.mjs';
+import {renalSessions,workspaceRoute,isCvpStudyItem} from '../public/course-workspace-core.mjs';
 
 const read=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 const timetable=JSON.parse(read('public/group-timetables.json'));
@@ -11,6 +11,7 @@ test('archived and current workspace bookmarks use distinct routes',()=>{
  assert.deepEqual(workspaceRoute('#archive/booklet'),{course:'CVP',view:'booklet'});
  assert.deepEqual(workspaceRoute('#renal/learning'),{course:'REN',view:'learning'});
  assert.deepEqual(workspaceRoute('#mol/practice'),{course:'MOL',view:'practice'});
+ assert.deepEqual(workspaceRoute('#mol/booklet'),{course:'MOL',view:'booklet'});
  for(const hash of ['#archive/planner','#archive/countdowns','#renal/grades','#archive/learning/stale'])assert.equal(workspaceRoute(hash),null);
 });
 
@@ -87,4 +88,26 @@ test('Renal and CVP booklet positions merge independently with stable answer IDs
  assert.equal(merged.filter,'completed');
  assert.deepEqual(merged.renalNavigation,older.renalNavigation);
  assert.deepEqual(Object.keys(merged.booklet),['cvp19','ren-booklet-p6-q11']);
+});
+
+
+test('archive filtering recognizes CVP lecture, exam and material associations',()=>{
+ for(const item of [
+  {id:'CVP-P6'}, {id:'cvp19-q42'}, {title:'CVP112 TBL'}, {scope:'CVP'},
+  {lectureIds:['MOL-4','CVP-A1']}, {url:'/api/site-assets/materials/cvp-booklet.pdf'},
+  {references:[{source:'cvp-transcript'}]},
+ ])assert.equal(isCvpStudyItem(item),true);
+ for(const item of [{id:'MOL-1'}, {id:'REN-P1'}, {lectureIds:['MOL-1','REN-P1']}, {id:'mol18-booklet-p5-q1'}]){
+  assert.equal(isCvpStudyItem(item),false);
+ }
+});
+
+test('MOL booklet keeps a separate cursor through account merges',async()=>{
+ const {mergePractice}=await import('../public/phase2-practice-core.mjs');
+ const a={position:2,navigationAt:'2026-11-23',molNavigation:{position:9,at:'2026-11-24'},renalNavigation:{position:1,at:'2026-11-21'}};
+ const b={position:3,navigationAt:'2026-11-22',molNavigation:{position:4,at:'2026-11-23'},renalNavigation:{position:8,at:'2026-11-22'}};
+ const merged=mergePractice(a,b);
+ assert.equal(merged.position,2);
+ assert.equal(merged.molNavigation.position,9);
+ assert.equal(merged.renalNavigation.position,8);
 });

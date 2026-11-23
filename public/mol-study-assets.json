@@ -1,0 +1,86 @@
+{
+  "booklet": {
+    "path": "materials/mol114/interactive-booklet.json",
+    "sha": "c2df2a8e884012c54794c5bedc56340a817e239baa3fa378fd6b56b28f5c2f39",
+    "size": 544167
+  },
+  "sources": [
+    {
+      "path": "materials/mol114/18th-booklet.pdf",
+      "title": "MOL 114 · 18th Batch Past Paper Booklet",
+      "batch": 18,
+      "kind": "booklet",
+      "units": 261,
+      "size": 15408104,
+      "sha": "ccb0f26555fd04bdebd694f7e531120d7029858dbbb4365bcaa45363f2cd6fad"
+    },
+    {
+      "path": "materials/mol114/18th-final.pdf",
+      "title": "MOL 114 · 18th Batch Final Collection",
+      "batch": 18,
+      "kind": "Final",
+      "units": 9,
+      "size": 380972,
+      "sha": "5924c1d109485c7999cc314c6540aca3e9fd2d2b1e84280d94cc6c5879960502"
+    },
+    {
+      "path": "materials/mol114/18th-midterm.pdf",
+      "title": "MOL 114 · 18th Batch Midterm",
+      "batch": 18,
+      "kind": "Midterm",
+      "units": 11,
+      "size": 254885,
+      "sha": "7e458b16a8daed0eb021338cb37312d8da86b5c77b6756896d0ea3cf21b162ab"
+    },
+    {
+      "path": "materials/mol114/16th-final.pdf",
+      "title": "MOL 114 · 16th Batch Final",
+      "batch": 16,
+      "kind": "Final",
+      "units": 18,
+      "size": 462189,
+      "sha": "68cc34b6397109062d89679eecf64a007bd8b74cf0cc4a0b7e1f7a2318372123"
+    },
+    {
+      "path": "materials/mol114/17th-final.pdf",
+      "title": "MOL 114 · 17th Batch Final",
+      "batch": 17,
+      "kind": "Final",
+      "units": 35,
+      "size": 320863,
+      "sha": "0fc2351c66baf6e46c709dac2db02e055d236580bd1be87b8dca2d5b37a0196e"
+    },
+    {
+      "path": "materials/mol114/14th-final.pdf",
+      "title": "MOL 114 · 14th Batch Final",
+      "batch": 14,
+      "kind": "Final",
+      "units": 16,
+      "size": 346572,
+      "sha": "46e5a0249f1c7c294abe06868570ab30938b21d0264e653937ef53ae3eb3ecf0"
+    },
+    {
+      "path": "materials/mol114/17th-midterm.pdf",
+      "title": "MOL 114 · 17th Batch Midterm",
+      "batch": 17,
+      "kind": "Midterm",
+      "units": 16,
+      "size": 681345,
+      "sha": "82fac1cbad8f613423f3d10eb5908e06f736dbbd64bca364cc42308d95b08b42"
+    },
+    {
+      "path": "materials/mol114/16th-midterm.pdf",
+      "title": "MOL 114 · 16th Batch Midterm",
+      "batch": 16,
+      "kind": "Midterm",
+      "units": 9,
+      "size": 267145,
+      "sha": "c5aabb548076816481ac307c9a75e1344cd261f7b78fe5c6d9ac956127283219"
+    }
+  ],
+  "assessments": {
+    "path": "materials/mol114/interactive-assessments.json",
+    "size": 150201,
+    "sha": "6cf54327592676667bbc643e1b1e0da1f34796600445996315929ae6812dca2f"
+  }
+}
