@@ -1,15 +1,7 @@
-# Owner-approved production release for alfaisal.review.
-#
-# Manual only (workflow_dispatch). Releases an exact commit that already passed
-# "Cloudflare staging checks" on cloudflare-staging. Uploads a new version of
-# review-studio-production, deploys it, checks that Cloudflare reports the new
-# version at 100% and that alfaisal.review's public sign-in flow responds, and
-# rolls back to the previous version if that check fails.
-#
-# Never runs migrations, never touches D1/R2 data, secrets, routes or DNS.
-# Requires the "production" GitHub environment with:
-#   secret CLOUDFLARE_API_TOKEN  (Workers Scripts:Edit, Account Settings:Read, D1:Read, R2:Read)
-#   vars   CLOUDFLARE_ACCOUNT_ID, PRODUCTION_D1_ID
+# Dispatchable entry point for production releases. GitHub only dispatches workflows on the
+# default branch, so main keeps this thin caller. The release logic (verification, build,
+# deploy, health check, rollback) lives in production-release.yml on cloudflare-staging,
+# which is PR- and CI-protected. Change release behaviour there, not here.
 name: Production release
 
 on:
@@ -41,147 +33,9 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 30
-    env:
-      SHA: ${{ inputs.commit_sha }}
-      ACCESS_MODE: ${{ inputs.access_mode }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      PRODUCTION_D1_ID: ${{ vars.PRODUCTION_D1_ID }}
-      CONFIG: dist/server/wrangler.production.prepared.json
-      WORKER: review-studio-production
-      SITE: https://alfaisal.review
-    steps:
-      - name: Validate inputs and environment
-        run: |
-          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "commit_sha must be a full 40-character SHA"; exit 1; }
-          [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && [ -n "$PRODUCTION_D1_ID" ] \
-            || { echo "production environment is missing CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID or PRODUCTION_D1_ID"; exit 1; }
-
-      - name: Check out the exact commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.commit_sha }}
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-
-      - run: npm ci
-
-      - name: Verify the commit is staged and passed staging CI
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          git fetch --no-tags origin refs/heads/cloudflare-staging:refs/remotes/origin/cloudflare-staging
-          node scripts/verify-reviewed-release.mjs --commit "$SHA" --staging-ref origin/cloudflare-staging \
-            --workflow .github/workflows/cloudflare-staging-check.yml
-
-      - name: Build the production candidate
-        run: |
-          npm run build:production-candidate
-          # The build re-gzips lib/learning-payload.ts and the bytes depend on the zlib version.
-          # Restore the committed file only when the decompressed content is identical.
-          if [ -n "$(git status --porcelain)" ]; then
-            [ "$(git status --porcelain)" = " M lib/learning-payload.ts" ] || { git status --porcelain; echo "Unexpected changes after build"; exit 1; }
-            git show HEAD:lib/learning-payload.ts > "$RUNNER_TEMP/committed-payload.ts"
-            node -e '
-              const fs=require("fs"),z=require("zlib"),x=s=>z.gunzipSync(Buffer.from(s.match(/payload = "([^"]+)"/)[1],"base64"));
-              if(!x(fs.readFileSync(process.argv[1],"utf8")).equals(x(fs.readFileSync("lib/learning-payload.ts","utf8")))){console.error("Payload content differs");process.exit(1)}
-              console.log("Payload content identical; restoring committed bytes");' "$RUNNER_TEMP/committed-payload.ts"
-            git checkout -- lib/learning-payload.ts
-          fi
-          node scripts/check-production-guard.mjs
-          node scripts/prepare-production-config.mjs "$PRODUCTION_D1_ID" "$SHA"
-
-      - name: Apply access mode
-        run: |
-          node -e '
-            const fs=require("fs"),f=process.env.CONFIG,c=JSON.parse(fs.readFileSync(f,"utf8"));
-            c.vars.REVIEW_STUDIO_ACCESS=process.env.ACCESS_MODE;
-            fs.writeFileSync(f,JSON.stringify(c,null,2)+"\n");
-            console.log(JSON.stringify({vars:c.vars,d1:c.d1_databases[0].database_id,r2:c.r2_buckets[0].bucket_name}));'
-
-      - name: Dry run
-        run: npx --no-install wrangler deploy --dry-run --config "$CONFIG"
-
-      - name: Record the current live version
-        id: previous
-        run: |
-          npx --no-install wrangler deployments status --name "$WORKER" --json > "$RUNNER_TEMP/status.json"
-          PREV=$(node -e 'const s=require(process.argv[1]);const v=(s.versions||[]).sort((a,b)=>b.percentage-a.percentage)[0];if(!v)process.exit(1);console.log(v.version_id)' "$RUNNER_TEMP/status.json")
-          echo "version=$PREV" >> "$GITHUB_OUTPUT"
-          echo "Previous live version: $PREV"
-
-      - name: Upload new version
-        id: upload
-        env:
-          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.ndjson
-        run: |
-          npx --no-install wrangler versions upload --config "$CONFIG" \
-            --tag "release-${SHA:0:7}" --message "Release ${SHA:0:7} (${ACCESS_MODE}) via GitHub Actions run ${GITHUB_RUN_ID}"
-          VID=$(node -e '
-            const lines=require("fs").readFileSync(process.argv[1],"utf8").trim().split("\n").map(JSON.parse);
-            const v=lines.reverse().find(l=>l.type==="version-upload"&&l.version_id);if(!v)process.exit(1);console.log(v.version_id)' "$WRANGLER_OUTPUT_FILE_PATH")
-          echo "version=$VID" >> "$GITHUB_OUTPUT"
-          echo "Uploaded version: $VID"
-
-      - name: Deploy new version
-        if: ${{ inputs.deploy }}
-        run: |
-          # A freshly uploaded version can take a few seconds to become visible to the API.
-          for i in $(seq 1 12); do
-            if npx --no-install wrangler versions deploy "${{ steps.upload.outputs.version }}@100%" --name "$WORKER" \
-                 --message "Release ${SHA:0:7} via GitHub Actions run ${GITHUB_RUN_ID}" --yes; then
-              exit 0
-            fi
-            echo "Deploy attempt $i failed; retrying in 10s"
-            sleep 10
-          done
-          echo "Could not deploy ${{ steps.upload.outputs.version }}"; exit 1
-
-      - name: Verify the new version is live and alfaisal.review responds
-        id: verify
-        if: ${{ inputs.deploy }}
-        env:
-          VID: ${{ steps.upload.outputs.version }}
-        run: |
-          # Production requires sign-in for everything except the sign-in flow, so build metadata
-          # cannot be read anonymously. Check the active version through Cloudflare and the public
-          # entry points through HTTP. The owner confirms the commit from a signed-in session.
-          for i in $(seq 1 18); do
-            npx --no-install wrangler deployments status --name "$WORKER" --json > "$RUNNER_TEMP/after.json" 2>/dev/null || true
-            ACTIVE=$(node -e 'try{const s=require(process.argv[1]);const v=(s.versions||[]).find(v=>v.percentage===100);console.log(v?v.version_id:"none")}catch{console.log("unknown")}' "$RUNNER_TEMP/after.json")
-            ROOT=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$SITE/?release=$GITHUB_RUN_ID-$i")
-            SIGNIN=$(curl -s -o /dev/null -w '%{http_code}' -L "$SITE/auth/sign-in?release=$GITHUB_RUN_ID-$i")
-            echo "attempt $i: active=$ACTIVE root=$ROOT sign-in=$SIGNIN"
-            if [ "$ACTIVE" = "$VID" ] && [[ "$ROOT" == 303\ */auth/sign-in* ]] && [ "$SIGNIN" = "200" ]; then echo "Live and healthy"; exit 0; fi
-            sleep 10
-          done
-          echo "Version $VID did not become healthy in time"; exit 1
-
-      - name: Roll back on failed deploy or verification
-        if: ${{ failure() && inputs.deploy && steps.previous.outputs.version != '' && steps.upload.outputs.version != '' }}
-        run: |
-          echo "Rolling back to ${{ steps.previous.outputs.version }}"
-          npx --no-install wrangler rollback "${{ steps.previous.outputs.version }}" --name "$WORKER" \
-            --message "Automatic rollback: release ${SHA:0:7} failed (run ${GITHUB_RUN_ID})" --yes
-
-      - name: Release receipt
-        if: always()
-        run: |
-          {
-            echo "### Production release"
-            echo "- Commit: \`$SHA\`"
-            echo "- Access mode: \`$ACCESS_MODE\`"
-            echo "- Previous version: \`${{ steps.previous.outputs.version }}\`"
-            echo "- New version: \`${{ steps.upload.outputs.version }}\`"
-            echo "- Deployed: ${{ inputs.deploy }}"
-            echo "- Verification: ${{ steps.verify.outcome }}"
-            echo "- Migrations: none"
-          } >> "$GITHUB_STEP_SUMMARY"
+    uses: Hatem-a10/alfaisal-review-studio/.github/workflows/production-release.yml@cloudflare-staging
+    with:
+      commit_sha: ${{ inputs.commit_sha }}
+      access_mode: ${{ inputs.access_mode }}
+      deploy: ${{ inputs.deploy }}
+    secrets: inherit
