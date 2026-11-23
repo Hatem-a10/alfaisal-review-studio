@@ -133,8 +133,16 @@ jobs:
       - name: Deploy new version
         if: ${{ inputs.deploy }}
         run: |
-          npx --no-install wrangler versions deploy "${{ steps.upload.outputs.version }}@100%" --name "$WORKER" \
-            --message "Release ${SHA:0:7} via GitHub Actions run ${GITHUB_RUN_ID}" --yes
+          # A freshly uploaded version can take a few seconds to become visible to the API.
+          for i in $(seq 1 12); do
+            if npx --no-install wrangler versions deploy "${{ steps.upload.outputs.version }}@100%" --name "$WORKER" \
+                 --message "Release ${SHA:0:7} via GitHub Actions run ${GITHUB_RUN_ID}" --yes; then
+              exit 0
+            fi
+            echo "Deploy attempt $i failed; retrying in 10s"
+            sleep 10
+          done
+          echo "Could not deploy ${{ steps.upload.outputs.version }}"; exit 1
 
       - name: Verify alfaisal.review serves the new commit
         id: verify
@@ -149,12 +157,12 @@ jobs:
           done
           echo "alfaisal.review did not serve $SHA in time"; exit 1
 
-      - name: Roll back on failed verification
+      - name: Roll back on failed deploy or verification
         if: ${{ failure() && inputs.deploy && steps.previous.outputs.version != '' && steps.upload.outputs.version != '' }}
         run: |
           echo "Rolling back to ${{ steps.previous.outputs.version }}"
           npx --no-install wrangler rollback "${{ steps.previous.outputs.version }}" --name "$WORKER" \
-            --message "Automatic rollback: release ${SHA:0:7} failed verification (run ${GITHUB_RUN_ID})" --yes
+            --message "Automatic rollback: release ${SHA:0:7} failed (run ${GITHUB_RUN_ID})" --yes
 
       - name: Release receipt
         if: always()
