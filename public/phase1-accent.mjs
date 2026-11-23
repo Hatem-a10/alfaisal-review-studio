@@ -51,7 +51,8 @@ export function deriveAccent(color, dark = false) {
   const direction = dark ? WHITE : BLACK;
   const selected = mix(raw, surface, dark ? 0.78 : 0.9);
   // Small margin protects the thresholds from 8-bit channel rounding.
-  const readable = reachContrast(raw, direction, selected, 4.6);
+  // Dark cards are tinted lighter than the selected surface, so dark text accents get extra headroom.
+  const readable = reachContrast(raw, direction, selected, dark ? 5.4 : 4.6);
   const border = reachContrast(raw, direction, surface, 3.1);
   const hover = reachContrast(raw, textAgainstAccent === WHITE ? BLACK : WHITE, textAgainstAccent, 4.6);
   const fg = hex(textAgainstAccent);

@@ -38,7 +38,7 @@ button,a,input,select,textarea,summary,[role=button]{-webkit-tap-highlight-color
 :where(button,a,input,select,textarea,summary,[tabindex]):focus-visible{outline:3px solid var(--focus-ring)!important;outline-offset:2px!important}
 button:disabled,[aria-disabled=true]{opacity:.72;cursor:not-allowed}
 button:disabled{background:color-mix(in srgb,var(--white,#fff) 82%,var(--line));color:var(--muted);border-color:var(--line)}
-a{color:var(--accent)}
+a{color:var(--accent-text,var(--accent))}
 input,select,textarea{border-color:#aab5ac}
 html[data-theme=amoled] input,html[data-theme=amoled] select,html[data-theme=amoled] textarea{border-color:#545c56}
 :is(.panel,.stat,.readiness-card,.document-card,.teaching-card,.adaptive-question,.checkpoint-card,.guide-toc,.slide-atlas,.schedule-panel,.study-card,.dashboard-card){border-color:var(--line)}
@@ -77,7 +77,7 @@ dialog textarea{resize:vertical}
 .student-progress-row input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--accent)}
 .student-wizard-progress{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:16px 0 22px}
 .student-wizard-progress :is(button,[data-step-indicator]){min-width:0;min-height:36px;padding:6px;border:1px solid var(--line);border-radius:999px;background:var(--white,#fff);color:var(--muted);text-align:center}
-.student-wizard-progress :is([aria-current=step],.current,.complete){background:var(--accent-selected);border-color:var(--accent-border);color:var(--accent);font-weight:700}
+.student-wizard-progress :is([aria-current=step],.current,.complete){background:var(--accent-selected);border-color:var(--accent-border);color:var(--accent-text,var(--accent));font-weight:700}
 .target-solver{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0}
 .target-solver>h2,.target-solver>[data-result]{grid-column:1/-1}
 .target-solver>label{display:grid;align-content:start;gap:7px;color:var(--ink);font-size:13px;font-weight:600}
