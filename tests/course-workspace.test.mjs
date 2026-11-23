@@ -111,3 +111,31 @@ test('MOL booklet keeps a separate cursor through account merges',async()=>{
  assert.equal(merged.molNavigation.position,9);
  assert.equal(merged.renalNavigation.position,8);
 });
+
+test('Renal practicals reuse cited topics without sharing lecture question or progress IDs',async()=>{
+ const {renalTeachingPack}=await import('../public/renal-lessons.mjs');
+ const {renalLabs}=await import('../public/renal-labs.mjs');
+ const {guides,questions,sources}=renalTeachingPack();
+ const labs=renalLabs(guides,questions);
+ const originalById=new Map(questions.map(q=>[q.id,q]));
+ const ids=new Set();
+ assert.deepEqual(labs.modules.map(m=>m.category),['dry','histology']);
+ for(const lab of labs.modules){
+  assert.equal(lab.course,'REN');
+  assert.ok(labs.sources.some(s=>s.id===lab.source&&s.url.startsWith('/api/site-assets/')));
+  for(const topic of lab.topics){
+   assert.ok(!ids.has(topic.id));
+   ids.add(topic.id);
+   assert.ok(topic.questions.length>=5);
+   assert.ok(topic.references.every(ref=>sources.some(s=>s.id===ref.source)));
+   for(const q of topic.questions){
+    assert.ok(!ids.has(q.id)&&!originalById.has(q.id));
+    ids.add(q.id);
+    const original=originalById.get(q.id.slice(lab.id.length+1));
+    assert.equal(q.reasons[q.answer],q.explanation);
+    assert.equal(q.answer,original.answer);
+    assert.equal(q.question,original.question);
+   }
+  }
+ }
+});

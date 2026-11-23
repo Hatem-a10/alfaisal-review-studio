@@ -1,3 +1,4 @@
+import {loadRenalBooklet} from './renal-booklet-data.mjs';
 import {bookletSections} from './renal-study.mjs';
 import {withQuestionContext} from './cvp19-booklet.mjs';
 import {formulaPage,installFormulas} from './formulas-practice.mjs';
@@ -6,7 +7,6 @@ export {deduplicateQuestions,analytics,rankWeakQuestions,updateSnapshot,coverage
 const clone=x=>JSON.parse(JSON.stringify(x));
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function bookletAnswerDetails(q,state){if(!state.completed||q.type!=='mcq'||!Array.isArray(q.options))return '';const accepted=(q.acceptedAnswers||[q.answer]).filter(i=>Number.isInteger(i)&&i>=0&&i<q.options.length);if(!accepted.length)return '';const answers=accepted.map(i=>`${String.fromCharCode(65+i)}. ${escapeHTML(q.options[i])}`).join(' / ');const reasons=Array.isArray(q.reasons)&&q.reasons.some(Boolean)?`<details><summary>Why each option fits or fails</summary>${q.options.map((o,i)=>`<p><b>${String.fromCharCode(65+i)}. ${escapeHTML(o)}</b><br>${escapeHTML(q.reasons[i]||'')}</p>`).join('')}</details>`:'';return `<p><strong>Correct answer: ${answers}</strong></p>${reasons}`}
-const renalBookletURL='/api/site-assets/materials/ren123/interactive-booklet-v2.json';
 const bookletCourse=()=>globalThis.reviewBookletCourse?.()||'CVP';
 const isRenalBooklet=()=>bookletCourse()==='REN';
 const molBookletURL='/api/site-assets/materials/mol114/interactive-booklet.json';
@@ -27,11 +27,7 @@ function loadMol(){
 let renalPack,renalLoading,renalMockBank=[],renalError=false;
 function loadRenal(){
  if(renalPack)return Promise.resolve(renalPack);
- return renalLoading??=fetch(renalBookletURL).then(r=>{
-  if(!r.ok)throw Error('Could not load the Renal booklet questions.');
-  return r.json();
- }).then(value=>{
-  if(value.version!==2||!value.questions?.length)throw Error('Renal booklet data is incomplete.');
+ return renalLoading??=loadRenalBooklet().then(value=>{
   renalPack=value;renalError=false;
   renalMockBank=value.questions.filter(q=>q.type==='mcq'&&!q.figures?.length).map(q=>({...q,lectureIds:['REN-Booklet'],kind:'Past paper · printed key',concept:q.discipline,reasons:q.options.map(()=>''),preserveOptionOrder:true}));
   if(view==='booklet'||view==='practice')render();
