@@ -5,9 +5,11 @@
  const managedAccounts=window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
  let verifiedAccount=null,offlineAccount=null;
  if(managedAccounts){
-  if(navigator.onLine===false){
+  const locked=localStorage.getItem('review-studio-managed-signed-out')==='1';
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){
+   if(locked){location.replace('/auth/sign-in');return}
    offlineAccount=localStorage.getItem('alfaisal-review-studio-v1-account');
-   if(localStorage.getItem('review-studio-managed-signed-out')==='1'||!/^[a-f0-9]{64}$/.test(offlineAccount||'')){
+   if(!/^[a-f0-9]{64}$/.test(offlineAccount||'')){
     throw Error('Reconnect and sign in to open your study space.');
    }
   }else{
@@ -18,6 +20,7 @@
     const value=await r.json();if(!/^[a-f0-9]{64}$/.test(value.accountKey))throw Error('Invalid account');
     verifiedAccount=value.accountKey;
    }catch{
+    if(locked){location.replace('/auth/sign-in');return}
     throw Error('Could not verify your sign-in. Reconnect and retry. Your progress is retained.');
    }
    try{localStorage.removeItem('review-studio-managed-signed-out')}catch{}

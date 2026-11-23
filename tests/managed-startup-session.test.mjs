@@ -92,12 +92,15 @@ test('a verified online student is bound to their own account before scripts loa
 });
 
 test('offline boot needs a matching previously initialized account and a device that is not signed out', async () => {
- for (const options of [{key: null}, {active: student}, {initialized: false}, {locked: true}]) {
+ for (const options of [{key: null}, {active: student}, {initialized: false}]) {
   const result = await boot({online: false, ...options});
   assert.equal(result.loaded, false);
   assert.equal(result.fetched, false);
   assert.match(result.error, /Reconnect and sign in/);
  }
+ const signedOut = await boot({online: false, locked: true});
+ assert.equal(signedOut.loaded, false);
+ assert.equal(signedOut.redirect, '/auth/sign-in');
  const result = await boot({online: false});
  assert.equal(result.loaded, true);
  assert.equal(result.fetched, false);
