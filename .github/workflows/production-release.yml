@@ -116,7 +116,10 @@ jobs:
         id: previous
         run: |
           npx --no-install wrangler deployments status --name "$WORKER" --json > "$RUNNER_TEMP/status.json"
-          PREV=$(node -e 'const s=require(process.argv[1]);const v=(s.versions||[]).sort((a,b)=>b.percentage-a.percentage)[0];if(!v)process.exit(1);console.log(v.version_id)' "$RUNNER_TEMP/status.json")
+          PREV=$(node -e 'const s=require(process.argv[1]);const v=s.versions?.length===1&&s.versions[0].percentage===100&&s.versions[0];if(!v){console.error("Expected one active production version");process.exit(1)}console.log(v.version_id)' "$RUNNER_TEMP/status.json")
+          LIVE_VERSION=$(curl -fsS --max-time 15 -D - -o /dev/null "$SITE/auth/config" | tr -d '\r' | awk 'tolower($1)=="x-review-studio-version:"{print $2}')
+          SITE_VERSION=$(node scripts/check-release-version.mjs "$LIVE_VERSION" "$PREV")
+          echo "site_version=$SITE_VERSION" >> "$GITHUB_OUTPUT"
           echo "version=$PREV" >> "$GITHUB_OUTPUT"
           echo "Previous live version: $PREV"
 
@@ -152,6 +155,7 @@ jobs:
         if: ${{ inputs.deploy }}
         env:
           VID: ${{ steps.upload.outputs.version }}
+          SITE_VERSION: ${{ steps.previous.outputs.site_version }}
         run: |
           # Production requires sign-in for everything except the sign-in flow, so build metadata
           # cannot be read anonymously. Check the active version through Cloudflare and the public
@@ -161,8 +165,9 @@ jobs:
             ACTIVE=$(node -e 'try{const s=require(process.argv[1]);const v=(s.versions||[]).find(v=>v.percentage===100);console.log(v?v.version_id:"none")}catch{console.log("unknown")}' "$RUNNER_TEMP/after.json")
             ROOT=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$SITE/?release=$GITHUB_RUN_ID-$i")
             SIGNIN=$(curl -s -o /dev/null -w '%{http_code}' -L "$SITE/auth/sign-in?release=$GITHUB_RUN_ID-$i")
+            DISPLAY=$(curl -fsS --max-time 15 -D - -o /dev/null "$SITE/auth/config?release=$GITHUB_RUN_ID-$i" | tr -d '\r' | awk 'tolower($1)=="x-review-studio-version:"{print $2}' || true)
             echo "attempt $i: active=$ACTIVE root=$ROOT sign-in=$SIGNIN"
-            if [ "$ACTIVE" = "$VID" ] && [[ "$ROOT" == 303\ */auth/sign-in* ]] && [ "$SIGNIN" = "200" ]; then echo "Live and healthy"; exit 0; fi
+            if [ "$ACTIVE" = "$VID" ] && [[ "$ROOT" == 303\ */auth/sign-in* ]] && [ "$SIGNIN" = "200" ] && [ "$DISPLAY" = "$SITE_VERSION" ]; then echo "Live and healthy at $DISPLAY"; exit 0; fi
             sleep 10
           done
           echo "Version $VID did not become healthy in time"; exit 1
@@ -182,6 +187,7 @@ jobs:
             echo "- Commit: \`$SHA\`"
             echo "- Access mode: \`$ACCESS_MODE\`"
             echo "- Previous version: \`${{ steps.previous.outputs.version }}\`"
+            echo "- Site version: ${{ steps.previous.outputs.site_version }}"
             echo "- New version: \`${{ steps.upload.outputs.version }}\`"
             echo "- Deployed: ${{ inputs.deploy }}"
             echo "- Verification: ${{ steps.verify.outcome }}"

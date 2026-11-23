@@ -1,4 +1,5 @@
 import handler from 'vinext/server/fetch-handler';
+import release from '../public/site-release.json';
 import {allowProductionWrite,isProductionDatabase,mayUseProduction,productionPolicy} from '../lib/production-access.mjs';
 import {authenticateStaging} from '../lib/staging-auth.mjs';
 import {authenticateManaged,managedAuthConfig} from '../lib/managed-auth.mjs';
@@ -37,7 +38,7 @@ const stagingWorker = {
    if(['/staging/signin','/signin-with-chatgpt','/staging/signout','/signout-with-chatgpt'].includes(originalPath))return Response.redirect(new URL(originalPath.includes('signout')?'/auth/sign-out':'/auth/sign-in',incoming.url),303);
    if(incoming.method==='GET'){
     try{
-     if(originalPath==='/auth/config')return Response.json({...managedPublicConfig(config),registrationClosed:policy?.restricted===true},{headers:{'Cache-Control':'no-store'}});
+     if(originalPath==='/auth/config')return Response.json({...managedPublicConfig(config),registrationClosed:policy?.restricted===true},{headers:{'Cache-Control':'no-store','X-Review-Studio-Version':release.displayVersion}});
      if(originalPath==='/auth/privacy')return privacyPage();
      if(['/auth/sign-in','/auth/sign-up','/auth/sign-out'].includes(originalPath))return managedPage(config,originalPath.split('/').at(-1));
     }catch{return new Response('Managed authentication configuration unavailable',{status:503,headers:{'Cache-Control':'no-store'}})}
