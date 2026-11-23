@@ -25,3 +25,6 @@
 .renal-guide summary,.renal-source-index summary { cursor:pointer; min-height:36px; align-content:center; }
 .renal-guide article { border-top:1px solid var(--line); padding-block:.65rem; }
 .renal-guide article h3 { margin:.35rem 0; }
+
+.workspace-course-select { display:inline-flex; align-items:center; gap:.5rem; margin-block:.35rem .75rem; }
+.workspace-course-select select { min-height:40px; }
