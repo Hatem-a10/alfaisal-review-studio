@@ -141,6 +141,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
  if(b.hasAttribute('data-adaptive-next')){activeQuestion=null;answerFeedback=null;render()}
  if(b.dataset.nextLesson)chooseLesson(b.dataset.nextLesson);
  if(b.dataset.overrideLesson){const x=DATA.items.find(x=>x.id===lessonId);state[x.id]={...rec(x),learning:{...rec(x).learning,overrideAt:new Date().toISOString()}};persist();chooseLesson(b.dataset.overrideLesson)}
+ if(b.hasAttribute('data-retry-renal-library'))loadRenalLibrary();
  if(b.id==='reloadMaterials')loadUploads();
  if(b.dataset.libraryTab){libraryTab=b.dataset.libraryTab;documentId=null;sourceSearch='';go('library')}
  if(b.id==='searchMaterial'){sourceSearch=$('#materialSearch').value.trim();documentId=null;render()}

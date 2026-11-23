@@ -106,9 +106,6 @@ function loadRenalLibrary() {
 function libraryDocuments() {
  return LEARNING.sources.concat(uploads).filter(source=>librarySourceInCourse(source)&&libraryDocumentURL(source));
 }
-document.addEventListener('click',event=>{
- if(event.target.closest('[data-retry-renal-library]'))loadRenalLibrary();
-});
 
 function searchRenalDocuments() {
  const terms=sourceSearch.toLowerCase().split(/\s+/).filter(Boolean);
