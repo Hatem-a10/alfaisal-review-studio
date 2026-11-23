@@ -30,7 +30,7 @@ jobs:
       PRODUCTION_D1_ID: ${{ inputs.production_d1_id }}
     steps:
       - name: Check out the exact approved commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.commit_sha }}
           fetch-depth: 0
