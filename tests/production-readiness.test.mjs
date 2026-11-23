@@ -47,17 +47,21 @@ test('the complete fresh schema is empty and only a designated database passes p
 
 test('prepare production targets only the designated resources with public routes and preview disabled',()=>{
  const id='12345678-1234-1234-1234-123456789abc';
- const prepared=candidateConfig(config,id);
+ const prepared=candidateConfig(config,id,'restricted');
  assert.equal(prepared.d1_databases[0].database_id,id);
+ assert.equal(prepared.vars.REVIEW_STUDIO_ACCESS,'restricted');
+ assert.equal(candidateConfig(config,id,'open').vars.REVIEW_STUDIO_ACCESS,'open');
+ assert.equal(config.vars.REVIEW_STUDIO_ACCESS,'restricted');
+ for(const access of [undefined,'','public','OPEN'])assert.throws(()=>candidateConfig(config,id,access),/access mode/);
  assert.equal(prepared.r2_buckets[0].bucket_name,'review-studio-production');
  assert.equal(prepared.workers_dev,false);
  for(const target of ['',staging.d1_databases[0].database_id,config.d1_databases[0].database_id]){
-  assert.throws(()=>candidateConfig(config,target),/verified production/);
+  assert.throws(()=>candidateConfig(config,target,'open'),/verified production/);
  }
  for(const wrong of [staging,{...config,workers_dev:true},{...config,routes:['*']},
   {...config,vars:{...config.vars,REVIEW_STUDIO_ACCESS:'open'}},
   {...config,r2_buckets:staging.r2_buckets}]){
-  assert.throws(()=>candidateConfig(wrong,id),/isolated/);
+  assert.throws(()=>candidateConfig(wrong,id,'open'),/isolated/);
  }
 });
 

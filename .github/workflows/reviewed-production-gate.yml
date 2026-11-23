@@ -73,7 +73,7 @@ jobs:
 
       - name: Prepare restricted production config for dry run
         if: ${{ inputs.production_d1_id != '' }}
-        run: node scripts/prepare-production-config.mjs "$PRODUCTION_D1_ID" "$APPROVED_SHA"
+        run: node scripts/prepare-production-config.mjs "$PRODUCTION_D1_ID" "$APPROVED_SHA" --access open
 
       - name: Dry-run the future production Worker (no deployment)
         run: |

@@ -7,6 +7,7 @@ const workflow = readFileSync(new URL('../.github/workflows/production-release.y
 test('production release workflow is manual, scoped and verified', () => {
   assert.match(workflow, /^on:\n  workflow_dispatch:/m);
   assert.doesNotMatch(workflow, /^\s+(push|pull_request|schedule|workflow_run):/m);
+  assert.match(workflow, /^  workflow_call:/m);
   assert.match(workflow, /environment: production/);
   assert.match(workflow, /contents: read/);
   assert.doesNotMatch(workflow, /(contents|actions|deployments): write/);
@@ -14,7 +15,8 @@ test('production release workflow is manual, scoped and verified', () => {
   assert.match(workflow, /verify-reviewed-release\.mjs --commit "\$SHA" --staging-ref origin\/cloudflare-staging/);
   assert.match(workflow, /build:production-candidate/);
   assert.match(workflow, /check-production-guard\.mjs/);
-  assert.match(workflow, /prepare-production-config\.mjs "\$PRODUCTION_D1_ID" "\$SHA"/);
+  assert.match(workflow, /prepare-production-config\.mjs "\$PRODUCTION_D1_ID" "\$SHA" --access "\$ACCESS_MODE"/);
+  assert.match(workflow, /\^\(open\|restricted\)\$/);
   assert.match(workflow, /wrangler deploy --dry-run --config "\$CONFIG"/);
 });
 
@@ -30,7 +32,6 @@ test('production release workflow never touches data, schema, secrets or routes'
 test('production release keeps the live access mode explicit and rolls back on failed verification', () => {
   assert.match(workflow, /options: \[open, restricted\]/);
   assert.match(workflow, /default: open/);
-  assert.match(workflow, /c\.vars\.REVIEW_STUDIO_ACCESS=process\.env\.ACCESS_MODE/);
   assert.match(workflow, /\[ "\$ACTIVE" = "\$VID" \]/);
   assert.match(workflow, /auth\/sign-in/);
   assert.match(workflow, /wrangler rollback "\$\{\{ steps\.previous\.outputs\.version \}\}"/);
