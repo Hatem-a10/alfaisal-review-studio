@@ -2,8 +2,9 @@
 #
 # Manual only (workflow_dispatch). Releases an exact commit that already passed
 # "Cloudflare staging checks" on cloudflare-staging. Uploads a new version of
-# review-studio-production, deploys it, checks that alfaisal.review serves the
-# new commit, and rolls back to the previous version if that check fails.
+# review-studio-production, deploys it, checks that Cloudflare reports the new
+# version at 100% and that alfaisal.review's public sign-in flow responds, and
+# rolls back to the previous version if that check fails.
 #
 # Never runs migrations, never touches D1/R2 data, secrets, routes or DNS.
 # Requires the "production" GitHub environment with:
@@ -144,18 +145,25 @@ jobs:
           done
           echo "Could not deploy ${{ steps.upload.outputs.version }}"; exit 1
 
-      - name: Verify alfaisal.review serves the new commit
+      - name: Verify the new version is live and alfaisal.review responds
         id: verify
         if: ${{ inputs.deploy }}
+        env:
+          VID: ${{ steps.upload.outputs.version }}
         run: |
+          # Production requires sign-in for everything except the sign-in flow, so build metadata
+          # cannot be read anonymously. Check the active version through Cloudflare and the public
+          # entry points through HTTP. The owner confirms the commit from a signed-in session.
           for i in $(seq 1 18); do
-            BUILT=$(curl -fsS -H 'cache-control: no-cache' "$SITE/site-build-info.json?release=$GITHUB_RUN_ID-$i" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{const b=JSON.parse(d);console.log(b.environment+" "+b.sourceCommit)}catch{console.log("unreadable")}})') || BUILT="unreachable"
-            HOME_STATUS=$(curl -s -o /dev/null -w '%{http_code}' "$SITE/")
-            echo "attempt $i: $BUILT, home $HOME_STATUS"
-            if [ "$BUILT" = "production $SHA" ] && [ "$HOME_STATUS" -lt 500 ]; then echo "Live and healthy"; exit 0; fi
+            npx --no-install wrangler deployments status --name "$WORKER" --json > "$RUNNER_TEMP/after.json" 2>/dev/null || true
+            ACTIVE=$(node -e 'try{const s=require(process.argv[1]);const v=(s.versions||[]).find(v=>v.percentage===100);console.log(v?v.version_id:"none")}catch{console.log("unknown")}' "$RUNNER_TEMP/after.json")
+            ROOT=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' "$SITE/?release=$GITHUB_RUN_ID-$i")
+            SIGNIN=$(curl -s -o /dev/null -w '%{http_code}' -L "$SITE/auth/sign-in?release=$GITHUB_RUN_ID-$i")
+            echo "attempt $i: active=$ACTIVE root=$ROOT sign-in=$SIGNIN"
+            if [ "$ACTIVE" = "$VID" ] && [[ "$ROOT" == 303\ */auth/sign-in* ]] && [ "$SIGNIN" = "200" ]; then echo "Live and healthy"; exit 0; fi
             sleep 10
           done
-          echo "alfaisal.review did not serve $SHA in time"; exit 1
+          echo "Version $VID did not become healthy in time"; exit 1
 
       - name: Roll back on failed deploy or verification
         if: ${{ failure() && inputs.deploy && steps.previous.outputs.version != '' && steps.upload.outputs.version != '' }}
