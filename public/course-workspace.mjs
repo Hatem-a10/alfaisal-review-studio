@@ -1,11 +1,12 @@
 /* global DATA, GroupSchedules, campusTime, campusWeekEvents, officialGroupSchedule, groupScheduleError, groupTimetableReady, settings, tasks, go, view, render, lessonId, lessonCourse:writable, learnTab:writable, etExam, originalRun, etScope:writable, etMockScope:writable, etAccurate:writable, etLecture, esc, intro, today, libraryTab:writable, applyTheme, paintProfile */
-import {archiveViews,renalViews,renalSessions,workspaceRoute} from './course-workspace-core.mjs';
+import {archiveViews,renalViews,renalSessions,workspaceRoute,isCvpStudyItem} from './course-workspace-core.mjs';
 import {bookletSections} from './renal-study.mjs';
 import {renalTeachingPack} from './renal-lessons.mjs';
 
 const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
 const scopedViews=new Set(['practice','library','labs','booklet','ospe']);
-const enabled=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&window.reviewManagedFlags?.archiveCvp!==false;
+const enabled=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
+const archiveEnabled=()=>enabled()&&window.reviewManagedFlags?.archiveCvp===true;
 const legacyGo=go,legacyRender=render;
 const renalTeaching=renalTeachingPack();
 if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
@@ -16,7 +17,11 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
 window.reviewCvpArchived=enabled;
-window.reviewBookletCourse=()=>context?.course==='REN'?'REN':'CVP';
+window.reviewArchiveEnabled=archiveEnabled;
+window.reviewViewingArchive=()=>context?.course==='CVP';
+window.reviewBookletCourse=()=>context?.view==='booklet'?context.course:enabled()?'REN':'CVP';
+window.reviewStudyItemVisible=item=>!enabled()||(context?.course==='CVP'?isCvpStudyItem(item):!isCvpStudyItem(item));
+window.reviewArchivedStudyItem=item=>enabled()&&(isCvpStudyItem(item)||item?.questions?.some(isCvpStudyItem)===true);
 window.reviewRenalOriginalWorkspace=()=>{
  if(!materials.length&&!materialError)loadMaterials();
  return '<section class="panel"><h2>Previous exams · REN 123</h2>'+bookletList(['MCQs','SAQs','OSPE'])+'</section>';
@@ -54,32 +59,14 @@ function bookletList(types){
 function courseSelector(route){
  if(!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
  const active=context?.course||'REN';
- const options=[['REN','REN 123'],...(['practice','library','labs'].includes(route)?[['MOL','MOL 114']]:[]),
-  ...(route==='booklet'||route==='ospe'||active==='CVP'?[['CVP',enabled()?'CVP 112 · Archive':'CVP 112']]:[])];
+ const options=active==='CVP'?[['CVP','CVP 112 · Archive']]:
+  [['REN','REN 123'],...(['booklet','practice','library','labs'].includes(route)?[['MOL','MOL 114']]:[])];
  return '<label class="workspace-course-select">Course <select aria-label="Course" data-workspace-course="'+route+'">'+options.map(([key,label])=>
   '<option value="'+key+'" '+(key===active?'selected':'')+'>'+label+'</option>').join('')+'</select></label>';
 }
 
 const courseButton=(course,route,label)=>'<button type="button" data-workspace="'+course+'/'+route+'">'+esc(label)+'</button>';
 const archiveLink=()=>courseButton('archive','index','CVP archive');
-function mountNavigation(){
- for(const navigation of document.querySelectorAll('#mainSidebar nav,.ui-mobile-nav')){
-  let archive=navigation.querySelector('[data-view="archive"]');
-  if(enabled()&&!archive){
-   archive=document.createElement('button');
-   archive.type='button';
-   archive.dataset.view='archive';
-   archive.innerHTML='<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 8h16v12H4zM3 4h18v4H3zM9 13h6"/></svg><span>Archive</span>';
-   navigation.append(archive);
-  }
-  if(archive){
-   archive.hidden=!enabled();
-   archive.classList.toggle('active',enabled()&&context?.course==='CVP');
-  }
-  const booklet=navigation.querySelector('[data-view="booklet"] span');
-  if(booklet)booklet.textContent=enabled()?'Booklets':'Booklet';
- }
-}
 function archiveIndex(){
  return intro('CVP 112','Course archive','')+
   '<section class="panel"><h2>Cardiovascular & Respiratory</h2><div class="course-workspace-links">'+
@@ -142,7 +129,7 @@ function show(route){
 function open(course,route){
  const hash=course==='archive'&&route==='index'?'#archive':'#'+course+'/'+route;
  const next=workspaceRoute(hash);
- if(!next||next.course==='CVP'&&!enabled()||!window.REVIEW_STUDIO_FRESH_ACCOUNTS)return;
+ if(!next||next.course==='CVP'&&!archiveEnabled()||!window.REVIEW_STUDIO_FRESH_ACCOUNTS)return;
  if(location.hash!==hash)history.pushState(null,'',hash);
  show(next);
  render();
@@ -160,7 +147,7 @@ go=function(next){
  if(next==='archive')return open('archive','index');
  if(context?.course==='CVP'&&['labs','ospe'].includes(next))return open('archive',next);
  if(context?.course==='MOL'&&next==='labs')return open('mol','labs');
- if(next==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))){
+ if(next==='practice'&&((etExam&&!etExam.finishedAt&&!window.reviewArchivedStudyItem(etExam))||(originalRun&&!originalRun.finishedAt&&!window.reviewArchivedStudyItem(ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId))))){
   show(null);return legacyGo(next);
  }
  if(next==='learning'&&view==='learning'&&context&&lessonId.startsWith(context.course+'-'))return render();
@@ -179,6 +166,7 @@ window.chooseLesson=function(id,...args){
   if(filter==='all')lessonCourse='all';
   return selectLesson(id,...args);
  }
+ if(id.startsWith('CVP-')&&(!archiveEnabled()||context?.course!=='CVP'))return;
  if(id.startsWith('MOL-'))lastMOLLesson=id;
  const course=id.startsWith('CVP-')?'archive':id.startsWith('MOL-')?'mol':null;
  if(!course)return selectLesson(id,...args);
@@ -190,25 +178,31 @@ window.chooseLesson=function(id,...args){
  return selectLesson(id,...args);
 };
 function restore(){
- const route=enabled()?workspaceRoute(location.hash):null;
+ let route=enabled()?workspaceRoute(location.hash):null;
+ if(route?.course==='CVP'&&!archiveEnabled()){
+  route=null;view='dashboard';if(window.reviewManagedFlags?.archiveCvp===false)history.replaceState(null,'','#dashboard');
+ }
  show(route);
- if(enabled()&&!route&&view!=='dashboard'&&renalViews.includes(view)&&!(view==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))))show({course:'REN',view});
+ if(enabled()&&!route&&view!=='dashboard'&&renalViews.includes(view))show({course:'REN',view});
 }
 function highlight(){
- for(const button of document.querySelectorAll('nav button[data-view]'))button.classList.toggle('active',button.dataset.view===(context?.course==='CVP'?'archive':view));
+ const current=context?.course==='CVP'?'other':view;
+ for(const button of document.querySelectorAll('#mainSidebar nav button[data-view],.ui-mobile-nav button[data-view]')){
+  button.classList.toggle('active',button.dataset.view===current);
+ }
 }
 render=function(...args){
  if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return legacyRender(...args);
  if(!enabled())show(null);
  const content=document.getElementById('content');
- if(enabled()&&!context&&view!=='dashboard'&&renalViews.includes(view)&&!(view==='practice'&&((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))))show({course:'REN',view});
+ if(enabled()&&!context&&view!=='dashboard'&&renalViews.includes(view))show({course:'REN',view});
  document.body.classList.toggle('cvp-archive-view',enabled()&&context?.course==='CVP');
  if((context?.course==='REN'&&!['practice','booklet','learning'].includes(context.view))||context?.view==='index'){
   applyTheme();
   paintProfile();
   document.body.classList.remove('schedule-expanded');
   content.innerHTML=context.course==='REN'?renalPage(context.view):archiveIndex();
-  mountNavigation();highlight();
+  highlight();window.mountOtherTools?.();
   return;
  }
  const value=legacyRender(...args);
@@ -216,8 +210,7 @@ render=function(...args){
   content.insertAdjacentHTML('afterbegin',courseSelector(context.view)+(context.course==='CVP'?'<div class="course-workspace-links course-workspace-back">'+archiveLink()+'</div>':''));
  }
  if(context?.course==='REN'&&['booklet','practice'].includes(view)&&!document.getElementById('xpExam'))content.insertAdjacentHTML('afterbegin',courseSelector(view));
- mountNavigation();
- if(context)highlight();
+ if(context){highlight();window.mountOtherTools?.();}
  return value;
 };
 document.addEventListener('click',event=>{

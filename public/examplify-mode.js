@@ -19,9 +19,9 @@
  function brandIcon(){return '<svg viewBox="0 0 30 32" width="27" height="30" aria-hidden="true" fill="none" stroke="#29b4f4" stroke-width="2.2" stroke-linejoin="round"><path d="m5 7 17-4 4 6-17 5z M3 13l7 8 15-12 M5 20l7 9L26 15"/></svg>'}
  function palette(){return `<div class="xp-palette" role="group" aria-label="Highlighter colors">${Object.keys(colors).map(c=>`<button type="button" data-xp-color="${c}" aria-label="${c[0].toUpperCase()+c.slice(1)} highlighter" aria-pressed="${ink===c}" style="--swatch:${examTheme==='light'?lightPenColors[c]:penColors[c]}"><span></span></button>`).join('')}</div>`}
  let originalAdapterRun=null,originalAdapter=null;
- function isOriginal(){return typeof originalRun!=='undefined'&&typeof etPracticeTab!=='undefined'&&view==='practice'&&etPracticeTab==='original'&&!!originalRun&&!originalRun.finishedAt}
+ function isOriginal(){return typeof originalRun!=='undefined'&&typeof etPracticeTab!=='undefined'&&view==='practice'&&etPracticeTab==='original'&&!!originalRun&&!originalRun.finishedAt&&(typeof visibleOriginalRun!=='function'||visibleOriginalRun())}
  function exam(){
-   if(!isOriginal())return typeof etExam==='undefined'?null:etExam;
+   if(!isOriginal())return typeof etExam==='undefined'||globalThis.reviewCourseScope!=='CVP'&&globalThis.reviewArchivedStudyItem?.(etExam)?null:etExam;
    if(originalAdapterRun===originalRun&&originalAdapter)return originalAdapter;
    const run=originalRun,questions=run.ids.map(id=>originalQuestionById(id)).filter(Boolean).map(q=>({...q,options:q.options||[],letters:q.letters||[],figures:q.figures||[]}));
    const answers=new Proxy({}, {get(_t,p){if(typeof p==='symbol')return undefined;return questions[Number(p)]?run.answers[questions[Number(p)].id]:undefined},set(_t,p,v){if(questions[Number(p)])run.answers[questions[Number(p)].id]=v;return true},deleteProperty(_t,p){if(questions[Number(p)])delete run.answers[questions[Number(p)].id];return true},ownKeys(){return questions.map((q,i)=>Object.prototype.hasOwnProperty.call(run.answers,q.id)?String(i):null).filter(x=>x!==null)},getOwnPropertyDescriptor(){return {configurable:true,enumerable:true}}});
@@ -44,9 +44,9 @@
  function mode(on){track();lastQuestionKey=null;if(!exam())return;if(!on&&Number.isFinite(exam().pausedAt))ExamEngine.setPaused(clockTarget(),false);exam().presentation=on?'examplify':'classic';hidden=false;save();render()}
  const oldOriginalWorkspace=typeof originalWorkspace==='function'?originalWorkspace:null;
  if(oldOriginalWorkspace)originalWorkspace=function(){
-   if(originalRun&&!originalRun.finishedAt&&originalRun.xp?.presentation==='examplify'&&originalRun.ids.every(originalQuestionById)){if(colors[originalRun.xp.ink])ink=originalRun.xp.ink;return markup()}
+   if(visibleOriginalRun()&&!originalRun.finishedAt&&originalRun.xp?.presentation==='examplify'&&originalRun.ids.every(originalQuestionById)){if(colors[originalRun.xp.ink])ink=originalRun.xp.ink;return markup()}
    let html=oldOriginalWorkspace();
-   if(originalRun&&!originalRun.finishedAt){const deadline=originalRun.xp?.deadline;const timer=deadline?`<p class="xp-original-timer">Examplify timer is running · <strong id="xpOriginalCountdown">${etTime(Math.max(0,Math.ceil((deadline-Date.now())/1000)))}</strong> remaining.</p>`:'';html=html.replace('<div class="original-jumps">',`${timer}<div class="xp-original-launch"><label>Optional exam timer · minutes <input type="number" id="xpOriginalMinutes" min="0" max="360" value="0" step="1" aria-label="Optional exam timer in minutes"></label><button type="button" data-xp-action="enter-original" class="primary">${originalRun.xp?.snapshotAnswers?'Resume Examplify mode':'Open Examplify mode'}</button><small>Enter 0 for untimed. Original order, figures, wording and printed keys are preserved.</small></div><div class="original-jumps">`)}
+   if(visibleOriginalRun()&&!originalRun.finishedAt){const deadline=originalRun.xp?.deadline;const timer=deadline?`<p class="xp-original-timer">Examplify timer is running · <strong id="xpOriginalCountdown">${etTime(Math.max(0,Math.ceil((deadline-Date.now())/1000)))}</strong> remaining.</p>`:'';html=html.replace('<div class="original-jumps">',`${timer}<div class="xp-original-launch"><label>Optional exam timer · minutes <input type="number" id="xpOriginalMinutes" min="0" max="360" value="0" step="1" aria-label="Optional exam timer in minutes"></label><button type="button" data-xp-action="enter-original" class="primary">${originalRun.xp?.snapshotAnswers?'Resume Examplify mode':'Open Examplify mode'}</button><small>Enter 0 for untimed. Original order, figures, wording and printed keys are preserved.</small></div><div class="original-jumps">`)}
    return html;
  };
  const oldPanel=etMockPanel;

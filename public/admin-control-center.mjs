@@ -131,7 +131,7 @@ function openForm(title, fields, submitLabel='Save', submit) {
  });
 }
 function confirm(title, wording) {return openForm(title,[node('p',wording)],'Confirm',()=>true);}
-const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library',archiveCvp:'Archive CVP 112 and show REN 123 as the current course'};
+const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library',archiveCvp:'Enable Archive for all users'};
 
 let active;
 export async function openAdminCenter(){
