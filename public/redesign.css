@@ -1,0 +1,199 @@
+/* Review Studio visual system: "slide & stain".
+   Final design layer. Every rule is scoped to body:not(.xp-exam-active) so a running
+   Examplify exam keeps its own presentation. No feature, layout logic or content changes. */
+
+/* Self-hosted Schibsted Grotesk (SIL OFL 1.1, license in /fonts). Absolute URLs survive style bundling. */
+@font-face{font-family:'Schibsted Grotesk';src:url('/fonts/schibsted-grotesk-latin-wght-normal.woff2') format('woff2');font-weight:400 900;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Schibsted Grotesk';src:url('/fonts/schibsted-grotesk-latin-ext-wght-normal.woff2') format('woff2');font-weight:400 900;font-style:normal;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Schibsted Grotesk';src:url('/fonts/schibsted-grotesk-latin-wght-italic.woff2') format('woff2');font-weight:400 900;font-style:italic;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F}
+
+html:root body:not(.xp-exam-active){
+  --rs-display:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --rs-text:'Schibsted Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --rs-r-sm:7px;--rs-r-md:11px;--rs-r-lg:16px;
+  --rs-canvas:#f1f3f6;--rs-surface:#ffffff;--rs-sunken:#e9edf2;--rs-raised:#ffffff;
+  --rs-ink:#11151b;--rs-ink-2:#363f4b;--rs-muted:#5b6574;--rs-line:#dce1e8;--rs-line-strong:#c3cad4;
+  --rs-hema:#3a2f86;--rs-hema-deep:#221b57;--rs-eosin:#d9547f;--rs-eosin-soft:#f6d9e3;
+  --rs-shadow:0 1px 2px rgb(17 21 27 / .05),0 1px 0 rgb(17 21 27 / .03);
+  --rs-shadow-pop:0 12px 32px -12px rgb(17 21 27 / .22);
+  --rs-accent-tint:color-mix(in srgb,var(--accent) 11%,var(--rs-surface));
+  --rs-ring:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent);
+  /* Map the app's existing tokens onto the new palette so older layers follow along. */
+  --bg:var(--rs-canvas);--white:var(--rs-surface);--surface:var(--rs-surface);
+  --ink:var(--rs-ink);--muted:var(--rs-muted);--line:var(--rs-line);--light:var(--rs-accent-tint);
+  --ui-shadow:var(--rs-shadow);
+  background:var(--rs-canvas);color:var(--rs-ink);
+  font-family:var(--rs-text);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+html:root[data-theme=amoled] body:not(.xp-exam-active){
+  --rs-canvas:#000;--rs-surface:#0c0e12;--rs-sunken:#07080a;--rs-raised:#13161b;
+  --rs-ink:#eef1f5;--rs-ink-2:#c4cad4;--rs-muted:#949dac;--rs-line:#20242b;--rs-line-strong:#2e343d;
+  --rs-hema:#8f86f2;--rs-hema-deep:#1a1540;--rs-eosin:#ef86a9;--rs-eosin-soft:#3a1a27;
+  --rs-shadow:none;--rs-shadow-pop:0 16px 40px -16px rgb(0 0 0 / .9);
+  --rs-accent-tint:color-mix(in srgb,var(--accent) 16%,#0c0e12);
+  background:#000;
+}
+
+html:root body:not(.xp-exam-active){
+
+  /* ---------- Type ---------- */
+  & :is(h1,h2,h3,h4){font-family:var(--rs-display);color:var(--rs-ink);text-wrap:balance}
+  & :is(h1,.intro h1,.home-top h1,.learning-heading h1){font-weight:750;letter-spacing:-.028em;line-height:1.04}
+  & :is(h2,.section-head h2,.home-section-title){font-weight:700;letter-spacing:-.018em;line-height:1.15}
+  & h3{font-weight:650;letter-spacing:-.01em}
+  & :is(p,li,td,label,.section-sub,.muted){text-wrap:pretty}
+  & :is(.stat .value,.readiness-number,.home-focus-value,.home-countdown,.mastery-number,.campus-day-head,time){font-variant-numeric:tabular-nums}
+  & :is(button,input,select,textarea,.pill){font-family:var(--rs-text)}
+  /* Sentence-case labels instead of tracked capitals. */
+  & :is(.eyebrow,.home-kicker,.home-overline,.home-card-label,.home-top-tag,.section-kicker,.catalog-head small){
+    text-transform:none;letter-spacing:0;font-family:var(--rs-text);font-weight:700;font-size:.82rem;color:var(--rs-muted)
+  }
+
+  /* ---------- Shell ---------- */
+  & #mainSidebar{
+    background:var(--rs-surface);border-right:1px solid var(--rs-line);color:var(--rs-ink);box-shadow:none
+  }
+  & #mainSidebar :is(.profile-name,.student,.brand){color:var(--rs-ink)}
+  & #mainSidebar :is(small,.muted){color:var(--rs-muted)}
+  & #mainSidebar nav :is(button,summary){
+    background:transparent;border:1px solid transparent;border-radius:var(--rs-r-md);
+    color:var(--rs-ink-2);font-weight:600;box-shadow:none;transition:background-color .15s,color .15s
+  }
+  & #mainSidebar nav :is(button,summary):hover{background:var(--rs-sunken);color:var(--rs-ink)}
+  & #mainSidebar nav button.active{
+    background:var(--rs-accent-tint);color:var(--rs-ink);border-color:color-mix(in srgb,var(--accent) 22%,transparent);
+    box-shadow:inset 3px 0 0 var(--accent)
+  }
+  & #mainSidebar nav button.active .nav-icon{color:var(--accent-text,var(--accent))}
+  & #mainSidebar .nav-icon{color:var(--rs-muted)}
+  & #mainSidebar :is(.sync-widget,#syncWidget){background:var(--rs-sunken)!important;border:1px solid var(--rs-line);border-radius:var(--rs-r-md);color:var(--rs-ink-2);box-shadow:none}
+  & #mainSidebar :is(.sync-widget,#syncWidget) :is(strong,span,small,#syncSummary,#siteVersion){color:var(--rs-ink-2)}
+  & #mainSidebar .profile-upload-icon{background:var(--rs-surface);color:var(--rs-ink);border-color:var(--rs-line-strong)}
+  & #mainSidebar .student{letter-spacing:0;text-transform:none;font-size:.8rem;color:var(--rs-muted)}
+  & #mainSidebar .student strong{color:var(--rs-ink-2)}
+  & .sidebar-toggle{background:var(--rs-surface);border:1px solid var(--rs-line);color:var(--rs-ink-2);border-radius:var(--rs-r-sm)}
+  & #content{background:transparent}
+
+  /* ---------- Surfaces ---------- */
+  & :is(.panel,.home-focus-card,.home-insights-card,.readiness-card,.schedule-panel,.teaching-card,.adaptive-question,.et-workspace,.reading-settings,.grade-course){
+    background:var(--rs-surface);border:1px solid var(--rs-line);border-radius:var(--rs-r-lg);box-shadow:var(--rs-shadow)
+  }
+  & .panel .panel{background:var(--rs-sunken);box-shadow:none;border-radius:var(--rs-r-md)}
+  & :is(.notice){border-radius:var(--rs-r-md)}
+  & hr{border:0;border-top:1px solid var(--rs-line)}
+
+  /* ---------- Controls ---------- */
+  & :is(#content,dialog,.phase3-modal) button:not(.answer-option):not(.strike-option):not(.eye-control):not([class*=xp-]):not(.topic-check){
+    border-radius:var(--rs-r-sm)
+  }
+  & :is(button.primary,.primary:is(button,a),#etStartMock,#expandSchedule){
+    background:var(--accent);color:var(--on-accent);border:1px solid color-mix(in srgb,var(--accent) 80%,black);
+    font-weight:700;letter-spacing:.005em;box-shadow:0 1px 0 rgb(255 255 255 / .12) inset
+  }
+  & :is(button.primary,.primary:is(button,a),#etStartMock,#expandSchedule):hover{background:color-mix(in srgb,var(--accent) 88%,black)}
+  & :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),select,textarea){
+    background:var(--rs-surface);color:var(--rs-ink);border:1px solid var(--rs-line-strong);border-radius:var(--rs-r-sm)
+  }
+  & #content :is(input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),select,textarea):not(:focus-visible){
+    background-color:var(--rs-surface);border-color:var(--rs-line-strong)
+  }
+  & :is(input,select,textarea):focus-visible{outline:none;border-color:var(--accent);box-shadow:var(--rs-ring)}
+  & :is(input[type=checkbox],input[type=radio],input[type=range],progress){accent-color:var(--accent)}
+  & :is(a,button,summary,[role=button],[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  & .pill{border-radius:999px;font-weight:700;font-size:.78rem}
+
+  /* Tabs */
+  & :is(.learning-tabs,.et-practice-tabs,.phase3-tabs,.learning-kind-switch){
+    background:var(--rs-sunken);border:1px solid var(--rs-line);border-radius:var(--rs-r-md);padding:4px;gap:2px
+  }
+  & :is(.learning-tabs,.et-practice-tabs,.phase3-tabs,.learning-kind-switch) :is(button,a){
+    background:transparent;border:0;color:var(--rs-muted);font-weight:650;border-radius:var(--rs-r-sm);box-shadow:none
+  }
+  & :is(.learning-tabs,.et-practice-tabs,.phase3-tabs,.learning-kind-switch) :is(button,a):is(.selected,.active,[aria-selected=true],[aria-pressed=true]){
+    background:var(--rs-surface);color:var(--rs-ink);box-shadow:var(--rs-shadow),0 0 0 1px var(--rs-line)
+  }
+
+  /* ---------- Home ---------- */
+  & .home-top h1::after{color:var(--rs-eosin)}
+  & .home-spotlight{
+    position:relative;isolation:isolate;overflow:hidden;color:#fff;border:0;border-radius:var(--rs-r-lg);
+    background:
+      radial-gradient(120% 90% at 92% 8%,rgb(217 84 127 / .55),transparent 58%),
+      linear-gradient(140deg,var(--rs-hema-deep) 0%,#3a2f86 52%,#5b3b98 100%);
+    box-shadow:var(--rs-shadow-pop)
+  }
+  & .home-spotlight::before{
+    /* Stained-slide texture: scattered nuclei, fading toward the text side. */
+    content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='180' viewBox='0 0 220 180'%3E%3Cg fill='%23c9c2ff' fill-opacity='.38'%3E%3Cellipse cx='22' cy='30' rx='7' ry='5' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5' ry='4'/%3E%3Cellipse cx='150' cy='44' rx='8' ry='5.5' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='200' cy='20' rx='4.5' ry='3.5'/%3E%3Cellipse cx='54' cy='92' rx='6' ry='4.5' transform='rotate(40 54 92)'/%3E%3Cellipse cx='120' cy='104' rx='4' ry='3'/%3E%3Cellipse cx='182' cy='118' rx='7' ry='5' transform='rotate(10 182 118)'/%3E%3Cellipse cx='30' cy='156' rx='5' ry='3.6'/%3E%3Cellipse cx='96' cy='160' rx='7.5' ry='5' transform='rotate(-30 96 160)'/%3E%3Cellipse cx='160' cy='170' rx='4' ry='3'/%3E%3C/g%3E%3Cg fill='none' stroke='%23f3b6cb' stroke-opacity='.22'%3E%3Cpath d='M0 64c40-14 70 10 110-2s66-30 110-12'/%3E%3Cpath d='M0 132c36-10 72 12 112 0s70-24 108-6'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:220px 180px;
+    -webkit-mask-image:linear-gradient(100deg,transparent 18%,#000 70%);mask-image:linear-gradient(100deg,transparent 18%,#000 70%)
+  }
+  & .home-spotlight[class*=assessment-theme]{background:radial-gradient(120% 90% at 92% 8%,rgb(217 84 127 / .55),transparent 58%),linear-gradient(140deg,var(--rs-hema-deep) 0%,#3a2f86 52%,#5b3b98 100%)}
+  & .home-spotlight :is(h1,h2,h3,p,strong,span,.home-countdown){color:#fff}
+  & .home-spotlight :is(.home-overline,small,p){color:rgb(255 255 255 / .78)}
+  & .home-spotlight .home-countdown{font-family:var(--rs-display);font-weight:800;letter-spacing:-.035em}
+  & .home-spotlight .home-overline-dot{background:var(--rs-eosin-soft);box-shadow:0 0 0 4px rgb(246 217 227 / .18)}
+  & .home-spotlight .home-orbit{opacity:0}
+  & .home-spotlight :is(a,button){background:#fff;color:var(--rs-hema-deep);border:0;border-radius:var(--rs-r-sm);font-weight:700}
+  & .home-focus-value{font-family:var(--rs-display);font-weight:750;letter-spacing:-.03em}
+  & .home-shortcut{background:var(--rs-surface);border:1px solid var(--rs-line);border-radius:var(--rs-r-lg);box-shadow:var(--rs-shadow);transition:border-color .15s}
+  & .home-shortcut:hover{border-color:var(--rs-line-strong)}
+  & .home-shortcut strong{font-family:var(--rs-display);font-weight:700}
+  & .home-short-icon{border-radius:var(--rs-r-md)}
+  & .home-short-icon.lilac{background:color-mix(in srgb,var(--rs-hema) 14%,var(--rs-surface));color:var(--rs-hema)}
+  & .home-short-icon.peach{background:color-mix(in srgb,var(--rs-eosin) 14%,var(--rs-surface));color:var(--rs-eosin)}
+  & .home-text-link{color:var(--accent-text,var(--accent));font-weight:700}
+  & .dated-review{border-color:var(--rs-line)}
+
+  /* ---------- Learn ---------- */
+  & .lesson-catalog{background:var(--rs-surface);border:1px solid var(--rs-line);border-radius:var(--rs-r-lg)}
+  & .catalog-list :is(button,a){border-radius:var(--rs-r-md)}
+  & .catalog-list :is(button,a):is(.chosen,.active,.selected){background:var(--rs-accent-tint);box-shadow:inset 3px 0 0 var(--accent)}
+  & .answer-option{border-radius:var(--rs-r-md);border-color:var(--rs-line)}
+  & .answer-option:hover{border-color:var(--rs-line-strong)}
+  & .option-letter{font-family:var(--rs-display);font-weight:700}
+  & .topic-map-item{border-radius:var(--rs-r-sm)}
+
+  /* ---------- Schedule ---------- */
+  & .campus-day-head{border-radius:var(--rs-r-md);background:var(--rs-sunken);color:var(--rs-ink);border:1px solid var(--rs-line)}
+  & .campus-day-head :is(strong,b,span,small){color:inherit}
+  & .campus-day-head.day-current{background:var(--accent);color:var(--on-accent);border-color:transparent}
+  & .schedule-scroll{background:var(--rs-sunken);border:1px solid var(--rs-line);border-radius:var(--rs-r-md)}
+  & .campus-day-column{border-color:var(--rs-line)}
+  & .campus-day-column.column-current{background:var(--rs-accent-tint)}
+  & .campus-event{border-radius:var(--rs-r-sm)}
+
+  /* ---------- Practice ---------- */
+  & .stat{background:var(--rs-sunken);border:1px solid var(--rs-line);border-radius:var(--rs-r-md)}
+  & .stat .value{font-family:var(--rs-display);font-weight:750;letter-spacing:-.02em}
+  & .mock-mode-row > *{border-radius:var(--rs-r-md)}
+
+  /* ---------- File inputs ---------- */
+  & input[type=file]{color:var(--rs-muted);font-size:.85rem}
+  & input[type=file]::file-selector-button{
+    font:inherit;font-weight:650;color:var(--rs-ink);background:var(--rs-sunken);
+    border:1px solid var(--rs-line-strong);border-radius:var(--rs-r-sm);padding:.45em .9em;margin-right:.7em;cursor:pointer
+  }
+
+  /* ---------- Mobile dock ---------- */
+  & .mobile-dock-shell{
+    background:color-mix(in srgb,var(--rs-surface) 88%,transparent);border:1px solid var(--rs-line);
+    border-radius:var(--rs-r-lg);box-shadow:var(--rs-shadow-pop);backdrop-filter:blur(14px) saturate(1.2)
+  }
+  & .mobile-dock-shell :is(button,a){color:var(--rs-muted);border-radius:var(--rs-r-md);font-weight:650}
+  & .mobile-dock-shell :is(button,a).active{background:var(--rs-accent-tint);color:var(--accent-text,var(--accent))}
+
+  /* ---------- Dialogs ---------- */
+  & dialog:not([id^=xp]){background:var(--rs-surface);color:var(--rs-ink);border:1px solid var(--rs-line);border-radius:var(--rs-r-lg);box-shadow:var(--rs-shadow-pop)}
+  & dialog::backdrop{background:rgb(9 11 16 / .52);backdrop-filter:blur(3px)}
+}
+
+html:root[data-theme=amoled] body:not(.xp-exam-active) :is(.learning-tabs,.et-practice-tabs,.phase3-tabs,.learning-kind-switch) :is(button,a):is(.selected,.active,[aria-selected=true],[aria-pressed=true]){
+  background:var(--rs-raised);box-shadow:0 0 0 1px var(--rs-line-strong)
+}
+
+@media (prefers-reduced-motion:reduce){
+  html:root body:not(.xp-exam-active) *{transition:none!important}
+}
