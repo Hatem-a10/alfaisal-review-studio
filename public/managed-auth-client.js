@@ -52,7 +52,7 @@
    window.addEventListener(event,()=>{lastInteraction=performance.now()},{passive:true});
   }
   setInterval(()=>{
-   if(!currentStatus?.analyticsOptIn||document.visibilityState!=='visible'||!document.hasFocus()||
+   if(document.visibilityState!=='visible'||!document.hasFocus()||
     !navigator.onLine||performance.now()-lastInteraction>60000)return;
    fetch(api+'active-minute',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).catch(()=>{});
   },60000);
@@ -152,7 +152,7 @@
   const frame=document.querySelector('#siteAdmin .admin-frame');if(!frame)return;
   window.ReviewStudioReportTools?.mountSettings(frame);
   if(!document.getElementById('managedAccountPrivacy')){
-   const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share study totals and estimated active time with the site owner'));const link=document.createElement('a');link.href='/auth/privacy';link.textContent='Privacy details';link.target='_blank';link.rel='noopener';const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,link,document.createTextNode(' · '),signout,status);frame.append(panel);
+   const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share study totals with the site owner'));const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,signout,status);frame.append(panel);
    if(window.Clerk.user&&typeof window.Clerk.openUserProfile==='function'){
     const methods=document.createElement('button');
     methods.type='button';

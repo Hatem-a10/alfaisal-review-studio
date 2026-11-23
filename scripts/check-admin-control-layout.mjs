@@ -10,7 +10,7 @@ const fixtures={
  access:{role:'owner',unlocked:true,sections},
  overview:{role:'owner',environment:'staging',summary:{registered:1,active7:1,onboarded:1},flags:{}},
  'students/list':{more:false,students:[{id:'synthetic',name:'Synthetic Student',email:'demo@example.test',studentGroup:'M2',studentSection:'A',labGroup:'2.1',onboarding:'complete',role:'student',suspended:false}]},
- 'students/details':{activeMinutes:92,sharing:true,photo:null,sessions:[{createdAt:1763000000000,lastActiveAt:1763000001000,device:'Tablet',browser:'Safari'}],profile:{name:'Synthetic Student',studentGroup:'M2',studentSection:'A',labGroup:'2.1',englishFrequency:2,englishStartTime:'17:30'}},
+ 'students/details':{activeMinutes:92,photo:null,sessions:[{createdAt:1763000000000,lastActiveAt:1763000001000,device:'Tablet',browser:'Safari'}],profile:{name:'Synthetic Student',studentGroup:'M2',studentSection:'A',labGroup:'2.1',englishFrequency:2,englishStartTime:'17:30'}},
  'roles/list':{more:false,students:[]},
  'academics/config':{active:null,draft:null,revisions:[]},
  'resources/list':{resources:[],total:0},

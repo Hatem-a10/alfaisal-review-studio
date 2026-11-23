@@ -212,10 +212,12 @@ test('profile corrections are validated, audited and reversible without changing
  assert.deepEqual(h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id),before);
 });
 
-test('active minutes require consent and duplicate pulses and study totals retain one counted minute',async t=>{
+test('active minutes are counted for every signed-in account without changing study sharing',async t=>{
  const h=harness();t.after(()=>h.sqlite.close());
  const pulse=()=>h.call('student/active-minute',student,{});
- assert.equal((await (await pulse()).json()).accepted,false);
+ assert.equal((await h.call('student/active-minute',null,{})).status,401);
+ assert.equal((await (await pulse()).json()).accepted,true);
+ assert.equal(h.sqlite.prepare('SELECT analytics_opt_in FROM review_accounts WHERE id=?').get(student.id).analytics_opt_in,0);
  h.sqlite.prepare('UPDATE review_accounts SET analytics_opt_in=1 WHERE id=?').run(student.id);
  await pulse();
  await pulse();

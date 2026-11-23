@@ -241,7 +241,7 @@ export async function openAdminCenter(){
   const details=node('section',null,{class:'acc-detail-body'});
   const {studentGroup,studentSection,labGroup,studentNumberOverride}=result.profile;
   const group=[studentGroup,studentSection].filter(Boolean).join('-')+(labGroup?' · '+labGroup:'');
-  details.append(cards([['Account',person.suspended?'Suspended':'Active'],['Academic group',group||'Unset'],['Estimated active time',result.sharing?minutes(result.activeMinutes):'Sharing off'],
+  details.append(cards([['Account',person.suspended?'Suspended':'Active'],['Academic group',group||'Unset'],['Estimated active time',minutes(result.activeMinutes)],
    ...(studentNumberOverride?[['Student number override',studentNumberOverride]]:[])]),
    node('h3','Recent sign-ins'),
    table(['Signed in','Device','Browser','Last active'],sessionRows,result.sessions?'No recent sessions.':'Clerk session history is unavailable.'));
