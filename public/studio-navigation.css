@@ -13,3 +13,15 @@
 @media(min-width:761px){html[data-ui=modern] body[data-sidebar-stage=expanded] #mainSidebar .profile-upload-icon{left:44px;top:42px;width:22px;height:22px;padding:3px;box-shadow:0 0 0 2px var(--paper,var(--bg))}}
 .sync-quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.sync-quick-actions :is(#syncNow,#openSiteAdmin){width:100%!important;min-width:0;flex:initial;border-radius:10px!important;background:transparent!important;color:inherit!important;border:1px solid var(--line)!important;box-shadow:none!important}.sync-quick-actions button:hover{background:var(--light)!important}.sync-quick-actions button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.sync-widget-body #syncState{margin-bottom:4px}.sync-widget-body #saveLabel{margin-top:9px}
 #siteAdmin .admin-frame{display:flex;flex-direction:column;gap:16px}#siteAdmin .admin-frame>.section-head{order:-2}#siteAdmin .hub-appearance{order:-1}#siteAdmin .admin-tools{order:10;border-top:1px solid var(--line);padding-top:14px}#toggleAdminSettings{width:100%;display:flex;align-items:center;justify-content:space-between;background:transparent;border:0;padding:10px 0;color:var(--muted)}#toggleAdminSettings[aria-expanded=true] span{transform:rotate(180deg)}#adminUnlockForm:not([hidden]){display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:12px 0}#adminUnlockForm label{display:grid;gap:7px;flex:1;min-width:160px}#adminUnlockStatus{width:100%;margin:0;color:var(--danger,#bd3939)}#adminSettingsContent[hidden],#adminUnlockForm[hidden]{display:none!important}
+
+.course-workspace-links { display:flex; gap:.55rem; flex-wrap:wrap; margin:0 0 .85rem; }
+.course-workspace-links button { min-height:44px; }
+.course-workspace-back { margin-block:.35rem .75rem; }
+.course-workspace-sessions { display:grid; gap:.5rem; margin:.75rem 0; padding:0; list-style:none; }
+.course-workspace-sessions li { padding:.65rem .75rem; border:1px solid var(--line); border-radius:.65rem; }
+.course-workspace-sessions small { display:block; margin-top:.25rem; color:var(--muted); }
+.cvp-archive-view .pass,.cvp-archive-view [data-spacing],.cvp-archive-view [data-restore-third] { display:none; }
+.renal-guide { margin-block:.75rem; }
+.renal-guide summary,.renal-source-index summary { cursor:pointer; min-height:36px; align-content:center; }
+.renal-guide article { border-top:1px solid var(--line); padding-block:.65rem; }
+.renal-guide article h3 { margin:.35rem 0; }

@@ -14,4 +14,3 @@ const grade=ExamEngine.grade;ExamEngine.grade=function(exam){return grade({...ex
 const record=etRecordSet;etRecordSet=function(qs,answers,...rest){return record(qs.map((q,i)=>accepted(q,answers[i])?{...q,answer:answers[i]}:q),answers,...rest)};ExamTools.recordSet=etRecordSet;
 const markup=etQuestionMarkup;etQuestionMarkup=function(q,i,answers,finished,...rest){return markup(finished&&accepted(q,answers?.[i])?{...q,answer:answers[i]}:q,i,answers,finished,...rest)};
 const byId=originalQuestionById;originalQuestionById=function(id){const q=byId(id),a=typeof originalRun!=='undefined'?originalRun?.answers?.[id]:undefined;return originalRun?.finishedAt&&q&&accepted(q,a)?{...q,answer:a}:q};
-await loadTbl19();

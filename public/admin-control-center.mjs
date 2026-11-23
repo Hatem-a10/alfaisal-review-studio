@@ -131,7 +131,7 @@ function openForm(title, fields, submitLabel='Save', submit) {
  });
 }
 function confirm(title, wording) {return openForm(title,[node('p',wording)],'Confirm',()=>true);}
-const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library'};
+const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library',archiveCvp:'Archive CVP 112 and show REN 123 as the current course'};
 
 let active;
 export async function openAdminCenter(){
@@ -505,7 +505,7 @@ export async function openAdminCenter(){
    const values=formValues(form);
    if(!await confirm('Apply site controls?','These controls take effect across this environment.'))return;
    event.submitter.disabled=true;
-   try{if(await mutation('site/save',values))status.textContent='Site controls saved.';}
+   try{if(await mutation('site/save',values)){status.textContent='Site controls saved.';window.dispatchEvent(new Event('review-managed-controls-refresh'));}}
    catch(error){status.textContent=error.message;}
    finally{event.submitter.disabled=false;}
   });

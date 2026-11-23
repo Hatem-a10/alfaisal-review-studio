@@ -228,3 +228,18 @@ test('active minutes are counted for every signed-in account without changing st
  assert.equal(record.completedReviews,2);
  assert.equal(record.answeredQuestions,5);
 });
+
+test('the owner can disable and re-enable the course archive without rewriting previous data',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const fields={readOnly:false,sharedUploads:true,reports:true,resourceLibrary:true,maintenance:''};
+ const profile=h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id);
+ assert.equal((await h.call('site/save',student,{...fields,archiveCvp:false})).status,403);
+ await h.challenge();
+ assert.equal((await h.call('site/save',owner,{...fields,archiveCvp:false})).status,200);
+ assert.equal((await (await h.call('student/status',student)).json()).flags.archiveCvp,false);
+ assert.equal((await h.call('site/save',owner,fields)).status,200);
+ assert.equal((await (await h.call('student/status',student)).json()).flags.archiveCvp,false);
+ assert.equal((await h.call('site/save',owner,{...fields,archiveCvp:true})).status,200);
+ assert.equal((await (await h.call('student/status',student)).json()).flags.archiveCvp,true);
+ assert.deepEqual(h.sqlite.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(student.id),profile);
+});

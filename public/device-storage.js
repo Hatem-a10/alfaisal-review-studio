@@ -33,9 +33,9 @@
  const open=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('review-studio-device',1);r.onupgradeneeded=()=>{r.result.createObjectStore('values');r.result.createObjectStore('meta');r.result.createObjectStore('recovery')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
  const tx=(store,mode,action)=>new Promise((resolve,reject)=>{const t=db.transaction(store,mode),r=action(t.objectStore(store));let value;r.onsuccess=()=>value=r.result;t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('Device write interrupted'))});
  const id=k=>account+'|'+k;
- async function hydrate(){cache.clear();const [keys,values]=await Promise.all([tx('values','readonly',s=>s.getAllKeys()),tx('values','readonly',s=>s.getAll())]);keys.forEach((key,i)=>{if(String(key).startsWith(account+'|'))cache.set(String(key).slice(account.length+1),values[i])});if(!await tx('meta','readonly',s=>s.get('initialized:'+account))){for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key&&managed(key)&&!cache.has(key))cache.set(key,rawGet.call(storage,key))}for(const[k,v]of cache)await tx('values','readwrite',s=>s.put(v,id(k)));await tx('meta','readwrite',s=>s.put(true,'initialized:'+account))}}
+ async function hydrate(initialized=false){cache.clear();const range=typeof IDBKeyRange==='undefined'?undefined:IDBKeyRange.bound(account+'|',account+'}');const [keys,values]=await Promise.all([tx('values','readonly',s=>s.getAllKeys(range)),tx('values','readonly',s=>s.getAll(range))]);keys.forEach((key,i)=>{if(String(key).startsWith(account+'|'))cache.set(String(key).slice(account.length+1),values[i])});if(!initialized&&!await tx('meta','readonly',s=>s.get('initialized:'+account))){for(let i=0;i<storage.length;i++){const key=storage.key(i);if(key&&managed(key)&&!cache.has(key))cache.set(key,rawGet.call(storage,key))}for(const[k,v]of cache)await tx('values','readwrite',s=>s.put(v,id(k)));await tx('meta','readwrite',s=>s.put(true,'initialized:'+account))}}
  function queue(k,v){if(!db)return;pending.set(id(k),v);chain=chain.catch(()=>{}).then(async()=>{const items=[...pending];if(!items.length)return;await new Promise((resolve,reject)=>{const t=db.transaction('values','readwrite'),s=t.objectStore('values');for(const[key,value]of items)value===null?s.delete(key):s.put(value,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error)});for(const[key,value]of items)if(pending.get(key)===value)pending.delete(key);lastError=null}).catch(notify)}
- try{db=await open();account=await tx('meta','readonly',s=>s.get('active'))||account}catch(error){notify(error);db=null}
+ try{db=await open();if(!verifiedAccount)account=await tx('meta','readonly',s=>s.get('active'))||account}catch(error){notify(error);db=null}
  if(managedAccounts&&!db)throw Error('Secure device storage is unavailable. Enable device storage and retry; your saved copies are retained.');
  if(offlineAccount&&(account!==offlineAccount||!await tx('meta','readonly',s=>s.get('initialized:'+account)))){
   throw Error('Reconnect and sign in to open your study space.');
@@ -47,7 +47,7 @@
    await tx('meta','readwrite',s=>s.put(true,'initialized:'+account));
    try{rawSet.call(storage,accountKey,account)}catch{}
   }
-  if(db)await hydrate();
+  if(db)await hydrate(!!verifiedAccount);
  }catch(error){
   notify(error);db=null;
   if(managedAccounts)throw Error('Secure device storage is unavailable. Enable device storage and retry; your saved copies are retained.');

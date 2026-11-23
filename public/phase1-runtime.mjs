@@ -3,7 +3,7 @@ import {deriveAccent} from './phase1-accent.mjs';
 import {declutter} from './phase1-copy.mjs';
 import {mountAcademicAdmin} from './phase1-academic-admin.mjs';
 import {installSearch} from './phase1-search.mjs';
-await Promise.all([import("./faculty-questions.mjs"),import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498")]);
+await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498")]);
 await import("./mobile-dock.js?v=1498");
 await import("./studio-navigation.js?v=1498");
 let solver;
@@ -20,3 +20,4 @@ enhance();
 await import('./phase2-runtime.mjs?v=1498');
 
 await import("./phase3-runtime.mjs");
+await import("./course-workspace.mjs");
