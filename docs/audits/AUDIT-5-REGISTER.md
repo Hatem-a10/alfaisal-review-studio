@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate scopes (108 speed-oriented changes and 19 measurement capabilities), 88 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 81 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate scopes (110 speed-oriented changes and 19 measurement capabilities), 93 pre-existing mechanisms source-reviewed, 6 rejected/not-applicable items, 0 submitted candidates and 72 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -63,8 +63,8 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-034 | Reuse unchanged dashboard DOM cards | Unassessed |
 | A5-035 | Batch DOM reads and writes | Merged #220; staging CI passed; scoped optimization |
 | A5-036 | Frame-align visual updates | Merged #213; staging CI passed; scoped optimization |
-| A5-037 | Apply CSS containment to independent sections | Unassessed |
-| A5-038 | Skip rendering offscreen content via content-visibility | Unassessed |
+| A5-037 | Apply CSS containment to independent sections | Existing coverage; offscreen Library sections already imply containment via A5-038 |
+| A5-038 | Skip rendering offscreen content via content-visibility | Merged #235; CI passed; print-safe offscreen Library content visibility |
 | A5-039 | Use compositor-friendly animation properties | Existing; source-reviewed public/redesign.css, public/phase3-ui.css; no new merge credit |
 | A5-040 | Suspend nonessential hidden-tab visual updates | Merged #164; CI passed; hidden classic mock DOM scope |
 
@@ -200,7 +200,7 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-126 | Sort timetable event lanes once per calendar day | Existing coverage; campusLayout groups by day before sorting; reviewed |
 | A5-127 | Avoid rebuilding hidden timetable views on clock tick | Existing narrower: second-tick timer toggles live event classes without rebuilding timetable board |
 | A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Merged #118; CI passed |
-| A5-129 | Memoize event category counts per selected group | Unassessed |
+| A5-129 | Memoize event category counts per selected group | Rejected; calendar legend has no per-group category counting hotspot to memoize |
 | A5-130 | Render only visible calendar range with preserved navigation | Existing: academic timetable renders five days or one compact day |
 
 ## Dashboard selectors
@@ -289,8 +289,8 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-185 | Defer media metadata extraction until needed | Existing coverage; deck parsing and media import deferred to user action |
 | A5-186 | Deduplicate concurrent authorized reads for same immutable asset | Existing coverage; reviewed scope in evidence |
 | A5-187 | Stream authorized upload hashing where supported | Existing; source-reviewed lib/personal-upload.ts; no new merge credit |
-| A5-188 | Avoid duplicate client upload buffers | Unassessed |
-| A5-189 | Batch verified metadata lookup for resource cards | Unassessed |
+| A5-188 | Avoid duplicate client upload buffers | Existing coverage; file is sent directly as original File in FormData |
+| A5-189 | Batch verified metadata lookup for resource cards | Existing coverage; libraryLectureCandidates builds indexed source associations per render |
 | A5-190 | Cache account-scoped material filter result until mutation | Unassessed |
 
 ## Offline storage
@@ -332,7 +332,7 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-213 | Split rarely used feature styles from entry stylesheet | Unassessed |
 | A5-214 | Deduplicate identical keyframe declarations | Rejected / not applicable; no duplicate keyframe names across public CSS sources |
 | A5-215 | Reduce expensive broad descendant selectors in hot views | Merged #212; staging CI passed; scoped optimization |
-| A5-216 | Avoid animating layout-affecting properties | Unassessed |
+| A5-216 | Avoid animating layout-affecting properties | Merged #236; CI passed; compositor transform without sidebar width animation |
 | A5-217 | Guard redundant root theme CSS and dataset assignments | Merged #141; CI passed; DOM operation counts |
 | A5-218 | Reuse derived palette for unchanged accent and theme | Merged #141; CI passed |
 | A5-219 | Preload only the essential font face | Existing coverage; single index.html font preload; reviewed |
@@ -366,7 +366,7 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-237 | Prioritize critical requests over speculative prefetch | Merged #208; staging CI passed; scoped optimization |
 | A5-238 | Limit concurrent speculative downloads by connection conditions | Merged #208; staging CI passed; scoped optimization |
 | A5-239 | Use lightweight version checks before fetching unchanged catalogs | Unassessed |
-| A5-240 | Avoid automatic retries for nonessential canceled work | Unassessed |
+| A5-240 | Avoid automatic retries for nonessential canceled work | Existing coverage; superseded search index work aborts without background retry |
 
 ## Server data processing
 
@@ -407,7 +407,7 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-263 | Avoid re-encoding unchanged generated JSON files | Merged #188; staging CI passed; scoped optimization |
 | A5-264 | Use bounded parallelism for independent image generation | Merged #191; staging CI passed; scoped optimization |
 | A5-265 | Deduplicate identical generated public asset bytes by digest | Merged #191; staging CI passed; scoped optimization |
-| A5-266 | Avoid reading archived inputs for active-only builds | Unassessed |
+| A5-266 | Avoid reading archived inputs for active-only builds | Rejected; active-only build target absent and archived CVP is intentionally accessible |
 | A5-267 | Precompute normalized question option indexes | Merged #192; staging CI passed; scoped optimization |
 | A5-268 | Serialize large generated tables in deterministic streaming order | Unassessed |
 | A5-269 | Cache validated source schema results by content hash | Unassessed |
@@ -422,7 +422,7 @@ Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate
 | A5-273 | Remove unused transitive runtime dependency imports after evidence | Merged #221; staging CI passed; scoped optimization |
 | A5-274 | Minify eligible shipped JS while keeping debugging maps private | Existing coverage; reviewed scope in evidence |
 | A5-275 | Exclude tests outside public startup source graph | Existing narrower coverage; startup bundler resolves only public sources |
-| A5-276 | Exclude development tooling from production Worker dependency graph | Unassessed |
+| A5-276 | Exclude development tooling from production Worker dependency graph | Existing coverage; runtime Worker entry excludes scripts/ development build tools |
 | A5-277 | Avoid copying unchanged assets during local staging build | Merged #188; staging CI passed; scoped optimization |
 | A5-278 | Upload only changed immutable asset objects during release | Existing coverage; reviewed scope in evidence |
 | A5-279 | Verify artifact hashes without rereading same unchanged local files | Existing coverage; verified transfer receipts skip already completed input re-reads |
@@ -681,6 +681,24 @@ The following are **already implemented** (not five additional gains):
 - **A5-280:** The same transfer tool runs twelve bounded independent transfer/verification lanes. It does not parallelize account-sensitive database recovery.
 
 A5-108 was **already credited as a merged measurement capability in PR #216** and is intentionally **not counted again**. This documentation causes no schema, production or student-record changes.
+
+## Audit 5 continuation: two speed merges, existing source coverage, and two no-ops (24 November 2026)
+
+- **A5-038 merged:** [PR #235](https://github.com/Hatem-a10/alfaisal-review-studio/pull/235), successful [staging CI 45442497535](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45442497535). Library material sections use `content-visibility:auto` under `@supports` with `contain-intrinsic-size:auto 660px`; print restores visible content. This reduces offscreen rendering work in supporting browsers; live navigation metrics were not recorded.
+- **A5-216 merged:** [PR #236](https://github.com/Hatem-a10/alfaisal-review-studio/pull/236), successful [staging CI 45443190798](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45443190798). Sidebar width no longer interpolates each animation frame; collapsed sidebar continues to animate `transform`, while fixed expanded/compact widths stay 250 and 76 pixels. Width snapping is an intentional minor visual tradeoff.
+
+Five reviewed mechanisms are **existing coverage, not new merges**:
+- **A5-037:** CSS `content-visibility:auto` applied to independent Library `.material-list` sections by A5-038 already implies style/layout/paint containment for skipped offscreen rendering. A separate `contain` rule on those same nodes would duplicate the mechanism.
+- **A5-188:** `public/upload-review.js` uses `form.set('file',file)` to send the original browser `File` directly, without creating an additional copy for transport; text and figure extraction retains its separate bounded processing path.
+- **A5-189:** `public/library-list.js` builds a `byId` source lookup in `libraryLookup`, and `libraryLectureCandidates` indexes lecture-to-source associations once for a Library list render, avoiding one catalog-wide scan per resource card.
+- **A5-240:** `public/phase1-search.mjs` `buildIndexCooperatively` discards superseded indexing tasks; `public/library-list.js` shows explicit Retry after a failed resource request. Neither schedules automatic retries for the canceled optional work.
+- **A5-276:** `worker/staging.ts` imports runtime modules and the compiled Vinext handler, not `scripts/` build-time minifiers. `scripts/build-cloudflare-staging.mjs` invokes build tooling separately from Worker dispatch. This is source-level graph separation, not a measured binary size claim.
+
+Two ideas are **not applicable to the current product**:
+- **A5-129:** `public/schedule-ui.js` renders a fixed legend of category labels; it does not repeatedly compute group-specific category counts. Memoizing absent counts would add cache complexity without removing work.
+- **A5-266:** Current staging and production-candidate builds must retain the user-accessible archived CVP material. There is no separate active-only build target that can exclude those inputs without removing the archive; skip this optimization rather than breaking preservation.
+
+A5-039 compositor-friendly keyframes was **previously source-reviewed and counted once**; this entry does not credit it again. No production deployment or student-data changes.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
