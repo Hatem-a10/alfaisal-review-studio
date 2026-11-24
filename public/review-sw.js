@@ -1,5 +1,5 @@
 import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,obsoleteCoreCache,fitsCache} from './phase3-cache-policy.mjs';
-const CORE=RELEASE_CACHE+':core',clientsByAccount=new Map(),accountEpoch=new Map(),privateWrites=new Map(),clearing=new Map();
+const CORE=RELEASE_CACHE+':core',clientsByAccount=new Map(),accountEpoch=new Map(),privateWrites=new Map(),clearing=new Map(),staticFlights=new Map();
 const epoch=account=>accountEpoch.get(account)||0;
 const accountHeader='X-Review-Cache-Account';
 const unavailable=(message,status=409)=>new Response(message,{status,headers:{'Content-Type':'text/plain','Cache-Control':'no-store'}});
@@ -67,6 +67,16 @@ self.addEventListener('fetch',event=>{
      return unavailable('Account identity changed or is unavailable. Sign in or retry.',identity.ok?409:identity.status===401||identity.status===403?identity.status:503);
     }
     if(clientsByAccount.get(event.clientId)!==account){denied=true;return unavailable('Account changed. Retry this download.')}
+   }
+   // Only coalesce immutable public hashed assets. Private and conditional requests
+   // retain their own account verification, network response and fallback path.
+   if(kind==='core'&&/^\/_studio\/[\w.-]+-[0-9a-f]{16}\.[a-z.]+$/.test(url.pathname)&&!url.search&&!request.headers.has('range')&&!request.headers.has('if-none-match')&&!request.headers.has('if-modified-since')){
+    const key=url.href;let pending=staticFlights.get(key);
+    if(!pending&&staticFlights.size<32){
+     pending=(async()=>{const response=await fetch(request);if(cache)await store(cache,request,response).catch(()=>{});return response})().finally(()=>staticFlights.delete(key));
+     staticFlights.set(key,pending);
+    }
+    if(pending)return (await pending).clone();
    }
    const response=kind==='private'?await fetch(request,{cache:'no-store'}):await fetch(request);
    if(response.status===401||response.status===403){
