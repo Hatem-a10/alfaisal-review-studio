@@ -24,29 +24,32 @@ export async function POST(request:Request){
  if(ext==='pdf'&&!await hasPdfHeader(file)||['pptx','docx'].includes(ext||'')&&!await hasZipHeader(file))return json({error:'The file contents do not match its document type.'},400);
  const mime=ext==='pdf'?'application/pdf':ext==='json'?'application/json':['pptx','docx'].includes(ext||'')?'application/octet-stream':'text/plain';
  const bytes=await file.arrayBuffer(),sha=await digest(bytes),known=await knownOriginal(env.BUCKET,sha,bytes.byteLength);
- if(known)return json({duplicate:true,builtin:true,url:known.url,name:known.name});
+ if(known&&form.get('attachKnown')!=='1')return json({duplicate:true,builtin:true,url:known.url,name:known.name});
  const existing=await duplicateMaterial(env.BUCKET,user,(await materialRows(env.DB,user)).filter(row=>row.lectureId===lectureId),sha,bytes.byteLength);if(existing)return json({...withMaterialLectureLinks(existing),duplicate:true});
  const id=crypto.randomUUID(),base='materials/'+user+'/'+id,createdAt=new Date().toISOString();
  const quotaError=()=>json({error:'Your personal cloud storage is full (500 MB). Contact the site owner about space or remove unused cloud decks.'},413);
  if(!await withinPersonalQuota(env.DB,user,file.size))return quotaError();
  const name=file.name.slice(0,250),pageCount=parsed.pages.length;
+ const submittedFigures=Array.isArray(parsed.figures)?parsed.figures:[];
+ const figures=submittedFigures.filter((f:any)=>f&&Number.isInteger(f.page)&&f.page>0&&f.page<=pageCount&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60);
+ const omittedFigures=submittedFigures.length-figures.length;
  try{
-  await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime}});
-  await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures:Array.isArray(parsed.figures)?parsed.figures.filter((f:{page:number;image:string})=>Number.isInteger(f.page)&&f.page>0&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60):[]}),{httpMetadata:{contentType:'application/json'}});
+  if(known)await env.BUCKET.put(base+'/original-alias',JSON.stringify({key:known.key,sha,bytes:bytes.byteLength}),{httpMetadata:{contentType:'application/json'}});else await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime},customMetadata:{sha256:sha}});
+  await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures,omittedFigures}),{httpMetadata:{contentType:'application/json'}});
  }catch{
-  await env.BUCKET.delete([base+'/original',base+'/text']).catch(()=>{});
+  await env.BUCKET.delete([base+'/original',base+'/original-alias',base+'/text']).catch(()=>{});
   return json({error:'Cloud material upload did not finish. Retry the upload.'},503);
  }
  try{
   if(!await reservePersonalUpload(env.DB,{id,user,name,lectureId,mime,bytes:file.size,pageCount,createdAt})){
-   await env.BUCKET.delete([base+'/original',base+'/text']).catch(()=>{});
+   await env.BUCKET.delete([base+'/original',base+'/original-alias',base+'/text']).catch(()=>{});
    return quotaError();
   }
  }catch{
   // A database response can fail after a commit. Never remove objects if the row might exist.
-  try{const committed=await env.DB.prepare('SELECT id FROM study_materials WHERE user_id=? AND id=?').bind(user,id).first();if(!committed)await env.BUCKET.delete([base+'/original',base+'/text']);else return json(withMaterialLectureLinks({id,name,lectureId,mime,bytes:file.size,pageCount,createdAt}))}catch{}
+  try{const committed=await env.DB.prepare('SELECT id FROM study_materials WHERE user_id=? AND id=?').bind(user,id).first();if(!committed)await env.BUCKET.delete([base+'/original',base+'/original-alias',base+'/text']);else return json(withMaterialLectureLinks({id,name,lectureId,mime,bytes:file.size,pageCount,createdAt,omittedFigures}))}catch{}
   return json({error:'Could not confirm the cloud material upload. Retry safely.'},503);
  }
 
- return json(withMaterialLectureLinks({id,name:file.name.slice(0,250),lectureId,mime,bytes:file.size,pageCount:parsed.pages.length,createdAt}));
+ return json(withMaterialLectureLinks({id,name:file.name.slice(0,250),lectureId,mime,bytes:file.size,pageCount:parsed.pages.length,createdAt,omittedFigures}));
 }
