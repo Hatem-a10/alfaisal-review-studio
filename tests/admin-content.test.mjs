@@ -74,3 +74,39 @@ test('announcements validate targets, schedule visibility, and never cross class
  const query=raw.prepare('SELECT status,target_class FROM review_announcements').get();assert.deepEqual({...query},{status:'published',target_class:'M1'});
  const draft=await callAdmin(context,'announcements','save',{id,title:'M1 update',body:'Accidental draft edit',audience:'class',targetClass:'M1',startsAt:now,expiresAt:later});assert.equal(draft.status,409);assert.equal(raw.prepare('SELECT status FROM review_announcements').get().status,'published');
 });
+
+
+test('default report pagination does not collapse to one result and irrelevant announcements do not consume student limit',async()=>{
+ const {db,raw}=await fixture(),env={DB:db},user={id:'student-1'},row={profile_json:JSON.stringify({studentGroup:'M1',studentSection:'A',labGroup:'1.6'})};
+ for(let i=0;i<2;i++)assert.equal((await contentStudent({request:request('/api/control-center/student/reports','POST',{questionId:'REN-Q'+i,kind:'other',details:'Synthetic review'}),env,user,row,path:'/api/control-center/student/reports'})).status,201);
+ const listing=await callAdmin({request:request('/api/control-center/admin/reports/list'),env,user:{id:'owner'},role:'owner'},'reports','list');const body=await listing.json();assert.equal(body.limit,30);assert.equal(body.reports.length,2);
+ const insert=raw.prepare("INSERT INTO review_announcements(id,title,body,audience,target_class,priority,starts_at,status,created_by,updated_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,'published',?,?,?,?)");
+ for(let i=0;i<101;i++)insert.run('other'+i,'Other group','Synthetic','class','M2','urgent','2020-01-01T00:00:00Z','owner','owner','2020-01-01','2020-01-01');
+ insert.run('visible','Relevant','Synthetic','global',null,'normal','2020-01-01T00:00:00Z','owner','owner','2020-01-01','2020-01-01');
+ const notices=await contentStudent({request:request('/api/control-center/student/announcements'),env,user,row,path:'/api/control-center/student/announcements'});
+ assert.deepEqual((await notices.json()).announcements.map(a=>a.id),['visible']);
+});
+test('proposal validation rejects nonexistent selected options and duplicates after cleanup',async()=>{
+ const {db}=await fixture(),env={DB:db},user={id:'student-1'};
+ const created=await contentStudent({request:request('/api/control-center/student/reports','POST',{questionId:'REN-Q1',kind:'other',details:'Synthetic review'}),env,user,path:'/api/control-center/student/reports'});const {id:reportId}=await created.json();
+ for(const patch of [{options:['a','b','c','d'],answer:4},{options:['a','A','c','d']},{question:'\u0001'}]){
+  const r=await callAdmin({request:request('/api/control-center/admin/reports/propose','POST',{}),env,user:{id:'editor'},role:'editor'},'reports','propose',{reportId,source:'Synthetic source',patch});
+  assert.equal(r.status,400);
+ }
+});
+test('review-only endpoints reject POST and malformed profile JSON does not crash notices',async()=>{
+ const {db}=await fixture(),env={DB:db},user={id:'student-1'};
+ for(const name of ['announcements','errata']){const path='/api/control-center/student/'+name;assert.equal((await contentStudent({request:request(path,'POST',{}),env,user,path})).status,405)}
+ const path='/api/control-center/student/announcements';assert.equal((await contentStudent({request:request(path),env,user,row:{profile_json:'null'},path})).status,200);
+});
+test('an editor replacement between approval read and write cannot be approved by the stale owner request',async()=>{
+ const {db,raw}=await fixture(),env={DB:db},user={id:'student-1'};
+ const created=await contentStudent({request:request('/api/control-center/student/reports','POST',{questionId:'REN-Q1',kind:'other',details:'Synthetic review'}),env,user,path:'/api/control-center/student/reports'});const {id:reportId}=await created.json();
+ const context={request:request('/api/control-center/admin/reports/propose','POST',{}),env,user:{id:'editor'},role:'editor'};
+ assert.equal((await callAdmin(context,'reports','propose',{reportId,source:'Synthetic source',patch:{question:'First proposal'}})).status,200);
+ const r=await contentAdmin({request:request('/api/control-center/admin/reports/approve','POST',{}),env,user:{id:'owner'},role:'owner',section:'reports',action:'approve',data:{reportId},mutate:async statements=>{
+  raw.prepare('UPDATE review_question_reports SET patch_json=? WHERE id=?').run(JSON.stringify({question:'Different proposal'}),reportId);
+  return db.batch(statements);
+ }});
+ assert.equal(r.status,409);assert.equal(raw.prepare('SELECT count(*) AS n FROM review_question_revisions').get().n,0);
+});
