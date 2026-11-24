@@ -25,6 +25,7 @@ async function boot({online = true, response, key = owner, active = owner, initi
  const result = {opened: false, loaded: false, redirect: null, error: '', fetched: false};
  const db = {
   transaction(store) {
+   let pending=0;
    const t = {objectStore: () => ({
     get: k => request(meta.get(k)),
     put: (v, k) => request(meta.set(k, v)),
@@ -33,7 +34,8 @@ async function boot({online = true, response, key = owner, active = owner, initi
    })};
    function request(value) {
     const req = {result: value};
-    queueMicrotask(() => { req.onsuccess(); t.oncomplete(); });
+    pending++;
+    queueMicrotask(() => { req.onsuccess?.(); if (--pending === 0) queueMicrotask(() => t.oncomplete?.()); });
     return req;
    }
    return t;
