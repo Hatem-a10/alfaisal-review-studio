@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against merged GitHub PRs on 24 November 2026: 66 newly merged candidate scopes (62 performance changes and 4 measurement capabilities), 55 existing mechanisms source-reviewed, 1 rejected/not-applicable, 3 submitted candidates, and 175 unassessed. The 300 IDs remain distinct. Production is unchanged.
+Status reconciled against merged GitHub PRs on 24 November 2026: 69 newly merged candidate scopes (65 performance changes and 4 measurement capabilities), 55 existing mechanisms source-reviewed, 1 rejected/not-applicable, 0 submitted candidates, and 175 unassessed. The 300 IDs remain distinct. Production is unchanged.
 
 ## Activity analytics
 
@@ -21,7 +21,7 @@ Status reconciled against merged GitHub PRs on 24 November 2026: 66 newly merged
 | A5-007 | Index daily aggregate identities at ingestion | Unassessed |
 | A5-008 | Reuse normalized date keys from validated records | Merged #121; CI passed |
 | A5-009 | Incrementally update daily unique-question sets | Unassessed |
-| A5-010 | Cache activity chart geometry between data changes | Submitted #180; corrected cross-realm test, CI pending |
+| A5-010 | Cache activity chart geometry between data changes | Merged #180; CI passed; cached activity date geometry |
 
 ## Startup
 
@@ -357,8 +357,8 @@ Status reconciled against merged GitHub PRs on 24 November 2026: 66 newly merged
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-231 | Deduplicate identical concurrent account-scoped GET requests | Submitted #174; corrected cross-realm test, CI pending |
-| A5-232 | Cancel superseded read requests on route changes | Submitted #176; earlier CI failed on now-repaired #177 timing gate |
+| A5-231 | Deduplicate identical concurrent account-scoped GET requests | Merged #174; CI passed; per-account Anki listing requests |
+| A5-232 | Cancel superseded read requests on route changes | Merged #176; CI passed; route-exit Library read cancellation |
 | A5-233 | Combine compatible small metadata reads | Unassessed |
 | A5-234 | Reduce oversized response field sets per view | Unassessed |
 | A5-235 | Reuse stable response schema encoding | Unassessed |
@@ -560,7 +560,7 @@ No production release, migrations, student-data edits or archived curriculum edi
 
 ## 24 November 2026 merged PR reconciliation
 
-Ten additional numbered candidate scopes are merged to `cloudflare-staging`, with successful candidate-head staging CI:
+Thirteen additional numbered candidate scopes are merged to `cloudflare-staging`, with successful candidate-head staging CI:
 
 - A5-199: [merged #162](https://github.com/Hatem-a10/alfaisal-review-studio/pull/162); [passing CI 45398589141](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398589141).
 - A5-040: [merged #164](https://github.com/Hatem-a10/alfaisal-review-studio/pull/164); [passing CI 45398779135](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398779135).
@@ -572,10 +572,14 @@ Ten additional numbered candidate scopes are merged to `cloudflare-staging`, wit
 - A5-210: [merged #173](https://github.com/Hatem-a10/alfaisal-review-studio/pull/173); [passing CI 45400615774](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45400615774). Measurement only.
 - A5-085: [merged #175](https://github.com/Hatem-a10/alfaisal-review-studio/pull/175); [passing CI 45401595267](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45401595267).
 - A5-172: [merged #178](https://github.com/Hatem-a10/alfaisal-review-studio/pull/178); [passing CI 45402010575](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45402010575).
+- A5-010: [merged PR #180](https://github.com/Hatem-a10/alfaisal-review-studio/pull/180); [passing staging CI 45403909856](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45403909856); merge `457d48d657eac992998bc0fb2ed963051b20f2ee`.
+- A5-231: [merged PR #174](https://github.com/Hatem-a10/alfaisal-review-studio/pull/174); [passing staging CI 45403810122](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45403810122); merge `88c72cc7f9d76dc5fc9a523e29e30dff6aa9c384`.
+- A5-232: [merged PR #176](https://github.com/Hatem-a10/alfaisal-review-studio/pull/176); [passing staging CI 45404176204](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45404176204); merge `1242ee0de1d1479dc84346267e71903392a466b5`.
 
-[#177](https://github.com/Hatem-a10/alfaisal-review-studio/pull/177) repaired a flaky speed-gate test, not a new candidate. [#179](https://github.com/Hatem-a10/alfaisal-review-studio/pull/179) reviewed five pre-existing mechanisms and rejected one inapplicable idea. Open, not verified: A5-231 [#174](https://github.com/Hatem-a10/alfaisal-review-studio/pull/174); A5-232 [#176](https://github.com/Hatem-a10/alfaisal-review-studio/pull/176); A5-010 [#180](https://github.com/Hatem-a10/alfaisal-review-studio/pull/180). No production changes, migrations or student-data edits.
 
-**Totals:** 66 merged (62 performance, 4 measurement), 55 existing, 1 rejected, 3 submitted, 175 unassessed = 300. These are synthetic/per-candidate test receipts, not measured production speedup guarantees.
+[#177](https://github.com/Hatem-a10/alfaisal-review-studio/pull/177) repaired a flaky speed-gate test, not a new candidate. [#179](https://github.com/Hatem-a10/alfaisal-review-studio/pull/179) reviewed five pre-existing mechanisms and rejected one inapplicable idea. A5-010 (#180), A5-231 (#174), and A5-232 (#176) subsequently passed staging CI and merged. All three now count as performance candidates; no submitted PRs remain from this batch. No production changes, migrations or student-data edits.
+
+**Totals:** 69 merged (65 performance, 4 measurement), 55 existing, 1 rejected, 0 submitted, 175 unassessed = 300. These are synthetic/per-candidate test receipts, not measured production speedup guarantees.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
