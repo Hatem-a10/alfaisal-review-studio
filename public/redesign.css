@@ -396,13 +396,6 @@ html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more>summary:
 /* A group name repeated above its own tabs adds nothing; the sidebar already says where you are. */
 html:root body:not(.xp-exam-active) #content .phase3-tabs > span:not([class]):first-child{display:none}
 
-body:not(.xp-exam-active) .home-next-action{margin-block:0 16px;padding:clamp(18px,3vw,28px);border-color:var(--accent-border,var(--line))}
-body:not(.xp-exam-active) .home-next-action h2,body:not(.xp-exam-active) .home-reviews p{margin-block:0 8px}
-body:not(.xp-exam-active) .home-next-action>p{margin-block:0 14px}
-body:not(.xp-exam-active) .home-resume-options{margin-top:12px}
-body:not(.xp-exam-active) .home-resume-options button{display:block;text-align:left;margin-top:6px}
-body:not(.xp-exam-active) .home-daily-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;margin-bottom:16px}
-body:not(.xp-exam-active) .home-reviews .dated-review{min-width:0}
 body:not(.xp-exam-active) .practice-start-actions,body:not(.xp-exam-active) .mobile-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
 body:not(.xp-exam-active) .practice-start-actions button,body:not(.xp-exam-active) .mobile-tools-grid button{min-height:48px;text-align:left}
 body:not(.xp-exam-active) .practice-start details,body:not(.xp-exam-active) #etMockCustomize{margin-block:14px}
@@ -411,27 +404,11 @@ body:not(.xp-exam-active) #mobileToolsMenu{width:min(420px,calc(100vw - 24px));m
 body:not(.xp-exam-active) .mobile-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 body:not(.xp-exam-active) .mobile-tools-grid button{display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
 body:not(.xp-exam-active) .mobile-tools-grid svg{width:20px;height:20px;flex:none}
-@media(max-width:700px){
- body:not(.xp-exam-active) .home-daily-grid{grid-template-columns:minmax(0,1fr)}
-}
 body:not(.xp-exam-active) .mobile-dock-shell:has(.simple-mobile-nav) .dock-scroll{display:none}
 body:not(.xp-exam-active) .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;height:auto!important;min-height:0;overflow:hidden!important;touch-action:pan-y}
 body:not(.xp-exam-active) .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav button:not([data-mobile-extra]){min-width:0!important;min-height:48px!important;padding:4px 1px!important;gap:4px;font-size:clamp(9px,2.7vw,12px)!important}
 
 body:not(.xp-exam-active) .more-tool-groups{display:grid;gap:14px}
 body:not(.xp-exam-active) .more-tool-groups h3{margin:0 0 6px;font-size:1rem}
-body:not(.xp-exam-active) #welcomeTourPrompt{display:flex;gap:8px;flex-wrap:wrap;margin-block:0 16px}
-body:not(.xp-exam-active) #welcomeTourPrompt button,body:not(.xp-exam-active) .first-lesson-step button,body:not(.xp-exam-active) #firstLessonNext button{min-height:44px}
 body:not(.xp-exam-active) .first-lesson-step,body:not(.xp-exam-active) #firstLessonNext{margin-block:8px 14px}
 body:not(.xp-exam-active) #studentWelcomeTour small{display:block;margin-top:12px;color:var(--muted)}
-
-body:not(.xp-exam-active) .home-priority-grid{margin-bottom:16px;align-items:stretch}
-body:not(.xp-exam-active) .home-priority-grid .home-next-action{margin:0;min-width:0;align-content:center}
-body:not(.xp-exam-active) .home-review-column{display:grid;min-width:0;gap:14px}
-body:not(.xp-exam-active) .home-review-column>.panel,
-body:not(.xp-exam-active) .home-daily-grid>.home-agenda{margin:0}
-body:not(.xp-exam-active) .home-overdue summary{min-height:44px;align-content:center;cursor:pointer}
-body:not(.xp-exam-active) .home-spotlight .home-assessment-name{color:#fff;font-size:clamp(1rem,2vw,1.3rem);font-weight:700}
-@media(max-width:700px){
- body:not(.xp-exam-active) .home-priority-grid .home-spotlight{min-height:0}
-}

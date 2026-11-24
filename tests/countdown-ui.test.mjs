@@ -11,21 +11,5 @@ test('each filtered view promotes its nearest event and preserves accessible cat
  }
 });
 test('dashboard agenda hides prayer/lunch without removing events from schedule data',()=>{
- const src=read('studio-redesign.js'),fragment=src.slice(src.indexOf(' function homeDaySchedule('),src.indexOf(' function nextLesson()')),list=[{id:'l',date:'2026-11-05',title:'Prayer and Lunch',start:720,kind:'break'},{id:'c',date:'2026-11-05',title:'CVP P20',start:660,kind:'physiology'}],before=JSON.stringify(list),ctx={day:'2026-11-05',campusWeekEvents:()=>list,campusWeekStart:x=>x,DATA:{events:[]},esc:String,fmt:String,campusTime:String,campusEventTitle:e=>({title:e.title}),campusCategoryLabel:String};const html=vm.runInNewContext(fragment+';homeDaySchedule()',ctx);assert.ok(!html.includes('Prayer and Lunch'));assert.ok(html.includes('CVP P20'));assert.equal(JSON.stringify(list),before);
-});
-
-test('Home shows the upcoming assessment and an expandable list of overdue reviews',()=>{
- const src=read('studio-redesign.js'),fragment=src.slice(src.indexOf(' function homeAssessment('),src.indexOf(' dashboard=function(){'));
- const ctx={window:{reviewStainFor:()=>3},Study:{gap:()=>1},esc:String,fullDate:String,
-  compareDatedReviews:(a,b)=>a.date.localeCompare(b.date),datedReviewItem:row=>'<article>'+row.date+'</article>',
-  document:{querySelector:()=>({open:true})}};
- const panels=vm.runInNewContext(fragment+';({homeAssessment,homeOverdue})',ctx);
- const date='2026-11-24';
- assert.match(panels.homeAssessment({title:'Renal TBL',date:'2026-11-25'},date),/Upcoming assessment[\s\S]*Renal TBL[\s\S]*Tomorrow[\s\S]*data-day="2026-11-25"/);
- assert.match(panels.homeAssessment(null,date),/Nothing scheduled/);
- const tasks=['2026-11-23','2026-11-20','2026-11-22','2026-11-21'].map(date=>({date}));
- assert.match(panels.homeOverdue(tasks),/Overdue reviews[\s\S]*2026-11-20[\s\S]*Show 1 more[\s\S]*2026-11-23/);
- assert.match(panels.homeOverdue(tasks),/id="homeOverdueMore" open/);
- assert.match(panels.homeOverdue([]),/No overdue reviews/);
- assert.equal(tasks[0].date,'2026-11-23');
+ const src=read('studio-redesign.js'),fragment=src.slice(src.indexOf(' function homeDaySchedule('),src.indexOf(' function homeCourses()')),list=[{id:'l',date:'2026-11-05',title:'Prayer and Lunch',start:720,kind:'break'},{id:'c',date:'2026-11-05',title:'CVP P20',start:660,kind:'physiology'}],before=JSON.stringify(list),ctx={day:'2026-11-05',campusWeekEvents:()=>list,campusWeekStart:x=>x,DATA:{events:[]},esc:String,fmt:String,campusTime:String,campusEventTitle:e=>({title:e.title}),campusCategoryLabel:String};const html=vm.runInNewContext(fragment+';homeDaySchedule()',ctx);assert.ok(!html.includes('Prayer and Lunch'));assert.ok(html.includes('CVP P20'));assert.equal(JSON.stringify(list),before);
 });
