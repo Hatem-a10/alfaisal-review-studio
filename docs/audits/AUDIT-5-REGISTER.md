@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 30 newly merged candidates with candidate CI passed (29 runtime/build optimization changes and 1 measurement capability); 32 previously existing mechanisms reviewed (not new measured improvements); 238 unassessed. Existing and narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
+Status at this evidence update: 45 newly merged candidates with candidate CI passed (44 runtime/build optimization scopes and 1 measurement capability); 2 submitted (#146); 32 existing mechanisms reviewed (not new measured improvements); 221 remaining, including A5-029 with one rejected variant. Narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
 
 ## Activity analytics
 
@@ -45,12 +45,12 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 | A5-021 | Eliminate provably unreachable runtime code | Unassessed |
 | A5-022 | Tree-shake modular dependencies | Unassessed |
 | A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
-| A5-024 | Memoize expensive pure selectors with precise invalidation | Unassessed |
+| A5-024 | Reuse latest learning results per lesson within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-025 | Offload expensive question-bank processing to worker | Unassessed |
 | A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Merged #120; CI passed; combined benchmark |
-| A5-027 | Replace redundant deep copies with targeted immutable updates | Unassessed |
+| A5-027 | Avoid cloning already-isolated mock history attempts again | Merged #139; CI passed; narrowed scope |
 | A5-028 | Delegate search result row clicks to the result list | Merged #128; CI passed; narrowed scope |
-| A5-029 | Avoid duplicate JSON serialization of study records | Unassessed |
+| A5-029 | Avoid duplicate JSON serialization of study records | Unassessed; structural comparison variant rejected; see evidence |
 | A5-030 | Yield between long computation batches | Unassessed |
 
 ## Rendering
@@ -134,13 +134,13 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 |---|---|---|
 | A5-081 | Precompute eligible pools for common practice filters | Unassessed |
 | A5-082 | Update question analytics incrementally after answers | Unassessed |
-| A5-083 | Index wrong-answer records by course lecture and question | Unassessed |
+| A5-083 | Index wrong-answer records by question within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
 | A5-085 | Sample questions without shuffling full bank where distribution unchanged | Unassessed |
 | A5-086 | Render only active timed-exam question where interface permits | Unassessed |
 | A5-087 | Isolate timer rendering from exam content | Unassessed |
 | A5-088 | Cache Anki due-card queue with precise invalidation | Unassessed |
-| A5-089 | Batch Anki review persistence and derived stats | Unassessed |
+| A5-089 | Reuse progress snapshot for Anki rating and deck-library rendering | Merged #142; CI passed; narrowed scope |
 | A5-090 | Incrementally calculate mastery without rescoring entire bank | Unassessed |
 
 ## Network and assets
@@ -192,7 +192,7 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-121 | Index events by local calendar day | Unassessed |
+| A5-121 | Index visible timetable events by local calendar day per board render | Merged #138; CI passed |
 | A5-122 | Index group timetable rows by group identifier | Unassessed |
 | A5-123 | Cache week calculations keyed by academic calendar version | Unassessed |
 | A5-124 | Precompute recurrence expansion for bounded visible weeks | Unassessed |
@@ -207,13 +207,13 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-131 | Index lesson completion by course and week | Unassessed |
-| A5-132 | Reuse grouped upcoming deadline arrays per calendar revision | Unassessed |
+| A5-131 | Index due-review counts by date within timetable board | Merged #138; CI passed; narrowed scope |
+| A5-132 | Index upcoming lecture targets and course finals within a planning run | Merged #144; CI passed; narrowed scope |
 | A5-133 | Precompute stable course display order | Unassessed |
-| A5-134 | Compute overdue count and breakdown in one traversal | Unassessed |
+| A5-134 | Compute due overdue and completed task buckets in one traversal | Merged #137; CI passed |
 | A5-135 | Derive next actionable lesson without sorting full curriculum | Unassessed |
 | A5-136 | Reuse progress denominators for static lesson sets | Unassessed |
-| A5-137 | Update countdown labels at displayed precision only | Unassessed |
+| A5-137 | Update countdown digits only when displayed markup changes | Merged #138; CI passed; DOM operation counts |
 | A5-138 | Share one saved-options and date snapshot across study activity view | Merged #135; CI passed; narrowed scope |
 | A5-139 | Reuse normalized student group profile across timetable filtering | Merged #118; CI passed |
 | A5-140 | Recompute only affected course progress after lesson change | Unassessed |
@@ -222,7 +222,7 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-141 | Pre-index objective IDs to lesson content | Unassessed |
+| A5-141 | Pre-index concept IDs for adaptive question selection | Merged #143; CI passed; narrowed scope |
 | A5-142 | Precompute ordered lesson section offsets | Unassessed |
 | A5-143 | Reuse parsed rich-text representation across identical lesson versions | Unassessed |
 | A5-144 | Cache static quiz markup fragments without personal answers | Unassessed |
@@ -243,9 +243,9 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 | A5-154 | Count exam receipt scoring and validation tallies in one pass | Merged #125; CI passed |
 | A5-155 | Precompute static option permutations at attempt creation | Unassessed |
 | A5-156 | Avoid repeated parse of unchanged exam source metadata | Unassessed |
-| A5-157 | Reuse navigation grid cells on flag changes | Unassessed |
+| A5-157 | Reuse classic mock navigation grid cells on flag and answer changes | Submitted #146; CI pending |
 | A5-158 | Defer explanation formatting until review pane opens | Unassessed |
-| A5-159 | Avoid recomputing elapsed time outside displayed timer interval | Unassessed |
+| A5-159 | Reuse classic exam timer dock nodes and avoid unchanged text writes | Submitted #146; CI pending; narrowed scope |
 | A5-160 | Compute mock-history ordering keys once before history sort | Merged #123; CI passed |
 
 ## OSPE and visual practice
@@ -267,7 +267,7 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-171 | Index decks by storage and account-scoped IDs | Unassessed |
+| A5-171 | Index local deck cloud IDs for remote membership lookup | Merged #142; CI passed; narrowed scope |
 | A5-172 | Group cards by deck in one traversal | Unassessed |
 | A5-173 | Precompute Anki due keys and read progress once per queue rebuild | Merged #126; CI passed; narrowed scope |
 | A5-174 | Avoid sorting deck list during unchanged card review | Unassessed |
@@ -282,8 +282,8 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-181 | Index library metadata by canonical material ID | Unassessed |
-| A5-182 | Build alias reverse lookup once per catalog revision | Unassessed |
+| A5-181 | Index canonical material IDs within each library render | Merged #140; CI passed |
+| A5-182 | Index reverse course reference membership within each library render | Merged #140; CI passed; narrowed scope |
 | A5-183 | Use lightweight list projections before detailed metadata | Unassessed |
 | A5-184 | Paginate large private-material listings with stable order | Unassessed |
 | A5-185 | Defer media metadata extraction until needed | Unassessed |
@@ -333,8 +333,8 @@ Status at this evidence update: 30 newly merged candidates with candidate CI pas
 | A5-214 | Deduplicate identical keyframe declarations | Unassessed |
 | A5-215 | Reduce expensive broad descendant selectors in hot views | Unassessed |
 | A5-216 | Avoid animating layout-affecting properties | Unassessed |
-| A5-217 | Reduce repeated style recalculation from root theme writes | Unassessed |
-| A5-218 | Reuse CSS custom property values for stable theme | Unassessed |
+| A5-217 | Guard redundant root theme CSS and dataset assignments | Merged #141; CI passed; DOM operation counts |
+| A5-218 | Reuse derived palette for unchanged accent and theme | Merged #141; CI passed |
 | A5-219 | Preload only essential font face | Unassessed |
 | A5-220 | Prefer metric-compatible fallback to reduce layout shift | Unassessed |
 
@@ -480,6 +480,17 @@ Median of three measured executions unless otherwise indicated, on the candidate
 | **A5-154** | 0.674 ms | 0.361 ms | 12,000-row receipt verification, 3 intermediate arrays → 0; seven runs | #125 |
 | **A5-173** | 560.426 ms | 0.584 ms | 10,398 progress reads → 1; 750-card fixed-time synthetic queue; five runs | #126 |
 | **A5-161** | 24.064 ms | 2.143 ms | 2,000 station-map entries → 0 per lookup; five runs | #126 |
+| **A5-134** | 21.290 ms | 19.679 ms | 8,000 synthetic review tasks; one fewer intermediate array; seven runs | #137 |
+| **A5-024 + A5-083** | 33.835 ms | 5.970 ms | Latest-result calls 1,041 → 21, wrong-answer reads 318,193 → 6,193 | #137 |
+| **A5-121 + A5-131** | 2.871 ms | 1.948 ms | Board markup; task calls 5 → 1 and event date reads 3,404 → 1,539 | #138 |
+| **A5-137** | 60 DOM assignments | 8 DOM assignments | Three countdowns over 20 simulated ticks; not browser paint timing | #138 |
+| **A5-027** | 15.542 ms | 8.072 ms | Four → three clone calls for 100-attempt mock history; seven runs | #139 |
+| **A5-181 + A5-182** | 24.631 ms | 2.420 ms | Source ID reads 248,124 → 3,061; reference reads 124,208 → 300 | #140 |
+| **A5-217 + A5-218** | 14.034 ms | 0.865 ms | 301 → 1 derivations; 5,117 → 17 CSS writes; 602 → 2 dataset writes; simulated root | #141 |
+| **A5-089 + A5-171** | 224.169 ms | 3.568 ms | 120-deck fixture; progress reads 120 → 1, cloud ID reads 14,700 → 360 | #142 |
+| **A5-141** | 24.090 ms | 3.344 ms | 12,000 questions, 150 concepts; stable minimum scan plus concept index; combined workload | #143 |
+
+| **A5-132** | 8.278 ms | 0.327 ms | 1,500 upcoming scans → 1; synthetic planning target lookup, not full planner time | #144 |
 
 - #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
 - #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
@@ -502,6 +513,16 @@ Median of three measured executions unless otherwise indicated, on the candidate
 - #134: candidate `abda03eff3718b43570598ceca213f430baac33b`, [CI 45386540888](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386540888), 1,339 full-suite tests passed; merge `99274b6cbafff2c2a6c53d2d75c5aacff244a9d5`. A5-271 measurement only: startup 861,638 raw / 237,435 gzip / 209,807 Brotli quality-5 bytes; MOL 3,254,527 / 652,263 / 432,696; archived CVP 3,208,610 / 761,385 / 623,070. No transfer encoding change, no new speed claim.
 - #135: candidate `c5beffccb65807ba20cc0f6e2af4e3185368a75b`, [CI 45386617986](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386617986), 1,339 full-suite tests passed; merge `065069391180a6e6c10ba7e8890244191835f475`. A5-138 activity view options reads 369 → 1, clock reads 612 → 1; identical markup for four metrics and two ranges with fixed date; no whole-dashboard or actual-device timing claim.
 - Combined latest staging tree requires independent integrated CI and browser/Worker profiling. Per-PR test counts differ because several branches were opened in parallel. No live deployment or production performance claim.
+- #136: integrated candidate `6005dbdec8e3666712b43829f174f93868fb4ac8`, [CI 45386983116](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386983116), 1,343 full-suite tests passed; merge `4aa8519502343f09dd58943739a1e9cc891db740`.
+- #137: candidate `0971c383555dd5006a73429b44fdc74de0e45146`, [CI 45389842509](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45389842509), 1,345 tests passed; merge `24c720f14b95e879184b461e6adeb54ae545c16c`.
+- #138: candidate `f4697427e2855f9c00fbfa916a1509dd2d36326c`, [CI 45389975812](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45389975812), 1,345 tests passed; merge `3775de48ee8894417389295f78c1b19fcdab11f7`. A5-131 is date-based due counts, not a persistent course/week completion index.
+- #139: candidate `9bd3d57a50073b46d310012a879c40e0fe35eb9d`, [CI 45390538706](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45390538706), 1,348 tests passed; merge `db1dc7e8ffec59a6461b831b1ce60cf2028d6865`. Earlier candidate CI 45390095233 measured A5-029 structural comparison at 75.878 → 103.059 ms, despite serialization calls 3,016 → 2. Reverted; no new delta optimization claimed. A5-029 remains open for other approaches.
+- #140: candidate `db448e2d19b9bbcd19e92dbf6b94fe9b57012f77`, [CI 45390385167](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45390385167), 1,347 tests passed; merge `8fccea1836f86bbc9100a484500c91d3b4db9b19`. A5-182 covers course references, not arbitrary aliases.
+- #141: candidate `116d5d99db9bb7f159ad20999588abd8ec5d46bb`, [CI 45391146154](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391146154), 1,352 tests passed; merge `84c05c8074a66e0988cc3c7c9a312737c41728ed`. Earlier CI 45390717823 failed due to test variable shadowing, corrected before merge; CSS recalculation timing remains unmeasured.
+- #142: candidate `1236ce38c531fdbb4fe58638418622a79ddfc27d`, [CI 45390957296](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45390957296), 1,351 tests passed; merge `d6c0bc46f029c0284891e5af831bfe4951060b31`. A5-089 reduces reads, not storage transaction count; A5-171 is render-local cloud membership.
+- #143: candidate `ea3c9c9fc72d1f2e8410ba65982e10ef01f26ac9`, [CI 45391243880](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391243880), 1,352 tests passed; merge `50c0146d46e58d72d4b495bbce24dfe7025eb617`. A5-135 next actionable lesson remains open; #143 optimizes question selection only.
+- #144: candidate `6880d1c0a7b3a0598d0c77ccb42d1624f7937121`, [CI 45391612418](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391612418), 1,356 tests passed; merge `b591132c478e6d1fa1ceeb2e5135ffb3fd15f594`.
+- #146: candidate `3cf9268e8e2968d19ce8e1f68748e98c4056485c`, submitted; CI pending. A5-159 concerns timer DOM updates, not changes to elapsed time calculations.
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
