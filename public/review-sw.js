@@ -60,10 +60,11 @@ self.addEventListener('fetch',event=>{
   try{
    if(kind==='private'){
     const identity=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin'});
-    if(!identity.ok||(await identity.json()).accountKey!==account){
+    let accountKey=null;if(identity.ok){try{accountKey=(await identity.json())?.accountKey}catch{denied=true;return unavailable('Identity verification unavailable. Retry.',503)}}
+    if(!identity.ok||accountKey!==account){
      denied=true;if(clientsByAccount.get(event.clientId)===account)clientsByAccount.delete(event.clientId);
      if(identity.status===401||identity.status===403)await clearPrivate(account).catch(()=>{});
-     return unavailable('Account identity changed or is unavailable. Sign in or retry.',identity.ok?409:identity.status);
+     return unavailable('Account identity changed or is unavailable. Sign in or retry.',identity.ok?409:identity.status===401||identity.status===403?identity.status:503);
     }
     if(clientsByAccount.get(event.clientId)!==account){denied=true;return unavailable('Account changed. Retry this download.')}
    }
@@ -78,6 +79,7 @@ self.addEventListener('fetch',event=>{
    }
    // A quota or cache failure must never replace a successful network response with stale bytes.
    if(cache){if(kind==='private')await storePrivate(account,cache,request,response,guard).catch(()=>{});else await store(cache,request,response).catch(()=>{})}
+   if(kind==='private'&&response.ok&&clientsByAccount.get(event.clientId)!==account)return unavailable('Account changed. Retry this download.');
    return response;
   }catch{
    if(kind==='private'){
