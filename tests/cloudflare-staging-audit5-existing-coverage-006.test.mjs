@@ -10,7 +10,7 @@ test('A5-064 unchanged companion-store value is compared before storage write',(
 test('A5-099 build groups and minifies CSS while preserving inline style boundaries',()=>{
  const src=read('scripts/client-styles.mjs');
  assert.match(src,/if\(group\.length&&\/<style/);
- assert.match(src,/transformSync\(text,\{loader:'css',minify:true/);
+ assert.match(src,/cachedTransform\(text,\{loader:'css',minify:true/);
  assert.match(src,/replacements\.reverse\(\)/);
 });
 test('A5-169 OSPE marks are user-assessed rather than tokenized from answer prose',()=>{

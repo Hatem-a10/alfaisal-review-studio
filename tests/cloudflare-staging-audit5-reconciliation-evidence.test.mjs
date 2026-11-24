@@ -6,13 +6,13 @@ test('Audit 5 register has exactly 300 distinct candidate IDs and consistent sta
  const src=read('docs/audits/AUDIT-5-REGISTER.md');
  const rows=[...src.matchAll(/^\| (A5-\d{3}) \| ([^|\n]+) \| ([^|\n]+) \|$/gm)];
  assert.equal(rows.length,300);assert.equal(new Set(rows.map(x=>x[1])).size,300);
- const counts={merged:0,existing:0,rejected:0,submitted:0,unassessed:0};
+ const counts={merged:0,existing:0,rejected:0,deferred:0};
  for(const row of rows){
-  const status=row[3].trim(),key=status.startsWith('Merged')?'merged':status.startsWith('Existing')?'existing':status.startsWith('Rejected')?'rejected':status.startsWith('Submitted')?'submitted':status.startsWith('Unassessed')?'unassessed':null;
+  const status=row[3].trim(),key=status.startsWith('Merged')?'merged':status.startsWith('Existing')?'existing':status.startsWith('Rejected')?'rejected':status.startsWith('Deferred')?'deferred':null;
   assert.ok(key,'Unsupported status for '+row[1]);counts[key]++;
  }
  assert.equal(Object.values(counts).reduce((a,b)=>a+b,0),300);
- assert.ok(counts.merged>=122);
+ assert.deepEqual(counts,{merged:138,existing:104,rejected:29,deferred:29});
 });
 test('A5-039 compositor-first CSS keyframes and A5-214 no duplicate keyframe identifiers',()=>{
  const css=readdirSync(new URL('../public/',import.meta.url)).filter(n=>n.endsWith('.css'));

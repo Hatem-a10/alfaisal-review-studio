@@ -91,4 +91,5 @@
  globalThis.performance?.mark?.('studio-device-hydrated');
  for(const tag of document.querySelectorAll('script[type="application/x-review-studio"][data-src]'))await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=tag.dataset.src;script.onload=resolve;script.onerror=()=>reject(Error('Could not load the study app.'));document.head.append(script)});
  globalThis.performance?.mark?.('studio-scripts-loaded');
-})().catch(error=>{window.reviewBootFailed=true;const text=document.getElementById('appBootText');if(text)text.textContent=error.message;document.getElementById('retryStartup')?.removeAttribute('hidden')});</script></body></html>
+})().catch(error=>{window.reviewBootFailed=true;const text=document.getElementById('appBootText');if(text)text.textContent=error.message;document.getElementById('retryStartup')?.removeAttribute('hidden')});
+</script></body></html>
