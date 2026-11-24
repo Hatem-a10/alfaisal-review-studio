@@ -23,7 +23,8 @@ export async function serveAsset(request:Request,bucket:R2Bucket,path:string,hea
  }
  const headers=new Headers({'Content-Type':contentType(path),'Cache-Control':'private, max-age=86400','X-Content-Type-Options':'nosniff','Accept-Ranges':'bytes','Content-Length':String(end-start+1),'ETag':tag,'Content-Disposition':(/\.(?:pptx?|docx)$/i.test(path)?'attachment':'inline')+`; filename*=UTF-8''${encodeURIComponent(path.split('/').pop()||'material')}`});
  try{
-  if(headOnly||status===206||request.headers.get('if-none-match')===tag){const head=await bucket.head(dataKey(asset.sha));if(!head)return error('Not found',404);if(head.size!==size)return error('Asset integrity check failed',503)}
+  // A5-236: a real range GET returns the authoritative object size itself; do not HEAD first.
+  if(headOnly||request.headers.get('if-none-match')===tag){const head=await bucket.head(dataKey(asset.sha));if(!head)return error('Not found',404);if(head.size!==size)return error('Asset integrity check failed',503)}
   if(request.headers.get('if-none-match')===tag){headers.delete('Content-Length');return new Response(null,{status:304,headers})}
   if(status===206)headers.set('Content-Range',`bytes ${start}-${end}/${size}`);
   if(headOnly)return new Response(null,{status,headers});
