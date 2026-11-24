@@ -46,8 +46,9 @@ function resumeCard(){
  if(host.querySelector('details[open]'))return;
  const position=e=>e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
  const details=e=>[label(e.course),e.title,position(e)].filter(Boolean).join(' · ');
- host.innerHTML='<h2>Continue studying</h2><p>'+esc(details(current))+'</p><button type="button" class="primary" data-study-resume="'+current.kind+'">Resume '+(current.kind==='original'||current.kind==='mock'?'exam':current.kind)+'</button>'+
+ const markup='<h2>Continue studying</h2><p>'+esc(details(current))+'</p><button type="button" class="primary" data-study-resume="'+current.kind+'">Resume '+(current.kind==='original'||current.kind==='mock'?'exam':current.kind)+'</button>'+
  (other.length?'<details class="home-resume-options"><summary>More to resume</summary>'+other.map(e=>`<button type="button" data-study-resume="${e.kind}">${esc(details(e))}</button>`).join('')+'</details>':'');
+ if(host.dataset.resumeMarkup!==markup){host.innerHTML=markup;host.dataset.resumeMarkup=markup;}
 }
 async function openTopic(id,index){
  const course=itemById(id)?.course;
@@ -187,7 +188,7 @@ function tourEntry(){
   if(hero&&!document.getElementById('welcomeTourPrompt')){
    hero.insertAdjacentHTML('afterend','<div id="welcomeTourPrompt"><button type="button" class="linkbtn" data-study-tour>Take a quick tour</button> <button type="button" class="linkbtn" data-study-hide-tour>Skip tour</button></div>');
   }
- }
+ }else document.getElementById('welcomeTourPrompt')?.remove();
  const settings=document.querySelector('#siteAdmin .admin-frame');
  if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay welcome tour</button>');
 }
