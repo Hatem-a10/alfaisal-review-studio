@@ -10,6 +10,7 @@ const source=runtime.slice(start,end);
 function needed({view='learning',lessonId='CVP-P1',scope=null,archived=true,permission=false,inArchive=false}={}){
  const window={reviewCvpArchived:()=>archived,reviewArchiveEnabled:()=>permission,reviewViewingArchive:()=>inArchive,reviewCourseScope:scope,reviewCourseConfig:()=>null};
  const context={window,view,lessonId,packs:{CVP:'cvp.js',MOL:'mol.js'},noContent:new Set(['dashboard']),everything:new Set(['weakness','wrong-bank','sources','search'])};
+ context.owns=c=>typeof c==='string'&&Object.hasOwn(context.packs,c);
  return Array.from(runInNewContext(source+'\nneeded()',context));
 }
 test('active learning ignores a stale archived lecture even without archive permission',()=>{
