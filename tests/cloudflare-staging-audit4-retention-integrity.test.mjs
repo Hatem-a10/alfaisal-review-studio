@@ -32,7 +32,7 @@ test('new recall records are scoped to lesson and legacy records need matching q
 test('stale lesson and noncanonical choice cannot submit a delayed recall attempt',()=>{
  let handler,saves=0,value='',lesson={id:'mine'};
  const form={dataset:{retentionLesson:'mine',retentionTopic:'topic',retentionQuestion:'b'}};
- const ctx={document:{addEventListener(type,fn){handler=fn}},lessonId:'mine',lessonById:()=>lesson,inlineSelected:()=>({topic:{id:'topic'},questions:q}),state:{mine:{}},inlineLatest:()=>answers,storeOptions:()=>({}),saveOptions:()=>{saves++},render:()=>{},FormData:class{get(){return value}},crypto:{randomUUID:()=> 'id'},Date,fmt:x=>x,Study:{localDate:x=>x}};
+ const ctx={document:{addEventListener(type,fn){handler=fn}},lessonId:'mine',lessonById:()=>lesson,inlineSelected:()=>({topic:{id:'topic'},questions:q}),state:{mine:{}},inlineLatest:()=>answers,storeOptions:()=>({}),saveOptions:()=>{saves++},render:()=>{},FormData:class{get(){return value}},crypto:{randomUUID:()=> 'id'},Date:class extends Date{static now(){return now}},fmt:x=>x,Study:{localDate:x=>x}};
  runInNewContext(source,ctx);
  const event={target:{closest:()=>form},preventDefault(){}};
  lesson=null;handler(event);lesson={id:'mine'};form.dataset.retentionLesson='other';handler(event);
