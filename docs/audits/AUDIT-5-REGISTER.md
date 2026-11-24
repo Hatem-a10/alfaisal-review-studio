@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 45 newly merged candidates with candidate CI passed (44 runtime/build optimization scopes and 1 measurement capability); 2 submitted (#146); 32 existing mechanisms reviewed (not new measured improvements); 221 remaining, including A5-029 with one rejected variant. Narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
+Status at this evidence update: 48 newly merged candidates with candidate CI passed (47 runtime/build optimization scopes and 1 measurement capability); 32 existing mechanisms reviewed (not new measured improvements); 220 remaining, including A5-029 with one rejected variant. Narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
 
 ## Activity analytics
 
@@ -237,15 +237,15 @@ Status at this evidence update: 45 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-151 | Index question IDs to attempt positions | Unassessed |
+| A5-151 | Index question IDs to attempt positions in learning provenance checks | Merged #147; CI passed |
 | A5-152 | Compute answer counts incrementally on answer changes | Unassessed |
 | A5-153 | Cache exam review filter membership per attempt revision | Unassessed |
 | A5-154 | Count exam receipt scoring and validation tallies in one pass | Merged #125; CI passed |
 | A5-155 | Precompute static option permutations at attempt creation | Unassessed |
 | A5-156 | Avoid repeated parse of unchanged exam source metadata | Unassessed |
-| A5-157 | Reuse classic mock navigation grid cells on flag and answer changes | Submitted #146; CI pending |
+| A5-157 | Reuse classic mock navigation grid cells on flag and answer changes | Merged #146; CI passed |
 | A5-158 | Defer explanation formatting until review pane opens | Unassessed |
-| A5-159 | Reuse classic exam timer dock nodes and avoid unchanged text writes | Submitted #146; CI pending; narrowed scope |
+| A5-159 | Reuse classic exam timer dock nodes and avoid unchanged text writes | Merged #146; CI passed; narrowed scope |
 | A5-160 | Compute mock-history ordering keys once before history sort | Merged #123; CI passed |
 
 ## OSPE and visual practice
@@ -492,6 +492,11 @@ Median of three measured executions unless otherwise indicated, on the candidate
 
 | **A5-132** | 8.278 ms | 0.327 ms | 1,500 upcoming scans → 1; synthetic planning target lookup, not full planner time | #144 |
 
+| **A5-157** | 100 navigator rebuilds | 1 navigator rebuild | 200 cells, 99 changes; unchanged node identity; synthetic DOM | #146 |
+| **A5-159** | 6 dock rebuilds | 1 dock rebuild | Simulated timer ticks and expiration; no clock accuracy change | #146 |
+
+| **A5-151** | 13.547 ms | 1.230 ms | Question ID reads 120,200 → 600; state reads 28,000 → 70; synthetic tracked exam | #147 |
+
 - #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
 - #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
 - #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, [CI 45382764102](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382764102), 1,315 full-suite tests passed, merge `2ea6a62a7b5de71d6a621411e22d2b4457a7ce0c`. Candidate started before #117 merged; integrated CI still required.
@@ -522,7 +527,9 @@ Median of three measured executions unless otherwise indicated, on the candidate
 - #142: candidate `1236ce38c531fdbb4fe58638418622a79ddfc27d`, [CI 45390957296](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45390957296), 1,351 tests passed; merge `d6c0bc46f029c0284891e5af831bfe4951060b31`. A5-089 reduces reads, not storage transaction count; A5-171 is render-local cloud membership.
 - #143: candidate `ea3c9c9fc72d1f2e8410ba65982e10ef01f26ac9`, [CI 45391243880](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391243880), 1,352 tests passed; merge `50c0146d46e58d72d4b495bbce24dfe7025eb617`. A5-135 next actionable lesson remains open; #143 optimizes question selection only.
 - #144: candidate `6880d1c0a7b3a0598d0c77ccb42d1624f7937121`, [CI 45391612418](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391612418), 1,356 tests passed; merge `b591132c478e6d1fa1ceeb2e5135ffb3fd15f594`.
-- #146: candidate `3cf9268e8e2968d19ce8e1f68748e98c4056485c`, submitted; CI pending. A5-159 concerns timer DOM updates, not changes to elapsed time calculations.
+- #145: integrated evidence candidate `ae09b15aac2e4b0ecd410dfeb94b1307300ae878`, [CI 45392119203](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45392119203) passed; merge `66edfbd19939c97f3214fb78f48b0a1c7cfd9159`.
+- #146: candidate `3cf9268e8e2968d19ce8e1f68748e98c4056485c`, [CI 45391921215](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45391921215), 1,358 tests passed; merge `7dd9a882b9c86250ea1cc631399c337d4c523b60`. A5-159 concerns timer DOM updates, not changes to elapsed time calculations.
+- #147: candidate `bd49017c781c3014e1c70dc8d16abf44e3616de3`, [CI 45392281529](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45392281529), 1,360 tests passed; merge `3a00b02049faa568f9d0695f22015236e5c03e1f`. Provenance lookups only; academic scoring semantics unchanged in equivalence fixture.
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
