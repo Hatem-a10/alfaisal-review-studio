@@ -14,7 +14,7 @@ test('A5-282 long tasks retain bounded per-view duration distributions only',()=
  assert.equal(metrics.start(),true);assert.equal(metrics.start(),false);assert.deepEqual(FakeObserver.instances.at(-1).options,{type:'longtask'});
  const o=FakeObserver.instances.at(-1);
  o.fire([100,50,20,200,300].map(duration=>({entryType:'longtask',duration,name:'sensitive task contents'})));
- assert.deepEqual(metrics.summary().learning,{count:4,p50Ms:100,p95Ms:300,minMs:20,maxMs:300});
+ assert.deepEqual(metrics.summary().learning,{count:4,p50Ms:50,p95Ms:300,minMs:20,maxMs:300});
  view='practice';o.fire([{entryType:'resource',duration:400},{entryType:'longtask',duration:75}]);
  assert.deepEqual(metrics.summary().practice,{count:1,p50Ms:75,p95Ms:75,minMs:75,maxMs:75});
  view='anki';o.fire([{entryType:'longtask',duration:90}]);
