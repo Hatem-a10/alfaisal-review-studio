@@ -6,7 +6,8 @@ import type {MaterialRow} from '../../../lib/material-dedup';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
 import {hasZipHeader,hasPdfHeader,withinPersonalQuota,reservePersonalUpload} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
-const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
+const RESPONSE_HEADERS=Object.freeze({'Cache-Control':'no-store'});
+const json=(v:unknown,status=200)=>Response.json(v,{status,headers:RESPONSE_HEADERS});
 export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all<MaterialRow>();return json({materials:rows.results.map(withMaterialLectureLinks)})}
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to upload materials.'},401);

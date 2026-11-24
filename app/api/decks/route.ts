@@ -2,7 +2,8 @@ import {boundedForm,RequestTooLarge} from '../../../lib/bounded-request';
 import {env} from 'cloudflare:workers';
 import {fileDigest,hasAnkiCollection,reservePersonalUpload} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
-const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
+const RESPONSE_HEADERS=Object.freeze({'Cache-Control':'no-store'});
+const json=(v:unknown,status=200)=>Response.json(v,{status,headers:RESPONSE_HEADERS});
 export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to view decks.'},401);if(!env.DB)return json({error:'Cloud deck storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id,name,bytes,page_count AS cardCount,created_at AS createdAt FROM study_materials WHERE user_id=? AND lecture_id='ANKI' ORDER BY created_at DESC").bind(user).all();return json({decks:rows.results.map(row=>({...row,cardCountVerified:false}))})}
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id');
