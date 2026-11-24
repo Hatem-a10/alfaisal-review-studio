@@ -118,6 +118,13 @@ export function validateRenalLessons(entries=renalLessons){
    if(!section.key||keys.has(section.key)||!section.body?.length||!section.pages?.length||!section.pages.every(p=>Number.isInteger(p)&&p>0))throw Error('REN-'+entry.code+' has incomplete or duplicate topic '+String(section.key));
    keys.add(section.key);
    const checks=lessonChecks(entry,section),stems=new Set(checks.map(q=>String(q[0]||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim()).filter(Boolean));
+   for(const row of checks){
+    const authored=Array.isArray(row?.[1]);
+    const optionReasons=authored?row[1].map((option,n)=>[option,row[2]?.[n]]):row.slice(1,5).map(option=>typeof option==='string'?option.split('|'):[null,null]);
+    if(optionReasons.length!==4||optionReasons.some(([option,reason])=>typeof option!=='string'||!option.trim()||typeof reason!=='string'||!reason.trim())){
+     throw Error('REN-'+entry.code+' '+section.key+' has incomplete choices or option-specific explanations.');
+    }
+   }
    if(stems.size<5)throw Error('REN-'+entry.code+' '+section.key+' needs at least five distinct core questions.');
   }
  }
