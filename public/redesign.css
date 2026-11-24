@@ -449,3 +449,12 @@ html:root[data-theme=amoled] body:not(.xp-exam-active) .practice-start .practice
  body:not(.xp-exam-active) .practice-start .practice-tool-card:is(:hover,:focus-visible){transform:none}
 }
 
+
+/* Tablet widths (761–850px) inherited an old wrapping row for the sidebar links, which
+   scattered them two-by-two. The rail stays a single column there, as on desktop. */
+@media (min-width:761px) and (max-width:850px){
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{display:flex;flex-direction:column;flex-wrap:nowrap;gap:4px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{width:100%;justify-content:flex-start}
+}
+/* One line for "Previous exams & TBLs" at three columns. */
+body:not(.xp-exam-active) .practice-tool-card strong{font-size:clamp(1.05rem,1.6vw,1.2rem)}
