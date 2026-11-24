@@ -11,8 +11,10 @@ const idOf=value=>typeof value==='string'&&value.length>0?value:null;
 function attemptsOf(practice){return array(practice?.mocks).flatMap(m=>m?Array.isArray(m.attempts)?m.attempts:[m.snapshot]:[]).filter(Boolean)}
 // Unique recorded question identities per day; do not infer unsaved historical attempts.
 export function questionHistory(records,practice={}){
- const days=new Map(),aliases=new Map(),attempts=attemptsOf(practice);
- function bucket(at){const day=dateOf(at);if(!day)return null;if(!days.has(day))days.set(day,{questions:new Set(),aggregates:new Map()});return days.get(day)}
+ const days=new Map(),aliases=new Map(),attempts=attemptsOf(practice),dateKeys=new Map();
+ // Keep normalization local to this calculation and cap retained distinct timestamps.
+ function dayOf(at){if(dateKeys.has(at))return dateKeys.get(at);const day=dateOf(at);if(day&&dateKeys.size<512)dateKeys.set(at,day);return day}
+ function bucket(at){const day=dayOf(at);if(!day)return null;if(!days.has(day))days.set(day,{questions:new Set(),aggregates:new Map()});return days.get(day)}
  function put(at,id){if(idOf(id))bucket(at)?.questions.add(id)}
  for(const s of attempts)for(const q of array(s.questions)){
   const id=idOf(q?.id);if(!id)continue;
@@ -34,10 +36,12 @@ export function questionHistory(records,practice={}){
   }
  }
  for(const[id,a]of Object.entries(object(practice?.booklet)))if(a&&(a.completed||typeof a.correct==='boolean'))put(a.at,canonical(id));
- for(const s of attempts)if(dateOf(s.finishedAt))for(const[i,q]of array(s.questions).entries()){
+ for(const s of attempts)if(dayOf(s.finishedAt))for(const[i,q]of array(s.questions).entries()){
   const answer=s.answers?.[i];
   if(Number.isInteger(answer)&&answer>=0&&(!Array.isArray(q?.options)||answer<q.options.length))put(s.xp?.answeredAt?.[i]||s.finishedAt,canonical(q?.id));
  }
- return Object.fromEntries([...days].map(([d,v])=>[d,v.questions.size+[...v.aggregates.values()].reduce((a,b)=>a+b,0)]));
+ const history={};
+ for(const [day,group] of days){let total=0;for(const count of group.aggregates.values())total+=count;history[day]=group.questions.size+total}
+ return history;
 }
 export function historyDates(end,days,baseline,questions,all=true){const valid=d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d+'T12:00:00Z'))&&new Date(d+'T12:00:00Z').toISOString().slice(0,10)===d;if(!valid(end))return [];let first=null;if(all)for(const source of [days,baseline,questions])for(const d of Object.keys(source||{}))if(d<=end&&(first===null||d<first)&&valid(d))first=d;const last=Date.parse(end+'T12:00:00Z'),earliest=first!==null?Date.parse(first+'T12:00:00Z'):last-83*86400000,start=Math.max(earliest,last-(all?365:83)*86400000),count=Math.max(1,Math.round((last-start)/86400000)+1);return Array.from({length:count},(_,i)=>new Date(start+i*86400000).toISOString().slice(0,10))}
