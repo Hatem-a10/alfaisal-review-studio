@@ -30,10 +30,14 @@ test('A5-249 repeated authorized and denied responses reuse one immutable header
  assert.equal(before,2000);assert.equal(after,1);
  console.log(JSON.stringify({label:'A5-249 reusable JSON response headers',syntheticRequests:2000,headerTemplateAllocationsBefore:before,after}));
 });
-test('A5-104 both independent CI test groups are passed to a single concurrent Node test runner',()=>{
+test('A5-104 staging uses a single concurrent test invocation and includes both groups at milestones',()=>{
  const workflow=read('.github/workflows/cloudflare-staging-check.yml');
- assert.match(workflow,/node --test tests\/cloudflare-staging\*\.test\.mjs tests\/registered-course-progress\.test\.mjs/);
- assert.doesNotMatch(workflow,/run: node --test tests\/registered-course-progress\.test\.mjs\s*$/m);
- assert.match(workflow,/run: node --test tests\/\*\.test\.mjs > existing-tests\.log/);
- console.log(JSON.stringify({label:'A5-104 independent staging test invocation',nodeTestProcessesBefore:2,nodeTestProcessesAfter:1,filesPreserved:true}));
+ const runner=read('scripts/run-reviewed-tests.mjs');
+ assert.match(workflow,/run: node scripts\/run-reviewed-tests\.mjs > existing-tests\.log/);
+ assert.doesNotMatch(workflow,/run: node --test/);
+ assert.match(runner,/siteVersion%5===0/);
+ assert.match(runner,/file.endsWith\('\.test\.mjs'\)/);
+ assert.match(runner,/full\|\|changed.has/);
+ assert.match(runner,/'registered-course-progress'/);
+ assert.match(runner,/spawnSync\(process.execPath,\['--test',\.\.\.files.map/);
 });

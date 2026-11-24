@@ -9,7 +9,7 @@ const begin=file.indexOf('const etQuestionStatic=new WeakMap();');
 const end=file.indexOf('\nfunction etQuestionMarkup(',begin);
 const candidate=file.slice(begin,end)+'\n'+file.split('\n').find(s=>s.startsWith('function etQuestionMarkup('));
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function fixture(source){let escCalls=0;const ctx=vm.createContext({esc:s=>{escCalls++;return escapeHTML(s)},guideFigure:()=>'<figure>Image</figure>',sourceLink:r=>'<a>'+r.source+'</a>'});vm.runInContext(source+'\nthis.run=etQuestionMarkup',ctx);return {run:ctx.run,calls:()=>escCalls}}
+function fixture(source){let escCalls=0;const ctx=vm.createContext({window:{},esc:s=>{escCalls++;return escapeHTML(s)},guideFigure:()=>'<figure>Image</figure>',sourceLink:r=>'<a>'+r.source+'</a>'});vm.runInContext(source+'\nthis.run=etQuestionMarkup',ctx);return {run:ctx.run,calls:()=>escCalls}}
 const make=i=>({id:'q'+i,lectureIds:['REN-A'+i%10],kind:i%2?'Lecture check':'Past paper',question:'Describe the process < and > '+i+' '.repeat(2000),options:Array.from({length:5},(_,j)=>'Option '+j+' & physiology '+('repeat '.repeat(50))),reasons:['Correct rationale','Incorrect','','',''],answer:0,explanation:'Detailed answer < and &',image:i%7===0?'/diagram.png':null,imageAlt:'Renal anatomy <diagram>',references:[{source:'REN-123'}],adaptationNote:i%10===0?'Repair note':null,originalQuestion:'Original?',originalOptions:['a','b']});
 const norm=x=>JSON.parse(JSON.stringify(x));
 const median=fn=>{fn();const times=[];for(let i=0;i<7;i++){const start=performance.now();fn();times.push(performance.now()-start)}return times.sort((a,b)=>a-b)[3]};

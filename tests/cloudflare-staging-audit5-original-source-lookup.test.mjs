@@ -12,7 +12,7 @@ function fixture(source,n=1000){
  sources.unshift({id:'source700',url:'/api/materials/first-700',title:'First 700',linkLabel:'Original PDF'});
  const questions=Array.from({length:n},(_,i)=>({id:'q'+i,number:i+1,source:i%13===0?'source700':'source'+((i*37)%1200),type:'mcq',question:'Question '+i,options:['Option A','Option B'],letters:['A','B'],answer:0,printedAnswer:'A',figures:[],page:i%400+1,sourceRefs:null}));
  const run={finishedAt:null,answers:Object.fromEntries(questions.map(q=>[q.id,0]))};
- const ctx=vm.createContext({ORIGINAL_EXAMS:{sources},originalRun:run,repeatBadge:()=>'',decorateOptions:(html)=>html,esc:String});
+ const ctx=vm.createContext({window:{},ORIGINAL_EXAMS:{sources},originalRun:run,repeatBadge:()=>'',decorateOptions:(html)=>html,esc:String});
  vm.runInContext(source+'\nthis.markup=originalQuestionMarkup',ctx);
  const lookup=new Map();for(const s of sources)if(!lookup.has(s.id))lookup.set(s.id,s);
  return {questions,run,markup:ctx.markup,lookup,reads:()=>sourceIdReads};

@@ -39,7 +39,7 @@ test('A5-227 discarded search-result buttons are released on modal close',()=>{
  const s=src('public/phase1-search.mjs');
  assert.match(s,/dialog\.addEventListener\('close'/);
  assert.match(s,/paintedResults=null;paintedSelected=-1;list\.replaceChildren\(\)/);
- assert.match(s,/request\+\+;index=\[\];results=\[\]/);
+ assert.match(s,/request\+\+;activeIndexAbort\?\.abort\(\);index=\[\];results=\[\]/);
 });
 test('A5-228 material IDs reuse canonical source objects within each library render',()=>{
  const s=src('public/library-list.js'),start=s.indexOf('function libraryLookup('),end=s.indexOf('function libraryDocuments(',start),code=s.slice(start,end);

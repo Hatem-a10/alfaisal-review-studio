@@ -27,8 +27,10 @@ function harness() {
  const DB={prepare:stmt,batch:async statements=>{
   sqlite.exec('BEGIN');
   try{
-   for(const statement of statements)await statement.run();
+   const results=[];
+   for(const statement of statements)results.push(await (/^SELECT\b/i.test(statement.sql.trim())?statement.all():statement.run()));
    sqlite.exec('COMMIT');
+   return results;
   }catch(error){sqlite.exec('ROLLBACK');throw error;}
  }};
  const salt=Buffer.alloc(16,1);
