@@ -321,7 +321,7 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-207 | Batch cache warmup within network budget | Existing coverage; reviewed scope in evidence |
 | A5-208 | Avoid caching resources that will never be reused | Unassessed |
 | A5-209 | Use versioned offline fallback without repeated network probe | Unassessed |
-| A5-210 | Benchmark offline bundle download concurrency | Unassessed |
+| A5-210 | Benchmark offline bundle download concurrency | Submitted benchmark PR (measurement only); CI pending |
 
 ## CSS and typography
 
