@@ -67,3 +67,12 @@ test('unexpected source revisions or changed source options fail closed',()=>{
  tampered.questions.find(q=>q.id==='cvp19-mcq-3').options[0]='unknown choice';
  assert.throws(()=>applyReviewedBookletErrata(tampered),/source changed/);
 });
+test('booklet UI marks uncertain keys as source alternatives rather than definitive answers',async()=>{
+ const {bookletAnswerDetails}=await import('../public/phase2-practice.mjs');
+ const disputed=byId.get('cvp19-mcq-328');
+ const html=bookletAnswerDetails(disputed,{completed:true});
+ assert.match(html,/Accepted source alternatives \(self-check\):/);
+ assert.match(html,/Why each option fits or fails/);
+ assert.match(html,/Below RV is not a normal physiological lung volume/);
+ assert.equal(bookletAnswerDetails(disputed,{completed:false}),'');
+});
