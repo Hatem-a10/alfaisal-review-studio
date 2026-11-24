@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate scopes (105 speed-oriented changes and 17 measurement capabilities), 75 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 99 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 125 newly merged candidate scopes (107 speed-oriented changes and 18 measurement capabilities), 80 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 91 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -18,7 +18,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-004 | Avoid scanning history outside requested display window where safe | Merged #169; CI passed; 12-week activity scope |
 | A5-005 | Accumulate aggregate counts without allocating intermediate values arrays | Merged #121; CI passed; allocation count evidence |
 | A5-006 | Avoid rebuilding attempt lists when only date range changes | Merged #200; staging CI passed; scoped optimization |
-| A5-007 | Index daily aggregate identities at ingestion | Unassessed |
+| A5-007 | Index daily aggregate identities at ingestion | Existing coverage; day-keyed Maps and canonical-ID Sets during history ingestion |
 | A5-008 | Reuse normalized date keys from validated records | Merged #121; CI passed |
 | A5-009 | Incrementally update daily unique-question sets | Unassessed |
 | A5-010 | Cache activity chart geometry between data changes | Merged #180; CI passed; cached activity heatmap dates |
@@ -77,8 +77,8 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-043 | Lazy-initialize route-specific server modules | Unassessed |
 | A5-044 | Edge-cache approved nonpersonal academic metadata | Unassessed |
 | A5-045 | Parallel independent D1 and R2 operations | Merged #199; staging CI passed; scoped optimization |
-| A5-046 | Deduplicate authentication lookups per request | Unassessed |
-| A5-047 | Reuse request-scoped configuration and authorization results | Unassessed |
+| A5-046 | Deduplicate authentication lookups per request | Existing coverage; authenticate once at managed Worker entry |
+| A5-047 | Reuse request-scoped configuration and authorization results | Existing coverage; pass request-scoped auth, account row, and config |
 | A5-048 | Benchmark Smart Placement for database-heavy routes | Unassessed |
 | A5-049 | Stream large resources without full memory buffering | Existing; source-reviewed lib/site-assets.ts, app/api/study-assets/[id]/route.ts; no new merge credit |
 | A5-050 | Eliminate unnecessary internal server API round trips | Existing; source-reviewed app/api/materials/route.ts; no new merge credit |
@@ -359,7 +359,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 |---|---|---|
 | A5-231 | Deduplicate identical concurrent account-scoped GET requests | Merged #174; CI passed; account-scoped Anki listing deduplication |
 | A5-232 | Cancel superseded read requests on route changes | Merged #176; CI passed; cancel stale Library reads |
-| A5-233 | Combine compatible small metadata reads | Unassessed |
+| A5-233 | Combine compatible small metadata reads | Merged #228; CI passed; one read-only D1 analytics batch |
 | A5-234 | Reduce oversized response field sets per view | Unassessed |
 | A5-235 | Reuse stable response schema encoding | Merged #193; staging CI passed; scoped optimization |
 | A5-236 | Avoid redundant HEAD before known GET resources | Merged #194; staging CI passed; scoped optimization |
@@ -389,14 +389,14 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 |---|---|---|
 | A5-251 | Load student count before optional detailed breakdown | Unassessed |
 | A5-252 | Query only requested report date range | Unassessed |
-| A5-253 | Aggregate report metrics in database when equivalent | Unassessed |
+| A5-253 | Aggregate report metrics in database when equivalent | Existing coverage; database-side SQL COUNT/SUM/GROUP BY analytics |
 | A5-254 | Stream large authorized export output | Unassessed |
 | A5-255 | Defer offscreen chart series computations | Unassessed |
 | A5-256 | Reuse report filter options per dataset revision | Unassessed |
 | A5-257 | Index audit event lists by timestamp and type | Unassessed |
-| A5-258 | Batch permission-scoped student metadata reads | Unassessed |
+| A5-258 | Batch permission-scoped student metadata reads | Existing coverage; one permission-scoped students JOIN and projection |
 | A5-259 | Avoid repeatedly recomputing unchanged group roster totals | Unassessed |
-| A5-260 | Cache derived report chart points within one view session | Unassessed |
+| A5-260 | Cache derived report chart points within one view session | Merged #225; CI passed; cache stable Admin storage chart HTML |
 
 ## Academic generators
 
@@ -438,7 +438,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-284 | Measure D1 rows read per common request | Merged #202; staging CI passed; measurement only |
 | A5-285 | Measure R2 transferred bytes per resource journey | Merged #202; staging CI passed; measurement only |
 | A5-286 | Measure client main-thread parsing time per course pack | Merged #203; staging CI passed; measurement only |
-| A5-287 | Measure memory peak during large exam review | Unassessed |
+| A5-287 | Measure memory peak during large exam review | Merged #226; CI passed; measurement-only sampled synthetic exam heap |
 | A5-288 | Measure cold versus warm cache startup separately | Merged #203; staging CI passed; measurement only |
 | A5-289 | Use deterministic seeded data for reproducible benchmarks | Merged #202; staging CI passed; measurement only |
 | A5-290 | Assert baseline equivalence within each measured optimization fixture | Existing coverage; benchmark tests compare exact outputs |
@@ -641,6 +641,24 @@ The following six candidates were inspected against current staging source rathe
 - **A5-294 existing.** [`tests/cloudflare-staging-audit5-resource-measurement.test.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/tests/cloudflare-staging-audit5-resource-measurement.test.mjs) uses `serveAsset` to compare full and ranged synthetic R2 responses: 1,048,576 bytes full versus 65,536 bytes ranged. That directly covers the requested diagnostic; it does not assert measured production latency gains.
 
 These are **four existing mechanisms and two not-applicable candidates**, not six newly implemented optimizations. Existing/rejected totals change; merged totals do not. No app runtime or production changes accompany this reconciliation.
+
+## Audit 5 continuation: three new merges and five source-reviewed mechanisms (24 November 2026)
+
+- **A5-260**: [PR #225](https://github.com/Hatem-a10/alfaisal-review-studio/pull/225), successful staging [CI 45438660554](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45438660554). Unchanged Admin storage charts reuse the same derived markup; cache invalidation is tied to the build report, limit, and private-media object.
+- **A5-287**: [PR #226](https://github.com/Hatem-a10/alfaisal-review-studio/pull/226), successful staging [CI 45438800346](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45438800346). Synthetic, discrete-stage heap high-water measurement only; not a speed gain or continuously monitored production peak.
+- **A5-233**: [PR #228](https://github.com/Hatem-a10/alfaisal-review-studio/pull/228), successful staging [CI 45439713757](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45439713757). Five independent, read-only Admin analytics statements are collected in one D1 batch without relaxing the minimum-group privacy threshold.
+
+The following five were already covered by source, and are **not newly implemented gains**:
+
+- **A5-007:** `public/activity-metrics.mjs` `questionHistory` constructs date-keyed `days` Maps and `questions` Sets as attempts are ingested; unique question identities are not reconstructed by sorting every event.
+- **A5-046:** `worker/staging.ts` performs one managed or staging authentication at the Worker entry and propagates the authorized request into route handling. This review does not assert downstream route-level owner verification never occurs.
+- **A5-047:** `worker/staging.ts` reuses per-request `auth`, `config` and selected account `row` across its canonical path dispatch and `controlRoute` call.
+- **A5-253:** `lib/admin-control.mjs` performs owner analytics counts and activity totals with SQL `COUNT`, `SUM` and `GROUP BY`, rather than loading all student rows into browser JavaScript.
+- **A5-258:** `lib/admin-control.mjs` `studentList` joins account and role/assignment rows within one D1 query and returns just the requested, permission-scoped page.
+
+Pending but **not credited here**: A5-251 in [PR #229](https://github.com/Hatem-a10/alfaisal-review-studio/pull/229); it must pass staging CI and merge before implementation credit.
+
+No production release, schema application, student-data editing, or academic/scoring changes.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
