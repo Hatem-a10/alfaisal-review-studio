@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate scopes (105 speed-oriented changes and 17 measurement capabilities), 71 pre-existing mechanisms source-reviewed, 2 rejected/not-applicable items, 0 submitted candidates and 105 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate scopes (105 speed-oriented changes and 17 measurement capabilities), 75 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 99 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -89,7 +89,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 |---|---|---|
 | A5-051 | Profile hot queries with EXPLAIN QUERY PLAN | Merged #206; staging CI passed; measurement only |
 | A5-052 | Add justified account-scoped composite indexes | Merged #206; staging CI passed; scoped optimization |
-| A5-053 | Remove demonstrably redundant indexes | Unassessed |
+| A5-053 | Remove demonstrably redundant indexes | Rejected (no redundant secondary index; keep PK and account/time index) |
 | A5-054 | Project only necessary database columns | Existing; source-reviewed app/api/materials/route.ts, app/api/decks/route.ts; no new merge credit |
 | A5-055 | Eliminate duplicate progress D1 read on a changed revision | Merged #127; CI passed; narrowed scope |
 | A5-056 | Batch compatible D1 statements | Existing; source-reviewed app/api/academic-config/route.ts; no new merge credit |
@@ -125,7 +125,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-076 | Pre-index lecture question associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-077 | Pre-index source document associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-078 | Share identical immutable metadata across course packs | Unassessed |
-| A5-079 | Version-cache immutable lesson structures locally | Unassessed |
+| A5-079 | Version-cache immutable lesson structures locally | Existing coverage; release-keyed offline cache for lesson data |
 | A5-080 | Exclude archived CVP content from active startup dependencies | Existing coverage; reviewed scope in evidence |
 
 ## Practice exams and Anki
@@ -286,7 +286,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-182 | Index reverse course reference membership within each library render | Merged #140; CI passed; narrowed scope |
 | A5-183 | Project library candidates by lecture before metadata classification | Merged #156; CI passed; narrowed scope |
 | A5-184 | Paginate large private-material listings with stable order | Unassessed |
-| A5-185 | Defer media metadata extraction until needed | Unassessed |
+| A5-185 | Defer media metadata extraction until needed | Existing coverage; deck parsing and media import deferred to user action |
 | A5-186 | Deduplicate concurrent authorized reads for same immutable asset | Existing coverage; reviewed scope in evidence |
 | A5-187 | Stream authorized upload hashing where supported | Existing; source-reviewed lib/personal-upload.ts; no new merge credit |
 | A5-188 | Avoid duplicate client upload buffers | Unassessed |
@@ -375,7 +375,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-241 | Reuse validated request parsing result across middleware | Merged #201; staging CI passed; scoped optimization |
 | A5-242 | Parse each bounded progress PUT/PATCH request once before validation | Existing coverage; one JSON.parse per request body |
 | A5-243 | Precompute constant response metadata | Merged #193; staging CI passed; scoped optimization |
-| A5-244 | Cache compiled schema validators per runtime | Unassessed |
+| A5-244 | Cache compiled schema validators per runtime | Rejected (no compiled validators in hot runtime paths) |
 | A5-245 | Avoid repeated string normalization after validated canonical lookup | Merged #196; staging CI passed; scoped optimization |
 | A5-246 | Batch R2 metadata lookups with bounded concurrency | Existing coverage; reviewed scope in evidence |
 | A5-247 | Single-pass study-asset status report counts | Merged #127; CI passed; operation counts |
@@ -402,7 +402,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-261 | Parse source manifests once per build invocation | Unassessed |
+| A5-261 | Parse source manifests once per build invocation | Existing coverage; build reads each manifest once per invocation |
 | A5-262 | Reuse model and generated variant SHA-256 digests in asset generator | Merged #133; CI passed; narrowed scope |
 | A5-263 | Avoid re-encoding unchanged generated JSON files | Merged #188; staging CI passed; scoped optimization |
 | A5-264 | Use bounded parallelism for independent image generation | Merged #191; staging CI passed; scoped optimization |
@@ -450,7 +450,7 @@ Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate
 | A5-291 | Benchmark simultaneous device sync under realistic account isolation | Unassessed |
 | A5-292 | Benchmark burst load at timetable transitions | Merged #218; staging CI passed; measurement only |
 | A5-293 | Measure cache hit ratio by eligible resource class | Merged #203; staging CI passed; measurement only |
-| A5-294 | Measure private PDF range transfer versus full response | Unassessed |
+| A5-294 | Measure private PDF range transfer versus full response | Existing coverage; A5-285 full versus range byte test |
 | A5-295 | Tune bounded background prefetch using measured hit rates | Unassessed |
 | A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Unassessed |
 | A5-297 | Measure D1 index storage cost versus read savings | Merged #206; staging CI passed; measurement only |
@@ -628,6 +628,19 @@ Only the newly merged IDs below add new candidate credit. Each linked PR passed 
 - **A5-095**: [PR #222](https://github.com/Hatem-a10/alfaisal-review-studio/pull/222), [passing CI 45423240968](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45423240968); immutable caching for exact fingerprinted public course and stylesheet packs.
 
 Additional source review (no new optimization credit): A5-039, A5-049, A5-050, A5-054, A5-056, A5-063, A5-068, A5-074, A5-086, A5-187. Checks are scoped to cited source files, not comprehensive real-device performance validation. A5-214 was marked not applicable because public CSS has no duplicate declared keyframe names.
+
+## Audit 5 continuation: source-reviewed redundancies and rejected ideas (24 November 2026)
+
+The following six candidates were inspected against current staging source rather than counted as new performance gains:
+
+- **A5-053 rejected.** [`db/schema.ts`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/db/schema.ts) defines one account-scoped secondary index for `study_materials` plus the distinct primary-key access path. No redundant second index was found to remove. Existing index query-plan tests are in `tests/cloudflare-staging-audit5-material-d1-index.test.mjs`.
+- **A5-079 existing.** [`phase3-cache-policy.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/phase3-cache-policy.mjs) assigns a release-versioned service-worker core cache and identifies `/api/lesson-data` as cacheable. [`review-sw.js`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/review-sw.js) stores and reads those resources; no additional account-scoped lesson data cache is justified here.
+- **A5-185 existing, narrow scope.** [`anki.js`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/anki.js) opens the IndexedDB deck store lazily; package parsing (`AnkiEngine.parse`) starts only when the user imports a deck. This source review does not claim that every possible media format has deferred metadata parsing.
+- **A5-244 rejected.** The hot progress, personal material and Anki API handlers have explicit hand-written validation; they do not compile schemas at request time. A compiled-validator cache would not save an existing runtime cost. This is not a recommendation to bypass validation.
+- **A5-261 existing.** [`scripts/client-scripts.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/scripts/client-scripts.mjs) parses `lab-curriculum.json` once within `optimizeClientScripts`, and its `readingURL` manifest inputs are distinct in the current source. No duplicate manifest parse was observed within this build invocation.
+- **A5-294 existing.** [`tests/cloudflare-staging-audit5-resource-measurement.test.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/tests/cloudflare-staging-audit5-resource-measurement.test.mjs) uses `serveAsset` to compare full and ranged synthetic R2 responses: 1,048,576 bytes full versus 65,536 bytes ranged. That directly covers the requested diagnostic; it does not assert measured production latency gains.
+
+These are **four existing mechanisms and two not-applicable candidates**, not six newly implemented optimizations. Existing/rejected totals change; merged totals do not. No app runtime or production changes accompany this reconciliation.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
