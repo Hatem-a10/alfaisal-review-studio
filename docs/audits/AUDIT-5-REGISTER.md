@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 7 candidates implemented and candidate-CI verified (6 with clear observed timing gains, 1 complexity improvement with inconclusive timing); 3 submitted; 290 unassessed. See receipts below. A5-003 has mixed timing across runs; its reduced sorting work is established, not a repeatable wall-time speedup.
+Status at this evidence update: 13 candidates merged with candidate CI passed; 1 submitted (#123); 286 unassessed. A5-003 has mixed timing across runs; its reduced sorting work is established, not a repeatable wall-time speedup. Combined benchmarks do not establish separate per-change speed gains. The evidence-only PR also exercises the integrated branch.
 
 ## Activity analytics
 
@@ -16,10 +16,10 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-002 | Memoize resolved question alias chains within one history calculation | Merged #116; CI passed |
 | A5-003 | Find earliest history date by linear scan rather than sorting | Merged #116; CI passed; modest timing signal |
 | A5-004 | Avoid scanning history outside requested display window where safe | Unassessed |
-| A5-005 | Accumulate aggregate counts without allocating intermediate values arrays | Unassessed |
+| A5-005 | Accumulate aggregate counts without allocating intermediate values arrays | Merged #121; CI passed; allocation count evidence |
 | A5-006 | Avoid rebuilding attempt lists when only date range changes | Unassessed |
 | A5-007 | Index daily aggregate identities at ingestion | Unassessed |
-| A5-008 | Reuse normalized date keys from validated records | Unassessed |
+| A5-008 | Reuse normalized date keys from validated records | Merged #121; CI passed |
 | A5-009 | Incrementally update daily unique-question sets | Unassessed |
 | A5-010 | Cache activity chart geometry between data changes | Unassessed |
 
@@ -47,7 +47,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
 | A5-024 | Memoize expensive pure selectors with precise invalidation | Unassessed |
 | A5-025 | Offload expensive question-bank processing to worker | Unassessed |
-| A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Submitted #120; CI pending |
+| A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Merged #120; CI passed; combined benchmark |
 | A5-027 | Replace redundant deep copies with targeted immutable updates | Unassessed |
 | A5-028 | Delegate compatible repeated DOM listeners | Unassessed |
 | A5-029 | Avoid duplicate JSON serialization of study records | Unassessed |
@@ -120,7 +120,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-071 | Chunk large course packs by lecture | Unassessed |
 | A5-072 | Separate teaching text from question data loading | Unassessed |
 | A5-073 | Defer detailed explanation loading until review | Unassessed |
-| A5-074 | Reuse parsed question fingerprints within a deduplication pass | Submitted #120; CI pending |
+| A5-074 | Fetch diagrams independently from lesson text | Unassessed |
 | A5-075 | Idle-prefetch next likely lesson within data budget | Unassessed |
 | A5-076 | Precompute lecture-to-question mappings | Unassessed |
 | A5-077 | Precompute source-document and lecture associations | Unassessed |
@@ -135,7 +135,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-081 | Precompute eligible pools for common practice filters | Unassessed |
 | A5-082 | Update question analytics incrementally after answers | Unassessed |
 | A5-083 | Index wrong-answer records by course lecture and question | Unassessed |
-| A5-084 | Build question duplicate fingerprints ahead of time | Unassessed |
+| A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
 | A5-085 | Sample questions without shuffling full bank where distribution unchanged | Unassessed |
 | A5-086 | Render only active timed-exam question where interface permits | Unassessed |
 | A5-087 | Isolate timer rendering from exam content | Unassessed |
@@ -181,7 +181,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-112 | Pre-tokenize searchable resource text at build time | Unassessed |
 | A5-113 | Index exact title and resource ID lookup separately | Unassessed |
 | A5-114 | Intersect smallest posting lists first | Unassessed |
-| A5-115 | Limit top-k result sorting with equivalent stable ranking | Unassessed |
+| A5-115 | Limit top-k result sorting with equivalent stable ranking | Merged #122; CI passed |
 | A5-116 | Debounce expensive search work without delaying keystrokes | Unassessed |
 | A5-117 | Cancel superseded asynchronous search work | Unassessed |
 | A5-118 | Reuse results for unchanged normalized query and scope | Unassessed |
@@ -246,7 +246,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-157 | Reuse navigation grid cells on flag changes | Unassessed |
 | A5-158 | Defer explanation formatting until review pane opens | Unassessed |
 | A5-159 | Avoid recomputing elapsed time outside displayed timer interval | Unassessed |
-| A5-160 | Compute attempt ordering keys once before history sort | Unassessed |
+| A5-160 | Compute mock-history ordering keys once before history sort | Submitted #123; CI pending |
 
 ## OSPE and visual practice
 
@@ -274,7 +274,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 | A5-175 | Reuse sanitized card template until card version changes | Unassessed |
 | A5-176 | Defer media decode until card face is displayed | Unassessed |
 | A5-177 | Reuse permitted object URLs during same account session | Unassessed |
-| A5-178 | Reuse per-card course scope within an Anki cross-link computation | Submitted #120; CI pending |
+| A5-178 | Reuse per-card course scope within an Anki cross-link computation | Merged #120; CI passed; combined benchmark |
 | A5-179 | Incrementally maintain per-deck review counters | Unassessed |
 | A5-180 | Skip rebuilding unchanged study-control DOM between flips | Unassessed |
 
@@ -460,7 +460,7 @@ Status at this evidence update: 7 candidates implemented and candidate-CI verifi
 
 ## Benchmark and verification receipts
 
-Median of three measured executions on the candidate CI runner after an equivalence comparison; synthetic workloads, not site-wide or production timings. Retained memory and real-device performance require separate testing.
+Median of three measured executions unless otherwise indicated, on the candidate CI runner after an equivalence comparison; synthetic workloads, not site-wide or production timings. Retained memory and real-device performance require separate testing.
 
 | ID | Baseline | Candidate | Operation-count evidence | Receipt |
 |---|---:|---:|---|---|
@@ -473,10 +473,20 @@ Median of three measured executions on the candidate CI runner after an equivale
 | **A5-128** | 45.150 ms | 1.055 ms | 2,880 formatter constructions → 1 across four fixture executions | [#118](https://github.com/Hatem-a10/alfaisal-review-studio/pull/118) |
 | **A5-139** | 16.862 ms | 14.944 ms | 8,002 profile reads → 2 per timetable fixture | #118 |
 
+| **A5-084** | 28.906 ms | 16.048 ms | 124-question deduplication fixture (historical label A5-074) | #120 |
+| **A5-026 + A5-178** | 89.299 ms | 11.492 ms | Combined cross-link workload, 30 lectures and 8 decks | #120 |
+| **A5-008** | 19.739 ms | 1.255 ms | 4,000 → 2 date format calls; seven measured runs after warmup | #121 |
+| **A5-005 + A5-008** | 34.900 ms | 16.700 ms | Combined workload; 10,000 aggregate array entries → 0; seven runs | #121 |
+| **A5-115** | 49.769 ms | 2.265 ms | 20,300 matched entries; maximum retained ranking entries 40; seven runs | #122 |
+
 - #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
 - #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
 - #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, [CI 45382764102](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382764102), 1,315 full-suite tests passed, merge `2ea6a62a7b5de71d6a621411e22d2b4457a7ce0c`. Candidate started before #117 merged; integrated CI still required.
-- #120: candidate `f6e4891a47410c3e4bf5264c5f171f14d4287924`, submitted; CI pending.
+- #120: candidate `f6e4891a47410c3e4bf5264c5f171f14d4287924`, [CI 45383091302](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383091302), success. A5-074 in its historical benchmark label means A5-084; the original diagram-loading candidate A5-074 remains unassessed. A5-178 was narrowed from general card search tokenization to per-card course-scope reuse; no general tokenization gain is claimed.
+- #119: integrated evidence [CI 45383257697](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383257697) passed; merge `b1e9f880fbb5ccec0b735ffe8e82624647148921`.
+- #121: candidate `1f43138e578e38c525ea7f2448f24cf31c4ecbf3`, [CI 45383566906](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383566906), 1,321 full-suite tests passed; merge `25f147380b1584e08f08548f271773811373ffab`.
+- #122: candidate `82fa59042c8633472d797e67317e22810cc5921e`, [CI 45383782390](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383782390), 1,320 full-suite tests passed; merge `f57523ba90fba855a569114a333627af68339bf2`. Candidate branched before #121 merged; integrated CI required.
+- #123: candidate `695898aa41c28302125261a75ba6fbd083a08292`, submitted; CI pending.
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
