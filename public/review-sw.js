@@ -37,6 +37,7 @@ self.addEventListener('install',event=>{event.waitUntil((async()=>{
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{
  // The application shell is release-specific. Account resources survive a release.
  for(const key of await caches.keys())if(obsoleteCoreCache(key))await caches.delete(key);
+ if(self.registration?.navigationPreload)await self.registration.navigationPreload.enable().catch(()=>{});
  await self.clients.claim();
 })())});
 self.addEventListener('message',event=>{
@@ -67,6 +68,13 @@ self.addEventListener('fetch',event=>{
      return unavailable('Account identity changed or is unavailable. Sign in or retry.',identity.ok?409:identity.status===401||identity.status===403?identity.status:503);
     }
     if(clientsByAccount.get(event.clientId)!==account){denied=true;return unavailable('Account changed. Retry this download.')}
+   }
+   // The browser can start eligible navigation work while this service worker wakes.
+   // A preload response preserves ordinary redirects/status; private API requests bypass it.
+   if(kind==='navigation'&&event.preloadResponse){
+    let preloaded=null;
+    try{preloaded=await event.preloadResponse}catch{}
+    if(preloaded){if(cache)await store(cache,request,preloaded).catch(()=>{});return preloaded}
    }
    // Only coalesce immutable public hashed assets. Private and conditional requests
    // retain their own account verification, network response and fallback path.
