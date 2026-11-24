@@ -17,5 +17,5 @@ export const studyMaterials = sqliteTable('study_materials', {
  createdAt: text('created_at').notNull(),
 }, table => [
  // Account-scoped reverse chronological private materials and deck listings.
- index('study_materials_user_created_idx').on(table.userId, table.createdAt.desc(), table.id),
+ index('study_materials_user_created_idx').on(table.userId, table.createdAt.desc()),
 ]);
