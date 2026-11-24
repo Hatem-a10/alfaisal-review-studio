@@ -525,3 +525,55 @@ html:root body:not(.xp-exam-active) #siteAdmin .hub-appearance .hub-accent-auto,
 html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions button[data-quick-action=sync]::after{content:attr(aria-label);font-weight:600}
 html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions{justify-content:flex-start}
 html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions button{width:auto;padding-inline:16px}
+
+/* Site settings: the frame scrolls and the Close button stays put, outside the box on
+   wide screens and pinned to its corner on narrow ones. */
+html:root body:not(.xp-exam-active) #siteAdmin[open]{overflow:visible!important;padding:0}
+html:root body:not(.xp-exam-active) #siteAdmin .admin-frame{max-height:min(850px,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;border-radius:inherit;padding:22px}
+html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close{position:absolute;top:0;left:calc(100% + 12px);z-index:3;display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;border-radius:50%;border:0;background:var(--rs-surface);color:var(--rs-ink);font-size:1.1rem;box-shadow:var(--rs-shadow-pop)}
+html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close:hover{background:var(--rs-grad);color:#fff}
+@media (max-width:900px){
+ html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close{left:auto;right:10px;top:10px;box-shadow:0 2px 10px rgb(0 0 0 / .18)}
+ html:root body:not(.xp-exam-active) #siteAdmin .admin-frame>.section-head{padding-right:52px}
+}
+
+/* Sidebar: larger targets and type so the links fill the rail's width. */
+@media (min-width:761px){
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{gap:6px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{min-height:54px;padding:12px 16px;gap:14px;font-size:1.04rem;font-weight:600;border-radius:var(--rs-r-item,12px)}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button .nav-icon{width:23px;height:23px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar .brand{gap:14px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar #syncWidget>summary{min-height:58px}
+ /* Semi-closed rail: icons only, centred, and the sync card shrinks to a square with its dot. */
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar nav.simple-desktop-nav>button{justify-content:center;padding:12px 0}
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar .sidebar-foot{display:flex!important;justify-content:center;margin-top:auto}
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar #syncWidget{width:52px;height:52px;min-width:0;padding:0!important;border-radius:var(--rs-r-item,12px)}
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar #syncWidget>summary{display:grid;place-items:center;width:100%;height:100%;min-height:0;padding:0!important;list-style:none}
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar #syncWidget>summary>:not(.sync-indicator){display:none!important}
+ html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar #syncWidget .sync-indicator{position:static;width:12px;height:12px;margin:0}
+}
+
+/* Header controls: one 40px row, matching corners; search and theme are equal square icons. */
+html:root body:not(.xp-exam-active) #hubTopBody{align-items:center}
+html:root body:not(.xp-exam-active) #hubTopBody :is(.datecontrol,.appearance-controls){display:flex;align-items:center;gap:8px;margin:0}
+html:root body:not(.xp-exam-active) #hubTopBody :is(#phase1SearchButton,#themeToggle){display:grid!important;place-items:center;width:40px!important;height:40px!important;min-width:40px;min-height:40px!important;padding:0!important;margin:0!important;border:1px solid var(--rs-line)!important;border-radius:var(--rs-r-ctl,10px)!important;background:var(--rs-surface)!important;color:var(--rs-ink)!important;box-shadow:none!important;transform:none!important;line-height:1}
+html:root body:not(.xp-exam-active) #hubTopBody :is(#phase1SearchButton,#themeToggle) :is(svg,span){width:19px;height:19px;margin:0!important;display:block;font-size:19px;line-height:19px}
+html:root body:not(.xp-exam-active) #hubTopBody :is(#phase1SearchButton,#themeToggle):hover{border-color:var(--ax-b)!important;color:var(--ax-b)!important}
+html:root body:not(.xp-exam-active) #hubTopBody :is(input[type=date],#today,.hub-time-chip){height:40px!important;min-height:40px!important;box-sizing:border-box;border-radius:var(--rs-r-ctl,10px)!important;margin:0!important;display:inline-flex;align-items:center}
+html:root body:not(.xp-exam-active) #hubTopBody{padding-block:4px;gap:8px}
+html:root body:not(.xp-exam-active) #hubTopBody .appearance-controls:empty{display:none}
+html:root body:not(.xp-exam-active) #hubTopControls>.hub-top-body{height:auto!important;min-height:48px;padding-block:4px!important;box-sizing:border-box;align-items:center}
+html:root body:not(.xp-exam-active) #hubTopControls{align-items:center}
+html:root body:not(.xp-exam-active) #hubTopControls>.hub-top-body{margin-block:-6px}
+
+/* Corners: three sizes only. Cards and panels 18px, blocks inside them 12px, controls 10px.
+   Circles (avatar camera, jump buttons) and pills keep their shapes. */
+html:root body:not(.xp-exam-active){--rs-r-sm:10px;--rs-r-md:12px;--rs-r-lg:18px;--rs-r-sec:18px;--rs-r-item:12px;--rs-r-ctl:10px}
+html:root body:not(.xp-exam-active) #content :is(.panel,.countdown-card,.home-spotlight,.home-focus-card,.home-insights-card,.readiness-card,.home-more,.lesson-catalog,.schedule-toolbar,.practice-tool-card){border-radius:18px!important}
+html:root body:not(.xp-exam-active) #content :is(summary,.guide-key,.guide-pitfalls,.worked-example,.retention-check,.mcq-option-row,.countdown-unit,.notice,.phase3-tabs,.schedule-scroll,.learning-kind-switch,.campus-day-column,.coverage-panel,.home-shortcut):not(.panel){border-radius:12px!important}
+html:root body:not(.xp-exam-active) :is(#content,#mainSidebar,#siteAdmin,#mobileToolsMenu) :is(button,select,textarea,input:not([type=checkbox]):not([type=radio]):not([type=range]),a.material-action):not(.profile-upload-icon):not(.jump-first-wrong):not(.gradient-swatch):not(.site-settings-close):not(.practice-tool-card):not(.home-shortcut):not([class*=pill]){border-radius:10px!important}
+html:root body:not(.xp-exam-active) #mainSidebar :is(nav>button,#syncWidget){border-radius:12px!important}
+html:root body:not(.xp-exam-active) #mainSidebar .sidebar-toggle,html:root body:not(.xp-exam-active) .sidebar-toggle{border-radius:10px!important}
+
+/* Question source labels sit under the options, centred and quiet. */
+html:root body:not(.xp-exam-active) :is(.question-kind,.et-question-kind).question-kind-foot{display:block;margin:12px 0 0;text-align:center;font-size:.8rem;font-weight:500;letter-spacing:.01em;color:var(--rs-muted)}

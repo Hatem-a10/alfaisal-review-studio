@@ -169,3 +169,58 @@
  .acc-content .acc-filter { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .acc-detail-body .acc-table-scroll { font-size:.85rem; }
 }
+
+/* ---------- Control Center, redesigned ----------
+   Full-height workspace: gradient header, grouped icon navigation, scrolling content.
+   Colours come from the site's gradient tokens (--ax-*, --rs-*), with fallbacks. */
+.acc-center{display:flex;flex-direction:column;width:min(1240px,calc(100vw - 32px));height:min(880px,calc(100dvh - 32px));max-height:none;padding:0;overflow:hidden;border:0;border-radius:18px;background:var(--rs-canvas,var(--surface));box-shadow:0 30px 80px -20px rgb(0 0 0 / .5)}
+.acc-center::backdrop{background:rgb(8 12 18 / .72)}
+.acc-center .acc-head{position:relative;align-items:center;padding:18px 22px;background:var(--rs-grad,linear-gradient(125deg,#24135e,#5a3bd6 22%,#c42f8f 68%));color:#fff}
+.acc-center .acc-head h2{font-size:1.35rem;letter-spacing:-.01em;color:#fff}
+.acc-center .acc-head .acc-role{display:inline-block;margin-top:6px;padding:3px 10px;border:0;border-radius:999px;background:rgb(255 255 255 / .2);color:#fff;font-size:.78rem;font-weight:600}
+.acc-center .acc-close{display:grid;place-items:center;width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:50%;background:rgb(255 255 255 / .18);color:#fff;cursor:pointer}
+.acc-center .acc-close:hover{background:rgb(255 255 255 / .32)}
+.acc-center .acc-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.acc-center .acc-layout{flex:1;min-height:0;grid-template-columns:236px minmax(0,1fr);gap:0}
+.acc-center .acc-layout>nav{display:flex;flex-direction:column;gap:2px;padding:14px 12px;overflow-y:auto;border:0;border-right:1px solid var(--rs-line,var(--line));background:var(--rs-surface,var(--white))}
+.acc-center .acc-nav-group{margin:14px 10px 4px;font-size:.74rem;font-weight:700;letter-spacing:.02em;color:var(--rs-muted,var(--muted))}
+.acc-center .acc-layout>nav button{display:flex;align-items:center;gap:12px;width:100%;min-height:42px;padding:9px 12px;border:0;border-radius:10px;background:transparent;color:var(--rs-ink-2,var(--text));font-size:.93rem;font-weight:550;text-align:left;line-height:1.25}
+.acc-center .acc-layout>nav button:hover{background:var(--rs-sunken,#0000000a);color:var(--rs-ink,var(--text))}
+.acc-center .acc-layout>nav button[aria-current]{background:var(--rs-grad-tint,var(--accent-bg));color:var(--rs-ink,var(--text));box-shadow:inset 3px 0 0 var(--ax-b,var(--accent))}
+.acc-center .acc-nav-icon{flex:none;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.acc-center .acc-layout>nav button[aria-current] .acc-nav-icon{stroke:var(--ax-b,var(--accent))}
+.acc-center .acc-content{overflow-y:auto;padding:24px 28px 36px}
+.acc-center .acc-content>h3{margin:0 0 14px;font-size:1.6rem;letter-spacing:-.02em}
+.acc-center .acc-status:empty{display:none}
+.acc-center .acc-metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.acc-center .acc-card{position:relative;padding:16px 18px;border:0;border-radius:12px;background:var(--rs-surface,var(--white));box-shadow:inset 0 0 0 1px var(--rs-line,var(--line))}
+.acc-center .acc-card span{display:block;font-size:.8rem;color:var(--rs-muted,var(--muted))}
+.acc-center .acc-card strong{display:block;margin-top:6px;font-size:1.7rem;font-weight:750;letter-spacing:-.02em;background:var(--rs-grad,currentColor);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;width:fit-content}
+.acc-center .acc-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.acc-center .acc-tile{display:flex;align-items:flex-start;gap:14px;min-height:0;padding:16px;border:0;border-radius:12px;background:var(--rs-surface,var(--white));box-shadow:inset 0 0 0 1px var(--rs-line,var(--line));color:var(--rs-ink,var(--text));text-align:left;cursor:pointer}
+.acc-center .acc-tile:hover,.acc-center .acc-tile:focus-visible{box-shadow:inset 0 0 0 2px var(--ax-b,var(--accent))}
+.acc-center .acc-tile .acc-nav-icon{width:38px;height:38px;padding:9px;border-radius:10px;background:var(--rs-grad,var(--accent));stroke:#fff;box-sizing:border-box}
+.acc-center .acc-tile strong{display:block;font-size:.98rem}
+.acc-center .acc-tile small{display:block;margin-top:3px;color:var(--rs-muted,var(--muted));font-size:.82rem;line-height:1.4}
+.acc-center .acc-filter{padding:14px;border:0;border-radius:12px;background:var(--rs-surface,var(--white));box-shadow:inset 0 0 0 1px var(--rs-line,var(--line))}
+.acc-center :is(.acc-person,.acc-row,.acc-table-scroll){border-radius:12px}
+.acc-center button.primary{background:var(--rs-grad,var(--accent));border:0;color:#fff}
+@media (max-width:760px){
+ .acc-center{width:100vw;height:100dvh;border-radius:0}
+ .acc-center .acc-layout{display:flex;flex-direction:column}
+ .acc-center .acc-layout>nav{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:8px;border-right:0;border-bottom:1px solid var(--rs-line,var(--line))}
+ .acc-center .acc-nav-group{display:none}
+ .acc-center .acc-layout>nav button{flex:none;width:auto;white-space:nowrap}
+ .acc-center .acc-content{padding:18px 16px 28px}
+}
+html:root body dialog.acc-center>header.acc-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0!important;padding:18px 22px!important;border:0!important;background:var(--rs-grad,linear-gradient(125deg,#24135e,#5a3bd6 22%,#c42f8f 68%))!important;color:#fff!important;position:static!important;min-height:0}
+html:root body dialog.acc-center>header.acc-head :is(h2,p){color:#fff!important}
+html:root body dialog.acc-center .acc-close:focus-visible{outline:2px solid #fff;outline-offset:2px}
+html:root[data-theme=amoled] body dialog.acc-center .acc-card strong{background-image:linear-gradient(125deg,color-mix(in srgb,var(--ax-b) 55%,#fff),color-mix(in srgb,var(--ax-c) 70%,#fff))}
+@media (max-width:760px){
+ html:root body dialog.acc-center>header.acc-head{padding:14px 16px!important}
+ html:root body dialog.acc-center .acc-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ html:root body dialog.acc-center .acc-card strong{font-size:1.35rem}
+}
+html:root body dialog.acc-center .acc-close{width:40px!important;height:40px!important;min-height:40px!important;padding:0!important;border:0!important;border-radius:50%!important;background:rgb(255 255 255 / .2)!important;color:#fff!important;box-shadow:none!important}
+html:root body dialog.acc-center .acc-close:hover{background:rgb(255 255 255 / .34)!important}
