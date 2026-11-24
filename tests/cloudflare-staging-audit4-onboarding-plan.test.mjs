@@ -27,7 +27,7 @@ test('partially allocated but unscheduled renal review does not reserve phantom 
 });
 test('review dates cannot extend beyond one common planning horizon',()=>{
  const result=planStudent([item('a')],{},now,{}, {budget:40,breaks:[[start,'2027-11-22']]});
- assert.equal(result.records.a.dates[0],'2027-11-23');assert.equal(result.warnings.length,2);
+ assert.equal(result.records.a.dates[0],'2027-11-23');assert.equal(result.records.a.dates[1],'2027-11-24');assert.equal(result.warnings.length,1);assert.equal(result.warnings[0].pass,2);
 });
 test('a completed bootstrap pass retains its existing date instead of rewriting it to today',()=>{
  const a={id:'a',course:'MOL',dates:['2026-11-01','2026-11-02','2026-11-03']},records={a:{dates:['2026-11-01','2026-11-25','2026-11-03'],done:{0:'2026-11-01T12:00:00Z'}}};
