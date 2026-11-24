@@ -56,6 +56,26 @@
  Storage.prototype.setItem=function(key,value){key=String(key);value=String(value);if(this===storage&&key===accountKey){if(account==='guest'&&value){account=value;for(const[k,v]of cache)queue(k,v)}chain=chain.then(()=>tx('meta','readwrite',s=>s.put(value,'active'))).catch(notify);try{rawSet.call(this,key,value)}catch{}return}if(this===storage&&managed(key)){cache.set(key,value);queue(key,value);return}return rawSet.call(this,key,value)};
  Storage.prototype.removeItem=function(key){key=String(key);if(this===storage&&managed(key)){cache.delete(key);queue(key,null);try{rawRemove.call(this,key)}catch{}return}return rawRemove.call(this,key)};}
  window.ReviewDevice={get available(){return !!db},keys:()=>[...new Set([...Object.keys(storage),...cache.keys()])],async flush(){await chain;if(lastError||pending.size)throw Error('Device database could not save your recovery copy. Keep this tab open and retry.');},async backup(key,value){if(!db)throw Error('Device database unavailable. Your progress is retained; keep this tab open and reconnect.');await this.flush();await tx('recovery','readwrite',s=>s.put(value,key));const check=await tx('recovery','readonly',s=>s.get(key));if(check!==value)throw Error('Recovery copy verification failed.');},async confirmed(){if(!db)return;await this.flush();for(const key of this.keys())if(managed(key)&&cache.has(key)&&rawGet.call(storage,key)!==null){const verified=await tx('values','readonly',s=>s.get(id(key)));if(verified===cache.get(key))try{rawRemove.call(storage,key)}catch{}}},async switchAccount(key){if(!db)throw Error('Device database unavailable; reconnect before switching accounts.');await this.flush();account=key;await tx('meta','readwrite',s=>s.put(key,'active'));await tx('meta','readwrite',s=>s.put(true,'initialized:'+key));try{rawSet.call(storage,accountKey,key)}catch{}await hydrate();location.reload()}};
- for(const tag of document.querySelectorAll('script[type="application/x-review-studio"][data-src]'))await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=tag.dataset.src;script.onload=resolve;script.onerror=()=>reject(Error('Could not load the study app.'));document.head.append(script)});
+ // Fetch a small window of static scripts in parallel, but execute in the original order.
+ // Do not speculate on authenticated APIs, and never start this before account hydration.
+ async function loadStudyScripts(tags){
+  const sources=Array.from(tags,tag=>tag.dataset.src),hints=new Map(),lookahead=6;
+  const staticScript=src=>/^[a-z0-9][a-z0-9_.-]*\.js(?:\?v=\d+)?$/i.test(src);
+  const drop=i=>{hints.get(i)?.remove();hints.delete(i)};
+  function preload(i){
+   const src=sources[i];if(!staticScript(src)||hints.has(i))return;
+   try{const link=document.createElement('link');if(!link.relList?.supports?.('preload'))return;link.rel='preload';link.as='script';link.href=src;document.head.append(link);hints.set(i,link)}catch{/* An unavailable preload must not prevent normal loading. */}
+  }
+  try{
+   for(let i=0;i<sources.length;i++){
+    const loaded=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=sources[i];script.onload=resolve;script.onerror=()=>reject(Error('Could not load the study app.'));document.head.append(script)});
+    for(let j=i+1;j<Math.min(sources.length,i+1+lookahead);j++)preload(j);
+    await loaded;drop(i);
+   }
+  }finally{for(const i of [...hints.keys()])drop(i)}
+ }
+ performance.mark?.('studio-scripts-start');
+ await loadStudyScripts(document.querySelectorAll('script[type="application/x-review-studio"][data-src]'));
+ performance.mark?.('studio-scripts-loaded');
 })().catch(error=>{window.reviewBootFailed=true;const text=document.getElementById('appBootText');if(text)text.textContent=error.message;document.getElementById('retryStartup')?.removeAttribute('hidden')});
 </script></body></html>
