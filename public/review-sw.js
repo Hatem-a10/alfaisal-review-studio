@@ -58,6 +58,13 @@ self.addEventListener('fetch',event=>{
  const startedEpoch=epoch(account),guard=()=>clientsByAccount.get(event.clientId)===account&&!clearing.has(account)&&epoch(account)===startedEpoch;
  event.respondWith((async()=>{
   const cache=await caches.open(kind==='private'?privateCacheName(account):CORE).catch(()=>null);
+  // A5-209: if the browser has declared offline, serve only already cached PUBLIC
+  // core files from this exact release cache without a guaranteed-to-fail probe.
+  // Navigation and private resources retain their existing verification paths.
+  if(kind==='core'&&self.navigator?.onLine===false){
+   const saved=await cache?.match(request,{ignoreSearch:true}).catch(()=>null);
+   if(saved)return saved;
+  }
   if(kind==='core'&&/^\/_studio\/[\w.-]+-[0-9a-f]{16}\.[a-z.]+$/.test(url.pathname)){const hit=await cache?.match(request).catch(()=>null);if(hit)return hit}
   let denied=false;
   try{
