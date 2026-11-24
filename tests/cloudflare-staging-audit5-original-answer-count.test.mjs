@@ -41,7 +41,7 @@ test('A5-152 avoids repeated full answer-object key enumeration',()=>{
 test('A5-152 external exam-mode writes are reflected when classic view remounts',()=>{
  const candidate=readFileSync(new URL('../public/original-exams.js',import.meta.url),'utf8');
  assert.match(candidate,/if\(visibleOriginalRun\(\)\)\{originalAnswerCount\(originalRun,true\)/);
- const sample=fixture(candidate.split('\\n').filter(l=>l.startsWith("document.addEventListener('change',e=>")||l.startsWith("document.addEventListener('input',e=>")).join('\\n'),candidate.split('\\n').filter(l=>l.startsWith('const originalCountCache=')||l.startsWith('function originalAnswerCount(')||l.startsWith('function originalTrackAnswer(')).join('\\n'));
+ const sample=fixture(candidate.split('\n').filter(l=>l.startsWith("document.addEventListener('change',e=>")||l.startsWith("document.addEventListener('input',e=>")).join('\n'),candidate.split('\n').filter(l=>l.startsWith('const originalCountCache=')||l.startsWith('function originalAnswerCount(')||l.startsWith('function originalTrackAnswer(')).join('\n'));
  sample.change('q2000','1');const run=sample.getRun();run.answers.q2001=2;
  assert.equal(sample.resync(),2002);
  sample.change('q2002','3');assert.equal(sample.display(),'2003 / '+run.ids.length+' responses saved on this device.');
