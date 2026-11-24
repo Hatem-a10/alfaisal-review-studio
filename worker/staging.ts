@@ -13,6 +13,7 @@ import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
 import {assetFor,serveAsset} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
 import {readClientError} from '../lib/client-error.mjs';
+import {stampOfflineAccount} from '../lib/offline-account.mjs';
 
 const stagingWorker = {
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
@@ -46,7 +47,7 @@ const stagingWorker = {
    }
   }
   const auth=managed?await authenticateManaged(incoming,config):await authenticateStaging(incoming,env);if(auth.response)return auth.response;
-  const finish=(response:Response)=>{if(!auth.headers)return response;const headers=new Headers(response.headers);for(const cookie of (typeof auth.headers.getSetCookie==='function'?auth.headers.getSetCookie():[auth.headers.get('Set-Cookie')].filter(Boolean)))headers.append('Set-Cookie',cookie);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
+  const finish=async(response:Response)=>{response=await stampOfflineAccount(response,auth.request);if(!auth.headers)return response;const headers=new Headers(response.headers);for(const cookie of (typeof auth.headers.getSetCookie==='function'?auth.headers.getSetCookie():[auth.headers.get('Set-Cookie')].filter(Boolean)))headers.append('Set-Cookie',cookie);return new Response(response.body,{status:response.status,statusText:response.statusText,headers})};
   if(production&&auth.user){
    if(!mayUseProduction(policy,auth.user))return finish(adminResponse({error:'This release is restricted to approved reviewers.'},403));
    if(!await isProductionDatabase(env.DB))return finish(adminResponse({error:'Production database verification unavailable.'},503));
