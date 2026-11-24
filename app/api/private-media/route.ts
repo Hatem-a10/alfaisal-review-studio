@@ -1,3 +1,4 @@
+import {boundedForm,RequestTooLarge} from '../../../lib/bounded-request';
 import {sharedUploadAccess} from '../../../lib/shared-upload-owner';
 import {env} from 'cloudflare:workers';
 import {PRIVATE_MEDIA,hashBytes,manifestHash,mediaKey,mediaPrefix} from '../../../lib/private-media';
@@ -32,12 +33,13 @@ export async function POST(request:Request){const denied=await sharedUploadAcces
  const bucket=env.BUCKET;if(!bucket)return json({error:'Private storage unavailable.'},503);
  if(Number(request.headers.get('content-length'))>12000000)return json({error:'Batch too large.'},413);
  let form;
- try{form=await request.formData();}catch{return json({error:'Invalid migration batch.'},400);}
+ try{form=await boundedForm(request,12000000);}catch(e){return json({error:e instanceof RequestTooLarge?'Batch too large.':'Invalid migration batch.'},e instanceof RequestTooLarge?413:400);}
  const files=[...form.entries()];
  if(!files.length||files.length>20)return json({error:'Invalid file count.'},400);
  let bytesTotal=0;
- const batch=[];
+ const batch=[],seen=new Set<string>();
  for(const [path,file] of files){
+  if(seen.has(path))return json({error:'Duplicate asset in migration batch.'},400);seen.add(path);
   const asset=assetsByPath.get(path);
   if(!asset||typeof file==='string'||file.size!==asset.size)return json({error:'Unknown asset or size mismatch.'},400);
   bytesTotal+=file.size;
@@ -46,14 +48,14 @@ export async function POST(request:Request){const denied=await sharedUploadAcces
   if(await hashBytes(bytes)!==asset.sha)return json({error:'Checksum mismatch: '+path},400);
   batch.push({asset,bytes});
  }
- for(const {asset,bytes} of batch){
+ let saved=0;try{for(const {asset,bytes} of batch){
   const key=mediaKey(asset.sha);
   const old=await bucket.head(key);
-  if(old?.size===asset.size&&old.customMetadata?.sha===asset.sha)continue;
+  if(old?.size===asset.size&&old.customMetadata?.sha===asset.sha){saved++;continue;}
   await bucket.put(key,bytes,{httpMetadata:{contentType:asset.type}});
   const readback=await bucket.get(key);
-  if(!readback||await hashBytes(await readback.arrayBuffer())!==asset.sha)return json({error:'Readback verification failed: '+asset.path},503);
-  await bucket.put(key,bytes,{httpMetadata:{contentType:asset.type},customMetadata:{sha:asset.sha}});
+  if(!readback||await hashBytes(await readback.arrayBuffer())!==asset.sha)return json({error:'Readback verification failed: '+asset.path,saved},503);
+  await bucket.put(key,bytes,{httpMetadata:{contentType:asset.type},customMetadata:{sha:asset.sha}});saved++;
  }
- return json({saved:batch.length});
+ return json({saved});}catch{return json({error:'Private media migration interrupted; retry the batch.',saved},503)}
 }
