@@ -1,4 +1,19 @@
 const cache=new WeakMap();
+const optionCache=new WeakMap();
+// A5-267: normalize only changed option strings; cache is tied to the option array.
+function normalizedOptions(input){
+ const options=Array.isArray(input)?input:[];
+ const prior=Array.isArray(input)?optionCache.get(input):null;
+ const normalized=new Array(options.length),snapshot=options.slice();
+ for(let i=0;i<options.length;i++){
+  if(!(i in options))continue;
+  const same=prior&&prior.raw.length===options.length&&(i in prior.raw)&&prior.raw[i]===options[i];
+  normalized[i]=same?prior.values[i]:normalize(options[i]);
+ }
+ if(Array.isArray(input))optionCache.set(input,{raw:snapshot,values:normalized});
+ return normalized;
+}
+
 const array=value=>Array.isArray(value)?value:[];
 const text=value=>typeof value==='string'?value:'';
 const normalize=value=>text(value).normalize('NFKC').toLowerCase().replace(/(?<!\d)\.|\.(?!\d)/g,' ').replace(/[^\p{L}\p{N}+.\-−<>=≤≥%/]+/gu,' ').trim();
@@ -6,7 +21,7 @@ const valid=q=>q&&typeof q==='object'&&!Array.isArray(q)&&typeof q.question==='s
 const canonical=q=>[q?.canonicalId,q?.bookletCanonicalId,q?.duplicateOf].find(v=>typeof v==='string'&&v.trim())||null;
 const criticalWord=t=>/^(?:no|not|never|except|unless|correct|incorrect|true|false|normal|abnormal|positive|negative|present|absent|with|without|increased|decreased|increase|decrease|more|less|most|least|higher|lower|above|below|before|after|left|right|afferent|efferent)$/.test(t)||/[\p{N}+−\-<>=≤≥%/\p{Script=Greek}]/u.test(t);
 function parsed(q){
- const stemText=text(q.question),options=array(q.options).map(normalize),choices=JSON.stringify([...options].sort());
+ const stemText=text(q.question),options=normalizedOptions(q.options),choices=JSON.stringify([...options].sort());
  const visual=JSON.stringify([text(q.image),text(q.figure?.image||q.figure?.src),...array(q.figures).map(f=>text(f?.image||f?.src))].filter(Boolean));
  const answer=Number.isSafeInteger(q.answer)&&q.answer>=0&&q.answer<options.length?options[q.answer]:null;
  const prior=cache.get(q);if(prior?.text===stemText&&prior.choices===choices&&prior.visual===visual&&prior.answer===answer)return prior;
@@ -21,12 +36,13 @@ function closeSequence(a,b){
  const n=a.length,m=b.length,limit=Math.floor(Math.max(n,m)*.04+1e-9);
  if(Math.abs(n-m)>limit)return false;
  if(!limit)return n===m&&a.every((word,i)=>word===b[i]);
- let prev=new Map();for(let j=0;j<=Math.min(m,limit);j++)prev.set(j,j);
+ // A5-224: two alternating per-call scratch maps replace one allocation per token.
+ let prev=new Map(),curr=new Map();for(let j=0;j<=Math.min(m,limit);j++)prev.set(j,j);
  for(let i=1;i<=n;i++){
-  const curr=new Map(),lo=Math.max(0,i-limit),hi=Math.min(m,i+limit);
+  curr.clear();const lo=Math.max(0,i-limit),hi=Math.min(m,i+limit);
   if(lo===0)curr.set(0,i);
   for(let j=Math.max(1,lo);j<=hi;j++)curr.set(j,Math.min((prev.get(j)??Infinity)+1,(curr.get(j-1)??Infinity)+1,(prev.get(j-1)??Infinity)+Number(a[i-1]!==b[j-1])));
-  if(![...curr.values()].some(v=>v<=limit))return false;prev=curr;
+  if(![...curr.values()].some(v=>v<=limit))return false;const old=prev;prev=curr;curr=old;
  }
  return (prev.get(m)??Infinity)<=limit;
 }
