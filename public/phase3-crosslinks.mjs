@@ -3,7 +3,7 @@ const array=v=>Array.isArray(v)?v:[];
 const identifier=v=>typeof v==='string'&&v.length>0;
 const courses={cvp:'112',mol:'114',ren:'123'};
 function cardLabels(deck,card){return [deck.name,card.deck,...(Array.isArray(card.tags)?card.tags:[card.tags])].map(normalize).filter(Boolean)}
-function explicitlyScoped(text){return new Set([...text.matchAll(/(?:^| )(cvp|mol|ren)(?: |$)/g)].map(m=>m[1]))}
+function explicitlyScoped(text){return new Set([...text.matchAll(/(?:^| )(cvp|mol|ren)(?= |$)/g)].map(m=>m[1]))}
 export function matchDecks(lectures,decks){
  const result=new Map(),seenDecks=new Set(),validLectures=array(lectures).filter(l=>identifier(l?.id)&&/^(CVP|MOL|REN)-([AP]?)(\d+)$/.test(l.id));
  for(const deck of array(decks)){
