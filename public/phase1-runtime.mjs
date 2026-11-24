@@ -12,7 +12,7 @@ export const STAIN_ACCENTS=['#3a2f86','#245796','#8e2a6c','#226a8f','#5c4428','#
 const DEFAULT_ACCENTS=/^#(?:5b4bd0|2f6c52)$/i;
 function themes(){const old=applyTheme;let lastColor,lastDark,paletteEntries;applyTheme=function(...args){const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent)),color=auto?STAIN_ACCENTS[stain]:settings.accent,dark=settings.theme==='amoled',stainValue=String(stain),accentValue=auto?'auto':'solid';if(root.dataset.stain!==stainValue)root.dataset.stain=stainValue;if(root.dataset.accent!==accentValue)root.dataset.accent=accentValue;if(!paletteEntries||color!==lastColor||dark!==lastDark){paletteEntries=Object.entries(deriveAccent(color,dark));lastColor=color;lastDark=dark}for(const[key,value]of paletteEntries)if(root.style.getPropertyValue?.(key)!==value||root.style.getPropertyPriority?.(key))root.style.setProperty(key,value);return result};applyTheme()}
 async function readingData({enrich=false}={}){
- const archived=item=>window.reviewArchivedStudyItem?.(item)===true;
+ const archived=item=>window.reviewArchivedStudyItem?.(item)===true||window.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&window.reviewViewingArchive?.()!==true&&item?.course==='CVP';
  // Course content loads on demand; search and reading need every active (non-archived) course.
  if(enrich)await window.reviewEnsureCourses?.(Object.keys(globalThis.REVIEW_COURSE_PACKS||{}).filter(course=>!archived({course})));
  if(enrich)await Promise.allSettled([window.ensureObjectivePack?.(),...(!archived({course:'CVP'})?[window.loadCvp19?.(),window.Cvp19?.ensure()]:[])]);
