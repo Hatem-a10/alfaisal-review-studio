@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {indexChangelog} from './lecture-changelog-index.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const read=name=>readFileSync(root+name,'utf8');
 const {assembledLearning}=await import('./assembled-learning.mjs');
@@ -9,6 +10,7 @@ const manifestText=read('lib/site-assets-manifest.ts');
 const manifest=JSON.parse(manifestText.split('export const SITE_ASSETS = ')[1].replace(/\s+as const;?\s*$/, ''));
 const assets=new Map(manifest.map(x=>[x.path,x.sha]));
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
+const indexed=indexChangelog(learning,digest);
 const path=root+'lib/lecture-changelog.json';
 const old=existsSync(path)?JSON.parse(readFileSync(path,'utf8')):null;
 const snapshot={};
@@ -17,11 +19,11 @@ for(const lesson of learning.lessons){
  const ids=new Set();
  function refs(v){if(!v||typeof v!=='object')return;if(typeof v.source==='string')ids.add(v.source);for(const x of Object.values(v))refs(x)}
  refs(lesson);refs(guide);
- const sources=(learning.sources||[]).filter(s=>ids.has(s.id)).sort((a,b)=>a.id.localeCompare(b.id));
+ const sources=indexed.sources(ids);
  const materialHashes={};
  function links(v){if(typeof v==='string'){const match=v.match(/(?:\/api\/site-assets\/|\/)(materials\/[^?#\s]+|study_material\/[^?#\s]+)/);if(match&&assets.has(match[1]))materialHashes[match[1]]=assets.get(match[1]);return}if(v&&typeof v==='object')for(const x of Object.values(v))links(x)}
  links(sources);
- const questions=Object.fromEntries(learning.questions.filter(q=>q.lectureIds?.includes(lesson.id)).map(q=>[q.id,digest(q)]).sort(([a],[b])=>a.localeCompare(b)));
+ const questions=indexed.questions(lesson.id);
  snapshot[lesson.id]={lesson:digest(lesson),guide:digest(guide),sources:digest({sources,materialHashes}),questions};
 }
 let entries=old?.entries||[];
