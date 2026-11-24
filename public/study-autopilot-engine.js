@@ -7,7 +7,7 @@ const StudyAutopilot=(()=>{
  const object=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
  const array=v=>Array.isArray(v)?v:[];
  // Only valid during a single synchronous planning run; account/calendar changes start a new cache.
- function memoCapacity(read){const cache=new Map();return (date,after=0)=>{const key=date+'|'+after;if(cache.has(key))return cache.get(key);const result=read(date,after);cache.set(key,result);return result}}
+ function memoCapacity(read){const cache=new Map();return (...args)=>{const key=String(args[0])+'|'+(args.length===1?'omitted':args.length+'|'+String(args[1]));if(cache.has(key))return cache.get(key);const result=read(...args);cache.set(key,result);return result}}
  function equal(a,b){
   if(a===b)return true;
   if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
