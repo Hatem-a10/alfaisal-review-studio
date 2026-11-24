@@ -79,20 +79,16 @@ function weakPreview(){const d=read();const archive=globalThis.reviewCourseScope
  if(archive&&!pack&&Object.keys(d.booklet||{}).length)load();
  const rows=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),
   archive?pack?.questions||[]:[...(renalPack?.questions||[]),...(molPack?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP')).filter(x=>!x.id.startsWith('Discipline: ')).slice(0,3);if(!rows.length)return '';return `<section class="panel"><h2>Weakest lectures</h2>${rows.map(r=>`<p>${escapeHTML(r.id)} · ${Math.round(r.accuracy*100)}% (${r.correct}/${r.total})</p>`).join('')}<button id="p2weak" class="primary">Practice weakest lectures</button></section>`}
-const practiceGroups=[
- ['Study and test',[
-  ['mock','Timed mock','Generate an exam and practice against the clock.','timer'],
-  ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
-  ['original','Previous exams & TBLs','Attempt previous papers in their original sets.','exam'],
- ]],
- ['Review and track',[
-  ['wrong','Wrong answers','Retry questions you missed.','practice'],
-  ['previous','Previous mocks','Review or retake your saved mocks.','calendar',true],
-  ['formulas','Formulas','Practice calculations and worked examples.','grades',true],
-  ['weak','Weak areas','Review weak topics and build a targeted mock.','weakness',true],
- ]],
+const practiceCards=[
+ ['mock','Timed mock','Generate an exam and practice against the clock.','timer'],
+ ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
+ ['original','Previous exams & TBLs','Attempt previous papers in their original sets.','exam'],
+ ['wrong','Wrong answers','Retry questions you missed.','practice'],
+ ['previous','Previous mocks','Review or retake your saved mocks.','calendar',true],
+ ['formulas','Formulas','Practice calculations and worked examples.','grades',true],
+ ['weak','Weak areas','Review weak topics and build a targeted mock.','weakness',true],
 ];
-const practiceTools=new Map(practiceGroups.flatMap(([,tools])=>tools.map(tool=>[tool[0],tool])));
+const practiceTools=new Map(practiceCards.map(tool=>[tool[0],tool]));
 function toolAvailable(id){
  if(id==='weak')return window.reviewAdmin===true;
  if(id==='formulas')return window.reviewCourseScope!=='REN'&&(!window.reviewCvpArchived?.()||window.reviewCourseScope==='CVP');
@@ -112,7 +108,7 @@ function practiceStart(){
    ${savedMock?'<button type="button" class="primary" data-et-tab="mock">Resume timed mock</button>':''}
    ${savedPaper?'<button type="button" class="primary" data-et-tab="original">Resume previous paper</button>':''}
   </div>`:''}
-  ${practiceGroups.map(([label,tools])=>`<section class="practice-collection"><h2>${label}</h2><div class="practice-start-actions">${tools.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div></section>`).join('')}
+  <div class="practice-start-actions">${practiceCards.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div>
  </div>`;
 }
 export function install(){if(installed)return;installed=true;window.reviewRenalPracticeQuestions=renalPracticeQuestions;window.reviewRenalPracticeLoadStatus=()=>renalError?'error':renalPack?'ready':'loading';installFormulas();
