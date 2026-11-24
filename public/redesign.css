@@ -419,7 +419,7 @@ body:not(.xp-exam-active) .practice-cover h1{color:#fff;margin:0}
 body:not(.xp-exam-active) .practice-cover-icon{display:grid;place-items:center;width:68px;height:68px;flex:none;border:1px solid #ffffff64;border-radius:18px;background:#ffffff18}
 body:not(.xp-exam-active) .practice-cover-icon svg{width:40px;height:40px;margin:0}
 body:not(.xp-exam-active) .practice-collection h2{margin:0 0 10px}
-body:not(.xp-exam-active) .practice-start-actions{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,248px),1fr))}
+body:not(.xp-exam-active) .practice-start-actions{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
 body:not(.xp-exam-active) .practice-start .practice-tool-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;text-align:start;min-height:88px;padding:12px;border:1px solid var(--line);color:var(--text);background:var(--white)}
 body:not(.xp-exam-active) .practice-start .practice-tool-card:hover{border-color:var(--accent-border,var(--accent));background:var(--accent-bg,var(--white))}
 body:not(.xp-exam-active) .practice-tool-card strong{display:block;margin-bottom:4px}
@@ -429,3 +429,7 @@ body:not(.xp-exam-active) .practice-card-icon svg{width:21px;height:21px;margin:
 body:not(.xp-exam-active) .practice-card-arrow{font-size:1.4rem;color:var(--accent-text,var(--accent))}
 body:not(.xp-exam-active) .practice-back{min-height:44px;margin-bottom:12px}
 body:not(.xp-exam-active) .practice-resume{display:flex;gap:8px;flex-wrap:wrap}
+
+@media(max-width:620px){
+ body:not(.xp-exam-active) .practice-start-actions{grid-template-columns:minmax(0,1fr)}
+}

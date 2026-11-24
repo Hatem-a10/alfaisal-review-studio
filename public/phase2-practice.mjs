@@ -109,7 +109,7 @@ function practiceStart(){
  const savedPaper=originalRun&&!originalRun.finishedAt&&visibleOriginalRun();
  const savedMock=etExam&&!etExam.finishedAt&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
  return `<div class="practice-start">
-  <header class="practice-cover"><div><h1>Practice Home</h1></div><span class="practice-cover-icon" aria-hidden="true">${navGlyph('practice')}</span></header>
+  <div class="practice-cover"><h1>Practice Home</h1><span class="practice-cover-icon" aria-hidden="true">${navGlyph('practice')}</span></div>
   ${savedMock||savedPaper?`<div class="practice-resume">
    ${savedMock?'<button type="button" class="primary" data-et-tab="mock">Resume timed mock</button>':''}
    ${savedPaper?'<button type="button" class="primary" data-et-tab="original">Resume previous paper</button>':''}
