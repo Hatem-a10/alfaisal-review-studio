@@ -11,28 +11,45 @@
  if(mode){mount.replaceChildren();const options={routing:'hash',forceRedirectUrl:new URL('/',window.location.origin).href,signInUrl:'/auth/sign-in',...(cfg.registrationClosed?{}:{signUpUrl:'/auth/sign-up'})};if(mode==='sign-up')window.Clerk.mountSignUp(mount,options);else window.Clerk.mountSignIn(mount,options);return}
  installManagedApp();
  window.addEventListener('review-admin-role',installAccountTools);document.addEventListener('click',e=>{if(e.target.closest('#openSiteAdmin'))installAccountTools()});window.addEventListener('studio-ready',installAccountTools);
- let profileFingerprint='',profileSaving=false,installing=false;
+ let profileFingerprint='',profileSaving=false,profileQueued=false,installing=false;
  function studyCounts(){
-  const records=typeof state==='undefined'?[]:Object.values(state);
-  return {
-   completedReviews:records.reduce((n,r)=>n+Object.values(r.done||{}).filter(Boolean).length,0),
-   answeredQuestions:records.reduce((n,r)=>n+(r.mcqs||[]).reduce((a,m)=>a+(Number(m.total)||0),0),0),
-  };
+  const records=typeof state==='undefined'||!state||typeof state!=='object'?[]:Object.values(state);
+  let completedReviews=0,answeredQuestions=0;
+  for(const r of records){
+   if(!r||typeof r!=='object')continue;
+   if(r.done&&typeof r.done==='object'&&!Array.isArray(r.done))completedReviews+=Object.values(r.done).filter(Boolean).length;
+   for(const m of Array.isArray(r.mcqs)?r.mcqs:[]){
+    const total=m?.total;if(Number.isSafeInteger(total)&&total>0)answeredQuestions=Math.min(10000000,answeredQuestions+total);
+   }
+  }
+  return {completedReviews:Math.min(100000,completedReviews),answeredQuestions};
  }
- window.addEventListener('review-profile-changed',syncProfile);window.addEventListener('studio-ready',syncProfile);
- async function syncProfile(){if(profileSaving||typeof settings==='undefined'||!settings.profileCreatedAt||!settings.profileName)return;profileSaving=true;try{const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime};const fingerprint=JSON.stringify(profile);if(fingerprint===profileFingerprint)return;const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});if(r.ok)profileFingerprint=fingerprint;}catch{}finally{profileSaving=false}}
+ for(const event of ['review-profile-changed','studio-ready','online','focus'])window.addEventListener(event,syncProfile);
+ async function syncProfile(){
+  profileQueued=true;if(profileSaving)return;
+  profileSaving=true;
+  try{
+   while(profileQueued){
+    profileQueued=false;
+    if(typeof settings==='undefined'||!settings?.profileCreatedAt||!settings.profileName)continue;
+    const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime},fingerprint=JSON.stringify(profile);
+    if(fingerprint===profileFingerprint)continue;
+    try{const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});if(r.ok)profileFingerprint=fingerprint;}catch{}
+   }
+  }finally{profileSaving=false}
+ }
+ function privacyPayload(enabled){return enabled?{analyticsOptIn:true,analytics:studyCounts()}:{analyticsOptIn:false}}
  async function getAccount(){const r=await fetch('/auth/account',{cache:'no-store'});if(!r.ok)throw Error('Account preferences unavailable.');return await r.json()}
  function installManagedApp(){
-  let currentStatus, appliedStatus, lastFetch=0, pending, lastError=0;
+  let currentStatus, appliedStatus, lastFetch=0, pending, forcedRefresh=false, lastError=0;
   let refreshProfile=false, libraryInstalled=false, lastTotals=null;
   const api='/api/control-center/student/';
   async function status(force=false){
-   if(pending)return pending;
+   if(pending){if(force)forcedRefresh=true;return pending}
    if(!force&&Date.now()-lastFetch<60000)return;
-   lastFetch=Date.now();
    pending=fetch(api+'status',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(value=>{
-    if(value){currentStatus=value;applyStatus();shareStudyCounts();}
-   }).catch(()=>{}).finally(()=>{pending=null});
+    if(value&&value.flags&&typeof value.flags==='object'&&!Array.isArray(value.flags)){lastFetch=Date.now();currentStatus=value;applyStatus();shareStudyCounts();}
+   }).catch(()=>{}).finally(()=>{pending=null;if(forcedRefresh){forcedRefresh=false;return status(true)}});
    return pending;
   }
   async function shareStudyCounts(){
@@ -172,7 +189,7 @@
     };
     panel.insertBefore(methods,status);
    }
-   checkbox.onchange=async()=>{checkbox.disabled=true;try{const profile=typeof settings==='undefined'?{}:{name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime};const analytics=studyCounts();const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({analyticsOptIn:checkbox.checked,profile,analytics})});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';document.dispatchEvent(new Event('review-analytics-changed'));}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
+   checkbox.onchange=async()=>{checkbox.disabled=true;try{const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(privacyPayload(checkbox.checked))});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';document.dispatchEvent(new Event('review-analytics-changed'));}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
   }
   }catch{console.error('Account controls unavailable.')}finally{installing=false}
  }
