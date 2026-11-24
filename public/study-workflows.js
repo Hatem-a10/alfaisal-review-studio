@@ -5,7 +5,7 @@ function storeOptions(){return StudyVault.read('options',{})}
 function saveOptions(v){StudyVault.set('options',v)}
 function hydrateStudyStores(){
  const w=StudyVault.read('wrongBank');if(w&&Array.isArray(w.entries)&&Array.isArray(w.exams))wrongBank={...w,entries:w.entries.filter(x=>ExamEngine.usable(x?.question)&&(x.choice===null||Number.isInteger(x.choice))),exams:w.exams.filter(x=>typeof x==='string'),clearedAt:w.clearedAt};
- const h=StudyVault.read('history',[]);etHistory=Array.isArray(h)?h.filter(e=>e&&typeof e.id==='string'&&Number.isFinite(e.total)&&e.total>=0&&Number.isFinite(e.correct)&&e.correct>=0&&e.correct<=e.total).slice(-100):[];
+ const h=StudyVault.read('history',[]);etHistory=Array.isArray(h)?h.filter(e=>e&&typeof e.id==='string'&&Number.isSafeInteger(e.total)&&e.total>=0&&Number.isSafeInteger(e.correct)&&e.correct>=0&&e.correct<=e.total).slice(-100):[];
  const e=StudyVault.read('mock');etExam=ExamEngine.restore(e);
  const r=StudyVault.read('originals',{});originalRuns=r&&typeof r==='object'&&!Array.isArray(r)?Object.fromEntries(Object.entries(r).filter(([,v])=>v&&Array.isArray(v.ids)&&v.answers&&v.ids.every(id=>!!originalQuestionById(id)||/^cvp-final-(?:b1[4-8]-(?:mcq|saq|ospe)-\d+|repeat-mock-\d+)$/.test(id)||deferredOriginalQuestion(v.setId,id))&&!originalLowScore(v))):{};
  originalRun=originalRun&&originalRuns[originalRun.setId]||null;try{if(originalRun)localStorage.setItem(originalRunKey,JSON.stringify(originalRun));else localStorage.removeItem(originalRunKey)}catch{}inlineTopicSessions.clear();inlineLessonCache.clear();
