@@ -396,10 +396,10 @@ html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more>summary:
 /* A group name repeated above its own tabs adds nothing; the sidebar already says where you are. */
 html:root body:not(.xp-exam-active) #content .phase3-tabs > span:not([class]):first-child{display:none}
 
-body:not(.xp-exam-active) .practice-start-actions,body:not(.xp-exam-active) .mobile-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
-body:not(.xp-exam-active) .practice-start-actions button,body:not(.xp-exam-active) .mobile-tools-grid button{min-height:48px;text-align:left}
-body:not(.xp-exam-active) .practice-start details,body:not(.xp-exam-active) #etMockCustomize{margin-block:14px}
-body:not(.xp-exam-active) .practice-start summary,body:not(.xp-exam-active) #etMockCustomize>summary{min-height:44px;align-content:center;cursor:pointer;font-weight:650}
+body:not(.xp-exam-active) .mobile-tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px}
+body:not(.xp-exam-active) .mobile-tools-grid button{min-height:48px;text-align:left}
+body:not(.xp-exam-active) #etMockCustomize{margin-block:14px}
+body:not(.xp-exam-active) #etMockCustomize>summary{min-height:44px;align-content:center;cursor:pointer;font-weight:650}
 body:not(.xp-exam-active) #mobileToolsMenu{width:min(420px,calc(100vw - 24px));max-height:80dvh;overflow:auto}
 body:not(.xp-exam-active) .mobile-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 body:not(.xp-exam-active) .mobile-tools-grid button{display:flex;align-items:center;gap:8px;overflow-wrap:anywhere}
@@ -412,3 +412,20 @@ body:not(.xp-exam-active) .more-tool-groups{display:grid;gap:14px}
 body:not(.xp-exam-active) .more-tool-groups h3{margin:0 0 6px;font-size:1rem}
 body:not(.xp-exam-active) .first-lesson-step,body:not(.xp-exam-active) #firstLessonNext{margin-block:8px 14px}
 body:not(.xp-exam-active) #studentWelcomeTour small{display:block;margin-top:12px;color:var(--muted)}
+
+body:not(.xp-exam-active) .practice-start{display:grid;gap:24px}
+body:not(.xp-exam-active) .practice-cover{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:122px;padding:clamp(18px,4vw,34px);border-radius:var(--rs-r-lg,20px);background:linear-gradient(120deg,var(--rs-hema-deep,#251f51),#462b72);color:#fff}
+body:not(.xp-exam-active) .practice-cover h1{color:#fff;margin:0}
+body:not(.xp-exam-active) .practice-cover-icon{display:grid;place-items:center;width:68px;height:68px;flex:none;border:1px solid #ffffff64;border-radius:18px;background:#ffffff18}
+body:not(.xp-exam-active) .practice-cover-icon svg{width:40px;height:40px;margin:0}
+body:not(.xp-exam-active) .practice-collection h2{margin:0 0 10px}
+body:not(.xp-exam-active) .practice-start-actions{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,248px),1fr))}
+body:not(.xp-exam-active) .practice-start .practice-tool-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;text-align:start;min-height:88px;padding:12px;border:1px solid var(--line);color:var(--text);background:var(--white)}
+body:not(.xp-exam-active) .practice-start .practice-tool-card:hover{border-color:var(--accent-border,var(--accent));background:var(--accent-bg,var(--white))}
+body:not(.xp-exam-active) .practice-tool-card strong{display:block;margin-bottom:4px}
+body:not(.xp-exam-active) .practice-tool-card small{display:block;line-height:1.4;color:var(--muted)}
+body:not(.xp-exam-active) .practice-card-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent-bg,var(--light));color:var(--accent-text,var(--accent))}
+body:not(.xp-exam-active) .practice-card-icon svg{width:21px;height:21px;margin:0}
+body:not(.xp-exam-active) .practice-card-arrow{font-size:1.4rem;color:var(--accent-text,var(--accent))}
+body:not(.xp-exam-active) .practice-back{min-height:44px;margin-bottom:12px}
+body:not(.xp-exam-active) .practice-resume{display:flex;gap:8px;flex-wrap:wrap}

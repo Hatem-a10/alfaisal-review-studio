@@ -37,7 +37,9 @@ const hasReviewDates=item=>item.course!=='REN'||dates(item).some(Boolean);
 window.reviewActiveStudyItems=()=>DATA.items.filter(item=>hasReviewDates(item)&&(!enabled()||item.course!=='CVP'));
 let context=null,renalLessonId='REN-A1',lastMOLLesson='MOL-1';
 function courseSelector(route){
- if(!enabled()||!context||!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
+ if(!enabled()||!context||!scopedViews.has(route))return '';
+ if(route==='practice'&&window.Phase2Practice&&!['start','original'].includes(etPracticeTab))return '';
+ if(route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
  const active=context?.course||'REN';
  const options=(active==='CVP'?archiveCourseEntries:route==='ospe'?ospeCourseEntries:activeCourseEntries)
   .map(([id,course])=>[id,course.label+(course.archived?' · Archive':'')]);
@@ -164,6 +166,7 @@ render=function(...args){
   return;
  }
  const value=legacyRender(...args);
+ for(const selector of content.querySelectorAll(':scope > .workspace-course-select'))selector.remove();
  if(context&&(context.course==='CVP'||context.course==='MOL')&&!document.getElementById('xpExam')){
   const combined=['library','labs','ospe'].includes(context.view)?'':courseSelector(context.view);
   if(combined)content.insertAdjacentHTML('afterbegin',combined);
