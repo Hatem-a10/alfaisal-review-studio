@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 97 newly merged candidate scopes (89 speed-oriented changes and 8 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 3 submitted measurement candidates and 138 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate scopes (89 speed-oriented changes and 11 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 0 submitted candidates and 138 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -437,9 +437,9 @@ Status reconciled against GitHub on 24 November 2026: 97 newly merged candidate 
 | A5-283 | Measure IndexedDB write amplification on synthetic data | Merged #202; staging CI passed; measurement only |
 | A5-284 | Measure D1 rows read per common request | Merged #202; staging CI passed; measurement only |
 | A5-285 | Measure R2 transferred bytes per resource journey | Merged #202; staging CI passed; measurement only |
-| A5-286 | Measure client main-thread parsing time per course pack | Submitted #203; CI pending; measurement only |
+| A5-286 | Measure client main-thread parsing time per course pack | Merged #203; staging CI passed; measurement only |
 | A5-287 | Measure memory peak during large exam review | Unassessed |
-| A5-288 | Measure cold versus warm cache startup separately | Submitted #203; CI pending; measurement only |
+| A5-288 | Measure cold versus warm cache startup separately | Merged #203; staging CI passed; measurement only |
 | A5-289 | Use deterministic seeded data for reproducible benchmarks | Merged #202; staging CI passed; measurement only |
 | A5-290 | Assert baseline equivalence within each measured optimization fixture | Existing coverage; benchmark tests compare exact outputs |
 
@@ -449,7 +449,7 @@ Status reconciled against GitHub on 24 November 2026: 97 newly merged candidate 
 |---|---|---|
 | A5-291 | Benchmark simultaneous device sync under realistic account isolation | Unassessed |
 | A5-292 | Benchmark burst load at timetable transitions | Unassessed |
-| A5-293 | Measure cache hit ratio by eligible resource class | Submitted #203; CI pending; measurement only |
+| A5-293 | Measure cache hit ratio by eligible resource class | Merged #203; staging CI passed; measurement only |
 | A5-294 | Measure private PDF range transfer versus full response | Unassessed |
 | A5-295 | Tune bounded background prefetch using measured hit rates | Unassessed |
 | A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Unassessed |
@@ -602,9 +602,9 @@ Each line below credits only numbered candidate scopes actually merged on `cloud
 - **A5-241**: [PR #201](https://github.com/Hatem-a10/alfaisal-review-studio/pull/201); [passing staging CI 45413914149](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45413914149); reuse validation on unmodified progress snapshots; revalidate after receipt merge.
 - **A5-283, A5-284, A5-285, A5-289**: [PR #202](https://github.com/Hatem-a10/alfaisal-review-studio/pull/202); [passing staging CI 45414279051](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45414279051); synthetic device/D1/R2 measurements and seeded fixtures — measurement only; no direct speed gain.
 
-Submitted, not yet counted: A5-286, A5-288, A5-293 in [PR #203](https://github.com/Hatem-a10/alfaisal-review-studio/pull/203), staging run [45414603438](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45414603438) pending.
+**A5-286, A5-288, A5-293**: [merged PR #203](https://github.com/Hatem-a10/alfaisal-review-studio/pull/203); [passing staging CI 45414603438](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45414603438); merge `8ef8ca2f5e3dec9afc1b86af7aee06c8c4c6eab4`. These are measurement-only capabilities with synthetic timing proxies; not direct speed gains.
 
-**Snapshot reconciliation: 97 merged + 61 existing + 1 rejected + 3 submitted + 138 unassessed = 300.** Eight implemented scopes are measurement-only, and 89 are speed-oriented; production remains untouched.
+**Snapshot reconciliation: 100 merged + 61 existing + 1 rejected + 0 submitted + 138 unassessed = 300.** Eleven merged scopes are measurement-only, and 89 are speed-oriented; production remains untouched.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
