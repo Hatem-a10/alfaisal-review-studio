@@ -29,3 +29,23 @@ test('search isolates closed and reopened async sessions, reflects loading, and 
   input.emit('keydown',{key:'Enter',preventDefault(){}});assert.deepEqual(opened,['New lecture']);
  }finally{globalThis.document=old}
 });
+
+test('search Enter flushes a changed query, IME Enter does not select, and enrichment retains selection',async()=>{
+ const host=element(),body=element(),dialog=element(),input=element(),list=element(),status=element(),close=element(),old=globalThis.document;
+ host.querySelector=()=>null;
+ dialog.querySelector=s=>({'input':input,'[role=listbox]':list,'[role=status]':status,'[data-search-close]':close})[s];
+ globalThis.document={body,activeElement:host,getElementById:()=>null,querySelector:()=>null,addEventListener(){},createElement:tag=>tag==='dialog'?dialog:element()};
+ const initial={lectures:[{id:'old',title:'Old lecture'},{id:'new',title:'New lecture'},{id:'extra',title:'Other lecture'}]},enrich=deferred(),opened=[];
+ try{
+  installSearch({host,read:options=>options?.enrich?enrich.promise:Promise.resolve(initial),open:item=>opened.push(item.id),blocked:()=>false});
+  await host.children[0].onclick();input.value='Old';input.emit('input');await new Promise(r=>setTimeout(r,90));
+  input.value='New';input.emit('input');
+  input.emit('keydown',{key:'Enter',isComposing:true,preventDefault(){throw Error('IME event must remain untouched')}});
+  assert.equal(opened.length,0);
+  input.emit('keydown',{key:'Enter',preventDefault(){}});assert.deepEqual(opened,['new']);
+  await host.children[0].onclick();input.value='lecture';input.emit('input');await new Promise(r=>setTimeout(r,90));
+  input.emit('keydown',{key:'ArrowDown',preventDefault(){}});const selected=list.children.find(n=>n.getAttribute('aria-selected')==='true').children[1].textContent;
+  enrich.resolve({lectures:[{id:'first',title:'Lecture'},...initial.lectures]});await flush();
+  assert.equal(list.children.find(n=>n.getAttribute('aria-selected')==='true').children[1].textContent,selected);
+ }finally{globalThis.document=old}
+});
