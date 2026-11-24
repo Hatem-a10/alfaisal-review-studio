@@ -5,10 +5,12 @@ import {renalTeachingPack} from './renal-lessons.mjs';
 
 const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
 // A5-133: immutable course registry order is stable; compute it once, not on every selector render.
-const orderedCourses=Object.entries(courses).sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'));
+const registryCourseEntries=Object.entries(courses);
+const orderedCourses=registryCourseEntries.slice().sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'));
 const activeCourseEntries=orderedCourses.filter(([,c])=>!c.archived);
-const archiveCourseEntries=orderedCourses.filter(([id])=>id==='CVP');
+const archiveCourseEntries=registryCourseEntries.filter(([id])=>id==='CVP');
 const ospeCourseEntries=activeCourseEntries.filter(([,c])=>!c.noOspe);
+const lessonCourseEntries=registryCourseEntries.filter(([,c])=>!c.archived);
 
 const scopedViews=new Set(['practice','library','labs','booklet','ospe']);
 const enabled=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
@@ -23,7 +25,7 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
 window.reviewCourseConfig=id=>typeof id==='string'&&Object.hasOwn(courses,id)?courses[id]:undefined;
-window.reviewLessonCourseOptions=()=>[['all','All available courses'],...(!enabled()?Object.entries(courses):context?.course==='CVP'?archiveCourseEntries:activeCourseEntries).map(([id,c])=>[id,c.label])];
+window.reviewLessonCourseOptions=()=>[['all','All available courses'],...(!enabled()?registryCourseEntries:context?.course==='CVP'?archiveCourseEntries:lessonCourseEntries).map(([id,c])=>[id,c.label])];
 window.reviewAllowsUnscheduledDates=id=>typeof id==='string'&&window.reviewCourseConfig(id.split('-')[0])?.unscheduled===true;
 window.reviewCvpArchived=enabled;
 window.reviewArchiveEnabled=archiveEnabled;
