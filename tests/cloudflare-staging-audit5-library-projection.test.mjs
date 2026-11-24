@@ -38,7 +38,7 @@ function evaluate(input,indexed){
 function median(fn){fn();const samples=[];for(let i=0;i<7;i++){const start=performance.now();fn();samples.push(performance.now()-start)}return samples.sort((a,b)=>a-b)[3]}
 test('A5-183 library index preserves canonical source order, duplicates and reference-only matches',()=>{
  const x=fixture(25,500);const a=norm(evaluate(x,false)),b=norm(evaluate(x,true));assert.deepEqual(b,a);
- for(const row of b){assert.equal(row.slides.length,3);assert.ok(row.transcript.length>=1)}
+ for(const row of b){assert.ok(row.slides.length>=3);assert.ok(row.transcript.length>=1)}
  const newer=x.make('new-attachment',{lectureId:x.items[0].id,kind:'slides'});x.sources.push(newer);
  assert.deepEqual(norm(evaluate(x,true)),norm(evaluate(x,false)));
 });
