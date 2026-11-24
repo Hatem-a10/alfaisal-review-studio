@@ -25,7 +25,7 @@ function harness(failures=0){
  const api=runInNewContext('let chain=Promise.resolve(),lastError;const notify=error=>{lastError=error};'+writer+'\n({queue,flushDevice})',ctx);
  return {...api,persisted,transactions,pending:ctx.pending};
 }
-test('flush retries a retained write after one transient failure without another edit',async()=>{
+test('flush retries a retained write after one transient failure without another edit',{timeout:5000},async()=>{
  const h=harness(1);
  h.queue('progress','new');
  await h.flushDevice();
@@ -33,7 +33,7 @@ test('flush retries a retained write after one transient failure without another
  assert.equal(h.pending.size,0);
  assert.equal(h.transactions.length,2);
 });
-test('persistent failure preserves pending data and refuses confirmation',async()=>{
+test('persistent failure preserves pending data and refuses confirmation',{timeout:5000},async()=>{
  const h=harness(20);
  h.queue('progress','new');
  await assert.rejects(h.flushDevice(),/could not save/i);
@@ -41,7 +41,7 @@ test('persistent failure preserves pending data and refuses confirmation',async(
  assert.equal(h.persisted.size,0);
  assert.equal(h.transactions.length,2);
 });
-test('queued newer value and deletion are preserved through a flush',async()=>{
+test('queued newer value and deletion are preserved through a flush',{timeout:5000},async()=>{
  const h=harness();
  h.queue('progress','first');
  h.queue('progress','latest');
@@ -52,7 +52,7 @@ test('queued newer value and deletion are preserved through a flush',async()=>{
  assert.equal(h.persisted.has('student|other'),false);
  assert.equal(h.pending.size,0);
 });
-test('hydration reads keys and values in the same read-only transaction',async()=>{
+test('hydration reads keys and values in the same read-only transaction',{timeout:5000},async()=>{
  const line=source.split('\n').find(s=>s.startsWith(' const readValues='));
  assert.ok(line);
  let transactions=0,calls=[];
