@@ -35,9 +35,9 @@ try{
  check('large reading mobile fits',await evaluate("document.documentElement.scrollWidth<=innerWidth+1"));
  await evaluate("import('/student-profile.mjs').then(m=>{window.phase1Wizard=m.setup({items:[{id:'CVP-P1',code:'P1',title:'Synthetic lecture'}]});return true})");
  check('setup opens with optional choices collapsed',await evaluate("!!document.querySelector('#studentProfileSetup[open]')&&!document.querySelector('.student-setup-options').open"));
- await evaluate("const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=name]').value='Synthetic Student';d.querySelector('[name=group]').value='F2';d.querySelector('[name=group]').dispatchEvent(new Event('change'));true");
+ await evaluate("(()=>{const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=name]').value='Synthetic Student';d.querySelector('[name=group]').value='F2';d.querySelector('[name=group]').dispatchEvent(new Event('change'));return true})()");
  check('lab choices wait for an academic section',await evaluate("document.querySelector('#studentProfileSetup [name=lab]').disabled"));
- await evaluate("const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=section]').value='A';d.querySelector('[name=section]').dispatchEvent(new Event('change'));d.querySelector('[name=lab]').value='2.1';d.querySelector('.student-setup-options').open=true;true");
+ await evaluate("(()=>{const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=section]').value='A';d.querySelector('[name=section]').dispatchEvent(new Event('change'));d.querySelector('[name=lab]').value='2.1';d.querySelector('.student-setup-options').open=true;return true})()");
  check('English frequencies remain available and optional',await evaluate("[...document.querySelector('#studentProfileSetup [name=frequency]').options].map(x=>x.value).join(',')==='2,3'&&!document.querySelector('[name=englishEnabled]').checked"));
  check('appearance picker is available without auto focus',await evaluate("document.activeElement.type!=='color'&&!!document.querySelector('#studentProfileSetup input[type=color]')"));
  await evaluate("document.querySelector('#studentProfileSetup [data-next]').click();true");
