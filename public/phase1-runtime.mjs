@@ -1,5 +1,6 @@
-/* global applyTheme, settings, render, view, storeOptions, DATA, LEARNING, uploads, inlineTopicsFor, lessonById, allLearningQuestions, TOPIC_CHECKS, inlineGroups, chooseLesson, go, libraryDocumentURL, sourceById */
+/* global applyTheme, persist, settings, render, view, storeOptions, DATA, LEARNING, uploads, inlineTopicsFor, lessonById, allLearningQuestions, TOPIC_CHECKS, inlineGroups, chooseLesson, go, libraryDocumentURL, sourceById */
 import {deriveAccent} from './phase1-accent.mjs';
+import {chosenGradient,mountGradientPicker} from './accent-gradients.mjs';
 import {declutter} from './phase1-copy.mjs';
 import {mountAcademicAdmin} from './phase1-academic-admin.mjs';
 import {installSearch} from './phase1-search.mjs';
@@ -12,7 +13,7 @@ let solver,solverRetries=0;
 // Mid tones of the eight stain palettes in redesign.css (--st-b), in the same order.
 export const STAIN_ACCENTS=['#3a2f86','#245796','#8e2a6c','#226a8f','#5c4428','#246b52','#4d3a99','#93302d'];
 const DEFAULT_ACCENTS=/^#(?:5b4bd0|2f6c52)$/i;
-function themes(){const old=applyTheme;let lastColor,lastDark,paletteEntries;applyTheme=function(...args){const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent)),color=auto?STAIN_ACCENTS[stain]:settings.accent,dark=settings.theme==='amoled',stainValue=String(stain),accentValue=auto?'auto':'solid';if(root.dataset.stain!==stainValue)root.dataset.stain=stainValue;if(root.dataset.accent!==accentValue)root.dataset.accent=accentValue;if(!paletteEntries||color!==lastColor||dark!==lastDark){paletteEntries=Object.entries(deriveAccent(color,dark));lastColor=color;lastDark=dark}for(const[key,value]of paletteEntries)if(root.style.getPropertyValue?.(key)!==value||root.style.getPropertyPriority?.(key))root.style.setProperty(key,value);return result};applyTheme()}
+function themes(){const old=applyTheme;let lastColor,lastDark,paletteEntries;applyTheme=function(...args){const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent)),palette=auto?null:chosenGradient({...settings,accentAuto:false}),color=palette?palette.b:STAIN_ACCENTS[stain],dark=settings.theme==='amoled',stainValue=String(stain),accentValue=palette?'palette':'auto';if(root.dataset.stain!==stainValue)root.dataset.stain=stainValue;if(root.dataset.accent!==accentValue)root.dataset.accent=accentValue;for(const [key,value] of [['--pal-a',palette?.a],['--pal-b',palette?.b],['--pal-c',palette?.c]]){if(value){if(root.style.getPropertyValue?.(key)!==value)root.style.setProperty?.(key,value)}else root.style.removeProperty?.(key)};if(!paletteEntries||color!==lastColor||dark!==lastDark){paletteEntries=Object.entries(deriveAccent(color,dark));lastColor=color;lastDark=dark}for(const[key,value]of paletteEntries)if(root.style.getPropertyValue?.(key)!==value||root.style.getPropertyPriority?.(key))root.style.setProperty(key,value);return result};applyTheme()}
 async function readingData({enrich=false}={}){
  const archived=item=>window.reviewArchivedStudyItem?.(item)===true||window.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&window.reviewViewingArchive?.()!==true&&item?.course==='CVP';
  // Course content loads on demand; search and reading need every active (non-archived) course.
@@ -41,3 +42,20 @@ await import('./phase2-runtime.mjs?v=1498');
 
 await import("./phase3-runtime.mjs");
 await import("./course-workspace.mjs");
+/* Settings → Appearance: a gradient picker replaces the free colour input and the separate
+   Auto accent checkbox. The old controls stay in the DOM, hidden, so existing handlers and
+   saved settings keep working. */
+export function installAccentPicker(doc=document){
+ const host=doc.querySelector('.hub-accent-control');if(!host||host.querySelector('.gradient-picker'))return;
+ const input=doc.getElementById('accentColor'),autoBox=doc.getElementById('accentAuto');
+ if(input){input.hidden=true;input.style.display='none'}
+ const autoLabel=autoBox?.closest('label');if(autoLabel){autoLabel.hidden=true;autoLabel.style.display='none'}
+ const title=host.querySelector(':scope>span');if(title)title.textContent='Accent gradient';
+ const current=()=>settings.accentAuto!==false?'auto':chosenGradient(settings)?.id;
+ const picker=mountGradientPicker(host,{selected:current(),onPick(g){
+  if(g){settings.accentAuto=false;settings.accentPalette=g.id;settings.accent=g.b;if(input)input.value=g.b}else settings.accentAuto=true;
+  if(autoBox)autoBox.checked=!g;persist();applyTheme();
+ }});
+ window.addEventListener('review-profile-changed',()=>picker.select(current()));
+}
+if(typeof document!=='undefined'&&typeof settings!=='undefined')installAccentPicker();

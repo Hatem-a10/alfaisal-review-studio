@@ -17,7 +17,7 @@ const options=()=>storeOptions();
 function saveOption(key,value){const current=options();saveOptions({...current,[key]:value});}
 window.reviewSyncIssue=value=>issue=value;
 window.reviewPaintSyncDetails=message=>{
- const host=document.querySelector('#syncWidget .sync-widget-body');if(!host)return;
+ const host=document.querySelector('.sync-widget-body');if(!host)return;
  let panel=host.querySelector('#studySyncDetails');
  if(!panel){panel=document.createElement('div');panel.id='studySyncDetails';host.append(panel);}
  if(/^Cloud saved/.test(message||''))issue=null;

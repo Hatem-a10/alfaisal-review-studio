@@ -36,23 +36,27 @@ html:root[data-theme=amoled] body:not(.xp-exam-active){
 }
 
 /* Site gradient: follows the next assessment's stain (html[data-stain], set in phase1-runtime.mjs).
-   With Auto accent off (html[data-accent=solid]) the student's chosen colour is used flat. */
+   Students can instead pick a fixed gradient in Settings (html[data-accent=palette]). */
 html:root body:not(.xp-exam-active){--ax-a:#221b57;--ax-b:#3a2f86;--ax-c:#d9547f}
 html:root[data-stain="1"] body:not(.xp-exam-active){--ax-a:#0f2547;--ax-b:#245796;--ax-c:#c2414f}
-html:root[data-stain="2"] body:not(.xp-exam-active){--ax-a:#3d0f33;--ax-b:#8e2a6c;--ax-c:#e07bb8}
+html:root[data-stain="2"] body:not(.xp-exam-active){--ax-a:#3d0f33;--ax-b:#8e2a6c;--ax-c:#db66ad}
 html:root[data-stain="3"] body:not(.xp-exam-active){--ax-a:#0d2a44;--ax-b:#226a8f;--ax-c:#9a6ad6}
-html:root[data-stain="4"] body:not(.xp-exam-active){--ax-a:#241a10;--ax-b:#5c4428;--ax-c:#d6a74f}
-html:root[data-stain="5"] body:not(.xp-exam-active){--ax-a:#0d2e25;--ax-b:#246b52;--ax-c:#8fd3a9}
-html:root[data-stain="6"] body:not(.xp-exam-active){--ax-a:#1d1a52;--ax-b:#4d3a99;--ax-c:#e58fc0}
-html:root[data-stain="7"] body:not(.xp-exam-active){--ax-a:#3b0f18;--ax-b:#93302d;--ax-c:#f08a4b}
+html:root[data-stain="4"] body:not(.xp-exam-active){--ax-a:#241a10;--ax-b:#5c4428;--ax-c:#b8872b}
+html:root[data-stain="5"] body:not(.xp-exam-active){--ax-a:#0d2e25;--ax-b:#246b52;--ax-c:#3e9f63}
+html:root[data-stain="6"] body:not(.xp-exam-active){--ax-a:#1d1a52;--ax-b:#4d3a99;--ax-c:#db66a9}
+html:root[data-stain="7"] body:not(.xp-exam-active){--ax-a:#3b0f18;--ax-b:#93302d;--ax-c:#ec6817}
+/* A gradient the student picked in Settings (html[data-accent=palette], stops set inline). */
+html:root[data-accent=palette] body:not(.xp-exam-active){--ax-a:var(--pal-a);--ax-b:var(--pal-b);--ax-c:var(--pal-c)}
+/* Full-strength stops that turn early: deep start, main colour by 22%, second colour by 68%. */
 html:root body:not(.xp-exam-active){
-  --rs-grad:linear-gradient(135deg,color-mix(in srgb,var(--ax-b) 78%,var(--ax-a)) 0%,var(--ax-b) 48%,color-mix(in srgb,var(--ax-b) 66%,var(--ax-c)) 100%);
-  --rs-grad-v:linear-gradient(180deg,var(--ax-b),color-mix(in srgb,var(--ax-b) 55%,var(--ax-c)));
+  --rs-grad:linear-gradient(125deg,var(--ax-a) 0%,var(--ax-b) 22%,var(--ax-c) 68%,var(--ax-c) 100%);
+  --rs-grad-v:linear-gradient(180deg,var(--ax-b) 0%,var(--ax-c) 62%);
+  --rs-grad-ring:conic-gradient(from 210deg,var(--ax-b),var(--ax-c),var(--ax-a),var(--ax-b));
+  --rs-grad-tint:linear-gradient(135deg,color-mix(in srgb,var(--ax-b) 16%,var(--rs-surface)),color-mix(in srgb,var(--ax-c) 18%,var(--rs-surface)));
 }
-html:root[data-accent=solid] body:not(.xp-exam-active){
-  /* Auto accent off: the student's chosen colour, flat. */
-  --rs-grad:linear-gradient(var(--accent),var(--accent));
-  --rs-grad-v:linear-gradient(var(--accent),var(--accent));
+html:root[data-theme=amoled] body:not(.xp-exam-active){
+  --rs-grad-ring:conic-gradient(from 210deg,var(--ax-b),var(--ax-c),color-mix(in srgb,var(--ax-b) 60%,#fff),var(--ax-b));
+  --rs-grad-tint:linear-gradient(135deg,color-mix(in srgb,var(--ax-b) 30%,var(--rs-surface)),color-mix(in srgb,var(--ax-c) 26%,var(--rs-surface)));
 }
 
 html:root body:not(.xp-exam-active){
@@ -149,24 +153,24 @@ html:root body:not(.xp-exam-active){
   & :is(.home-spotlight,.countdown-card){--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f}
   & :is(.assessment-theme-0,.stain-0){--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f} /* H&E */
   & :is(.assessment-theme-1,.stain-1){--st-a:#0f2547;--st-b:#245796;--st-c:#c2414f} /* Masson trichrome */
-  & :is(.assessment-theme-2,.stain-2){--st-a:#3d0f33;--st-b:#8e2a6c;--st-c:#e07bb8} /* PAS */
+  & :is(.assessment-theme-2,.stain-2){--st-a:#3d0f33;--st-b:#8e2a6c;--st-c:#db66ad} /* PAS */
   & :is(.assessment-theme-3,.stain-3){--st-a:#0d2a44;--st-b:#226a8f;--st-c:#9a6ad6} /* Toluidine blue */
-  & :is(.assessment-theme-4,.stain-4){--st-a:#241a10;--st-b:#5c4428;--st-c:#d6a74f} /* Silver / reticulin */
-  & :is(.assessment-theme-5,.stain-5){--st-a:#0d2e25;--st-b:#246b52;--st-c:#8fd3a9} /* Light green SF */
-  & :is(.assessment-theme-6,.stain-6){--st-a:#1d1a52;--st-b:#4d3a99;--st-c:#e58fc0} /* Giemsa */
-  & :is(.assessment-theme-7,.stain-7){--st-a:#3b0f18;--st-b:#93302d;--st-c:#f08a4b} /* Oil red O */
+  & :is(.assessment-theme-4,.stain-4){--st-a:#241a10;--st-b:#5c4428;--st-c:#b8872b} /* Silver / reticulin */
+  & :is(.assessment-theme-5,.stain-5){--st-a:#0d2e25;--st-b:#246b52;--st-c:#3e9f63} /* Light green SF */
+  & :is(.assessment-theme-6,.stain-6){--st-a:#1d1a52;--st-b:#4d3a99;--st-c:#db66a9} /* Giemsa */
+  & :is(.assessment-theme-7,.stain-7){--st-a:#3b0f18;--st-b:#93302d;--st-c:#ec6817} /* Oil red O */
 
   & .home-spotlight{
     position:relative;isolation:isolate;overflow:hidden;color:#fff;border:0;border-radius:var(--rs-r-lg);
     background:
-      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
-      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%);
+      radial-gradient(110% 90% at 95% 5%,color-mix(in srgb,var(--st-c) 85%,transparent),transparent 62%),
+      linear-gradient(135deg,var(--st-a) 0%,var(--st-b) 26%,var(--st-c) 88%);
     box-shadow:var(--rs-shadow-pop)
   }
   & .home-spotlight[class*=assessment-theme]{
     background:
-      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
-      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%)
+      radial-gradient(110% 90% at 95% 5%,color-mix(in srgb,var(--st-c) 85%,transparent),transparent 62%),
+      linear-gradient(135deg,var(--st-a) 0%,var(--st-b) 26%,var(--st-c) 88%)
   }
   & :is(.home-spotlight,.countdown-card)::before{
     /* Stained-slide texture: each stain has its own histology motif (--st-img), fading toward the text side. */
@@ -201,8 +205,8 @@ html:root body:not(.xp-exam-active){
   & .countdown-card.countdown-featured[class*=stain-]{
     color:#fff;border:0;
     background:
-      radial-gradient(120% 90% at 92% 8%,color-mix(in srgb,var(--st-c) 55%,transparent),transparent 58%),
-      linear-gradient(140deg,var(--st-a) 0%,var(--st-b) 60%,color-mix(in srgb,var(--st-b) 70%,var(--st-c)) 100%)
+      radial-gradient(110% 90% at 95% 5%,color-mix(in srgb,var(--st-c) 85%,transparent),transparent 62%),
+      linear-gradient(135deg,var(--st-a) 0%,var(--st-b) 26%,var(--st-c) 88%)
   }
   & .countdown-card.countdown-featured[class*=stain-]::before{filter:none;opacity:.55}
   & .countdown-card.countdown-featured[class*=stain-] :is(h2,p,span,strong,small,.countdown-date,.countdown-card-top,.countdown-card-bottom,.countdown-unit,.countdown-unit *){color:#fff}
@@ -287,7 +291,7 @@ html:root[data-theme=amoled] body:not(.xp-exam-active) .countdown-card[class*=st
 }
 html:root[data-theme=amoled] body:not(.xp-exam-active) .countdown-card[class*=stain-] .course-token{color:color-mix(in srgb,var(--st-c) 75%,#fff)}
 
-html:root[data-accent=auto] body:not(.xp-exam-active) .hub-accent-control{opacity:.55}
+
 
 @media (prefers-reduced-motion:reduce){
   html:root body:not(.xp-exam-active) *{transition:none!important}
@@ -458,3 +462,66 @@ html:root[data-theme=amoled] body:not(.xp-exam-active) .practice-start .practice
 }
 /* One line for "Previous exams & TBLs" at three columns. */
 body:not(.xp-exam-active) .practice-tool-card strong{font-size:clamp(1.05rem,1.6vw,1.2rem)}
+
+/* ---------- Gradient everywhere ----------
+   Static surfaces carry a 1.5px ring that runs round them through the gradient's stops
+   (--rs-grad-ring), drawn on ::after with a mask so each element keeps its own fill.
+   Icon tiles are filled with the gradient; key numbers use it as text colour. */
+html:root body:not(.xp-exam-active) :is(#content .panel,#content .home-focus-card,#content .practice-tool-card,#content .home-shortcut,#mobileToolsMenu .mobile-tools-grid button,#siteAdmin .panel){position:relative;border-color:transparent!important}
+html:root body:not(.xp-exam-active) :is(#content .panel,#content .home-focus-card,#content .practice-tool-card,#content .home-shortcut,#mobileToolsMenu .mobile-tools-grid button,#siteAdmin .panel)::after{content:'';position:absolute;inset:-1px;z-index:0;padding:var(--ring-w,1.5px);border-radius:inherit;background:var(--rs-grad-ring);opacity:var(--ring-o,.85);pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+html:root body:not(.xp-exam-active) #content .panel .panel::after{display:none}
+html:root body:not(.xp-exam-active) :is(#content .practice-tool-card,#content .home-shortcut,#mobileToolsMenu .mobile-tools-grid button):is(:hover,:focus-visible){--ring-w:2.5px;--ring-o:1}
+html:root body:not(.xp-exam-active) #content .home-shortcuts{border:0;gap:12px}
+html:root body:not(.xp-exam-active) #content .home-shortcut{border-radius:var(--rs-r-item,12px);background:var(--rs-surface)}
+
+/* Gradient-filled icon tiles */
+html:root body:not(.xp-exam-active) :is(.practice-card-icon,.home-short-icon){background:var(--rs-grad)!important;color:#fff!important;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--ax-b) 70%,transparent)}
+html:root body:not(.xp-exam-active) .practice-start .practice-tool-card:is(:hover,:focus-visible) .practice-card-icon{background:var(--rs-grad)!important;color:#fff!important;transform:scale(1.06)}
+html:root body:not(.xp-exam-active) .practice-card-icon{transition:transform .16s ease}
+html:root body:not(.xp-exam-active) #mobileToolsMenu .mobile-tools-grid button svg{color:var(--ax-b)}
+html:root[data-theme=amoled] body:not(.xp-exam-active) #mobileToolsMenu .mobile-tools-grid button svg{color:color-mix(in srgb,var(--ax-c) 55%,#fff)}
+
+/* Sidebar: the current page gets a gradient tint and bar */
+html:root body:not(.xp-exam-active) #mainSidebar nav>button.active{background:var(--rs-grad-tint)!important;box-shadow:inset 3px 0 0 var(--ax-b)}
+html:root body:not(.xp-exam-active) #mainSidebar nav>button.active svg{color:var(--ax-b)}
+html:root[data-theme=amoled] body:not(.xp-exam-active) #mainSidebar nav>button.active svg{color:color-mix(in srgb,var(--ax-c) 55%,#fff)}
+
+/* Key numbers in the gradient */
+html:root body:not(.xp-exam-active) .home-focus-value{background:var(--rs-grad);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;width:fit-content}
+html:root body:not(.xp-exam-active) .home-focus-value small{-webkit-text-fill-color:var(--rs-ink);color:var(--rs-ink)}
+html:root[data-theme=amoled] body:not(.xp-exam-active) .home-focus-value{background-image:linear-gradient(125deg,color-mix(in srgb,var(--ax-b) 55%,#fff),color-mix(in srgb,var(--ax-c) 70%,#fff))}
+
+/* A chosen gradient also drives the assessment hero and countdown cards. */
+html:root[data-accent=palette] body:not(.xp-exam-active) :is(.home-spotlight,.countdown-card){--st-a:var(--pal-a)!important;--st-b:var(--pal-b)!important;--st-c:var(--pal-c)!important}
+
+/* Gradient picker */
+html:root body:not(.xp-exam-active) .gradient-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:8px;margin-top:8px;max-width:420px}
+html:root body:not(.xp-exam-active) .gradient-swatch{position:relative;aspect-ratio:1;min-width:40px;min-height:40px;padding:0!important;border:0!important;border-radius:12px!important;background:var(--swatch)!important;opacity:1!important;filter:none!important;cursor:pointer;box-shadow:inset 0 0 0 1px rgb(255 255 255 / .18)}
+html:root body:not(.xp-exam-active) .gradient-swatch.is-auto{background:conic-gradient(from 210deg,#3a2f86,#d9547f,#245796,#246b52,#b8872b,#3a2f86)!important}
+html:root body:not(.xp-exam-active) .gradient-swatch.is-auto span::before{content:'A';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.95rem}
+html:root body:not(.xp-exam-active) .gradient-swatch[aria-checked=true]{outline:2.5px solid var(--rs-ink,currentColor);outline-offset:2px}
+html:root body:not(.xp-exam-active) .gradient-swatch[aria-checked=true]:not(.is-auto) span::after{content:'';position:absolute;inset:0;margin:auto;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgb(0 0 0 / .25)}
+html:root body:not(.xp-exam-active) .gradient-swatch:focus-visible{outline:3px solid var(--accent-ring,var(--accent));outline-offset:2px}
+html:root body:not(.xp-exam-active) .student-appearance .gradient-picker{grid-template-columns:repeat(auto-fill,minmax(30px,1fr));max-width:none;flex:1 1 100%}
+html:root body:not(.xp-exam-active) .student-appearance .gradient-swatch{min-width:30px;min-height:30px;border-radius:9px}
+@media (prefers-reduced-motion:reduce){html:root body:not(.xp-exam-active) .practice-card-icon{transition:none;transform:none!important}}
+
+/* Sync: the sidebar shows status only; details and recovery live in Settings. */
+html:root body:not(.xp-exam-active) #syncWidget.sync-status-only .sync-chevron{display:none}
+html:root body:not(.xp-exam-active) #syncWidget.sync-status-only>summary{cursor:pointer}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-widget-body{display:grid;gap:10px}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync #studySyncDetails dl{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync #studySyncDetails dt{color:var(--rs-muted,var(--muted))}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync #studySyncDetails dd{margin:0;font-weight:600}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions,html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .study-next-actions{display:flex;flex-wrap:wrap;gap:8px}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions button{display:inline-flex;align-items:center;gap:8px;min-height:40px}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions svg{width:18px;height:18px}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync-tools{margin-top:10px}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync-tools>summary{cursor:pointer;min-height:40px;align-content:center;font-weight:600;color:var(--rs-muted,var(--muted))}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync-tools button{margin-top:6px}
+/* Replaced controls: the gradient picker supersedes the colour input and Auto checkbox,
+   and Settings no longer needs a button that opens Settings. */
+html:root body:not(.xp-exam-active) #siteAdmin .hub-appearance .hub-accent-auto,html:root body:not(.xp-exam-active) #siteAdmin .hub-appearance #accentColor,html:root body:not(.xp-exam-active) #siteAdmin #openSiteAdmin{display:none!important}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions button[data-quick-action=sync]::after{content:attr(aria-label);font-weight:600}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions{justify-content:flex-start}
+html:root body:not(.xp-exam-active) #siteAdmin .settings-sync .sync-quick-actions button{width:auto;padding-inline:16px}

@@ -63,7 +63,7 @@ html[data-ui=modern] .et-workspace>button+.section-sub{margin:12px 0 18px!import
 html[data-ui=modern] .et-workspace .section-sub{overflow-wrap:anywhere}
 #siteAdmin .hub-appearance{display:flex;flex-direction:column;align-items:stretch;gap:18px}
 #siteAdmin .hub-appearance h3{margin:0}
-#siteAdmin .hub-accent-control{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:0}
+#siteAdmin .hub-accent-control{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:0}
 #siteAdmin .hub-accent-control #accentColor{appearance:auto;-webkit-appearance:auto;width:52px!important;height:36px!important;min-height:36px;min-width:52px;padding:4px!important;margin:0!important;box-sizing:border-box;background:var(--white);border:1px solid var(--line);border-radius:9px;cursor:pointer;display:block}
 #siteAdmin #accentColor::-webkit-color-swatch-wrapper{padding:0}#siteAdmin #accentColor::-webkit-color-swatch{border:0;border-radius:5px}#siteAdmin #accentColor::-moz-color-swatch{border:0;border-radius:5px}
 #siteAdmin .hub-break-control{display:flex!important;flex-direction:row!important;align-items:center;justify-content:flex-start;gap:10px;margin:0;line-height:1.5}

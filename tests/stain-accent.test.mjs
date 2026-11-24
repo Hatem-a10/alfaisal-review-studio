@@ -13,10 +13,10 @@ test('default accent follows the next assessment stain and matches the CSS palet
     assert.match(css, new RegExp(`\\.assessment-theme-${i},\\.stain-${i}\\)\\{--st-a:#[0-9a-f]{6};--st-b:${hex}`), `card palette ${i}`);
     if (i) assert.match(css, new RegExp(`data-stain="${i}"\\] body:not\\(\\.xp-exam-active\\)\\{--ax-a:#[0-9a-f]{6};--ax-b:${hex}`), `site palette ${i}`);
   });
-  assert.match(runtime, /auto\?STAIN_ACCENTS\[stain\]:settings\.accent/);
+  assert.match(runtime, /color=palette\?palette\.b:STAIN_ACCENTS\[stain\]/);
   assert.match(read('public/app.js'), /accentAuto:typeof s\?\.accentAuto==='boolean'/);
   assert.match(read('public/learning.js'), /settings\.accentAuto=false/);
-  assert.match(css, /data-accent=solid\] body:not\(\.xp-exam-active\)\{\s*\/\*[^*]*\*\/\s*--rs-grad:linear-gradient\(var\(--accent\),var\(--accent\)\)/);
+  assert.match(css, /data-accent=palette\] body:not\(\.xp-exam-active\)\{--ax-a:var\(--pal-a\);--ax-b:var\(--pal-b\);--ax-c:var\(--pal-c\)\}/);
   assert.match(runtime, /DEFAULT_ACCENTS=\/\^#\(\?:5b4bd0\|2f6c52\)\$\/i/);
 });
 
