@@ -7,7 +7,7 @@ function installMobileDock(){
  const left=control('left','Show earlier navigation tools'),right=control('right','Show more navigation tools');nav.before(shell);shell.append(left,nav,right);
  function update(){if(nav.clientWidth<=0){left.disabled=right.disabled=true;return}const max=limit(),position=Math.max(0,Math.min(max,Number.isFinite(nav.scrollLeft)?nav.scrollLeft:0));if(nav.scrollLeft>max+1||nav.scrollLeft<0||!Number.isFinite(nav.scrollLeft))nav.scrollTo({left:position,behavior:'instant'});left.disabled=position<=2;right.disabled=position>=max-2}
  let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;update()})}
- nav.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',schedule);if(typeof MutationObserver!=='undefined')new MutationObserver(schedule).observe(nav,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','aria-expanded','class','aria-current']});if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedule).observe(nav);schedule();
+ nav.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);if(typeof MutationObserver!=='undefined')new MutationObserver(schedule).observe(nav,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','aria-expanded','class','aria-current']});if(typeof ResizeObserver!=='undefined')new ResizeObserver(schedule).observe(nav);schedule();
 }
 
 window.installMobileDock=installMobileDock;installMobileDock();
