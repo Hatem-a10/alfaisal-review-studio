@@ -149,23 +149,100 @@ function scheduleAlerts(){
  const describe=event=>event?[event.date||event.day,[event.startTime,event.endTime].filter(Boolean).join('–'),event.room,[event.studentGroup,event.studentSection,event.labGroup].filter(Boolean).join(' / ')].filter(Boolean).join(' · '):'Outside your schedule';
  html('studyNextSchedule','<h2>Schedule changes</h2><ul>'+rows.map(change=>`<li><strong>${esc(change.title)}</strong> · ${esc(describe(change.previous))} → ${esc(describe(change.next))}</li>`).join('')+'</ul><button data-study-dismiss-schedule>Dismiss</button>');
 }
+const tourSteps=[
+ ['Learn','Open a lesson, read a topic, then check its questions.','learning','Open Learn'],
+ ['Schedule','Find your classes and labs. Open My Study Plan to organize review tasks.','calendar','Open Schedule'],
+ ['Practice','Choose a topic quiz, the Booklet, or a timed mock.','practice','Open Practice'],
+];
+function openWelcomeTour(){
+ if(document.getElementById('studentWelcomeTour'))return;
+ const dialog=document.createElement('dialog');
+ dialog.id='studentWelcomeTour';dialog.className='study-next-dialog';
+ dialog.setAttribute('aria-labelledby','studentTourTitle');
+ document.body.append(dialog);
+ let step=0;
+ const draw=()=>{
+  const [title,description,,action]=tourSteps[step];
+  dialog.innerHTML=`<div><h2 id="studentTourTitle">${title}</h2><p>${description}</p><div class="study-next-actions">
+   <button type="button" data-tour-action="dismiss">${step===2?'Done':'Skip tour'}</button>
+   ${step?'<button type="button" data-tour-action="back">Back</button>':''}
+   ${step<2?'<button type="button" class="primary" data-tour-action="next">Next</button>':''}
+   <button type="button" data-tour-action="open">${action}</button>
+  </div><small>Step ${step+1} of ${tourSteps.length}</small></div>`;
+ };
+ dialog.addEventListener('click',e=>{
+  const action=e.target.closest('[data-tour-action]')?.dataset.tourAction;
+  if(action==='next'||action==='back'){step+=action==='next'?1:-1;draw();dialog.querySelector('[data-tour-action="next"],[data-tour-action="dismiss"]')?.focus();return}
+  if(action==='dismiss'||action==='open'){
+   dialog.close();
+   if(action==='open'){document.getElementById('siteAdmin')?.close();go(tourSteps[step][2]);}
+  }
+ });
+ dialog.addEventListener('close',()=>{saveOption('welcomeTourSeen',true);dialog.remove();document.getElementById('welcomeTourPrompt')?.remove();},{once:true});
+ draw();dialog.showModal();
+}
+function tourEntry(){
+ if(!options().welcomeTourSeen&&!window.reviewHasStudyEvidence?.(DATA.items)&&window.REVIEW_STUDIO_FRESH_ACCOUNTS){
+  const hero=document.getElementById('homeNextAction');
+  if(hero&&!document.getElementById('welcomeTourPrompt')){
+   hero.insertAdjacentHTML('afterend','<div id="welcomeTourPrompt"><button type="button" class="linkbtn" data-study-tour>Take a quick tour</button> <button type="button" class="linkbtn" data-study-hide-tour>Skip tour</button></div>');
+  }
+ }
+ const settings=document.querySelector('#siteAdmin .admin-frame');
+ if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay welcome tour</button>');
+}
+function firstLessonControls(){
+ const main=document.querySelector('.learning-main');
+ if(!main||view!=='learning'||learnTab!=='lesson')return;
+ const lesson=lessonById(lessonId),guide=options().firstLessonGuide;
+ const quiz=main.querySelector('#inlineTopicQuestions');
+ if(!lesson||!quiz||guide!==lessonId||main.querySelector('[data-guide-try]'))return;
+ const session=inlineSession(lesson),score=inlineTopicScore(lesson,session.questions,undefined,session);
+ const section=main.querySelector('.guide-section,.teaching-card');
+ if(section&&score.available&&score.total===0){
+  section.insertAdjacentHTML('afterbegin','<div class="first-lesson-step"><button type="button" class="primary" data-guide-try>Try the questions</button></div>');
+ }
+ if(score.total>0&&!quiz.querySelector('#firstLessonNext')){
+  const next=score.complete?(session.index+1<session.topics.length?`<button type="button" class="primary" data-inline-jump="${session.index+1}">Next topic</button>`:'<button type="button" class="primary" data-view="dashboard">Back to Home</button>'):
+   '<p>Read the feedback below, then retry missed questions when you’re ready.</p>';
+  quiz.querySelector('.inline-quiz-actions')?.insertAdjacentHTML('afterend','<div id="firstLessonNext">'+next+'</div>');
+ }
+}
+document.addEventListener('click',e=>{
+ const start=e.target.closest('[data-first-lesson]');
+ if(start?.dataset.lesson)saveOption('firstLessonGuide',start.dataset.lesson);
+ if(e.target.closest('[data-guide-try]')){
+  const question=document.querySelector('#inlineTopicQuestions');
+  const first=question?.querySelector('input[data-inline-question]:not(:disabled)');
+  if(first)first.focus({preventScroll:true});
+  question?.scrollIntoView({block:'start',behavior:'instant'});
+ }
+},true);
 function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
  if(view==='dashboard'){resumeCard();scheduleAlerts();}
- if(view==='calendar')scheduleAlerts();
+ tourEntry();firstLessonControls();
+ if(view==='calendar'){
+  scheduleAlerts();
+  if(settings.groupConfigured&&settings.labGroupConfigured&&!settings.labGroup&&window.REVIEW_STUDIO_FRESH_ACCOUNTS)
+   html('scheduleChooseLab','<p>Add your lab group to see your assigned labs. <button type="button" data-study-lab-settings>Open Site Settings</button></p>');
+ }
  if(view==='planner'){planPanel();paintPlan();}
  if(view==='practice')reviewPanel();
  if(view==='learning'&&itemById(lessonId)&&document.querySelector('.guide-section,.complete-guide,.teaching-card')){
   const position=guideTopicLesson===lessonId?Number(guideTopic)||0:Number(cardIndex)||0;
   const key=lessonId+':'+position;if(paintedLesson===key)return;paintedLesson=key;
   const lesson=lessonById(lessonId),saved=options().studyNextLesson;
-  if(saved?.id!==lessonId||saved.position!==position)saveOption('studyNextLesson',{id:lessonId,position,topicTitle:lesson?inlineTopicsFor(lesson)[position]?.title:''});
+  if(saved?.id!==lessonId||saved.position!==position)saveOption('studyNextLesson',{id:lessonId,position,topicTitle:lesson?inlineTopicsFor(lesson)[position]?.title:'',at:new Date().toISOString()});
  }
 }
 const before=render;render=function(...args){const result=before.apply(this,args);paint();return result;};
 window.addEventListener('review:academic-config',paint);
 const actionHandlers={
+ 'tour':openWelcomeTour,
+ 'lab-settings':()=>document.getElementById('openSiteAdmin')?.click(),
+ 'hide-tour':()=>{saveOption('welcomeTourSeen',true);document.getElementById('welcomeTourPrompt')?.remove();},
  'sync-edit':()=>itemById(issue?.recordId)&&openEdit(issue.recordId),
  'sync-export':()=>document.getElementById('export')?.click(),
  'sync-retry':()=>document.getElementById('syncNow')?.click(),
