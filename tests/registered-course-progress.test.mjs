@@ -25,7 +25,7 @@ test('every displayed lecture is registered for sync and every course resolves t
 
 test('managed workspaces delegate screen rendering to the common renderer',()=>{
  const calls=[];
- const nodes={insertAdjacentHTML(){}};
+ const nodes={insertAdjacentHTML(){},querySelectorAll(){return[]}};
  const window={REVIEW_STUDIO_FRESH_ACCOUNTS:true,reviewManagedFlags:{archiveCvp:true},chooseLesson(){},addEventListener(){}};
  const ctx={
   window,location:{hash:''},history:{pushState(_state,_unused,hash){ctx.location.hash=hash}},

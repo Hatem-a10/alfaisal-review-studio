@@ -4,8 +4,9 @@ import fs from 'node:fs';
 import {visibleCatalogSets,catalogKind} from '../public/original-catalog.mjs';
 test('practice home keeps bookkeeping and study actions distinct and restricts weak areas to admins',()=>{
  const src=fs.readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
- assert.match(src,/\['Study and test',[\s\S]*?\['sets','Practice a topic'[\s\S]*?\['booklet','Booklet'/);
+ assert.match(src,/\['Study and test',[\s\S]*?\['mock','Timed mock'[\s\S]*?\['sets','Practice a topic'/);
  assert.match(src,/\['Review and track',[\s\S]*?\['wrong','Wrong answers'[\s\S]*?\['previous','Previous mocks'/);
+ assert.doesNotMatch(src,/\['booklet'|Practice results/);
  assert.match(src,/if\(id==='weak'\)return window.reviewAdmin===true/);
  assert.match(src,/tools.filter\(\(\[id\]\)=>toolAvailable\(id\)\)/);
 });

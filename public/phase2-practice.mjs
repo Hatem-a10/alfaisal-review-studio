@@ -81,15 +81,13 @@ function weakPreview(){const d=read();const archive=globalThis.reviewCourseScope
   archive?pack?.questions||[]:[...(renalPack?.questions||[]),...(molPack?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP')).filter(x=>!x.id.startsWith('Discipline: ')).slice(0,3);if(!rows.length)return '';return `<section class="panel"><h2>Weakest lectures</h2>${rows.map(r=>`<p>${escapeHTML(r.id)} · ${Math.round(r.accuracy*100)}% (${r.correct}/${r.total})</p>`).join('')}<button id="p2weak" class="primary">Practice weakest lectures</button></section>`}
 const practiceGroups=[
  ['Study and test',[
-  ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
-  ['booklet','Booklet','Work through questions from your course booklet.','library'],
   ['mock','Timed mock','Generate an exam and practice against the clock.','timer'],
+  ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
   ['original','Previous exams & TBLs','Attempt previous papers in their original sets.','exam'],
  ]],
  ['Review and track',[
   ['wrong','Wrong answers','Retry questions you missed.','practice'],
   ['previous','Previous mocks','Review or retake your saved mocks.','calendar',true],
-  ['performance','Practice results','See your scores or log an outside question set.','dashboard'],
   ['formulas','Formulas','Practice calculations and worked examples.','grades',true],
   ['weak','Weak areas','Review weak topics and build a targeted mock.','weakness',true],
  ]],
@@ -109,21 +107,21 @@ function practiceStart(){
  const savedPaper=originalRun&&!originalRun.finishedAt&&visibleOriginalRun();
  const savedMock=etExam&&!etExam.finishedAt&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
  return `<div class="practice-start">
-  <div class="practice-cover"><h1>Practice Home</h1><span class="practice-cover-icon" aria-hidden="true">${navGlyph('practice')}</span></div>
+  <h1>Practice Home</h1>
   ${savedMock||savedPaper?`<div class="practice-resume">
    ${savedMock?'<button type="button" class="primary" data-et-tab="mock">Resume timed mock</button>':''}
    ${savedPaper?'<button type="button" class="primary" data-et-tab="original">Resume previous paper</button>':''}
   </div>`:''}
-  ${practiceGroups.map(([label,tools])=>`<section class="practice-collection"><h2>${label}</h2><div class="practice-start-actions">${tools.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" ${id==='booklet'?'data-view="booklet"':`data-${extra?'p2':'et'}-tab="${id}"`}><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div></section>`).join('')}
+  ${practiceGroups.map(([label,tools])=>`<section class="practice-collection"><h2>${label}</h2><div class="practice-start-actions">${tools.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div></section>`).join('')}
  </div>`;
 }
-export function install(){if(installed)return;installed=true;window.reviewRenalPracticeQuestions=renalPracticeQuestions;window.reviewRenalPracticeLoadStatus=()=>renalError?'error':renalPack?'ready':'loading';installFormulas();const previous=practice;
+export function install(){if(installed)return;installed=true;window.reviewRenalPracticeQuestions=renalPracticeQuestions;window.reviewRenalPracticeLoadStatus=()=>renalError?'error':renalPack?'ready':'loading';installFormulas();
  window.reviewResetPracticePage=()=>{selected='main';};
  practice=function(){
   if(selected!=='main'&&!toolAvailable(selected))selected='main';
   if(etPracticeTab==='start'&&selected==='main')return practiceStart();
   const tool=selected==='main'?etPracticeTab:selected;
-  const markup=tool==='formulas'?formulaPage():tool==='previous'?previousMarkup():tool==='weak'?weakPreview()+weakMarkup():tool==='performance'?previous():etPracticeWorkspace();
+  const markup=tool==='formulas'?formulaPage():tool==='previous'?previousMarkup():tool==='weak'?weakPreview()+weakMarkup():etPracticeWorkspace();
   return practiceNavigation(practiceTools.get(tool)?.[1]||'Practice',markup);
  };
  document.addEventListener('click',e=>{if(e.target.closest('[data-et-tab],button[data-view=practice]'))selected='main'},true);
