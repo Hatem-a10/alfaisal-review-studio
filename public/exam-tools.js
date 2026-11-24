@@ -3,8 +3,8 @@
 let etPracticeTab='mock',etScope='CVP',etLecture='CVP-P1',etConcept='',etSet=null,etMockScope='CVP',etMockType='exam',etMockCount=50,etMockMinutes=60,etExam=null,etHistory=[];
 let etAccurate=false,etStartingMock=false;
 const etExamKey=KEY+'-mock-exam-v1',etHistoryKey=KEY+'-mock-history-v1';
-try{const e=JSON.parse(localStorage.getItem(etExamKey)||'null');if(e&&Array.isArray(e.questions)&&e.questions.length>0&&e.questions.length<=200&&e.questions.every(ExamEngine.usable)&&Number.isFinite(e.deadline)&&typeof e.id==='string'&&e.answers&&typeof e.answers==='object')etExam=e}catch{}
-function validMockSummary(e){return !!e&&typeof e.id==='string'&&Number.isFinite(e.total)&&e.total>=0&&Number.isFinite(e.correct)&&e.correct>=0&&e.correct<=e.total}
+try{const e=JSON.parse(localStorage.getItem(etExamKey)||'null');etExam=ExamEngine.restore(e)}catch{}
+function validMockSummary(e){return !!e&&typeof e.id==='string'&&Number.isSafeInteger(e.total)&&e.total>=0&&Number.isSafeInteger(e.correct)&&e.correct>=0&&e.correct<=e.total}
 try{const h=JSON.parse(localStorage.getItem(etHistoryKey)||'[]');if(Array.isArray(h))etHistory=h.filter(validMockSummary).slice(-100)}catch{}
 function etBank(){if(globalThis.reviewCourseScope==='REN')return window.reviewRenalPracticeQuestions?.()||[];return (typeof allLearningQuestions==='function'?allLearningQuestions():LEARNING.questions).filter(q=>!q.duplicateOf&&globalThis.reviewStudyItemVisible?.(q)!==false)}
 function etSaveExam(){try{if(etExam)localStorage.setItem(etExamKey,JSON.stringify(etExam));else localStorage.removeItem(etExamKey);localStorage.setItem(etHistoryKey,JSON.stringify(etHistory));return true}catch{toast('Exam saving is unavailable. Keep this page open until you finish.');return false}}
@@ -39,23 +39,23 @@ function etPracticeWorkspace(){return `<div class="et-practice-tabs"><button dat
 const etOriginalPractice=practice;
 practice=function(){const html=etOriginalPractice(),start=html.indexOf('<div class="stats">');return start<0?etPracticeWorkspace()+html:html.slice(0,start)+etPracticeWorkspace()+html.slice(start)};
 async function etLaunchMock(button){
- if(etStartingMock||etExam&&!etExam.finishedAt){toast('Finish or cancel your current mock first.');return false}
+ if(etStartingMock){toast('A mock is already being prepared.');return false}if(etExam&&!etExam.finishedAt){toast('Finish or cancel your current mock first.');return false}
  if(etExam?.finishedAt&&(!etExam.trackerRecorded||!etRetrySnapshot()))return false;
  const countField=$('#etMockCount'),minuteField=$('#etMockMinutes');if(!countField||!minuteField)return false;
- const count=Number(countField.value),minutes=Number(minuteField.value),scope=etMockScope,accurate=etAccurate,course=globalThis.reviewCourseScope,selection=JSON.stringify(lessonMix.mock),cheat=phase2CheatPreference();
+ const count=Number(countField.value),minutes=Number(minuteField.value),scope=etMockScope,accurate=etAccurate,course=globalThis.reviewCourseScope,mockType=etMockType,selection=JSON.stringify(lessonMix.mock),cheat=phase2CheatPreference();
  const previousExam=etExam;etStartingMock=true;button.disabled=true;
- const current=()=>view==='practice'&&etPracticeTab==='mock'&&etExam===previousExam&&scope===etMockScope&&accurate===etAccurate&&course===globalThis.reviewCourseScope&&selection===JSON.stringify(lessonMix.mock)&&count===Number($('#etMockCount')?.value)&&minutes===Number($('#etMockMinutes')?.value);
+ const current=()=>view==='practice'&&etPracticeTab==='mock'&&etExam===previousExam&&scope===etMockScope&&accurate===etAccurate&&mockType===etMockType&&course===globalThis.reviewCourseScope&&selection===JSON.stringify(lessonMix.mock)&&count===Number($('#etMockCount')?.value)&&minutes===Number($('#etMockMinutes')?.value);
  try{
   if(!Number.isInteger(count)||count<1||count>200||!Number.isFinite(minutes)||minutes<1||minutes>360)throw Error('Choose 1–200 questions and 1–360 minutes.');
   if(scope!=='REN')await window.loadFacultyQuestions?.();
-  if(!current())return false;
+  if(!current()){toast('Mock settings changed while loading. Start again with the current settings.');return false}
   const chosen=accurate?await window.Cvp19.accurate(count):null;
   if(!current())return false;
   const created=ExamEngine.create(chosen?chosen.questions:phase2MockPool(),count,minutes);
   etMockCount=count;etMockMinutes=minutes;
   etExam={...created,accurate:chosen?{counts:chosen.counts,categoryCounts:chosen.categoryCounts,categoryTargets:chosen.categoryTargets,imageCount:chosen.imageCount,mandatoryIds:chosen.mandatoryIds,source:chosen.source}:null,id:crypto.randomUUID(),cheatMode:cheat,scope:scope==='REN'?'REN':accurate?'CVP · Accurate':lessonMix.mock.enabled?'Custom lesson mix':scope,selectedLessons:!accurate&&lessonMix.mock.enabled?[...lessonMix.mock.ids]:null};
   window.Phase2Practice?.recordMock?.(etExam);etSaveExam();render();etTick();return true;
- }catch(err){toast(err.message||'Could not create the mock.');return false}finally{etStartingMock=false;button.disabled=false;const currentButton=$('#etStartMock');if(currentButton&&phase2MockPool().length)currentButton.disabled=false}
+ }catch(err){toast(err.message||'Could not create the mock.');return false}finally{etStartingMock=false;button.disabled=false;const currentButton=$('#etStartMock');if(currentButton)currentButton.disabled=!phase2MockPool().length}
 }
 function etCancelExam(){if(!etExam||etExam.finishedAt)return false;if(!confirm('Cancel this mock exam? No answers or results from this attempt will be submitted or added to your progress.'))return false;if(window.Phase2Practice?.cancelMock?.(etExam)===false){toast('Cancellation could not be saved. This mock is retained; retry cancellation.');return false}etExam=null;etSaveExam();render();etTick();return true}
 function etFinishExam(reason){if(!etExam||etExam.finishedAt)return;etExam.finishedAt=new Date().toISOString();etExam.reason=reason;const g=ExamEngine.grade(etExam);etExam.excludedLowScore=!resultMeetsMinimum(g.correct,g.total);etExam.snapshotSaved=window.Phase2Practice?.recordMock?.(etExam)===true;etExam.trackerRecorded=etExam.excludedLowScore;if(etExam.excludedLowScore)etExam.logged=0;etHistory=etHistory.filter(e=>e.id!==etExam.id).concat({id:etExam.id,finishedAt:etExam.finishedAt,correct:g.correct,total:g.total,scope:etExam.scope,reason,excludedLowScore:etExam.excludedLowScore}).slice(-100);etSaveExam();etReconcileExam();if(view==='practice')render();etTick()}
