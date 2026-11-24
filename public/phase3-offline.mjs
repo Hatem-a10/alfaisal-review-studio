@@ -9,16 +9,18 @@ export function offlineReleaseEligible(release){
 
 // Only the most recent identity check may bind a client to a private cache.
 export function createAccountBinder({getWorker,readKey,isOnline,verify}){
- let generation=0;
+ let generation=0,lastBound=null;
  return async()=>{
   const run=++generation;if(!getWorker())return;
   const initial=readKey();let key=validAccount(initial)?initial:null;
+  // Immediately revoke an earlier account while a different identity is being verified.
+  if(lastBound&&key!==lastBound){getWorker()?.postMessage({type:'ACCOUNT',key:null});lastBound=null}
   if(key&&isOnline()){
    try{if(await verify()!==key)key=null}catch{key=null}
   }
   if(run!==generation)return;
   if(readKey()!==initial)key=null;
-  getWorker()?.postMessage({type:'ACCOUNT',key});
+  const worker=getWorker();if(worker){worker.postMessage({type:'ACCOUNT',key});lastBound=key}
  };
 }
 
