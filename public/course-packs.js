@@ -60,14 +60,18 @@ function __reviewMergeKeys(path,target,entries){
   const current=typeof view==='string'?view:'dashboard';
   if(noContent.has(current))return [];
   const all=Object.keys(packs);
-  if(everything.has(current))return all;
-  const archived=c=>c==='CVP'&&window.reviewArchiveEnabled?.()===true&&window.reviewViewingArchive?.()!==true;
+  // Archive visibility and archive permission are different: a hidden CVP course is
+  // still archived when the owner has disabled access to the archive itself.
+  const inArchive=window.reviewViewingArchive?.()===true&&window.reviewArchiveEnabled?.()===true;
+  const archived=c=>c==='CVP'&&(window.reviewCvpArchived?.()===true||window.reviewArchiveEnabled?.()===true)&&!inArchive;
   const active=all.filter(c=>!archived(c)),courseOf=id=>typeof id==='string'?id.split('-')[0]:'';
   const known=c=>c==='REN'||Boolean(window.reviewCourseConfig?.(c))||Boolean(packs[c]);
   const scope=window.reviewCourseScope;
+  if(everything.has(current))return active;
   // Learn always needs every active course: its catalogue checks today's due lessons across courses.
-  if(current==='learning')return [...active,courseOf(typeof lessonId==='string'?lessonId:'')].filter(c=>packs[c]);
-  if(typeof scope==='string'&&known(scope))return packs[scope]?[scope]:[];
+  // An old selected lecture must not load a hidden course pack on an active-course screen.
+  if(current==='learning')return [...new Set([...active,courseOf(typeof lessonId==='string'?lessonId:'')])].filter(c=>packs[c]&&!archived(c));
+  if(typeof scope==='string'&&known(scope))return packs[scope]&&!archived(scope)?[scope]:[];
   return active;
  }
  let painted='',renderRequest=0;
