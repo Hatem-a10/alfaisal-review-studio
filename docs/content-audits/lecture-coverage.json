@@ -26843,15 +26843,11 @@
         "distinct": 35,
         "application": 25,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 2,
         "missingDifficulty": [
           "drill-MOL-20-0-0",
           "drill-MOL-20-1-0",
           "drill-MOL-20-2-0",
-          "MOL-20:synthesis:depth-1",
-          "MOL-20:mobilization:depth-1",
-          "MOL-20:regulation:depth-1",
-          "MOL-20:disease:depth-1",
           "MOL-20:synthesis:resume-1",
           "MOL-20:synthesis:resume-2",
           "MOL-20:synthesis:resume-3",
@@ -26907,8 +26903,6 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27067,14 +27061,11 @@
         "distinct": 30,
         "application": 23,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 2,
         "missingDifficulty": [
           "drill-MOL-21-0-0",
           "drill-MOL-21-1-0",
           "drill-MOL-21-2-0",
-          "MOL-21:oxidative:depth-1",
-          "MOL-21:rearrangement:depth-1",
-          "MOL-21:red-cells:depth-1",
           "MOL-21:oxidative:resume-1",
           "MOL-21:oxidative:resume-2",
           "MOL-21:oxidative:resume-3",
@@ -27126,8 +27117,6 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27208,7 +27197,7 @@
           "sourceCount": 2,
           "validCitations": 2,
           "invalidCitations": [],
-          "distinctMcqs": 4,
+          "distinctMcqs": 5,
           "visualInterpretationMcqs": 0,
           "distinctCoreStems": 5,
           "targetMinimum": 2,
@@ -27283,16 +27272,14 @@
       "citedTopics": 6,
       "invalidLectureCitations": [],
       "questions": {
-        "distinct": 29,
-        "application": 20,
+        "distinct": 30,
+        "application": 21,
         "visualInterpretation": 0,
         "mediumReasoning": 0,
         "missingDifficulty": [
           "drill-MOL-22-0-0",
           "drill-MOL-22-1-0",
           "drill-MOL-22-2-0",
-          "MOL-22:formation:depth-1",
-          "MOL-22:injury:depth-1",
           "MOL-22:formation:resume-1",
           "MOL-22:formation:resume-2",
           "MOL-22:formation:resume-3",
@@ -27318,14 +27305,7 @@
           "MOL-22:1:booklet-1",
           "MOL-22:2:booklet-1"
         ],
-        "invalidMcqs": [
-          {
-            "id": "MOL-22:defense:depth-1",
-            "issues": [
-              "duplicate-choices"
-            ]
-          }
-        ],
+        "invalidMcqs": [],
         "missingExplanations": [],
         "missingCitations": [],
         "invalidCitations": [],
@@ -27339,7 +27319,7 @@
           "Concept check · authored study aid": 3,
           "Lecture application": 18,
           "Reviewed booklet adaptation": 6,
-          "Source-linked application": 2
+          "Source-linked application": 3
         },
         "unassignedToInlineTopic": []
       },
@@ -27352,8 +27332,6 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "revision-summary",
-        "question-integrity",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27510,14 +27488,11 @@
         "distinct": 30,
         "application": 27,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 2,
         "missingDifficulty": [
           "drill-MOL-23-0-0",
           "drill-MOL-23-1-0",
           "drill-MOL-23-2-0",
-          "MOL-23:fructose:depth-1",
-          "MOL-23:galactose:depth-1",
-          "MOL-23:other-sugars:depth-1",
           "objective5-mol-23-0-1",
           "objective5-mol-23-0-2",
           "objective5-mol-23-0-3",
@@ -27567,8 +27542,6 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27704,13 +27677,11 @@
         "distinct": 25,
         "application": 22,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 1,
         "missingDifficulty": [
           "drill-MOL-24-0-0",
           "drill-MOL-24-1-0",
           "drill-MOL-24-2-0",
-          "MOL-24:oxidation:depth-1",
-          "MOL-24:redox:depth-1",
           "objective5-mol-24-0-1",
           "objective5-mol-24-0-2",
           "objective5-mol-24-0-3",
@@ -27756,8 +27727,6 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -27922,9 +27891,6 @@
           "drill-MOL-25-0-0",
           "drill-MOL-25-1-0",
           "drill-MOL-25-2-0",
-          "MOL-25:energy-vitamins:depth-1",
-          "MOL-25:amino-and-one-carbon:depth-1",
-          "MOL-25:vitamin-c:depth-1",
           "objective5-mol-25-0-1",
           "objective5-mol-25-0-2",
           "objective5-mol-25-0-3",
@@ -27975,7 +27941,6 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -28114,8 +28079,6 @@
           "drill-MOL-26-0-0",
           "drill-MOL-26-1-0",
           "drill-MOL-26-2-0",
-          "MOL-26:a-d:depth-1",
-          "MOL-26:e-k:depth-1",
           "MOL-26:a-d:coverage-1",
           "MOL-26:a-d:coverage-2",
           "MOL-26:a-d:coverage-3",
@@ -28163,7 +28126,6 @@
       "gaps": [
         "objective-map-needs-editor",
         "difficulty-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -28336,13 +28298,11 @@
         "distinct": 25,
         "application": 22,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 2,
         "missingDifficulty": [
           "drill-MOL-27-0-0",
           "drill-MOL-27-1-0",
           "drill-MOL-27-2-0",
-          "MOL-27:information-review:depth-1",
-          "MOL-27:structure-review:depth-1",
           "MOL-27:information-review:coverage-1",
           "MOL-27:information-review:coverage-2",
           "MOL-27:information-review:coverage-3",
@@ -28450,9 +28410,7 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
         "citation-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
@@ -28585,13 +28543,11 @@
         "distinct": 25,
         "application": 11,
         "visualInterpretation": 0,
-        "mediumReasoning": 0,
+        "mediumReasoning": 2,
         "missingDifficulty": [
           "drill-MOL-28-0-0",
           "drill-MOL-28-1-0",
           "drill-MOL-28-2-0",
-          "MOL-28:carbon-review:depth-1",
-          "MOL-28:redox-review:depth-1",
           "MOL-28:carbon-review:coverage-1",
           "MOL-28:carbon-review:coverage-2",
           "MOL-28:carbon-review:coverage-3",
@@ -28643,9 +28599,7 @@
       },
       "gaps": [
         "objective-map-needs-editor",
-        "difficulty-review",
         "citation-review",
-        "revision-summary",
         "source-document-availability"
       ],
       "meetsExistingCoreFloor": true,
