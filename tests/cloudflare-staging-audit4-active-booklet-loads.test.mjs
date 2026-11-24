@@ -24,15 +24,14 @@ test('a stalled request is aborted and can be retried',async()=>{
  const load=bookletLoader('/pack',metadata,{timeout:10,fetcher:async(url,{signal})=>{if(++calls===1)return new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Error('timeout')),{once:true}));return {ok:true,json:async()=>pack}}});
  await assert.rejects(load(),/timeout/);assert.equal(await load(),pack);
 });
-test('REN loader publishes only a complete mock bank and exposes an error state for retry',async()=>{
+test('REN loader publishes only a complete mock bank and retries a failed load on its own',async()=>{
  const s=readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
  const start=s.indexOf('let renalPack,'),end=s.indexOf('const bookletPack=',start);
- let calls=0,renders=0;const ctx={loadRenalBooklet:async()=>{if(++calls===1)throw Error('offline');return pack},view:'booklet',bookletCourse:()=> 'MOL',window:{reviewCourseScope:'MOL'},render:()=>renders++,toast:()=>{}};
+ let calls=0,renders=0;const ctx={loadRenalBooklet:async()=>{if(++calls===1)throw Error('offline');return pack},view:'booklet',bookletCourse:()=> 'MOL',window:{reviewCourseScope:'MOL',reviewAutoRetry:{schedule:(key,run)=>scheduled.push([key,run]),ok(){}}},render:()=>renders++,toast:()=>{},console:{error(){}}};const scheduled=[];
  const api=runInNewContext(s.slice(start,end)+'\n({loadRenal,renalPracticeQuestions,error:()=>renalError,pack:()=>renalPack})',ctx);
- await api.loadRenal();assert.equal(api.error(),true);assert.equal(api.pack(),undefined);assert.equal(api.renalPracticeQuestions().length,0);assert.equal(renders,0);
- ctx.view='practice';ctx.window.reviewCourseScope='REN';await api.loadRenal();assert.equal(api.error(),false);assert.equal(api.renalPracticeQuestions().length,1);assert.equal(renders,1);
- assert.match(s,/b\.id==='renalMockRetry'/);
- assert.match(readFileSync(new URL('../public/exam-tools.js',import.meta.url),'utf8'),/id="renalMockRetry"/);
+ await api.loadRenal();assert.equal(api.error(),false);assert.equal(api.pack(),undefined);assert.equal(renders,0);assert.equal(scheduled[0]?.[0],'renal-practice');
+ ctx.view='practice';ctx.window.reviewCourseScope='REN';await scheduled[0][1]();assert.equal(api.error(),false);assert.equal(api.renalPracticeQuestions().length,1);assert.equal(renders,1);
+ assert.doesNotMatch(readFileSync(new URL('../public/exam-tools.js',import.meta.url),'utf8'),/Renal questions could not load/);
 });
 
 test('deduplicated packs enforce the declared MCQ inventory and allow review-only questions',()=>{

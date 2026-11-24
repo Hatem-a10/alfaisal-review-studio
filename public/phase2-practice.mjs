@@ -15,13 +15,12 @@ const activeBookletLoaders={
  MOL:bookletLoader(activeBookletPaths.MOL,{version:3,pages:261,mcqs:874}),
  REN:bookletLoader(activeBookletPaths.REN,{version:3,pages:294,mcqs:645}),
 };
-const activeBooklets={},bookletRequests={},bookletErrors=new Set();
+const activeBooklets={},bookletRequests={};
 function loadActiveBooklet(course){
  if(activeBooklets[course]||bookletRequests[course])return;
- bookletErrors.delete(course);
  bookletRequests[course]=activeBookletLoaders[course]().then(value=>{
-  activeBooklets[course]=value;
- }).catch(error=>{bookletErrors.add(course);toast(error.message)}).finally(()=>{
+  activeBooklets[course]=value;window.reviewAutoRetry?.ok('booklet-'+course);
+ }).catch(error=>{console.error(error);window.reviewAutoRetry?.schedule('booklet-'+course,()=>{if(view==='booklet'&&bookletCourse()===course)loadActiveBooklet(course)})}).finally(()=>{
   delete bookletRequests[course];
   if(view==='booklet'&&bookletCourse()===course)render();
  });
@@ -32,10 +31,10 @@ function loadRenal(){
  if(renalPack)return Promise.resolve(renalPack);
  return renalLoading??=loadRenalBooklet().then(value=>{
   const bank=value.questions.filter(q=>q.type==='mcq'&&!q.figures?.length).map(q=>({...q,lectureIds:['REN-Booklet'],kind:'Past paper · printed key',concept:q.discipline,reasons:Array.isArray(q.reasons)&&q.reasons.length===q.options.length?q.reasons:q.options.map(()=>''),preserveOptionOrder:true}));
-  renalPack=value;renalMockBank=bank;renalError=false;
+  renalPack=value;renalMockBank=bank;renalError=false;window.reviewAutoRetry?.ok('renal-practice');
   if(view==='practice'&&window.reviewCourseScope==='REN')render();
   return value;
- }).catch(error=>{renalLoading=null;renalError=true;toast(error.message);if(view==='practice'&&window.reviewCourseScope==='REN')render();return null;});
+ }).catch(error=>{renalLoading=null;console.error(error);window.reviewAutoRetry?.schedule('renal-practice',()=>loadRenal());return null;});
 }
 const renalPracticeQuestions=()=> {
  if(!renalPack&&!renalError)loadRenal();
@@ -71,9 +70,9 @@ const source=renal?'<details class="renal-source-index"><summary>Full source boo
  (pack?.chapters||[]).map(chapter=>'<li><a href="'+original+'#page='+Number(chapter.page)+'" target="_blank" rel="noopener">MOL '+Number(chapter.number)+' · '+escapeHTML(chapter.title)+'</a></li>').join('')+
  '<li><a href="'+original+'#page=234" target="_blank" rel="noopener">Written cases ↗</a></li><li><a href="'+original+'#page=260" target="_blank" rel="noopener">Lab ↗</a></li></ul></details>':'';
 if(!pack){
- const failed=bookletErrors.has(bookletCourse());
- if(renal||mol){if(!failed)loadActiveBooklet(bookletCourse())}else load();
- return '<section class="panel">'+(failed?'Booklet questions could not load. <button id="renalBookletRetry">Retry</button>':'Loading booklet…')+source+'</section>';
+ // Failed loads retry on their own (reviewAutoRetry); the panel only ever says it is loading.
+ if(renal||mol){if(!window.reviewAutoRetry?.pending('booklet-'+bookletCourse()))loadActiveBooklet(bookletCourse())}else load();
+ return '<section class="panel" role="status">Loading booklet…'+source+'</section>';
 }
 const d=readBooklet(),{a,q,position}=current(d),completed=pack.questions.filter(q=>{const x=bookletEntry(q,d.booklet);return x?.completed&&x.correct!==false}).length;
 const inventory=pack.counts?'<p>'+pack.counts.mcq+' unique MCQs'+(pack.counts.saq?' · '+pack.counts.saq+' written questions':'')+(pack.counts.ospe?' · '+pack.counts.ospe+' OSPE questions':'')+'</p>':'';
@@ -84,7 +83,7 @@ function repeatedSourceMarkup(q,pdf){
  if(locations.length<2)return '';
  return `<details><summary>Booklet appearances (${locations.length})</summary><ul>${locations.map(loc=>`<li><a href="${pdf}#page=${loc.page}" target="_blank" rel="noopener">${escapeHTML(loc.section)}${loc.number!=null?' · Q'+escapeHTML(loc.number):''} · p. ${loc.page}</a></li>`).join('')}</ul></details>`;
 }
-function filters(d){const mol=bookletCourse()==='MOL',subjects=mol?[...(activeBooklets.MOL?.chapters||[]).map(chapter=>'MOL '+chapter.number),'Written cases','Lab']:['Physiology','Anatomy','Histology','Embryology'];return `<div class="booklet-filters"><div class="booklet-modes">${[['bookletIncludeMCQ','Include MCQs',d.bookletIncludeMCQ!==false],['bookletRandom','Random order',!!d.bookletRandom],['bookletIncludeSAQ','Include SAQs',d.bookletIncludeSAQ!==false],...(mol?[]:[['bookletIncludeOSPE','Include OSPE',d.bookletIncludeOSPE!==false]])].map(([key,label,on])=>`<label><input type="checkbox" data-booklet-mode="${key}" ${on?'checked':''}><span>${label}</span></label>`).join('')}</div><label>Show <select id="p2filter">${[['all','All questions'],['unanswered','Unanswered'],['wrong','Wrong'],['completed','Completed']].map(([v,l])=>`<option value="${v}" ${d.filter===v?'selected':''}>${l}</option>`).join('')}</select></label><label>Subject <select id="bookletDiscipline">${['all',...subjects].map(v=>`<option value="${v}" ${(d.bookletDiscipline||'all')===v?'selected':''}>${v==='all'?'All subjects':v}</option>`).join('')}</select></label></div>`}
+function filters(d){const mol=bookletCourse()==='MOL',subjects=mol?[...(activeBooklets.MOL?.chapters||[]).map(chapter=>'MOL '+chapter.number),'Written cases','Lab']:['Physiology','Anatomy','Histology','Embryology'];return `<div class="booklet-filters"><div class="booklet-modes">${[['bookletIncludeMCQ','Include MCQs',d.bookletIncludeMCQ!==false],['bookletIncludeSAQ','Include SAQs',d.bookletIncludeSAQ!==false],...(mol?[]:[['bookletIncludeOSPE','Include OSPE',d.bookletIncludeOSPE!==false]]),['bookletRandom','Random order',!!d.bookletRandom]].map(([key,label,on])=>`<label><input type="checkbox" data-booklet-mode="${key}" ${on?'checked':''}><span>${label}</span></label>`).join('')}</div><label>Show <select id="p2filter">${[['all','All questions'],['unanswered','Unanswered'],['wrong','Wrong'],['completed','Completed']].map(([v,l])=>`<option value="${v}" ${d.filter===v?'selected':''}>${l}</option>`).join('')}</select></label><label>Subject <select id="bookletDiscipline">${['all',...subjects].map(v=>`<option value="${v}" ${(d.bookletDiscipline||'all')===v?'selected':''}>${v==='all'?'All subjects':v}</option>`).join('')}</select></label></div>`}
 function previousMarkup(){const d=read();return `<section class="panel"><h2>Previous mocks</h2><p>Exact question and option snapshots, saved with your account. Saved attempts are retained within your account storage limit. Export a backup before explicitly deleting an attempt.</p>${(d.mocks||[]).filter(m=>!globalThis.reviewArchivedStudyItem?.(m.snapshot)||globalThis.reviewCourseScope==='CVP').map(m=>{const s=m.snapshot,answered=s.questions.filter((q,i)=>Number.isInteger(s.answers?.[i])&&s.answers[i]>=0&&s.answers[i]<q.options.length).length,correct=s.questions.reduce((n,q,i)=>n+(s.answers?.[i]===q.answer),0);return `<article><h3>${escapeHTML(m.name)}</h3><p>${escapeHTML(m.createdAt)} · ${s.cancelled?'Cancelled · no result recorded':s.finishedAt?(s.excludedLowScore?'Below 15% · excluded from scores':correct+' / '+answered+' correct'):'In progress'}</p><p>${(m.attempts||[s]).filter(x=>x.finishedAt&&!x.cancelled).map((x,i)=>{const n=x.questions.filter((q,i)=>Number.isInteger(x.answers?.[i])&&x.answers[i]>=0&&x.answers[i]<q.options.length).length,c=x.questions.reduce((v,q,j)=>v+(x.answers?.[j]===q.answer),0);return `Attempt ${i+1}: ${x.excludedLowScore?'below 15% · excluded':c+' / '+n}`}).join(' · ')}</p><button data-p2-retry="${escapeHTML(m.id)}">Retry same questions</button> <button data-p2-export="${escapeHTML(m.id)}">Export saved mock</button> <button data-p2-delete="${escapeHTML(m.id)}">Delete saved mock</button></article>`}).join('')||'<p>No saved mocks yet.</p>'}</section>`}
 function weakMarkup(){const archive=globalThis.reviewCourseScope==='CVP'||!globalThis.reviewCvpArchived?.();
  if(archive&&!pack){load();return '<section class="panel">Loading analytics…</section>'}

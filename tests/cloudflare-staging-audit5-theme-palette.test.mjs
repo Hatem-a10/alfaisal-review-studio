@@ -14,7 +14,7 @@ function fixture(source){
  const style={getPropertyValue:k=>properties.get(k)||'',getPropertyPriority:k=>priority.get(k)||'',setProperty(k,v,p=''){writes++;properties.set(k,v);priority.set(k,p)},removeProperty(k){properties.delete(k);priority.delete(k)}};
  const settings={accentAuto:false,accent:'#aabcdd',theme:'light'};
  // Simulate an earlier theme layer which occasionally changes an overlapping token.
- const ctx=vm.createContext({settings,document:{documentElement:{dataset,style}},window:{reviewNextStain:()=>stain},applyTheme:(conflict=false)=>{if(conflict)style.setProperty('--green','#ffffff');return 'preserved'},chosenGradient,deriveAccent:(...a)=>{derivations++;return deriveAccent(...a)}});
+ const ctx=vm.createContext({settings,document:{documentElement:{dataset,style}},window:{reviewNextStain:()=>stain},applyTheme:(conflict=false)=>{if(conflict)style.setProperty('--green','#ffffff');return 'preserved'},chosenGradient,rememberBootGradient:()=>{},deriveAccent:(...a)=>{derivations++;return deriveAccent(...a)}});
  vm.runInContext(constants+'\n'+source+'\nthemes();this.run=(v)=>applyTheme(v);',ctx);
  return {settings,run:ctx.run,setStain:v=>stain=v,style,state:()=>({dataset:{...dataset},properties:[...properties],priority:[...priority]}),counts:()=>({derivations,writes,datasetWrites})};
 }

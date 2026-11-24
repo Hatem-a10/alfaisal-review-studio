@@ -4,7 +4,9 @@ function paintSyncSummary(message){const s=String(message||''),bad=!storageOK||/
 function campusTime(n){const h=Math.floor(n/60),m=n%60;return (h%12||12)+':'+String(m).padStart(2,'0')+(h>=12?' pm':' am')}
 function campusWeekStart(value){return add(value,-new Date(value+'T12:00:00Z').getUTCDay())}
 let officialGroupSchedule=null,groupScheduleError='';
-const groupTimetableReady=fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{if(!value||!Array.isArray(value.events)||!Array.isArray(value.weeks))throw Error('Invalid timetable');applyRenalScheduleAssessments(value);officialGroupSchedule=value;if(view==='calendar'||view==='dashboard')render();return value}).catch(()=>{groupScheduleError='Official timetable could not load. Reconnect and refresh.';if(view==='calendar')render();return null});
+function loadGroupTimetable(){return fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{if(!value||!Array.isArray(value.events)||!Array.isArray(value.weeks))throw Error('Invalid timetable');applyRenalScheduleAssessments(value);officialGroupSchedule=value;groupScheduleError='';window.reviewAutoRetry?.ok('group-timetable');if(view==='calendar'||view==='dashboard')render();return value}).catch(()=>{// Retry quietly; the schedule says it is loading rather than asking for a refresh.
+groupScheduleError='';window.reviewAutoRetry?.schedule('group-timetable',()=>loadGroupTimetable());return null})}
+const groupTimetableReady=loadGroupTimetable();
 function applyRenalScheduleAssessments(timetable){
  for(const row of timetable.events.filter(e=>e?.source==='Renal Schedule.pdf'&&e.kind==='assessment'&&Array.isArray(e.studentGroups)&&new Set(e.studentGroups).size===4&&typeof e.title==='string'&&Number.isInteger(e.start)&&Number.isInteger(e.end)&&e.start>=0&&e.end<=1440&&e.start<e.end&&Number.isInteger(e.references?.[0]?.page)&&e.references[0].page>0)){
   const course=row.title.match(/^(REN|MOL|COM)\b/i)?.[1]?.toUpperCase(),practical=/OSPE/i.test(row.title);

@@ -68,18 +68,17 @@
  function populate(){
   const groups=[
    ['Study',[
-    {id:'library',label:'Library',icon:navGlyph('library')},
-    {id:'labs',label:'Labs',icon:navGlyph('flask')},
-    {id:'ospe',label:'OSPE',icon:navGlyph('stethoscope')},
     ...(anatomy?[toolFrom(anatomy)]:[]),
+    {id:'anki',label:'Anki',icon:navGlyph('cards')},
    ]],
-   ['Practice',[{id:'booklet',label:'Booklet',icon:navGlyph('booklet')},{id:'anki',label:'Anki',icon:navGlyph('cards')}]],
    ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:navGlyph('hourglass')}]],
    ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('activity')},{id:'grades',label:'Grade Calculator',icon:navGlyph('calculator')},{id:'weakness',label:'Study priorities',icon:navGlyph('weakness')}]],
-   ['Help',[{id:'methods',label:'How to study',icon:navGlyph('methods')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
+   ['Help',[{id:'library',label:'Library',icon:navGlyph('library')},{id:'methods',label:'How to study',icon:navGlyph('methods')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
   ];
+  // OSPE and Labs live in Learn; Booklet has its own sidebar link (and appears here on phones).
+  groups[0][1].push({id:'booklet',label:'Booklet',icon:navGlyph('booklet')});
   const included=new Set([...desktopOnly,...groups.flatMap(([,entries])=>entries.map(tool=>tool.id))]);
-  groups[0][1].push(...[...secondary,...tools].filter(tool=>tool.id!=='sources'&&!included.has(tool.id)&&included.add(tool.id)));
+  groups[0][1].push(...[...secondary,...tools].filter(tool=>!['sources','ospe','labs'].includes(tool.id)&&!included.has(tool.id)&&included.add(tool.id)));
   grid.className='more-tool-groups';
   grid.innerHTML=groups.map(([group,links])=>'<section><h3>'+group+'</h3><div class="mobile-tools-grid">'+links.filter(tool=>mobileLayout.matches||!desktopOnly.includes(tool.id)).map(tool=>'<button type="button" data-view="'+tool.id+'">'+tool.icon+'<span>'+esc(tool.label)+'</span></button>').join('')+'</div></section>').join('');
   if(sync){sync.hidden=!mobileLayout.matches;sync.removeAttribute('data-mobile-extra');grid.append(sync);}
