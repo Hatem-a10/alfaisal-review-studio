@@ -15,8 +15,8 @@ test('calendar availability memo is scoped to a single planning run and includes
  const first=candidate.memoCapacity(capacity);
  assert.equal(first('2026-11-24',10),230);assert.equal(first('2026-11-24',10),230);
  assert.equal(first('2026-11-24',11),229);assert.equal(first('2026-11-25',10),100);
- assert.equal(calls,3);
- const second=candidate.memoCapacity(capacity);assert.equal(second('2026-11-24',10),230);assert.equal(calls,4);
+ assert.equal(first('2026-11-25'),100);assert.equal(first('2026-11-25'),100);assert.equal(calls,4);
+ const second=candidate.memoCapacity(capacity);assert.equal(second('2026-11-24',10),230);assert.equal(calls,5);
  let throwCount=0;const bad=candidate.memoCapacity(()=>{throwCount++;throw Error('temporary')});
  assert.throws(()=>bad('2026-11-24'),/temporary/);assert.throws(()=>bad('2026-11-24'),/temporary/);assert.equal(throwCount,2);
 });
