@@ -82,3 +82,8 @@ test('browser runtime replaces exact non-REN catalog rows and adds published exa
  assert.ok(!rows.some(row=>row.id==='old-lecture'));
  assert.equal(DATA.events.length,1);assert.equal(DATA.events[0].title,'CVP Final');
 });
+
+
+test('academic configuration rejects non-object category entries and does not mutate source rows during clash indexing',()=>{
+ const value=config(),before=JSON.stringify(value);assert.equal(validateAcademicConfig(value),null);assert.equal(JSON.stringify(value),before);assert.match(validateAcademicConfig(config({categories:[['anatomy','Anatomy']]})),/invalid/);
+});
