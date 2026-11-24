@@ -16,15 +16,15 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  LEARNING.questions.push(...renalTeaching.questions);
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
-window.reviewCourseConfig=id=>courses[id];
+window.reviewCourseConfig=id=>typeof id==='string'&&Object.hasOwn(courses,id)?courses[id]:undefined;
 window.reviewLessonCourseOptions=()=>[['all','All available courses'],...Object.entries(courses).filter(([id,c])=>!enabled()||context?.course==='CVP'?(!enabled()||id==='CVP'):!c.archived).map(([id,c])=>[id,c.label])];
-window.reviewAllowsUnscheduledDates=id=>courses[id.split('-')[0]]?.unscheduled===true;
+window.reviewAllowsUnscheduledDates=id=>typeof id==='string'&&window.reviewCourseConfig(id.split('-')[0])?.unscheduled===true;
 window.reviewCvpArchived=enabled;
 window.reviewArchiveEnabled=archiveEnabled;
 window.reviewViewingArchive=()=>context?.course==='CVP';
 window.reviewBookletCourse=()=>context?.view==='booklet'?context.course:enabled()?'REN':'CVP';
 window.reviewStudyItemVisible=item=>!enabled()||(context?.course==='CVP'?isCvpStudyItem(item):!isCvpStudyItem(item));
-window.reviewArchivedStudyItem=item=>enabled()&&(isCvpStudyItem(item)||item?.questions?.some(isCvpStudyItem)===true);
+window.reviewArchivedStudyItem=item=>enabled()&&(isCvpStudyItem(item)||Array.isArray(item?.questions)&&item.questions.some(isCvpStudyItem));
 const hasReviewDates=item=>item.course!=='REN'||dates(item).some(Boolean);
 window.reviewActiveStudyItems=()=>DATA.items.filter(item=>hasReviewDates(item)&&(!enabled()||item.course!=='CVP'));
 let context=null,renalLessonId='REN-A1',lastMOLLesson='MOL-1';
@@ -65,11 +65,11 @@ function show(route){
   view=route.view;
   if(view==='learning'){
    lessonCourse=route.course;
-   if(!lessonId.startsWith(route.course+'-')){lessonId=DATA.items.find(item=>item.course===route.course)?.id||lessonId;learnTab='lesson';}
+   if(typeof lessonId!=='string'||!lessonId.startsWith(route.course+'-')){lessonId=DATA.items.find(item=>item.course===route.course)?.id||lessonId;learnTab='lesson';}
   }
   if(view==='practice'&&!((etExam&&!etExam.finishedAt)||(originalRun&&!originalRun.finishedAt))){
    etScope=etMockScope=route.course;
-   if(!etLecture.startsWith(route.course+'-'))etLecture=DATA.items.find(item=>item.course===route.course)?.id||etLecture;
+   if(typeof etLecture!=='string'||!etLecture.startsWith(route.course+'-'))etLecture=DATA.items.find(item=>item.course===route.course)?.id||etLecture;
    if(route.course==='MOL')etAccurate=false;
   }
 
@@ -100,7 +100,7 @@ go=function(next){
  if(next==='practice'&&((etExam&&!etExam.finishedAt&&!window.reviewArchivedStudyItem(etExam))||(originalRun&&!originalRun.finishedAt&&!window.reviewArchivedStudyItem(ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId))))){
   show(null);return legacyGo(next);
  }
- if(next==='learning'&&view==='learning'&&context&&lessonId.startsWith(context.course+'-'))return render();
+ if(next==='learning'&&view==='learning'&&context&&typeof lessonId==='string'&&lessonId.startsWith(context.course+'-'))return render();
  if(next!=='dashboard'&&renalViews.includes(next))return open('renal',next);
  show(null);
  return legacyGo(next);
@@ -108,7 +108,8 @@ go=function(next){
 const selectLesson=window.chooseLesson;
 window.chooseLesson=function(id,...args){
  if(!enabled())return selectLesson(id,...args);
- if(renalTeaching.guides[id]){
+ if(typeof id!=='string'||!DATA.items.some(item=>item.id===id))return;
+ if(Object.hasOwn(renalTeaching.guides,id)){
   const filter=lessonCourse;
   renalLessonId=id;
   if(location.hash!=='#renal/learning')history.pushState(null,'','#renal/learning');
@@ -174,18 +175,19 @@ document.addEventListener('change',event=>{
  if(enabled()&&['etMockScope','etScope'].includes(target.id)&&['REN','MOL'].includes(target.value)&&(target.value!==context?.course)){
   open(target.value==='REN'?'renal':'mol','practice');
  }
- if(target.matches('[data-workspace-course]')){
-  const course=courses[target.value]?.slug;
+ if(target.matches?.('[data-workspace-course]')){
+  const course=window.reviewCourseConfig(target.value)?.slug;
   if(course)open(course,target.dataset.workspaceCourse);
  }
  if(!enabled()||target.id!=='lessonCourse'||context?.course==='CVP')return;
  event.stopImmediatePropagation();
  const filter=target.value;
+ if(!['REN','MOL','all','today','midterm'].includes(filter))return;
  if(filter==='REN')open('renal','learning');
  else if(filter==='all'&&context?.course==='REN'){lessonCourse=filter;render();}
  else{
   if(context?.course==='REN')show({course:'MOL',view:'learning'});
-  lessonId=lessonId.startsWith('MOL-')?lessonId:lastMOLLesson;
+  lessonId=typeof lessonId==='string'&&lessonId.startsWith('MOL-')?lessonId:lastMOLLesson;
   lessonCourse=filter;
   history.replaceState(null,'','#mol/learning');
   render();
