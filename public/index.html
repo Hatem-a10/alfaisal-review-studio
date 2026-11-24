@@ -5,26 +5,33 @@
  // Offline study stays available to the last signed-in account; logout locks it.
  const managedAccounts=window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
  let verifiedAccount=null,offlineAccount=null;
+ const validAccount=value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value);
  if(managedAccounts){
   const locked=localStorage.getItem('review-studio-managed-signed-out')==='1';
   if(typeof navigator!=='undefined'&&navigator.onLine===false){
    if(locked){location.replace('/auth/sign-in');return}
    offlineAccount=localStorage.getItem('alfaisal-review-studio-v1-account');
-   if(!/^[a-f0-9]{64}$/.test(offlineAccount||'')){
+   if(!validAccount(offlineAccount)){
     throw Error('Reconnect and sign in to open your study space.');
    }
   }else{
    try{
-    const r=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin'});
+    const controller=typeof AbortController==='function'&&typeof setTimeout==='function'?new AbortController():null;
+    const timer=controller?setTimeout(()=>controller.abort(),15000):null;
+    let r,value;try{
+     r=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin',...(controller?{signal:controller.signal}:{})});
+     if(r.ok)value=await r.json();
+    }finally{if(timer!==null)clearTimeout(timer)}
     if(r.status===401||r.status===403){location.replace('/auth/sign-in');return}
     if(!r.ok)throw Error('Account unavailable');
-    const value=await r.json();if(!/^[a-f0-9]{64}$/.test(value.accountKey))throw Error('Invalid account');
+    if(!validAccount(value?.accountKey))throw Error('Invalid account');
     verifiedAccount=value.accountKey;
    }catch{
     if(locked){location.replace('/auth/sign-in');return}
     throw Error('Could not verify your sign-in. Reconnect and retry. Your progress is retained.');
    }
-   try{localStorage.removeItem('review-studio-managed-signed-out')}catch{}
+   // Do not unlock the previous offline identity until the new verified account is hydrated.
+   if(locked||localStorage.getItem('alfaisal-review-studio-v1-account')!==verifiedAccount)localStorage.setItem('review-studio-managed-signed-out','1');
   }
  }
  globalThis.performance?.mark?.('studio-account-verified');
@@ -32,7 +39,14 @@
  const managed=k=>k===prefix||k.startsWith(prefix+'-')&&k!==accountKey||k.startsWith('review-studio-account-copy:');
  const cache=new Map(),pending=new Map();let account=rawGet.call(storage,accountKey)||'guest',db,chain=Promise.resolve(),lastError;
  const notify=error=>{lastError=error;window.dispatchEvent(new CustomEvent('device-storage-error',{detail:{message:'Device saving needs attention. Keep this tab open and reconnect to sync.'}}))};
- const open=()=>new Promise((resolve,reject)=>{const r=indexedDB.open('review-studio-device',1);r.onupgradeneeded=()=>{r.result.createObjectStore('values');r.result.createObjectStore('meta');r.result.createObjectStore('recovery')};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+ const open=()=>new Promise((resolve,reject)=>{
+  let settled=false;const r=indexedDB.open('review-studio-device',1);
+  const fail=error=>{if(settled)return;settled=true;reject(error||Error('Device storage unavailable'))};
+  r.onupgradeneeded=()=>{if(settled){r.transaction?.abort();return}r.result.createObjectStore('values');r.result.createObjectStore('meta');r.result.createObjectStore('recovery')};
+  r.onblocked=()=>fail(Error('Device storage is blocked by another study tab. Close it and retry.'));
+  r.onerror=()=>fail(r.error);
+  r.onsuccess=()=>{if(settled){r.result.close?.();return}settled=true;resolve(r.result)};
+ });
  const tx=(store,mode,action)=>new Promise((resolve,reject)=>{const t=db.transaction(store,mode),r=action(t.objectStore(store));let value;r.onsuccess=()=>value=r.result;t.oncomplete=()=>resolve(value);t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('Device write interrupted'))});
  const id=k=>account+'|'+k;
  // Read keys and values in one snapshot so a write from another tab cannot misalign them.
@@ -60,9 +74,9 @@
    account=verifiedAccount;
    await tx('meta','readwrite',s=>s.put(account,'active'));
    await tx('meta','readwrite',s=>s.put(true,'initialized:'+account));
-   try{rawSet.call(storage,accountKey,account)}catch{}
   }
   if(db)await hydrate(!!verifiedAccount);
+  if(verifiedAccount){rawSet.call(storage,accountKey,verifiedAccount);rawRemove.call(storage,'review-studio-managed-signed-out')}
  }catch(error){
   notify(error);db=null;
   if(managedAccounts)throw Error('Secure device storage is unavailable. Enable device storage and retry; your saved copies are retained.');
@@ -70,7 +84,7 @@
  if(db){Storage.prototype.getItem=function(key){key=String(key);if(this===storage){if(key===accountKey)return account==='guest'?null:account;if(managed(key))return cache.has(key)?cache.get(key):null}return rawGet.call(this,key)};
  Storage.prototype.setItem=function(key,value){key=String(key);value=String(value);if(this===storage&&key===accountKey){if(account==='guest'&&value){account=value;for(const[k,v]of cache)queue(k,v)}chain=chain.then(()=>tx('meta','readwrite',s=>s.put(value,'active'))).catch(notify);try{rawSet.call(this,key,value)}catch{}return}if(this===storage&&managed(key)){cache.set(key,value);queue(key,value);return}return rawSet.call(this,key,value)};
  Storage.prototype.removeItem=function(key){key=String(key);if(this===storage&&managed(key)){cache.delete(key);queue(key,null);try{rawRemove.call(this,key)}catch{}return}return rawRemove.call(this,key)};}
- window.ReviewDevice={get available(){return !!db},keys:()=>[...new Set([...Object.keys(storage),...cache.keys()])],flush:flushDevice,stageBatch(entries){if(!db)throw Error('Device database unavailable.');if(!Array.isArray(entries)||entries.some(e=>!Array.isArray(e)||e.length!==2||typeof e[0]!=='string'||!managed(e[0])||e[1]!==null&&typeof e[1]!=='string'))throw Error('Invalid study transaction.');for(const [key,value] of entries){if(value===null){cache.delete(key);try{rawRemove.call(storage,key)}catch{}}else cache.set(key,value);pending.set(id(key),value)}drain()},async backup(key,value){if(!db)throw Error('Device database unavailable. Your progress is retained; keep this tab open and reconnect.');await this.flush();await tx('recovery','readwrite',s=>s.put(value,key));const check=await tx('recovery','readonly',s=>s.get(key));if(check!==value)throw Error('Recovery copy verification failed.');},async confirmed(){if(!db)return;await this.flush();for(const key of this.keys())if(managed(key)&&cache.has(key)&&rawGet.call(storage,key)!==null){const verified=await tx('values','readonly',s=>s.get(id(key)));if(verified===cache.get(key))try{rawRemove.call(storage,key)}catch{}}},async switchAccount(key){if(!db)throw Error('Device database unavailable; reconnect before switching accounts.');await this.flush();account=key;await tx('meta','readwrite',s=>s.put(key,'active'));await tx('meta','readwrite',s=>s.put(true,'initialized:'+key));try{rawSet.call(storage,accountKey,key)}catch{}await hydrate();location.reload()}};
+ window.ReviewDevice={get available(){return !!db},keys:()=>[...new Set([...Object.keys(storage),...cache.keys()])],flush:flushDevice,stageBatch(entries){if(!db)throw Error('Device database unavailable.');if(!Array.isArray(entries)||entries.some(e=>!Array.isArray(e)||e.length!==2||typeof e[0]!=='string'||!managed(e[0])||e[1]!==null&&typeof e[1]!=='string'))throw Error('Invalid study transaction.');for(const [key,value] of entries){if(value===null){cache.delete(key);try{rawRemove.call(storage,key)}catch{}}else cache.set(key,value);pending.set(id(key),value)}drain()},async backup(key,value){if(!db)throw Error('Device database unavailable. Your progress is retained; keep this tab open and reconnect.');await this.flush();await tx('recovery','readwrite',s=>s.put(value,key));const check=await tx('recovery','readonly',s=>s.get(key));if(check!==value)throw Error('Recovery copy verification failed.');},async confirmed(){if(!db)return;await this.flush();for(const key of this.keys())if(managed(key)&&cache.has(key)&&rawGet.call(storage,key)!==null){const verified=await tx('values','readonly',s=>s.get(id(key)));if(verified===cache.get(key)&&verified===rawGet.call(storage,key)&&rawGet.call(storage,accountKey)===account)try{rawRemove.call(storage,key)}catch{}}},async switchAccount(key){if(!db)throw Error('Device database unavailable; reconnect before switching accounts.');await this.flush();account=key;await tx('meta','readwrite',s=>s.put(key,'active'));await tx('meta','readwrite',s=>s.put(true,'initialized:'+key));try{rawSet.call(storage,accountKey,key)}catch{}await hydrate();location.reload()}};
  globalThis.performance?.mark?.('studio-device-hydrated');
  for(const tag of document.querySelectorAll('script[type="application/x-review-studio"][data-src]'))await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=tag.dataset.src;script.onload=resolve;script.onerror=()=>reject(Error('Could not load the study app.'));document.head.append(script)});
  globalThis.performance?.mark?.('studio-scripts-loaded');
