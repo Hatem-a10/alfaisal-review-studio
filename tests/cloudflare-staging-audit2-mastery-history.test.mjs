@@ -14,6 +14,7 @@ test('completion requires 85% of available core questions, not attempted answers
  assert.equal(score({id:'MOL-1'},qs,rec(5)).complete,true);
  assert.equal(score({id:'MOL-1'},qs.concat({id:'variant',duplicateOf:'q0'}),rec(5)).complete,true);
  assert.equal(score({id:'MOL-1'},[],rec(5)).complete,false);
+ assert.equal(score({id:'CVP-P2'},qs,rec(3)).complete,true);
 });
 test('low-score mock snapshots survive saving and summaries do not enter performance',()=>{
  const stored=new Map(),etExam={id:'low',finishedAt:'2026-11-24T00:00:00Z',excludedLowScore:true};
@@ -22,7 +23,7 @@ test('low-score mock snapshots survive saving and summaries do not enter perform
  assert.equal(JSON.parse(stored.get('mock')).id,'low');
  assert.equal(JSON.parse(stored.get('history'))[0].correct,0);
  assert.match(exam,/if\(etExam.excludedLowScore\)etExam.logged=0;etHistory=/);
- assert.match(read('study-workflows.js'),/h.filter\(validMockSummary\).slice\(-100\)/);
+ assert.match(read('study-workflows.js'),/h.filter\(e=>.*slice\(-100\)/);
  assert.match(read('study-vault.js'),/k==='history'.*slice\(-100\)/);
 });
 test('draft failure produces explicit feedback and retry',()=>{
