@@ -19,7 +19,7 @@ const GroupSchedules=(()=>{
   return days.map(offset=>{const d=new Date(start+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+offset);const date=d.toISOString().slice(0,10);return {id:'personal-english-'+date,date,title:'English',start:time,end:time+60,kind:'english',custom:true,source:'Personal English preference',detail:settings?.englishFrequency===3?'Sunday, Tuesday & Thursday':'Monday & Wednesday'}});
  }
  function authority(event){return event?.course==='REN'&&typeof event.source==='string'&&/^(?:Renal Schedule\.pdf|REN123_Fall 26-27 Weekly Time Table(?:[^/]*\.xlsx)?)$/i.test(event.source)}
- function assessmentKey(event){const text=typeof event?.title==='string'?event.title:'',course=['CVP','MOL','REN','COM'].includes(event?.course)?event.course:text.match(/\b(CVP|MOL|REN|COM)\s*(?:112|114|123|116)?\b/i)?.[1]?.toUpperCase(),kind=/OSPE|practical/i.test(text)?'practical':/final/i.test(text)?'final':/mid.?term/i.test(text)?'midterm':null;return course&&kind?course+':'+kind:null}
+ function assessmentKey(event){const text=typeof event?.title==='string'?event.title:'',course=text.match(/\b(CVP|MOL|REN|COM)\s*(?:112|114|123|116)?\b/i)?.[1]?.toUpperCase()||(event?.kind==='assessment'&&['CVP','MOL','REN','COM'].includes(event?.course)?event.course:null),kind=/OSPE|practical/i.test(text)?'practical':/final/i.test(text)?'final':/mid.?term/i.test(text)?'midterm':null;return course&&kind?course+':'+kind:null}
  function authoritative(rows,source=rows){
   const byDate=new Map(),assessments=new Set();
   for(const e of array(source))if(authority(e)&&!e.shared){
