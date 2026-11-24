@@ -110,7 +110,8 @@ export function setup({reset=false,items=[]}={}){
    if(reset&&group.value===settings.studentGroup&&section.value===settings.studentSection&&validLab(settings.labGroup)&&!values.includes(settings.labGroup))values.push(settings.labGroup);
    lab.replaceChildren(new Option(group.value&&section.value?'Select your lab group':'Choose your group and section first',''));
    for(const value of values)lab.add(new Option(value,value));
-   lab.value=values.includes(preferred)?preferred:'';
+   if(!reset&&values.length)lab.add(new Option('I’ll add it later','later'));
+   lab.value=Array.from(lab.options).some(option=>option.value===preferred)?preferred:'';
    lab.disabled=!values.length;
   }
   updateLabs(reset?settings.labGroup:'');
@@ -136,7 +137,7 @@ export function setup({reset=false,items=[]}={}){
    const selected={};
    d.querySelectorAll('[data-item]:checked').forEach(el=>(selected[el.dataset.item]??=[]).push(Number(el.dataset.pass)));
    finish({profileName:name.value.trim(),studentNumber:field('number').value.trim().replace(/^#+/,'').trim(),
-    profileCreatedAt:new Date().toISOString(),labGroupConfigured:true,labGroup:lab.value,
+    profileCreatedAt:new Date().toISOString(),labGroupConfigured:true,labGroup:lab.value==='later'?'':lab.value,
     englishEnabled:englishEnabled.checked,englishFrequency:Number(field('frequency').value),englishStartTime:field('englishTime').value,
     ...groupValues(d),_selectedReviews:selected});
   };

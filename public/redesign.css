@@ -417,3 +417,10 @@ html:root body:not(.xp-exam-active) #content .phase3-tabs > span:not([class]):fi
 .mobile-dock-shell:has(.simple-mobile-nav) .dock-scroll{display:none}
 .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;height:auto!important;min-height:0;overflow:hidden!important;touch-action:pan-y}
 .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav button:not([data-mobile-extra]){min-width:0!important;min-height:48px!important;padding:4px 1px!important;gap:4px;font-size:clamp(9px,2.7vw,12px)!important}
+
+.more-tool-groups{display:grid;gap:14px}
+.more-tool-groups h3{margin:0 0 6px;font-size:1rem}
+#welcomeTourPrompt{display:flex;gap:8px;flex-wrap:wrap;margin-block:0 16px}
+#welcomeTourPrompt button,.first-lesson-step button,#firstLessonNext button{min-height:44px}
+.first-lesson-step,#firstLessonNext{margin-block:8px 14px}
+#studentWelcomeTour small{display:block;margin-top:12px;color:var(--muted)}

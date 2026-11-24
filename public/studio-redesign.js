@@ -17,37 +17,42 @@
  function assessmentStyle(event){if(!event)return {theme:0,icon:'✳'};const index=Math.max(0,assessmentDates().indexOf(event.date));return {theme:index%8,icon:['✳','◈','✦','◉','✺','◇','✷','⌁'][index%8]}};
  function homeDaySchedule(date=day){const events=campusWeekEvents(campusWeekStart(date),false).filter(e=>e.date===date&&!/prayer|lunch/i.test(e.title||'')).sort((a,b)=>a.start-b.start);const guides=DATA.events.filter(e=>e.date===date&&e.type==='MOL assessment guide'&&!events.some(x=>/MOL/i.test(x.title)&&(/TBL/i.test(x.title)===/TBL/i.test(e.title))));const rows=events.map(e=>`<button class="home-agenda-row" data-campus-event="${esc(e.id)}"><span class="home-agenda-time">${esc(campusTime(e.start))}</span><span class="agenda-dot campus-${esc(e.kind)}"></span><span class="home-agenda-copy"><strong>${esc(campusEventTitle(e).title)}</strong><small>${esc(campusEventTitle(e).detail||campusCategoryLabel(e.kind))}</small></span></button>`).join('')+guides.map(e=>`<div class="home-agenda-row home-guide-event"><span class="home-agenda-time">${esc((e.detail||'').match(/\d{2}:\d{2}–\d{2}:\d{2}/)?.[0]||'Time not listed')}</span><span class="agenda-dot campus-assessment"></span><span class="home-agenda-copy"><strong>${esc(e.title)}</strong><small>${esc(e.detail||'Assessment guide')}</small></span></div>`).join('');return `<section class="home-insights-card home-agenda"><div class="home-agenda-heading"><h2>Today’s schedule</h2><span>${esc(fmt(date))}</span></div><div class="home-agenda-list">${rows||'<p class="home-agenda-empty">No classes or events listed for this day.</p>'}</div><button class="home-text-link" data-view="calendar">Full schedule</button></section>`}
  // Active courses for progress: open (not closed after their final) and not archived.
- function homeCourses(){const items=DATA.items||[],seen=[...new Set(items.map(x=>x.course).filter(Boolean))];return seen.filter(c=>!window.reviewCourseClosed?.(c)&&!window.reviewArchivedStudyItem?.({course:c})&&(!window.reviewCourseConfig?.(c)?.unscheduled||items.some(x=>x.course===c&&(dates(x).some(reviewCalendarDay)||completed(x)>0))))}
+ function homeCourses(){const items=DATA.items||[],seen=[...new Set(items.map(x=>x.course).filter(Boolean))];return seen.filter(c=>!window.reviewCourseClosed?.(c)&&!window.reviewArchivedStudyItem?.({course:c})&&(!window.reviewCourseConfig?.(c)?.unscheduled||items.some(x=>x.course===c&&(dates(x).some(reviewCalendarDay)||evidence(x)))))}
  function nextLesson(){
   const eligible=DATA.items.filter(item=>!window.reviewCourseClosed?.(item.course)&&window.reviewStudyItemVisible?.(item)!==false);
   const current=eligible.filter(item=>item.course==='REN');
   const candidates=current.length?current:eligible;
   return candidates.find(item=>!done(item,0))||candidates[0];
  }
+ const evidence=item=>{
+  const r=rec(item),progress=r.learning;
+  return completed(item)>0||(r.mcqs||[]).some(result=>result.total>0)||(progress?.attempts||[]).length>0||Object.keys(progress?.results||{}).length>0;
+ };
+ window.reviewHasStudyEvidence=items=>items.some(evidence);
  dashboard=function(){
   const date=today(),reviews=datedReviewBuckets(date),event=nextAssessment(DATA.events,date);
   const group=window.reviewGroupLabel?.();
   const courses=homeCourses(),lesson=nextLesson();
   const reviewSummary=reviews.due.length?reviews.due.length+' due today':reviews.overdue.length?'No reviews due today.':'You’re caught up. No reviews due.';
-  const start=lesson?`<h2>${lesson.course==='REN'&&isFirstRenalLesson(lesson)?'Start your first Renal lesson':'Open your next lesson'}</h2><p>${esc(lesson.code+' · '+title(lesson))}</p><button class="primary" type="button" data-lesson="${esc(lesson.id)}">Open lesson</button>`:
+  const firstSession=lesson&&!window.reviewHasStudyEvidence(DATA.items);
+  const start=lesson?`<h2>${firstSession?(lesson.course==='REN'?'Start your first Renal lesson':'Start your first lesson'):'Open your next lesson'}</h2><p>${esc(lesson.code+' · '+title(lesson))}</p>${firstSession?'<p>Read the first topic, then try its questions.</p>':''}<button class="primary" type="button" ${firstSession?'data-first-lesson ':''}data-lesson="${esc(lesson.id)}">Open lesson</button>`:
     '<h2>Ready to study?</h2><button class="primary" type="button" data-view="learning">Browse lessons</button>';
   const expanded=document.querySelector('#homeStudyOverview')?.open;
   return `<header class="home-top"><div>${group&&group!=='Made by Hatem'?`<span class="home-kicker" data-profile-group>${esc(group)}</span>`:''}<h1>Home</h1><p class="home-summary">${esc(fullDate(date))}</p></div></header>
   <section class="panel home-next-action" id="homeNextAction">${start}</section>
   <div class="home-content-grid home-daily-grid">${homeDaySchedule(date)}
-   <section class="panel home-reviews"><div class="section-head"><h2>Today’s reviews</h2><button type="button" class="home-text-link" data-view="planner" data-day="${esc(date)}">Full plan</button></div>
+   <section class="panel home-reviews"><div class="section-head"><h2>Today’s reviews</h2><button type="button" class="home-text-link" data-view="planner" data-day="${esc(date)}">My Study Plan</button></div>
     <p>${esc(reviewSummary)}${reviews.overdue.length?' '+reviews.overdue.length+' overdue.':''}</p>
     ${reviews.due.slice(0,3).map(datedReviewItem).join('')}
    </section>
   </div>
   <details class="home-more" id="homeStudyOverview" ${expanded?'open':''}><summary>Progress and upcoming assessments</summary>
    <div class="home-more-content">${event?`<section class="panel"><h2>Next assessment</h2><p>${esc(event.title+' · '+fullDate(event.date))}</p><button type="button" data-view="calendar" data-day="${esc(event.date)}">Open schedule</button></section>`:''}
-    ${courses.map(c=>progress(c)).join('')}${courses.map(c=>readinessCard(c)).join('')}${scoreExplanation()}${heatmap()}
+    ${courses.filter(c=>DATA.items.some(item=>item.course===c&&evidence(item))).map(c=>progress(c)).join('')}
+    ${courses.filter(c=>DATA.items.filter(item=>item.course===c&&evidence(item)).length>1).map(c=>readinessCard(c)).join('')}
+    ${window.reviewHasStudyEvidence(DATA.items)?heatmap():'<p>Check your first topic quiz or complete a review to see your study progress.</p>'}
    </div>
   </details>`;
  };
- function isFirstRenalLesson(lesson){
-  return DATA.items.find(item=>item.course==='REN')?.id===lesson.id&&!DATA.items.some(item=>item.course==='REN'&&completed(item)>0);
- }
  render();
 })();

@@ -43,7 +43,8 @@ test('profile setup keeps legacy defaults and validates the required managed sch
  assert.match(source,/Object.assign\(settings,initialAppearance\);applyTheme\(\)/);
  assert.match(source,/const required=\[name,\.\.\.\(managed&&!reset\?\[group,section,lab\]:\[\]\)\]/);
  assert.match(source,/required.find\(input=>!input.value.trim\(\)\)/);
- assert.match(source,/lab.value=values.includes\(preferred\)\?preferred:''/);
+ assert.match(source,/values.length\)lab.add\(new Option\('I’ll add it later','later'\)\)/);
+ assert.match(source,/labGroup:lab.value==='later'\?'':lab.value/);
  assert.match(source,/loadGroups\(\).then\(\(\)=>fill\(true\)\)/);
 });
 const entry=readFileSync(new URL('../public/profile-entry.js',import.meta.url),'utf8');
