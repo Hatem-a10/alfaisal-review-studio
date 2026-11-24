@@ -6,6 +6,8 @@ const StudyAutopilot=(()=>{
  const own=(v,k)=>!!v&&Object.hasOwn(v,k),safeKey=k=>!['__proto__','prototype','constructor'].includes(k);
  const object=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
  const array=v=>Array.isArray(v)?v:[];
+ // Only valid during a single synchronous planning run; account/calendar changes start a new cache.
+ function memoCapacity(read){const cache=new Map();return (date,after=0)=>{const key=date+'|'+after;if(cache.has(key))return cache.get(key);const result=read(date,after);cache.set(key,result);return result}}
  function equal(a,b){
   if(a===b)return true;
   if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
@@ -136,5 +138,5 @@ const StudyAutopilot=(()=>{
  for(const x of items){const r=state[x.id];if(r.skipThird&&!r.done?.[2]){const afterSecond=r.done?.[1]?localDay(r.done[1]):r.dates?.[1]||day,date=[day,plus(afterSecond,2)].sort().at(-1),dates=[...(r.dates||x.dates)];if((x.course!=='CVP'||!final||date<final)&&dates[2]!==date){changes.push({id:x.id,field:'dates.2',before:dates[2],after:date});dates[2]=date;r.dates=dates}}}
  return {records:state,changes,omitted,unplaced,late,capacityShortfall,reset:true};
  }
- return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,thirdOptional,deadline,rebalance,automaticRebalance,freshPlan};
+ return {stampChanges,mergeRecords,mergeSettings,firstStudyAt,restoreThird,memoCapacity,thirdOptional,deadline,rebalance,automaticRebalance,freshPlan};
 })();
