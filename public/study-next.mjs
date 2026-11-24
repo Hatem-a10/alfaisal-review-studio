@@ -40,15 +40,11 @@ function resumeCard(){
  const lesson=saved.studyNextLesson;
  if(lesson&&itemById(lesson.id))entries.push({...lesson,kind:'lesson',course:itemById(lesson.id).course,title:itemById(lesson.id).title});
  const slots=entries.filter(e=>e&&!(e.course==='CVP'&&window.reviewCvpArchived?.()));
- const host=document.getElementById('homeNextAction');
- if(!host||!slots.length)return;
- const [current,...other]=slots.sort((a,b)=>Number(['mock','original'].includes(b.kind))-Number(['mock','original'].includes(a.kind))||String(b.at||'').localeCompare(String(a.at||'')));
- if(host.querySelector('details[open]'))return;
- const position=e=>e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
- const details=e=>[label(e.course),e.title,position(e)].filter(Boolean).join(' · ');
- const markup='<h2>Continue studying</h2><p>'+esc(details(current))+'</p><button type="button" class="primary" data-study-resume="'+current.kind+'">Resume '+(current.kind==='original'||current.kind==='mock'?'exam':current.kind)+'</button>'+
- (other.length?'<details class="home-resume-options"><summary>More to resume</summary>'+other.map(e=>`<button type="button" data-study-resume="${e.kind}">${esc(details(e))}</button>`).join('')+'</details>':'');
- if(host.dataset.resumeMarkup!==markup){host.innerHTML=markup;host.dataset.resumeMarkup=markup;}
+ if(!slots.length)return;
+ html('studyNextResume','<h2>Continue studying</h2><div class="study-next-resume">'+slots.map(e=>{
+  const position=e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
+  return `<button data-study-resume="${e.kind}"><strong>${esc(e.title)}</strong><span>${esc([label(e.course),position].filter(Boolean).join(' · '))}</span></button>`;
+ }).join('')+'</div>');
 }
 async function openTopic(id,index){
  const course=itemById(id)?.course;
@@ -179,16 +175,10 @@ function openWelcomeTour(){
    if(action==='open'){document.getElementById('siteAdmin')?.close();go(tourSteps[step][2]);}
   }
  });
- dialog.addEventListener('close',()=>{saveOption('welcomeTourSeen',true);dialog.remove();document.getElementById('welcomeTourPrompt')?.remove();},{once:true});
+ dialog.addEventListener('close',()=>{saveOption('welcomeTourSeen',true);dialog.remove();},{once:true});
  draw();dialog.showModal();
 }
 function tourEntry(){
- if(!options().welcomeTourSeen&&!window.reviewHasStudyEvidence?.(DATA.items)&&window.REVIEW_STUDIO_FRESH_ACCOUNTS){
-  const hero=document.getElementById('homeNextAction');
-  if(hero&&!document.getElementById('welcomeTourPrompt')){
-   (hero.closest('.home-priority-grid')||hero).insertAdjacentHTML('afterend','<div id="welcomeTourPrompt"><button type="button" class="linkbtn" data-study-tour>Take a quick tour</button> <button type="button" class="linkbtn" data-study-hide-tour>Skip tour</button></div>');
-  }
- }else document.getElementById('welcomeTourPrompt')?.remove();
  const settings=document.querySelector('#siteAdmin .admin-frame');
  if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay welcome tour</button>');
 }
@@ -210,8 +200,6 @@ function firstLessonControls(){
  }
 }
 document.addEventListener('click',e=>{
- const start=e.target.closest('[data-first-lesson]');
- if(start?.dataset.lesson)saveOption('firstLessonGuide',start.dataset.lesson);
  if(e.target.closest('[data-guide-try]')){
   const question=document.querySelector('#inlineTopicQuestions');
   const first=question?.querySelector('input[data-inline-question]:not(:disabled)');
@@ -243,7 +231,6 @@ window.addEventListener('review:academic-config',paint);
 const actionHandlers={
  'tour':openWelcomeTour,
  'lab-settings':()=>document.getElementById('openSiteAdmin')?.click(),
- 'hide-tour':()=>{saveOption('welcomeTourSeen',true);document.getElementById('welcomeTourPrompt')?.remove();},
  'sync-edit':()=>itemById(issue?.recordId)&&openEdit(issue.recordId),
  'sync-export':()=>document.getElementById('export')?.click(),
  'sync-retry':()=>document.getElementById('syncNow')?.click(),

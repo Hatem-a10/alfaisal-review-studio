@@ -18,9 +18,9 @@ test('explicitly unscheduled overflow rows still render without date sorting cra
  const rows=[{...task('REN',undefined),unscheduled:true},task('REN',today)];assert.match(harness(rows).courseDayTasks(rows,''),/2 tasks/);
 });
 test('dashboard includes Renal progress when dates or earned completions exist but excludes archived courses',()=>{
- const src=read('studio-redesign.js'),a=src.indexOf(' function homeCourses()'),b=src.indexOf(' function nextLesson',a),start=source.indexOf('function reviewCalendarDay('),end=source.indexOf('function datedReviewBuckets',start);
+ const src=read('studio-redesign.js'),a=src.indexOf(' function homeCourses()'),b=src.indexOf(' function homeSummary',a),start=source.indexOf('function reviewCalendarDay('),end=source.indexOf('function datedReviewBuckets',start);
  const items=[{course:'MOL',dates:[]},{course:'REN',dates:[today]},{course:'CVP',dates:[today]}];
- const context={DATA:{items},window:{reviewCourseConfig:c=>({unscheduled:c==='REN'}),reviewCourseClosed:()=>false,reviewArchivedStudyItem:x=>x.course==='CVP'},dates:x=>x.dates,evidence:x=>Boolean(x.done)};
+ const context={DATA:{items},window:{reviewCourseConfig:c=>({unscheduled:c==='REN'}),reviewCourseClosed:()=>false,reviewArchivedStudyItem:x=>x.course==='CVP'},dates:x=>x.dates,completed:x=>x.done||0};
  const courses=runInNewContext(source.slice(start,end)+src.slice(a,b)+'\nhomeCourses',context);
  assert.deepEqual(Array.from(courses()),['MOL','REN']);items[1].dates=[];assert.deepEqual(Array.from(courses()),['MOL']);items[1].done=1;assert.deepEqual(Array.from(courses()),['MOL','REN']);
 });
