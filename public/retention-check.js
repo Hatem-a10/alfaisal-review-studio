@@ -6,14 +6,14 @@ function recallTimestamp(item) {
 
 function validRecallRecords(records) {
  return (Array.isArray(records) ? records : []).filter(item =>
-  typeof item?.question === 'string' && typeof item.correct === 'boolean' && recallTimestamp(item) !== null
+  typeof item?.correct === 'boolean' && recallTimestamp(item) !== null
  ).sort((a,b) => recallTimestamp(a)-recallTimestamp(b));
 }
 
 function recallRecordsFor(lesson, topic, questions, records) {
  const questionIds = new Set(questions.map(question => question.id));
  return validRecallRecords(records).filter(item =>
-  item.topic === topic.id && (item.lesson === undefined ? questionIds.has(item.question) : item.lesson === lesson.id)
+  typeof item.question === 'string' && item.topic === topic.id && (item.lesson === undefined ? questionIds.has(item.question) : item.lesson === lesson.id)
  );
 }
 
