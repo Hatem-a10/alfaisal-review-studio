@@ -147,3 +147,24 @@ render();timerPaint();if(document.readyState==='loading')document.addEventListen
 function examRisk(){if(day>'2026-10-28')return '';const remaining=tasks(DATA.items.filter(x=>x.midterm)).filter(t=>!t.done).length,projected=Study.catchup(DATA.items,state,day,settings,DATA.events).filter(v=>v.date<'2026-10-29').flatMap(v=>v.selected).filter(t=>t.x.midterm&&t.p!==null).length,uncovered=Math.max(0,remaining-projected);return uncovered?`<p class="notice exam-risk"><b>Midterm capacity check:</b> ${uncovered} of ${remaining} unfinished MOL passes do not fit before October 29 at this daily budget and spacing. Increase study time, focus on the highest-risk topics, or adjust dates manually. No plan can guarantee exam readiness.</p>`:''}
 
 window.addEventListener('device-storage-error',()=>{storageOK=false;syncMessage('Device database unavailable · reconnect to sync; keep this tab open')});
+
+/* Quiet automatic retries for anything that fails to load. Each caller passes a key and
+   the work to repeat; delays grow 0.6s → 1.2s → 2.4s → 4.8s. A load that keeps failing
+   while online usually means this tab is running an older build than the server, so the
+   page reloads once (never during an exam, at most once every two minutes); after that it
+   keeps trying every 15 seconds and again as soon as the connection returns. */
+window.reviewAutoRetry=(()=>{
+ const tries=new Map(),timers=new Map(),work=new Map();
+ const examRunning=()=>document.body?.classList.contains('xp-exam-active')||!!document.getElementById('xpExam');
+ function later(key,delay){clearTimeout(timers.get(key));timers.set(key,setTimeout(()=>{timers.delete(key);try{work.get(key)?.()}catch(error){console.error(error)}},delay));}
+ function schedule(key,run){
+  work.set(key,run);if(timers.has(key))return;
+  const n=(tries.get(key)||0)+1;tries.set(key,n);
+  if(n<=4||navigator.onLine===false)return later(key,Math.min(8000,600*2**(n-1)));
+  if(n===5&&!examRunning()){try{const last=Number(sessionStorage.getItem('review-auto-reload')||0);if(Date.now()-last>120000){sessionStorage.setItem('review-auto-reload',String(Date.now()));location.reload();return}}catch{}}
+  later(key,15000);
+ }
+ function ok(key){tries.delete(key);work.delete(key);clearTimeout(timers.get(key));timers.delete(key);}
+ addEventListener('online',()=>{for(const key of work.keys())later(key,300)});
+ return {schedule,ok,pending:key=>work.has(key)};
+})();

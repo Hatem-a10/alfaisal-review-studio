@@ -47,7 +47,7 @@ function loadCourseAssessments(course){
    ORIGINAL_EXAMS[key].push(...items.filter(item=>!existing.has(item.id)));
   }
   assessmentLoads.set(course,'ready');
- }).catch(()=>assessmentLoads.set(course,'error')).finally(()=>{
+ }).catch(error=>{console.error(error);assessmentLoads.set(course,'error');window.reviewAutoRetry?.schedule('assessments-'+course,()=>{assessmentLoads.delete(course);loadCourseAssessments(course)})}).finally(()=>{
   if(view==='practice'&&etPracticeTab==='original')render();
  });
 }
@@ -67,7 +67,7 @@ function originalWorkspace(){
  if(course&&!assessmentLoads.has(course))loadCourseAssessments(course);
  const status=assessmentLoads.get(course);
  if(course==='REN'&&status==='loading')return '<p role="status">Loading Renal assessments…</p>';
- if(course==='REN'&&status==='error')return '<p role="status">Could not load Renal assessments. <button data-retry-assessments="REN">Retry</button></p>';
+ if(course==='REN'&&status==='error')return '<p role="status">Loading Renal assessments…</p>';
  if(typeof originalCatalog!=='function'){
  originalCatalog??=Promise.all([import('/original-catalog.mjs?v=2'),import('/cvp-final-mock-data.mjs'),import('/cvp-past-papers.mjs')]).then(([catalog, mock, papers])=>{
   mock.registerCvpMock(ORIGINAL_EXAMS);
