@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../lib/admin-control.mjs',import.meta.url),'utf8');
-const from=source.indexOf('async function usageAnalytics(db) {'),to=source.indexOf('\nexport async function controlRoute(',from);
+const from=source.indexOf('function analyticsSummaryQuery(db)'),to=source.indexOf('\nexport async function controlRoute(',from);
 assert.ok(from>0&&to>from);
 const ctx=vm.createContext({});vm.runInContext(source.slice(from,to)+'\nthis.usageAnalytics=usageAnalytics;',ctx);
 const rowsFor=(query,sharing=5)=>{
