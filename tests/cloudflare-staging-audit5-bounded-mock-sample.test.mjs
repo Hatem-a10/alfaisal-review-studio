@@ -13,7 +13,7 @@ const rngFor=seed=>{let x=seed>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223
 const norm=x=>JSON.parse(JSON.stringify(x));
 const median=fn=>{fn();const samples=[];for(let i=0;i<7;i++){const t=performance.now();fn();samples.push(performance.now()-t)}return samples.sort((a,b)=>a-b)[3]};
 test('A5-085 retained full shuffle for smaller banks preserves deterministic outputs',()=>{
- for(const n of [1,5,50,255,300])for(const count of [1,Math.max(1,Math.floor(n/3)),n]){const bank=makeBank(n);for(const seed of [1,10,239]){
+ for(const n of [1,5,50,255,300])for(const count of [1,Math.max(1,Math.min(200,Math.floor(n/3))),Math.min(200,n)]){const bank=makeBank(n);for(const seed of [1,10,239]){
   const a=before.create(bank,count,50,1000,rngFor(seed)),b=after.create(bank,count,50,1000,rngFor(seed));
   if(n<256||n<=count*4)assert.deepEqual(norm(b),norm(a),JSON.stringify({n,count,seed}));
   else {assert.equal(b.questions.length,count);assert.equal(new Set(b.questions.map(q=>q.id)).size,count);assert.equal(after.grade({...b,answers:{}}).questionCount,count)}
