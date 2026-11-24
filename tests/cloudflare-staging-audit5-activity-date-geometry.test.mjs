@@ -22,19 +22,19 @@ test('A5-010 cached chart geometry is isolated from returned array edits and sou
  const days={'2026-11-21':{minutes:20}},baseline={'2026-11-22':{}},questions={};
  const first=candidate('2026-11-24',days,baseline,questions,true);
  first[0]='mutated';
- assert.deepEqual(JSON.parse(JSON.stringify(candidate('2026-11-24',days,baseline,questions,true)),JSON.parse(JSON.stringify(original('2026-11-24',days,baseline,questions,true)));
+ assert.deepEqual([...candidate('2026-11-24',days,baseline,questions,true)],[...original('2026-11-24',days,baseline,questions,true))]);
  days['2024-10-01']={minutes:2};
- assert.deepEqual(JSON.parse(JSON.stringify(candidate('2026-11-24',days,baseline,questions,true)),JSON.parse(JSON.stringify(original('2026-11-24',days,baseline,questions,true)));
+ assert.deepEqual([...candidate('2026-11-24',days,baseline,questions,true)],[...original('2026-11-24',days,baseline,questions,true))]);
  delete days['2024-10-01'];
- assert.deepEqual(JSON.parse(JSON.stringify(candidate('2026-11-24',days,baseline,questions,true)),JSON.parse(JSON.stringify(original('2026-11-24',days,baseline,questions,true)));
- assert.deepEqual(JSON.parse(JSON.stringify(candidate('2026-11-24',days,baseline,questions,false)),JSON.parse(JSON.stringify(original('2026-11-24',days,baseline,questions,false)));
+ assert.deepEqual([...candidate('2026-11-24',days,baseline,questions,true)],[...original('2026-11-24',days,baseline,questions,true))]);
+ assert.deepEqual([...candidate('2026-11-24',days,baseline,questions,false)],[...original('2026-11-24',days,baseline,questions,false))]);
 });
 test('A5-010 repeated chart date creation benchmark across both display ranges',()=>{
  const day='2026-11-24',days={'2025-01-01':{minutes:30}},baseline={},questions={};
  for(const all of [false,true]){
   const a=()=>{for(let i=0;i<100;i++)original(day,days,baseline,questions,all)};
   const b=()=>{for(let i=0;i<100;i++)candidate(day,days,baseline,questions,all)};
-  assert.deepEqual(JSON.parse(JSON.stringify(candidate(day,days,baseline,questions,all)),JSON.parse(JSON.stringify(original(day,days,baseline,questions,all)));
+  assert.deepEqual([...candidate(day,days,baseline,questions,all)],[...original(day,days,baseline,questions,all))]);
   const baselineMedianMs=median(a),candidateMedianMs=median(b);
   console.log(JSON.stringify({label:'A5-010 cached activity chart geometry',baselineMedianMs,candidateMedianMs,all,days:all?366:84,repeatedCalls:100}));
  }
