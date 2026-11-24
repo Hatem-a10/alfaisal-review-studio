@@ -44,3 +44,24 @@
  function paintPerformance(){const samples=performanceSamples()||[],latest=samples.at(-1),sorted=samples.map(s=>s.ready).sort((a,b)=>a-b),middle=Math.floor(sorted.length/2),median=sorted.length%2?sorted[middle]:(sorted[middle-1]+sorted[middle])/2;$('#startupPerformance').textContent=latest?'Latest: '+(latest.ready/1000).toFixed(2)+' s · median: '+(median/1000).toFixed(2)+' s · '+samples.length+' recent launches. '+(latest.ready<=1000?'Within target.':'Above target on this launch.'):'Available after the next completed startup.'}
  window.addEventListener('studio-ready',()=>{try{const ready=performance.getEntriesByName('studio-ready').at(-1)?.startTime;if(!Number.isFinite(ready))return;const list=performanceSamples();if(!list)return;localStorage.setItem('studio-startup-metrics',JSON.stringify([...list,{at:new Date().toISOString(),ready:Math.round(ready),width:innerWidth}].slice(-20)))}catch{}});
 })();
+
+/* Sync details live in Site settings. The sidebar keeps a one-line status that opens
+   Settings; the full panel (device/cloud state, sync issues, sync now, recovery tools)
+   is moved, not copied, so every existing handler and status update keeps working. */
+(()=>{
+ const widget=document.getElementById('syncWidget'),body=widget?.querySelector('.sync-widget-body'),frame=document.querySelector('#siteAdmin .admin-frame'),open=document.getElementById('openSiteAdmin');
+ if(!widget||!body||!frame||!open)return;
+ const panel=document.createElement('section');panel.className='panel settings-sync';panel.innerHTML='<h3>Sync & backup</h3>';
+ panel.append(body);
+ const tools=document.createElement('details');tools.className='settings-sync-tools';tools.innerHTML='<summary>Recovery tools</summary>';
+ // The damaged-data export is created later in startup, so collect it whenever Settings opens.
+ const collect=()=>{const damaged=document.getElementById('exportDamagedStudy');if(damaged&&damaged.parentElement!==tools){tools.append(damaged);panel.append(tools)}};
+ collect();open.addEventListener('click',collect);window.addEventListener('studio-ready',collect);
+ frame.querySelector('.section-head')?.after(panel);
+ open.hidden=true;open.style.display='none';widget.open=false;widget.classList.add('sync-status-only');
+ const summary=widget.querySelector('summary');
+ summary?.setAttribute('aria-label','Cloud sync status. Open sync settings');
+ summary?.addEventListener('click',e=>{e.preventDefault();open.click()});
+ widget.addEventListener('toggle',()=>{if(widget.open)widget.open=false});
+ const mobile=document.getElementById('mobileSyncSettings');if(mobile)mobile.onclick=()=>open.click();
+})();
