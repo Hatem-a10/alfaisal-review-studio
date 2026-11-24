@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 125 newly merged candidate scopes (107 speed-oriented changes and 18 measurement capabilities), 80 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 91 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 126 newly merged candidate scopes (108 speed-oriented changes and 18 measurement capabilities), 83 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 87 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -154,7 +154,7 @@ Status reconciled against GitHub on 24 November 2026: 125 newly merged candidate
 | A5-095 | Immutable-cache fingerprinted public assets | Merged #222; staging CI passed; scoped optimization |
 | A5-096 | Use conditional requests for versioned resources | Existing coverage; reviewed scope in evidence |
 | A5-097 | Lazy-load offscreen thumbnails and images | Existing coverage; reviewed scope in evidence |
-| A5-098 | Subset fonts while preserving required glyphs | Unassessed |
+| A5-098 | Subset fonts while preserving required glyphs | Existing coverage; Schibsted Latin/Latin-ext Unicode ranges and swap fallback |
 | A5-099 | Consolidate duplicate CSS assets respecting Examplify isolation | Existing: build CSS grouped and minified with inline-style ordering preserved; source/test verified |
 | A5-100 | Use efficient PDF byte-range delivery where supported | Existing coverage; reviewed scope in evidence |
 
@@ -360,7 +360,7 @@ Status reconciled against GitHub on 24 November 2026: 125 newly merged candidate
 | A5-231 | Deduplicate identical concurrent account-scoped GET requests | Merged #174; CI passed; account-scoped Anki listing deduplication |
 | A5-232 | Cancel superseded read requests on route changes | Merged #176; CI passed; cancel stale Library reads |
 | A5-233 | Combine compatible small metadata reads | Merged #228; CI passed; one read-only D1 analytics batch |
-| A5-234 | Reduce oversized response field sets per view | Unassessed |
+| A5-234 | Reduce oversized response field sets per view | Existing coverage; account-scoped material and deck SELECT projections |
 | A5-235 | Reuse stable response schema encoding | Merged #193; staging CI passed; scoped optimization |
 | A5-236 | Avoid redundant HEAD before known GET resources | Merged #194; staging CI passed; scoped optimization |
 | A5-237 | Prioritize critical requests over speculative prefetch | Merged #208; staging CI passed; scoped optimization |
@@ -387,13 +387,13 @@ Status reconciled against GitHub on 24 November 2026: 125 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-251 | Load student count before optional detailed breakdown | Unassessed |
+| A5-251 | Load student count before optional detailed breakdown | Merged #231; CI passed; overview only fetches account summary SELECT |
 | A5-252 | Query only requested report date range | Unassessed |
 | A5-253 | Aggregate report metrics in database when equivalent | Existing coverage; database-side SQL COUNT/SUM/GROUP BY analytics |
 | A5-254 | Stream large authorized export output | Unassessed |
 | A5-255 | Defer offscreen chart series computations | Unassessed |
 | A5-256 | Reuse report filter options per dataset revision | Unassessed |
-| A5-257 | Index audit event lists by timestamp and type | Unassessed |
+| A5-257 | Index audit event lists by timestamp and type | Existing coverage; audit timestamp/id index and chronological paging; no type filter |
 | A5-258 | Batch permission-scoped student metadata reads | Existing coverage; one permission-scoped students JOIN and projection |
 | A5-259 | Avoid repeatedly recomputing unchanged group roster totals | Unassessed |
 | A5-260 | Cache derived report chart points within one view session | Merged #225; CI passed; cache stable Admin storage chart HTML |
@@ -659,6 +659,15 @@ The following five were already covered by source, and are **not newly implement
 Pending but **not credited here**: A5-251 in [PR #229](https://github.com/Hatem-a10/alfaisal-review-studio/pull/229); it must pass staging CI and merge before implementation credit.
 
 No production release, schema application, student-data editing, or academic/scoring changes.
+
+## Audit 5 continuing — verified A5-251 and three existing optimizations (24 November 2026)
+
+- **A5-251 merged:** [PR #231](https://github.com/Hatem-a10/alfaisal-review-studio/pull/231), successful [staging CI 45440580731](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45440580731), switched owner overview to one privacy-suppressed aggregate SELECT while Analytics retains the separate, five-query D1 batch. This is one newly implemented speed-oriented scope.
+- **A5-098 existing:** `public/redesign.css` already declares self-hosted Schibsted Grotesk with distinct Latin and Latin-ext `@font-face` files, specific `unicode-range` blocks, weight ranges, `font-display:swap`, and system-ui fallback. Thus basic glyph subsetting is already in use. This is not evidence of optimal font byte counts or coverage of every non-Latin glyph.
+- **A5-234 existing:** `app/api/materials/route.ts` and `app/api/decks/route.ts` project precise per-view D1 columns for listings rather than using `SELECT *`, including explicit user scoping. The register should not credit the same projection twice as a new runtime change.
+- **A5-257 existing, constrained:** `staging/admin-control.sql` defines `control_audit_recent(created_at DESC,id)`; `lib/admin-control.mjs` requests only the recent timestamp-window with identical ordering and bounded page size. The current audit UI has no action-type filter, so no speculative type index was added.
+
+These three reviewed mechanisms are **not newly implemented**. Staging-only GitHub merges do not establish production deployment or measured live performance.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
