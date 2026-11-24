@@ -26,15 +26,17 @@ export function planStudent(items,records={},instant=new Date(),selected={},cons
   else entries.push({item,old,done});
  }
  for(const {item,old,done} of entries){
-  const dates=[start,start,start],fallback=Array.isArray(item.dates)&&item.dates.length===3&&item.dates.every(validDay)?item.dates:null;let prior=null,unplaced=false;
+  const dates=[start,start,start],fallback=Array.isArray(item.dates)&&item.dates.length===3&&item.dates.every(validDay)?item.dates:null;let prior=null,unplaced=false;const allocations=[];
   for(let p=0;p<3;p++){
    if(done[p]){prior=completedDay(done[p])||prior;dates[p]=validDay(old.dates?.[p])?old.dates[p]:prior||start;continue}
    let candidate=prior?[start,add(prior,p===1?1:2)].sort().at(-1):start,chosen=null;const final=validDay(finals[item.course])?finals[item.course]:null;
    for(;candidate<=horizon;candidate=add(candidate,1)){if(final&&candidate>=final)break;if(free(candidate)&&(used.get(candidate)||0)+minutes[p]<=budget){chosen=candidate;break}}
-   if(chosen){dates[p]=chosen;prior=chosen;reserve(chosen,p)}
+   if(chosen){dates[p]=chosen;prior=chosen;reserve(chosen,p);allocations.push([chosen,p])}
    else{unplaced=true;if(fallback)dates[p]=fallback[p];warnings.push({id:item.id,pass:p,reason:final?'No available capacity before the final.':'No available capacity in the planning horizon.'});prior=null}
   }
-  out[item.id]={...old,dates:unplaced&&!fallback&&item.course==='REN'?[]:dates,done};
+  const unscheduled=unplaced&&!fallback&&item.course==='REN';
+  if(unscheduled)for(const [date,pass] of allocations)used.set(date,Math.max(0,(used.get(date)||0)-minutes[pass]));
+  out[item.id]={...old,dates:unscheduled?[]:dates,done};
  }
  return {records:out,warnings,start};
 }
