@@ -1,3 +1,4 @@
+import {readBounded,RequestTooLarge} from '../../../lib/bounded-request';
 import {requestOwner} from '../../../lib/owner-access';
 import {env} from 'cloudflare:workers';
 import {groupsFromRows, sameOrigin, validateGroups} from '../../../lib/academic-config.mjs';
@@ -23,8 +24,7 @@ export async function PUT(request:Request) {
  if (!await requestOwner(request)) return json({error:'Owner authorization required.'},403);
  if (!env.DB) return json({error:'Academic configuration is unavailable.'},503);
  if (Number(request.headers.get('content-length')) > 100000) return json({error:'Configuration is too large.'},413);
- const raw = await request.text();
- if (raw.length > 100000) return json({error:'Configuration is too large.'},413);
+ let raw:string;try{raw=new TextDecoder().decode(await readBounded(request,100000))}catch(e){return json({error:e instanceof RequestTooLarge?'Configuration is too large.':'Invalid configuration body.'},e instanceof RequestTooLarge?413:400)}
  let body:unknown;
  try { body = JSON.parse(raw); } catch { return json({error:'Invalid JSON.'},400); }
  if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).join(',') !== 'groups' || !validateGroups((body as {groups:unknown}).groups)) return json({error:'Invalid academic configuration.'},400);
