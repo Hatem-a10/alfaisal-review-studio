@@ -1,7 +1,7 @@
 # Audit 4 — completion and release boundary
 
 **Date:** November 24, 2026
-**Scope:** Alfaisal Review Studio, \`cloudflare-staging\`; active MOL 114 and REN 123 courses and shared application/runtime paths.
+**Scope:** Alfaisal Review Studio, `cloudflare-staging`; active MOL 114 and REN 123 courses and shared application/runtime paths.
 **Outcome:** 500 distinct documented source-level findings and hardening cases addressed in merged changes, each with a successful candidate GitHub CI run. The canonical register is [AUDIT-4-INDEX.md](AUDIT-4-INDEX.md).
 
 ## Completion evidence
@@ -28,7 +28,7 @@ The separate final register validation test checks all 500 contiguous IDs, trace
 
 - **500 is the number of source-level findings and hardening cases** recorded in the audit, not 500 confirmed production incidents, production outages, or device-tested user journeys. Different candidate test runs are not summed to manufacture more findings.
 - **No production deployment was authorized or made as part of Audit 4.** Student records, exam history, private files, and archived CVP lecture materials were not intentionally migrated, wiped, or edited.
-- The Safari \`/%23dashboard\` sign-in return defect has a CI-passed staging code fix in PR #78. It has **not** been verified with a real authenticated production Safari session after a production deployment.
+- The Safari `/%23dashboard` sign-in return defect has a CI-passed staging code fix in PR #78. It has **not** been verified with a real authenticated production Safari session after a production deployment.
 - GitHub CI and synthetic tests do not replace a hosted authenticated end-to-end smoke test. Real Clerk email/Google login, account isolation, offline recovery and device-browser compatibility must be checked during the separate release procedure.
 - Unresolved non-target follow-up work includes retention policy and cleanup decisions, authoritative server-side card counts, precise session attribution, editorial validation of diagrams/answer keys, and authenticated device-browser verification.
 
