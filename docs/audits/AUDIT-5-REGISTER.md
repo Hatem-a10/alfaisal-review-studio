@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 56 newly merged candidate scopes recorded, 55 existing mechanisms source-reviewed, 1 rejected/not-applicable candidate, 2 submitted candidates, and 186 not yet assessed. This evidence-only update does not claim new speed gains; merges after prior register reconciliation may need further receipt updates.
+Status at this evidence update: 56 newly merged candidates recorded, 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 2 prior submitted items and 180 unassessed candidates. Evidence-only review; merges newer than the register require reconciliation. No performance gain attributed to an existing feature without measurement.
 
 ## Activity analytics
 
@@ -198,10 +198,10 @@ Status at this evidence update: 56 newly merged candidate scopes recorded, 55 ex
 | A5-124 | Precompute recurrence expansion for bounded visible weeks | Unassessed |
 | A5-125 | Reuse overlap layout until visible event set changes | Unassessed |
 | A5-126 | Sort timetable event lanes once per calendar day | Existing coverage; campusLayout groups by day before sorting; reviewed |
-| A5-127 | Avoid rebuilding hidden timetable views on clock tick | Unassessed |
+| A5-127 | Avoid rebuilding hidden timetable views on clock tick | Existing narrower: second-tick timer toggles live event classes without rebuilding timetable board |
 | A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Merged #118; CI passed |
 | A5-129 | Memoize event category counts per selected group | Unassessed |
-| A5-130 | Render only visible calendar range with preserved navigation | Unassessed |
+| A5-130 | Render only visible calendar range with preserved navigation | Existing: academic timetable renders five days or one compact day |
 
 ## Dashboard selectors
 
@@ -241,7 +241,7 @@ Status at this evidence update: 56 newly merged candidate scopes recorded, 55 ex
 | A5-152 | Incrementally count original exam responses across active answer edits | Merged #158; CI passed; narrowed scope |
 | A5-153 | Cache exam review filter membership per attempt revision | Unassessed |
 | A5-154 | Count exam receipt scoring and validation tallies in one pass | Merged #125; CI passed |
-| A5-155 | Precompute static option permutations at attempt creation | Unassessed |
+| A5-155 | Precompute static option permutations at attempt creation | Existing: exam option and rationale permutations fixed when mock created |
 | A5-156 | Index original exam source metadata for one render | Merged #154; CI passed; narrowed original exam scope |
 | A5-157 | Reuse classic mock navigation grid cells on flag and answer changes | Merged #146; CI passed |
 | A5-158 | Defer original-exam answer explanations until review | Existing coverage; originalQuestionMarkup renders feedback only after submission; reviewed narrow scope |
@@ -300,7 +300,7 @@ Status at this evidence update: 56 newly merged candidate scopes recorded, 55 ex
 | A5-191 | Batch read-only IndexedDB lookups in one transaction | Existing coverage; reviewed scope in evidence |
 | A5-192 | Reuse Anki IndexedDB connection with versionchange cleanup | Existing coverage; ankiDBPromise single-flight, versionchange closes connection |
 | A5-193 | Avoid device-store rehydration on routine view navigation | Existing coverage; device hydrate on boot or explicit account switch |
-| A5-194 | Load companion stores on first feature access | Unassessed |
+| A5-194 | Load companion stores on first feature access | Existing narrower: companion stores read lazily through StudyVault.read after metadata bootstrap |
 | A5-195 | Store stable index metadata alongside records when validated | Unassessed |
 | A5-196 | Use cursor iteration for large local collections | Unassessed |
 | A5-197 | Avoid copying large binary blobs into JS arrays | Existing narrower: source streams assembled once into bounded Uint8Array, not copied into JS byte arrays |
@@ -348,8 +348,8 @@ Status at this evidence update: 56 newly merged candidate scopes recorded, 55 ex
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Unassessed |
 | A5-225 | Release inactive search result/index caches on dialog close | Existing coverage; search close clears index/results and pending callbacks |
 | A5-226 | Release image decode references on route exit | Existing narrower: Anki closes/replaces card faces with object-URL revocation |
-| A5-227 | Avoid retaining detached DOM through closures | Unassessed |
-| A5-228 | Reuse immutable source objects across views | Unassessed |
+| A5-227 | Avoid retaining detached DOM through closures | Existing narrower: closing quick-search dialog releases results and DOM buttons |
+| A5-228 | Reuse immutable source objects across views | Existing narrower: library snapshots reuse canonical source objects within a single render |
 | A5-229 | Bound question-history memo maps to one calculation | Existing coverage; local Map lifetimes in questionHistory |
 | A5-230 | Profile heap growth across repeated navigation and optimize retained allocations | Unassessed |
 
@@ -602,3 +602,10 @@ Scope below reflects existing mechanisms verified in repository source and relat
 | **A5-197** | public/source-demand.js; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Reading parser retains typed stream chunks and performs a single size-checked typed-array assembly. Does not assert zero copies in browser-native Blob internals. |
 | **A5-202** | public/phase3-offline.mjs; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Worker registration relies on browser lifecycle; no custom recurring `registration.update()` timer exists. Native browser update checks are outside app scope. |
 | **A5-226** | public/anki.js; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Anki card replacement/exit revokes object URLs. Other image surfaces are not covered by this narrower classification. |
+| **A5-127** | public/hub-upgrade.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | One-second paint toggles live event state, with separate day-rollover rendering; no general view diffing claim. |
+| **A5-130** | public/schedule-ui.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | Five-day academic grid on desktop and one active-day column in compact mode; other calendar views remain unassessed. |
+| **A5-155** | public/exam-engine.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | Option and reason permutation fixed on mock creation, persisted in the attempt; no per-render reshuffle. |
+| **A5-193** | public/device-storage.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | Additional regression coverage for the pre-existing device hydration scope already classified by #172; NOT additional candidate credit. |
+| **A5-194** | public/study-vault.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | Vault boot reads only metadata; companion JSON is read when feature invokes StudyVault.read. Not proof of zero startup reads elsewhere. |
+| **A5-227** | public/phase1-search.mjs; tests/cloudflare-staging-audit5-existing-007.test.mjs | Quick-search close discards index, results, references and child buttons; other detached DOM closure paths remain unassessed. |
+| **A5-228** | public/library-list.js; tests/cloudflare-staging-audit5-existing-007.test.mjs | Canonical source map exposes original source objects during single synchronous library render; no cross-account cache claim. |
