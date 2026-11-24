@@ -14,7 +14,7 @@ function themes(){const old=applyTheme;applyTheme=function(...args){const result
 async function readingData({enrich=false}={}){
  const archived=item=>window.reviewArchivedStudyItem?.(item)===true;
  // Course content loads on demand; search and reading need every active (non-archived) course.
- await window.reviewEnsureCourses?.(Object.keys(globalThis.REVIEW_COURSE_PACKS||{}).filter(course=>!archived({course})));
+ if(enrich)await window.reviewEnsureCourses?.(Object.keys(globalThis.REVIEW_COURSE_PACKS||{}).filter(course=>!archived({course})));
  if(enrich)await Promise.allSettled([window.ensureObjectivePack?.(),...(!archived({course:'CVP'})?[window.loadCvp19?.(),window.Cvp19?.ensure()]:[])]);
  const archivedRefs=new Set(LEARNING.lessons.filter(archived).flatMap(l=>[
   ...(l.references||[]),...(l.facts||[]).flatMap(f=>f.references||[]),

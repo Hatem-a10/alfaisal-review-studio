@@ -17,4 +17,4 @@ export async function knownOriginal(bucket:R2Bucket,sha:string,size:number){
  return null;
 }
 export async function materialRows(db:D1Database,user:string){const r=await db.prepare("SELECT id,name,lecture_id AS lectureId,mime,bytes,page_count AS pageCount,created_at AS createdAt FROM study_materials WHERE user_id=? AND lecture_id!='ANKI' ORDER BY created_at ASC,id ASC").bind(user).all<MaterialRow>();return r.results}
-export async function duplicateMaterial(bucket:R2Bucket,user:string,rows:MaterialRow[],sha:string,size:number){for(const row of rows.filter(r=>r.bytes===size)){const original=await materialOriginal(bucket,user,row.id);if(original&&await digest(await original.arrayBuffer())===sha)return row}return null}
+export async function duplicateMaterial(bucket:R2Bucket,user:string,rows:MaterialRow[],sha:string,size:number){for(const row of rows.filter(r=>r.bytes===size)){const head=await bucket.head(base(user,row.id)+'/original');if(head?.size===size&&head.customMetadata?.sha256===sha)return row;const original=await materialOriginal(bucket,user,row.id);if(original&&await digest(await original.arrayBuffer())===sha)return row}return null}
