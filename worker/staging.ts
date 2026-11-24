@@ -6,15 +6,26 @@ import {authenticateManaged,managedAuthConfig} from '../lib/managed-auth.mjs';
 import {managedPage,managedPublicConfig,privacyPage} from '../lib/managed-auth-pages.mjs';
 import {managedAccount,managedAccountRoute} from '../lib/managed-accounts.mjs';
 import {accountControl,adminResponse,adminWriteGate,auditWriter,controlRoute,controls,countControlEvent,verifiedAdminChallenge} from '../lib/admin-control.mjs';
-import {academicAdmin,academicStudent} from '../lib/admin-academics.mjs';
-import {contentAdmin,contentStudent} from '../lib/admin-content.mjs';
-import {resourceAdmin,resourceStudent} from '../lib/admin-resources.mjs';
 import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
 import {assetFor,serveAsset} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
 import {readClientError} from '../lib/client-error.mjs';
 import {stampOfflineAccount} from '../lib/offline-account.mjs';
 import {managedDashboardLanding} from '../lib/managed-login-landing.mjs';
+
+// A5-043: only Control Center requests load their academic/content/resource
+// handler modules; ordinary student boot, assets and progress routes avoid eagerly
+// evaluating these Admin-only dependencies. ESM caching makes subsequent calls cheap.
+async function controlHandlers(student:boolean){
+ const [academic,content,resource]=await Promise.all([
+  import('../lib/admin-academics.mjs'),
+  import('../lib/admin-content.mjs'),
+  import('../lib/admin-resources.mjs')
+ ]);
+ return student
+  ?[academic.academicStudent,content.contentStudent,resource.resourceStudent]
+  :[academic.academicAdmin,content.contentAdmin,resource.resourceAdmin];
+}
 
 const stagingWorker = {
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
@@ -86,8 +97,9 @@ const stagingWorker = {
    const canonical=path.replace(/\/+$/,'');
    if(canonical.startsWith('api/control-center/')){
     const student=canonical.startsWith('api/control-center/student/');
-    const response=await controlRoute({request,env:config,user:auth.user,row,owner,path:'/'+canonical,
-     handlers:student?[academicStudent,contentStudent,resourceStudent]:[academicAdmin,contentAdmin,resourceAdmin]});
+    let handlers;
+    try{handlers=await controlHandlers(student)}catch{return adminResponse({error:'Admin feature modules unavailable.'},503)}
+    const response=await controlRoute({request,env:config,user:auth.user,row,owner,path:'/'+canonical,handlers});
     const download=/^api\/control-center\/student\/resources\/([a-f0-9-]{36})\/download$/i.exec(canonical);
     if(response?.ok&&download)ctx.waitUntil(countControlEvent(env.DB,'resource-open:'+download[1]).catch(()=>{}));
     return response;
