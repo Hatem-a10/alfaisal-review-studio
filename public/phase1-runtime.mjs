@@ -6,7 +6,7 @@ import {installSearch} from './phase1-search.mjs';
 await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498")]);
 await import("./mobile-dock.js?v=1498");
 await import("./studio-navigation.js?v=1498");
-let solver;
+let solver,solverRetries=0;
 // Mid tones of the eight stain palettes in redesign.css (--st-b), in the same order.
 export const STAIN_ACCENTS=['#3a2f86','#245796','#8e2a6c','#226a8f','#5c4428','#246b52','#4d3a99','#93302d'];
 const DEFAULT_ACCENTS=/^#(?:5b4bd0|2f6c52)$/i;
@@ -28,7 +28,7 @@ async function readingData({enrich=false}={}){
  };
 }
 function jump(item){if(window.reviewArchivedStudyItem?.({...item,lectureId:item.lecture}))return;if(item.kind==='material'){go('library');const url=libraryDocumentURL(sourceById(item.id));if(url){const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.click()}return}let id=item.lecture,topic=item.topic,index=-1;if(item.kind==='question'){for(const lesson of LEARNING.lessons){const groups=inlineGroups(lesson).groups;const found=groups.findIndex(group=>group.some(q=>q.id===item.id));if(found>=0){id=lesson.id;topic=found;index=groups[found].findIndex(q=>q.id===item.id);break}}}if(!lessonById(id))return;chooseLesson(id);if(Number.isInteger(topic)){guideTopic=cardIndex=topic;guideTopicLesson=id;learnTab='lesson';render()}requestAnimationFrame(()=>{const target=index>=0?document.getElementById('inline-question-'+index):document.querySelector('.guide-section,.complete-guide,.teaching-card,#inlineTopicQuestions');target?.scrollIntoView({block:'start',behavior:'instant'})})}
-function enhance(){declutter(document);mountAcademicAdmin();if(view==='grades'){solver??=import('./grade-solver.mjs');solver.then(m=>{if(view==='grades')m.mountGradeSolver(document.getElementById('content'),()=>storeOptions().grades||[])})}}
+function enhance(){declutter(document);mountAcademicAdmin();if(view==='grades'){solver??=solverRetries?import('./grade-solver.mjs?retry='+solverRetries):import('./grade-solver.mjs');const pending=solver;pending.then(m=>{if(view==='grades')m.mountGradeSolver(document.getElementById('content'),()=>storeOptions().grades||[])}).catch(()=>{if(solver===pending){solver=null;solverRetries++}if(view!=='grades')return;const host=document.getElementById('content');if(!host||host.querySelector('[data-grade-retry]'))return;const note=document.createElement('p'),button=document.createElement('button');note.dataset.gradeRetry='';note.setAttribute('role','status');note.textContent='Score Needed could not load. ';button.type='button';button.textContent='Retry';button.onclick=()=>{note.remove();enhance()};note.append(button);host.append(note)})}}
 themes();const old=render;render=function(...args){const result=old.apply(this,args);enhance();return result};
 installSearch({read:readingData,open:jump,blocked:()=>!!document.querySelector('#xpExam')});
 // Wizard is mounted asynchronously outside the content tree.

@@ -17,6 +17,7 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
 window.reviewCourseConfig=id=>courses[id];
+window.reviewLessonCourseOptions=()=>[['all','All available courses'],...Object.entries(courses).filter(([id,c])=>!enabled()||context?.course==='CVP'?(!enabled()||id==='CVP'):!c.archived).map(([id,c])=>[id,c.label])];
 window.reviewAllowsUnscheduledDates=id=>courses[id.split('-')[0]]?.unscheduled===true;
 window.reviewCvpArchived=enabled;
 window.reviewArchiveEnabled=archiveEnabled;
