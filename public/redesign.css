@@ -424,3 +424,14 @@ body:not(.xp-exam-active) #welcomeTourPrompt{display:flex;gap:8px;flex-wrap:wrap
 body:not(.xp-exam-active) #welcomeTourPrompt button,body:not(.xp-exam-active) .first-lesson-step button,body:not(.xp-exam-active) #firstLessonNext button{min-height:44px}
 body:not(.xp-exam-active) .first-lesson-step,body:not(.xp-exam-active) #firstLessonNext{margin-block:8px 14px}
 body:not(.xp-exam-active) #studentWelcomeTour small{display:block;margin-top:12px;color:var(--muted)}
+
+body:not(.xp-exam-active) .home-priority-grid{margin-bottom:16px;align-items:stretch}
+body:not(.xp-exam-active) .home-priority-grid .home-next-action{margin:0;min-width:0;align-content:center}
+body:not(.xp-exam-active) .home-review-column{display:grid;min-width:0;gap:14px}
+body:not(.xp-exam-active) .home-review-column>.panel,
+body:not(.xp-exam-active) .home-daily-grid>.home-agenda{margin:0}
+body:not(.xp-exam-active) .home-overdue summary{min-height:44px;align-content:center;cursor:pointer}
+body:not(.xp-exam-active) .home-spotlight .home-assessment-name{color:#fff;font-size:clamp(1rem,2vw,1.3rem);font-weight:700}
+@media(max-width:700px){
+ body:not(.xp-exam-active) .home-priority-grid .home-spotlight{min-height:0}
+}
