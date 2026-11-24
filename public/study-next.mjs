@@ -67,27 +67,32 @@ function topicsFor(questions){
  }
  return rows;
 }
+const resultAttempt=()=>etPracticeTab==='original'&&visibleOriginalRun()?originalRun:etPracticeTab==='mock'?etExam:null;
+const revisionKey=run=>String(run.id||run.setId)+':'+run.finishedAt;
 function reviewPanel(){
- const run=etPracticeTab==='original'&&visibleOriginalRun()?originalRun:etPracticeTab==='mock'?etExam:null;
+ const run=resultAttempt();
  if(!run?.finishedAt||run.cancelled||document.querySelector('#xpExam')||content()?.querySelector('#studyNextRevision'))return;
  html('studyNextRevision','<h2>Revise exam mistakes</h2><button data-study-build-revision>Build revision session</button><div data-study-revision-body></div>');
+ paintRevision();
 }
 async function buildRevision(){
- const run=etPracticeTab==='original'?originalRun:etExam;
+ const run=resultAttempt();
  if(!run?.finishedAt)return;
  const questions=run.ids?run.ids.map(originalQuestionById).filter(Boolean):run.questions;
  const scopes=[...new Set([...questions.flatMap(q=>(q.lectureIds||[]).map(id=>id.split('-')[0])),window.reviewCourseScope].filter(Boolean))];
  await window.reviewEnsureCourses?.(scopes);
- if(view!=='practice'||(run!==originalRun&&run!==etExam))return;
+ if(view!=='practice'||run!==resultAttempt())return;
  const rows=revisionQueue(run,questions,topicsFor(questions));
- revision={rows,key:String(run.id||run.setId)+':'+run.finishedAt};
+ revision={rows,key:revisionKey(run)};
  paintRevision();
 }
 function paintRevision(){
- const body=content()?.querySelector('[data-study-revision-body]');if(!body||!revision)return;
+ const body=content()?.querySelector('[data-study-revision-body]');const run=resultAttempt();
+ if(!body||!revision||!run||revision.key!==revisionKey(run))return;
  const {rows}=revision,mapped=rows.filter(r=>r.topic);
+ const added=(options().requiredPlannerTasks||[]).some(task=>task.revisionKey===revision.key&&!task.deleted);
  body.innerHTML=rows.length?'<p>'+rows.length+' missed · '+mapped.length+' linked to a lesson topic</p>'+
- (mapped.length?'<button data-study-add-revision>Add to today’s plan</button>':'')+
+ (mapped.length?(added?'<p role="status">Added to today’s plan.</p>':'<button data-study-add-revision>Add to today’s plan</button>'):'')+
  '<ol>'+rows.map((row,i)=>`<li>Question ${row.number} · ${esc(row.topic?.title||'Topic mapping unavailable')}${row.topic?` <button data-study-revision-topic="${i}">Open topic</button>`:''}${row.next?` <button data-study-revision-practice="${i}">Try another question</button>`:''}</li>`).join('')+'</ol>':'<p>No scored mistakes in this attempt.</p>';
 }
 function practiceAlternate(question){
@@ -105,7 +110,7 @@ function addRevision(){
  if(list.some(task=>task.revisionKey===revision.key&&!task.deleted))return;
  const entries=revision.rows.filter(row=>row.topic).map(row=>({lectureId:row.topic.lectureId,index:row.topic.index,title:row.topic.title,questionId:row.next?.id}));
  saveOption('requiredPlannerTasks',[...list,{id:crypto.randomUUID(),date:today(),title:'Revise '+entries.length+' exam mistakes',revisionKey:revision.key,entries,required:true}]);
- paintRevision();const body=content()?.querySelector('[data-study-revision-body]');body?.querySelector('[data-study-add-revision]')?.replaceWith(document.createTextNode('Added to today’s plan.'));
+ paintRevision();
 }
 function planInputs(){
  const clock=assessmentClock(),items=window.reviewActiveStudyItems?.()||DATA.items,catalog=AssessmentPlan.catalog(DATA.events,DATA.items);
