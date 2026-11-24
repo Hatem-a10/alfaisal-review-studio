@@ -8,7 +8,7 @@ test('Audit 5 register has exactly 300 distinct candidate IDs and consistent sta
  assert.equal(rows.length,300);assert.equal(new Set(rows.map(x=>x[1])).size,300);
  const counts={merged:0,existing:0,rejected:0,submitted:0,unassessed:0};
  for(const row of rows){
-  const status=row[3].trim(),key=status.startsWith('Merged')?'merged':status.startsWith('Existing')?'existing':status.startsWith('Rejected')?'rejected':status.startsWith('Submitted')?'submitted':status==='Unassessed'?'unassessed':null;
+  const status=row[3].trim(),key=status.startsWith('Merged')?'merged':status.startsWith('Existing')?'existing':status.startsWith('Rejected')?'rejected':status.startsWith('Submitted')?'submitted':status.startsWith('Unassessed')?'unassessed':null;
   assert.ok(key,'Unsupported status for '+row[1]);counts[key]++;
  }
  assert.equal(Object.values(counts).reduce((a,b)=>a+b,0),300);
