@@ -20,13 +20,13 @@ test('A5-176 Anki visible card face contains exactly the same sanitized markup',
   assert.equal(await current.run(),await old.run());
   assert.deepEqual(current.revoked,old.revoked);
   assert.deepEqual(current.reads,occlusion?['FRONT','SHARED']:back?['BACK','SHARED']:['FRONT','SHARED']);
-  assert.deepEqual(old.reads,['FRONT','BACK','SHARED']);
+  assert.deepEqual(old.reads,['FRONT','BACK','UNUSED','SHARED']);
  }
 });
 test('A5-176 avoid decoding media only mentioned by inactive template or hidden fields',async()=>{
  const old=fixture(baseline),next=fixture(candidate);
  await old.run();await next.run();
- assert.equal(old.reads.length,3);
+ assert.equal(old.reads.length,4);
  assert.equal(next.reads.length,2);
  console.log(JSON.stringify({label:'A5-176 Anki media decoding',baselineMediaReads:old.reads.length,candidateMediaReads:next.reads.length,visibleFace:'front',cssReferences:1}));
 });
