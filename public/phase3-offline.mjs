@@ -12,10 +12,10 @@ export function createAccountBinder({getWorker,readKey,isOnline,verify}){
  let generation=0,lastBound=null;
  return async()=>{
   const run=++generation;if(!getWorker())return;
-  const initial=readKey();let key=validAccount(initial)?initial:null;
+  const initial=readKey(),online=isOnline();let key=validAccount(initial)?initial:null;
   // Immediately revoke an earlier account while a different identity is being verified.
-  if(lastBound&&key!==lastBound){getWorker()?.postMessage({type:'ACCOUNT',key:null});lastBound=null}
-  if(key&&isOnline()){
+  if(lastBound&&key&&key!==lastBound&&online){getWorker()?.postMessage({type:'ACCOUNT',key:null});lastBound=null}
+  if(key&&online){
    try{if(await verify()!==key)key=null}catch{key=null}
   }
   if(run!==generation)return;
