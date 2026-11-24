@@ -1,8 +1,8 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 167 source-level findings and hardening cases; 333 remain to reach the target.** This is not a claim of 167 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 187 source-level findings and hardening cases; 313 remain to reach the target.** This is not a claim of 187 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
-Staging snapshot: `93a3223d1bf8da0db32d497a2d367526bdb199d8`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
+Staging snapshot: `dd38d567e5f18722574a789585afb50dc9d4915e`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
 ## Candidate verification receipts
 
@@ -15,6 +15,7 @@ Staging snapshot: `93a3223d1bf8da0db32d497a2d367526bdb199d8`. Only active course
 | [#64](https://github.com/Hatem-a10/alfaisal-review-studio/pull/64) | 19 | [Details](audit-4-admin-data-consistency.md) | [Run 45359850458](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45359850458) | `e27e0ccde88daa7bc2469be07aa7509e0af1f495` |
 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) | 19 | [Details](audit-4-upload-anki-boundaries.md) | [Run 45360070913](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360070913) | `8b9a2ec835a98613d7ad41bb066607665b708c9a` |
 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) | 28 | [Details](AUDIT-4-LEDGER.md) | [Run 45360550106](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360550106) | `93a3223d1bf8da0db32d497a2d367526bdb199d8` |
+| [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) | 20 | [Details](audit-4-choice-controls.md) | [Run 45361587002](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45361587002) | `dd38d567e5f18722574a789585afb50dc9d4915e` |
 
 Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
 
@@ -189,6 +190,26 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 | A4-165 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-061 | High — originalLowScore can delete finished original runs before deferred data is loaded | require full bank before threshold checks; behavioral test | Merged; candidate CI passed |
 | A4-166 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-062 | Medium — original grade treats out-of-range printed key as usable | validate key range; behavioral test | Merged; candidate CI passed |
 | A4-167 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-063 | Medium — original grade counts invalid stored answer as answered | validate choice range; behavioral test | Merged; candidate CI passed |
+| A4-168 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-01 | High — choice-ui.js decoration creates data-clear-eliminated and render wrapper deletes restored answers | Rendering is read-only with respect to saved answers; checked inputs take precedence | Merged; candidate CI passed |
+| A4-169 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-02 | High — checked locked review input is stripped of checked state when an elimination mark exists | Preserve checked feedback | Merged; candidate CI passed |
+| A4-170 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-03 | Medium — elimination button remains enabled for locked questions | Disable control and reject handler | Merged; candidate CI passed |
+| A4-171 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-04 | High — mock elimination deletes selected answer without deadline validation | Check deadline before clearing, finish expired run | Merged; candidate CI passed |
+| A4-172 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-05 | Medium — original-run elimination bypasses finite deadline | Check run expiry before removal | Merged; candidate CI passed |
+| A4-173 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-06 | High — inline elimination removes session answer without saving its draft | Persist immediately | Merged; candidate CI passed |
+| A4-174 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-07 | Medium — concept elimination removes answer without immediate draft save | Persist practice draft | Merged; candidate CI passed |
+| A4-175 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-08 | Medium — imported question hash only incorporates stem when nonempty | Incorporate option set | Merged; candidate CI passed |
+| A4-176 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-09 | Medium — repeated identical option text uses one strike key | Distinguish duplicate choices by index | Merged; candidate CI passed |
+| A4-177 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-10 | Medium — stored strike entry may be non-array and throw on includes | Validate array and filter string entries | Merged; candidate CI passed |
+| A4-178 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-11 | Medium — inherited property lookup may return non-array prototype members | Own-key lookup and define own property | Merged; candidate CI passed |
+| A4-179 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-12 | Medium — localStorage failure is swallowed in elimination handler | Warn without claiming successful save | Merged; candidate CI passed |
+| A4-180 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-13 | Medium — checked and disabled regex scans all label text | Inspect radio markup only | Merged; candidate CI passed |
+| A4-181 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-14 | Medium — concept answer counter depends on rendered radio count | Use actual answer map | Merged; candidate CI passed |
+| A4-182 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-15 | Medium — image zoom only available via mouse/touch click | Keyboard focus, semantic label and Enter/Space activation | Merged; candidate CI passed |
+| A4-183 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-16 | Medium — callbacks remain attached after zoom closes | Clear callbacks and invalidate generation | Merged; candidate CI passed |
+| A4-184 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-17 | Low — fitted image does not resize with viewport | Refit only while fit mode is active | Merged; candidate CI passed |
+| A4-185 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-18 | Low — zoom action before image loads computes a 1-pixel width | Ignore until natural width available | Merged; candidate CI passed |
+| A4-186 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-19 | Low — src attribute can override browser-selected responsive image | Prefer currentSrc after explicit full-size source | Merged; candidate CI passed |
+| A4-187 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-20 | Low — previous width persists during next image load | Reset sizing and scale | Merged; candidate CI passed |
 
 ## Verification boundaries
 
