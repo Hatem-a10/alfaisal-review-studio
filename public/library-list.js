@@ -1,8 +1,8 @@
 'use strict';
 
-function libraryDocumentURL(source, page = 1) {
+function libraryDocumentURL(source, page = 1, lookup) {
  if (!source) return null;
- const target = sourceTarget({source: source.id, page});
+ const target = sourceTarget({source: source.id, page},lookup);
  if (!target || !/^(?:\/api\/(?:materials|study-assets)\/[\w-]+(?:[?#]|$)|\/(?:api\/site-assets\/)?(?:materials|study_material)\/|https:\/\/)/.test(target.url)) return null;
  if (!/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(source.name)) return null;
  return sourcePageURL(target);
@@ -71,13 +71,13 @@ function libraryMaterials(item, lesson, sources) {
  return selections;
 }
 
-function librarySourceInCourse(source, scope=globalThis.reviewCourseScope) {
+function librarySourceInCourse(source, scope=globalThis.reviewCourseScope, references) {
   if(!scope)return !globalThis.reviewArchivedStudyItem?.(source);
   if(source.course)return source.course===scope;
   const ranges=Array.isArray(source.lectureRanges)?source.lectureRanges:[];
   const mapped=[source.lectureId,...(source.lectureIds||[]),...ranges.map(range=>range.lectureId)].filter(Boolean);
   if(mapped.length)return mapped.some(id=>id.startsWith(scope+'-'));
-  if(LEARNING.lessons.some(lesson=>lesson.id.startsWith(scope+'-')&&lesson.references?.some(ref=>ref.source===source.id)))return true;
+  if(references ? references().has(source.id) : LEARNING.lessons.some(lesson=>lesson.id.startsWith(scope+'-')&&lesson.references?.some(ref=>ref.source===source.id)))return true;
   return new RegExp('(?:^|[^a-z])'+scope+'(?:[^a-z]|$)','i').test(source.id+' '+source.name);
 }
 
@@ -115,25 +115,31 @@ function loadRenalLibrary() {
   if(view==='library'&&globalThis.reviewCourseScope==='REN')render();
  });
 }
-function libraryDocuments() {
- return LEARNING.sources.concat(uploads).filter(source=>librarySourceInCourse(source)&&libraryDocumentURL(source));
+// A snapshot is owned by one synchronous list render, never retained across account or catalog changes.
+function libraryLookup(scope=globalThis.reviewCourseScope) {
+ const sources=LEARNING.sources.concat(uploads),byId=new Map();let referenceIds;
+ for(const source of sources)if(!byId.has(source.id))byId.set(source.id,source);
+ return {scope,sources,lookup:id=>byId.get(id),references:()=>{if(!referenceIds){referenceIds=new Set();for(const lesson of LEARNING.lessons)if(lesson.id.startsWith(scope+'-'))for(const ref of lesson.references||[])referenceIds.add(ref.source)}return referenceIds}};
+}
+function libraryDocuments(snapshot=libraryLookup()) {
+ return snapshot.sources.filter(source=>librarySourceInCourse(source,snapshot.scope,snapshot.references)&&libraryDocumentURL(source,1,snapshot.lookup));
 }
 
 function searchRenalDocuments() {
  const terms=sourceSearch.toLowerCase().split(/\s+/).filter(Boolean);
- const matches=libraryDocuments().filter(source=>{
+ const snapshot=libraryLookup(),matches=libraryDocuments(snapshot).filter(source=>{
   const name=(source.name+' '+(source.displayName||'')).toLowerCase();
   return terms.every(term=>name.includes(term));
  });
  if(!matches.length)return '<p>No matching document titles.</p>';
  return '<h3>Matching document titles</h3><ul class="material-extras">'+matches.map(source=>
-  '<li><a href="'+esc(libraryDocumentURL(source))+'" target="_blank" rel="noopener noreferrer">'+
+  '<li><a href="'+esc(libraryDocumentURL(source,1,snapshot.lookup))+'" target="_blank" rel="noopener noreferrer">'+
   esc(source.displayName||source.name)+' ↗</a></li>').join('')+'</ul>';
 }
 
 function libraryLectureLists() {
  const scope=globalThis.reviewCourseScope;
- const sources = libraryDocuments();
+ const snapshot=libraryLookup(scope),sources = libraryDocuments(snapshot);
  const covered = new Set();
  const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine'], ['REN-A','Renal Anatomy & Histology'], ['REN-P','Renal Physiology']];
  const lists = groups.filter(([prefix])=>scope?prefix.startsWith(scope+'-'):!prefix.startsWith('REN-')&&(!prefix.startsWith('CVP-')||!globalThis.reviewCvpArchived?.())).map(([prefix,label]) => {
@@ -144,7 +150,7 @@ function libraryLectureLists() {
     if (!list.length) return `<button disabled title="${label} unavailable">${label} unavailable</button>`;
     const button = ({source,page}, caption) => {
      covered.add(source.id);
-     const url = libraryDocumentURL(source, page);
+     const url = libraryDocumentURL(source, page,snapshot.lookup);
      return url ? `<a class="material-action" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(source.name)}">${esc(caption)} ↗</a>`
       : '';
     };
@@ -156,5 +162,5 @@ function libraryLectureLists() {
  const status=scope==='REN'&&!renalLibraryReady?renalLibraryError
   ? '<p role="status">Could not load additional Renal documents. <button data-retry-renal-library>Retry</button></p>'
   : '<p role="status">Loading course documents…</p>':'';
- return lists + status + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
+ return lists + status + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source,1,snapshot.lookup))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
 }
