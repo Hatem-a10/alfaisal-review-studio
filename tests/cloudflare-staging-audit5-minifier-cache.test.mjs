@@ -34,13 +34,13 @@ test('A5-273 options changes, esbuild-version changes, input edits, and corrupt 
  const dir=mkdtempSync(join(tmpdir(),'a5-minify-'));try{
   let count=0;const transform=(...args)=>{count++;return transformSync(...args)};
   const a=cachedTransform('let x=1',js,{cacheDir:dir,transform,version:'v1'});
+  const firstFile=readdirSync(dir).find(f=>f.endsWith('.txt'));
   assert.equal(cachedTransform('let x=1',js,{cacheDir:dir,transform,version:'v1'}),a);assert.equal(count,1);
   cachedTransform('let x=2',js,{cacheDir:dir,transform,version:'v1'});
   cachedTransform('let x=1',{...js,minifyIdentifiers:true},{cacheDir:dir,transform,version:'v1'});
   cachedTransform('let x=1',js,{cacheDir:dir,transform,version:'v2'});
   assert.equal(count,4);
-  const one=readdirSync(dir).find(f=>f.endsWith('.txt'));
-  writeFileSync(join(dir,one),'damaged');
+  writeFileSync(join(dir,firstFile),'damaged');
   assert.equal(cachedTransform('let x=1',js,{cacheDir:dir,transform,version:'v1'}),a);
   assert.equal(count,5);
   assert.equal(cachedTransform('let x=1',js,{transform}),transformSync('let x=1',js).code);
