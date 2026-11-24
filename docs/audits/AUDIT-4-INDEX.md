@@ -1,8 +1,8 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 221 source-level findings and hardening cases; 279 remain to reach the target.** This is not a claim of 221 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 230 source-level findings and hardening cases; 270 remain to reach the target.** This is not a claim of 230 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
-Staging snapshot: `803ebc92217626f145c4451e87d248258a637c78`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
+Staging snapshot: `e9cd05f6dd231a331e8a0ee30c24885563897e52`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
 ## Candidate verification receipts
 
@@ -20,6 +20,7 @@ Staging snapshot: `803ebc92217626f145c4451e87d248258a637c78`. Only active course
 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) | 12 | [Details](audit-4-hub-calculations.md) | [Run 45365224270](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365224270) | `f0a80b5f47b8a0d964d32cd8fb9f8832c4d8bda1` |
 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) | 6 | [Details](audit-4-renal-library.md) | [Run 45365486667](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365486667) | `bf53a264f74276ff7639376ccd99da47fe5c9e2b` |
 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) | 8 | [Details](audit-4-source-index.md) | [Run 45365856162](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365856162) | `803ebc92217626f145c4451e87d248258a637c78` |
+| [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) | 9 | [Details](audit-4-offline-account.md) | [Run 45366867059](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45366867059) | `e9cd05f6dd231a331e8a0ee30c24885563897e52` |
 
 Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
 
@@ -248,6 +249,15 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 | A4-219 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-06 | Index and term cache survive a changed content-addressed URL | Invalidate both caches and reject stale response installation | Merged; candidate CI passed |
 | A4-220 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-07 | Unicode-normalized local matches use unnormalized string offsets; empty positions produce blank previews | Reuse normalized text for offsets and bound preview start | Merged; candidate CI passed |
 | A4-221 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-08 | No-matches fallback is unreachable because the prefixed HTML string is always truthy | Explicit no-results feedback | Merged; candidate CI passed |
+| A4-222 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-01 | The service worker verifies identity before requesting a private asset but cannot prove the response belongs to that same account | Stamp successful protected responses from authenticated request identity; require matching tag before returning/caching | Merged; candidate CI passed |
+| A4-223 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-02 | Failed or changed identity preflight forwards the original request into a different account context | Fail closed with retryable response | Merged; candidate CI passed |
+| A4-224 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-03 | Malformed successful identity JSON falls into the ordinary offline fallback | Deny fallback when identity response itself is invalid | Merged; candidate CI passed |
+| A4-225 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-04 | Implicit HTTP caching of protected asset responses can reuse bytes across account changes | Use no-store HTTP response and request policy while retaining explicit per-account Cache API storage | Merged; candidate CI passed |
+| A4-226 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-05 | Legacy user-specific mock figures lack proof of the account that supplied them | Refuse unverified figure fallback; preserve underlying old caches and legacy shared assets | Merged; candidate CI passed |
+| A4-227 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-06 | Previously bound account remains active while a new account key is asynchronously verified | Immediately revoke earlier binding before checking a changed online identity | Merged; candidate CI passed |
+| A4-228 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-07 | CLEAR_OFFLINE reports cleared:true without an account binding | Report actual success/failure | Merged; candidate CI passed |
+| A4-229 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-08 | In-flight downloads/cache writes can repopulate a cache after clearing | Track account epochs, wait for active writes and guard late writes and fallback | Merged; candidate CI passed |
+| A4-230 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-09 | Cache-size validation does not release the stream reader | Release reader in finally | Merged; candidate CI passed |
 
 ## Verification boundaries
 
@@ -259,3 +269,5 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 - Previous audit follow-up remains separate from the target: #54–#57 are merged with successful CI. Retention policy/cleanup, authoritative server-side SQLite card counts, precise session attribution and authenticated browser/device verification remain outstanding. Browser package parsing, upload shape checks, figure omission reporting and safer capacity estimates improve behavior without claiming those remaining limitations are solved.
 
 - #74 also fixes one-letter postings in the search-index generator as a previous-audit follow-up; this is not a new registered finding.
+
+- #76 combined candidate: 1,135 full regression tests, 647 isolation/authentication tests and 4 course integration checks passed; these counts are separate suites and not additional findings. #75 candidate passed all CI stages after updating the existing hashed-cache assertion. Hosted cross-account/offline verification remains outstanding.
