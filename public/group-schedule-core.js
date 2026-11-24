@@ -34,7 +34,7 @@ const GroupSchedules=(()=>{
   const old=p.group==='M1'&&p.section==='A'?array(legacy).filter(e=>timed(e)&&(!e.shared||shared)&&(p.lab==='1.6'||!['lab','shared'].includes(e.kind))):[];
   const official=array(catalog?.events).filter(e=>timed(e)&&assigned(e,settings)&&(!e.shared||shared));
   const byId=new Map(),withoutId=[];for(const e of old.concat(official)){if(typeof e.id==='string'&&e.id)byId.set(e.id,e);else withoutId.push(e)}
-  const resolved=authoritative([...byId.values(),...withoutId],official.concat(old));
+  const resolved=authoritative([...byId.values(),...withoutId]);
   return resolved.filter(e=>e.date>=start&&e.date<=last).concat(english(start,settings)).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
  }
  return {profile,assigned,english,selected,authoritative};
