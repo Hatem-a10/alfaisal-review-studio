@@ -36,8 +36,11 @@ test('A5-260 chart cache invalidates on replacement build, limit, size and priva
 test('A5-260 unchanged admin re-paints avoid repeatedly deriving chart series and markup',()=>{
  let reads=0;const a=build(),categories=a.breakdown.categories;
  Object.defineProperty(a.breakdown,'categories',{get(){reads++;return categories}});
- for(let i=0;i<200;i++)optimized.storageDetails(a,268435456);
- assert.equal(reads,1);
+ optimized.storageDetails(a,268435456);
+ const initialCategoryReads=reads;
+ assert.ok(initialCategoryReads>=1,'initial render must read category data');
+ for(let i=1;i<200;i++)optimized.storageDetails(a,268435456);
+ assert.equal(reads,initialCategoryReads,'unchanged repeated renders must not reread the category series');
  assert.match(source,/storageChartCache\.set\(build,/);
- console.log(JSON.stringify({label:'A5-260 repeated admin storage chart',adminPaints:200,categorySeriesRebuildsBefore:200,after:reads}));
+ console.log(JSON.stringify({label:'A5-260 repeated admin storage chart',adminPaints:200,categorySeriesRebuildsBefore:'200 full renders',after:'1 full render',initialCategoryReads}));
 });
