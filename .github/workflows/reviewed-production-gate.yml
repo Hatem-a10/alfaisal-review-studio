@@ -35,10 +35,12 @@ jobs:
           ref: ${{ inputs.commit_sha }}
           fetch-depth: 0
 
+      - name: Keep the pinned Node version for commits made before it existed
+        run: test -f .node-version || echo 24.22.1 > .node-version
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version-file: .node-version
           cache: npm
 
       - name: Install dependencies
