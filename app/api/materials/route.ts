@@ -2,6 +2,7 @@ import {env} from 'cloudflare:workers';
 import {withMaterialLectureLinks} from '../../../lib/material-lecture-links';
 import type {MaterialRow} from '../../../lib/material-dedup';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
+import {hasZipHeader,hasPdfHeader,withinPersonalQuota,reservePersonalUpload} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
 const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all<MaterialRow>();return json({materials:rows.results.map(withMaterialLectureLinks)})}
@@ -15,13 +16,34 @@ export async function POST(request:Request){
  const lectureId=String(form.get('lectureId')||'');if(!/^(MOL-(?:[1-9]|1\d|2[0-8])|CVP-P(?:[1-9]|1\d|2[0-8])|CVP-A(?:[1-9]|1\d|2[0-3]))$/.test(lectureId))return json({error:'Choose a known lecture.'},400);
  let parsed;const raw=String(form.get('extraction')||'');if(raw.length>8000000)return json({error:'Extracted text is too large; split the document.'},413);try{parsed=JSON.parse(raw)}catch{return json({error:'Document text could not be parsed.'},400)}
  if(!Array.isArray(parsed.pages)||parsed.pages.length<1||parsed.pages.length>1200||parsed.pages.some((p:{page:number;text:string})=>!Number.isInteger(p.page)||p.page<1||typeof p.text!=='string'||p.text.length>100000))return json({error:'Invalid extracted pages.'},400);
- const mime=file.type==='application/pdf'?'application/pdf':/\.json$/i.test(file.name)?'application/json':/\.(pptx|docx)$/i.test(file.name)?'application/octet-stream':'text/plain';if(!/\.(pdf|txt|md|json|pptx|docx)$/i.test(file.name))return json({error:'Use PDF, PPTX, DOCX, TXT, Markdown or a question-pack JSON file.'},400);
+ const ext=file.name.toLowerCase().split('.').pop();
+ if(!['pdf','txt','md','json','pptx','docx'].includes(ext||''))return json({error:'Use PDF, PPTX, DOCX, TXT, Markdown or a question-pack JSON file.'},400);
+ if(ext==='pdf'&&!await hasPdfHeader(file)||['pptx','docx'].includes(ext||'')&&!await hasZipHeader(file))return json({error:'The file contents do not match its document type.'},400);
+ const mime=ext==='pdf'?'application/pdf':ext==='json'?'application/json':['pptx','docx'].includes(ext||'')?'application/octet-stream':'text/plain';
  const bytes=await file.arrayBuffer(),sha=await digest(bytes),known=await knownOriginal(env.BUCKET,sha,bytes.byteLength);
  if(known)return json({duplicate:true,builtin:true,url:known.url,name:known.name});
  const existing=await duplicateMaterial(env.BUCKET,user,await materialRows(env.DB,user),sha,bytes.byteLength);if(existing)return json({...withMaterialLectureLinks(existing),duplicate:true});
  const id=crypto.randomUUID(),base='materials/'+user+'/'+id,createdAt=new Date().toISOString();
- await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime}});
- await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures:Array.isArray(parsed.figures)?parsed.figures.filter((f:{page:number;image:string})=>Number.isInteger(f.page)&&f.page>0&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60):[]}),{httpMetadata:{contentType:'application/json'}});
- try{await env.DB.prepare('INSERT INTO study_materials (id,user_id,name,lecture_id,mime,bytes,page_count,created_at) VALUES (?,?,?,?,?,?,?,?)').bind(id,user,file.name.slice(0,250),lectureId,mime,file.size,parsed.pages.length,createdAt).run()}catch(error){await env.BUCKET.delete([base+'/original',base+'/text']);throw error}
+ const quotaError=()=>json({error:'Your personal cloud storage is full (500 MB). Contact the site owner about space or remove unused cloud decks.'},413);
+ if(!await withinPersonalQuota(env.DB,user,file.size))return quotaError();
+ const name=file.name.slice(0,250),pageCount=parsed.pages.length;
+ try{
+  await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime}});
+  await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures:Array.isArray(parsed.figures)?parsed.figures.filter((f:{page:number;image:string})=>Number.isInteger(f.page)&&f.page>0&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60):[]}),{httpMetadata:{contentType:'application/json'}});
+ }catch{
+  await env.BUCKET.delete([base+'/original',base+'/text']).catch(()=>{});
+  return json({error:'Cloud material upload did not finish. Retry the upload.'},503);
+ }
+ try{
+  if(!await reservePersonalUpload(env.DB,{id,user,name,lectureId,mime,bytes:file.size,pageCount,createdAt})){
+   await env.BUCKET.delete([base+'/original',base+'/text']).catch(()=>{});
+   return quotaError();
+  }
+ }catch{
+  // A database response can fail after a commit. Never remove objects if the row might exist.
+  try{const committed=await env.DB.prepare('SELECT id FROM study_materials WHERE user_id=? AND id=?').bind(user,id).first();if(!committed)await env.BUCKET.delete([base+'/original',base+'/text']);else return json(withMaterialLectureLinks({id,name,lectureId,mime,bytes:file.size,pageCount,createdAt}))}catch{}
+  return json({error:'Could not confirm the cloud material upload. Retry safely.'},503);
+ }
+
  return json(withMaterialLectureLinks({id,name:file.name.slice(0,250),lectureId,mime,bytes:file.size,pageCount:parsed.pages.length,createdAt}));
 }
