@@ -10,11 +10,11 @@ const object=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:
 const idOf=value=>typeof value==='string'&&value.length>0?value:null;
 function attemptsOf(practice){return array(practice?.mocks).flatMap(m=>m?Array.isArray(m.attempts)?m.attempts:[m.snapshot]:[]).filter(Boolean)}
 // Unique recorded question identities per day; do not infer unsaved historical attempts.
-export function questionHistory(records,practice={}){
+export function questionHistory(records,practice={},since=null){
  const days=new Map(),aliases=new Map(),attempts=attemptsOf(practice),dateKeys=new Map();
  // Keep normalization local to this calculation and cap retained distinct timestamps.
  function dayOf(at){if(dateKeys.has(at))return dateKeys.get(at);const day=dateOf(at);if(day&&dateKeys.size<512)dateKeys.set(at,day);return day}
- function bucket(at){const day=dayOf(at);if(!day)return null;if(!days.has(day))days.set(day,{questions:new Set(),aggregates:new Map()});return days.get(day)}
+ function bucket(at){const day=dayOf(at);if(!day||since&&day<since)return null;if(!days.has(day))days.set(day,{questions:new Set(),aggregates:new Map()});return days.get(day)}
  function put(at,id){if(idOf(id))bucket(at)?.questions.add(id)}
  for(const s of attempts)for(const q of array(s.questions)){
   const id=idOf(q?.id);if(!id)continue;
@@ -36,10 +36,10 @@ export function questionHistory(records,practice={}){
   }
  }
  for(const[id,a]of Object.entries(object(practice?.booklet)))if(a&&(a.completed||typeof a.correct==='boolean'))put(a.at,canonical(id));
- for(const s of attempts)if(dayOf(s.finishedAt))for(const[i,q]of array(s.questions).entries()){
+ for(const s of attempts)if(dayOf(s.finishedAt)){if(since&&dayOf(s.finishedAt)<since&&!s.xp?.answeredAt)continue;for(const[i,q]of array(s.questions).entries()){
   const answer=s.answers?.[i];
   if(Number.isInteger(answer)&&answer>=0&&(!Array.isArray(q?.options)||answer<q.options.length))put(s.xp?.answeredAt?.[i]||s.finishedAt,canonical(q?.id));
- }
+ }}
  const history={};
  for(const [day,group] of days){let total=0;for(const count of group.aggregates.values())total+=count;history[day]=group.questions.size+total}
  return history;
