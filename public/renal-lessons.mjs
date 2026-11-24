@@ -1,5 +1,6 @@
 import {anatomyChecks} from './renal-anatomy-checks.mjs';
 import {renalPhysiology} from './renal-physiology.mjs';
+import {courses} from './course-registry.mjs';
 
 // Authored study aids. Page and slide numbers refer to the private REN 123 source decks.
 const renalAnatomy = [
@@ -106,10 +107,27 @@ const bookletSource={
  id:'ren123-booklet-source',name:'REN 123 Past Paper Booklet.pdf',kind:'Past questions',
  unit:'page',url:'/api/site-assets/materials/ren123/past-paper-booklet.pdf',pages:[],
 };
-export function renalTeachingPack() {
+export function validateRenalLessons(entries=renalLessons){
+ const expected=courses.REN.lectureCodes,seen=new Set();
+ for(const entry of entries){
+  if(!entry?.code||!expected.includes(entry.code)||seen.has(entry.code))throw Error('Invalid or duplicate REN lesson code: '+String(entry?.code));
+  seen.add(entry.code);
+  if(!Array.isArray(entry.objectives)||!entry.objectives.length||!Array.isArray(entry.topics)||!entry.topics.length)throw Error('REN-'+entry.code+' has no objectives or teaching topics.');
+  const keys=new Set();
+  for(const section of entry.topics){
+   if(!section.key||keys.has(section.key)||!section.body?.length||!section.pages?.length||!section.pages.every(p=>Number.isInteger(p)&&p>0))throw Error('REN-'+entry.code+' has incomplete or duplicate topic '+String(section.key));
+   keys.add(section.key);
+   const checks=lessonChecks(entry,section),stems=new Set(checks.map(q=>String(q[0]||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim()).filter(Boolean));
+   if(stems.size<5)throw Error('REN-'+entry.code+' '+section.key+' needs at least five distinct core questions.');
+  }
+ }
+ for(const code of expected)if(!seen.has(code))throw Error('Missing registered REN lesson: REN-'+code);
+ return entries;
+}
+export function renalTeachingPack(entries=renalLessons) {
+ validateRenalLessons(entries);
  const items=[], sources=[bookletSource], lessons=[], guides={}, questions=[];
- for(const entry of renalLessons){
-  if(!entry.objectives.length||!entry.topics.length||entry.topics.some(section=>!section.body.length||!section.pages.length||lessonChecks(entry,section).length<5))continue;
+ for(const entry of entries){
   const id='REN-'+entry.code,source='ren123-'+(entry.code==='P4'?'p4-':'')+entry.source;
   const cite=page=>({source,page});
   items.push({id,code:entry.code,course:'REN',title:entry.title,group:entry.group,dates:[]});
