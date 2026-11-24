@@ -55,7 +55,7 @@
  function drain(){if(!db)return;chain=chain.catch(()=>{}).then(async()=>{const items=[...pending];if(!items.length)return;await new Promise((resolve,reject)=>{const t=db.transaction('values','readwrite'),s=t.objectStore('values');for(const[key,value]of items)value===null?s.delete(key):s.put(value,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error)});for(const[key,value]of items)if(pending.get(key)===value)pending.delete(key);lastError=null}).catch(notify);return chain}
  let drainQueued=false;
  // A5-066 (narrow): consolidate synchronous edits into a single pending IDB drain.
- function queue(k,v){if(!db)return;pending.set(id(k),v);if(drainQueued)return;drainQueued=true;queueMicrotask(()=>{drainQueued=false;drain()})}
+ function queue(k,v){if(!db)return;pending.set(id(k),v);if(drainQueued)return;drainQueued=true;Promise.resolve().then(()=>{drainQueued=false;drain()})}
  async function flushDevice(){
   if(!db)throw Error('Device database unavailable. Keep this tab open and reconnect.');
   await chain;
