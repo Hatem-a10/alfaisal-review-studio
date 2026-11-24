@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {performance} from 'node:perf_hooks';
-import {cacheKind,RELEASE_CACHE} from '../public/phase3-cache-policy.mjs';
+import {cacheKind,RELEASE_CACHE,offlinePrecacheWidth,prioritizeOfflineAssets} from '../public/phase3-cache-policy.mjs';
 
 const source=readFileSync(new URL('../public/review-sw.js',import.meta.url),'utf8').replace(/^import .*?;\n/,'');
 function fixture(count=24,delay=7){
@@ -19,7 +19,7 @@ function fixture(count=24,delay=7){
   inFlight--;
   return new Response('public '+path);
  };
- const context=vm.createContext({cacheKind,RELEASE_CACHE,validAccount:()=>false,privateCacheName:()=>'',privateCacheNames:()=>[],obsoleteCoreCache:()=>false,fitsCache:async()=>true,Map,Set,Response,self,fetch:fakeFetch,caches:{open:async()=>cache},URL,Promise,setTimeout});
+ const context=vm.createContext({cacheKind,RELEASE_CACHE,offlinePrecacheWidth,prioritizeOfflineAssets,validAccount:()=>false,privateCacheName:()=>'',privateCacheNames:()=>[],obsoleteCoreCache:()=>false,fitsCache:async()=>true,Map,Set,Response,self,fetch:fakeFetch,caches:{open:async()=>cache},URL,Promise,setTimeout});
  vm.runInContext(source,context);
  return {run:async()=>{let pending;install({waitUntil:p=>pending=p});await pending},reads:()=>({maxInFlight,assetCalls,writes,manifestCalls}),routes};
 }
