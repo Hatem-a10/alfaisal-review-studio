@@ -83,7 +83,7 @@ function __reviewMergeKeys(path,target,entries){
   const error=need.map(c=>failed[c]).find(Boolean);
   if(error){painted='';if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(error.message)+' <button id="reloadForCourse" class="primary">Reload</button></section>';return}
   if(content&&painted!==key){painted=key;content.innerHTML='<section class="panel notice" role="status">Loading '+esc(need.join(' and '))+' content…</section>'}
-  ensure(need).then(()=>{if(run!==renderRequest)return;painted='';render()},e=>{if(run!==renderRequest)return;painted='';if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(e.message)+' <button id="retryCourse">Try again</button></section>'});
+  ensure(need).then(()=>{if(run!==renderRequest)return;painted='';render()},e=>{if(run!==renderRequest)return;painted='';if(content){const fatal=need.some(c=>failed[c]);content.innerHTML='<section class="panel notice" role="alert">'+esc(e.message)+(fatal?' <button id="reloadForCourse" class="primary">Reload</button>':' <button id="retryCourse">Try again</button>')+'</section>'}});
  };
  async function reloadCourse(button){
   if(button.disabled||document.body.classList.contains('xp-exam-active'))return;
