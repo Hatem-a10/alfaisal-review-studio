@@ -105,7 +105,7 @@ const stagingWorker = {
    if(canonical.startsWith('api/control-center/')){
     const student=canonical.startsWith('api/control-center/student/');
     let handlers;
-    try{handlers=await controlHandlers(student,canonical.split('/')[student?4:2])}catch{return adminResponse({error:'Admin feature modules unavailable.'},503)}
+    try{handlers=await controlHandlers(student,canonical.split('/')[student?3:2])}catch{return adminResponse({error:'Admin feature modules unavailable.'},503)}
     const response=await controlRoute({request,env:config,user:auth.user,row,owner,path:'/'+canonical,handlers});
     const download=/^api\/control-center\/student\/resources\/([a-f0-9-]{36})\/download$/i.exec(canonical);
     if(response?.ok&&download)ctx.waitUntil(countControlEvent(env.DB,'resource-open:'+download[1]).catch(()=>{}));
