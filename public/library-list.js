@@ -114,7 +114,7 @@ function searchRenalDocuments() {
   return terms.every(term=>name.includes(term));
  });
  if(!matches.length)return '<p>No matching document titles.</p>';
- return '<ul class="material-extras">'+matches.map(source=>
+ return '<h3>Matching document titles</h3><ul class="material-extras">'+matches.map(source=>
   '<li><a href="'+esc(libraryDocumentURL(source))+'" target="_blank" rel="noopener noreferrer">'+
   esc(source.displayName||source.name)+' ↗</a></li>').join('')+'</ul>';
 }
