@@ -1,0 +1,48 @@
+{
+  "MOL": {
+    "input_sha256": "1b073b708e6f97c99302e5dd91ee7c0c54003f1e6cc2b78fe71bda340c819f8d",
+    "source_pdf_sha256": "ccb0f26555fd04bdebd694f7e531120d7029858dbbb4365bcaa45363f2cd6fad",
+    "counts": {
+      "mcq": 874,
+      "saq": 23
+    },
+    "prior_counts": {
+      "mcq": 738,
+      "saq": 23
+    },
+    "merged_occurrences": 35,
+    "unchanged_mcq_ids": 705,
+    "preserved_aliases": 33,
+    "legacy_unmatched": [],
+    "self_check": 785,
+    "needs_figure_or_context": 29,
+    "embedded_mcq_candidates": 21,
+    "answer_anchors_not_question_counts": 70
+  },
+  "REN": {
+    "input_sha256": "b64092793feae92a2a01637b224855c15cece807c3be96c190c03f6d39b069bc",
+    "source_pdf_sha256": "df0a674c71a173b3299497f4de3fa916e15f522207c421ac0af5c5582bc6da41",
+    "counts": {
+      "mcq": 645,
+      "saq": 172,
+      "ospe": 103
+    },
+    "prior_counts": {
+      "mcq": 671,
+      "saq": 172,
+      "ospe": 103
+    },
+    "merged_occurrences": 75,
+    "unchanged_mcq_ids": 596,
+    "preserved_aliases": 72,
+    "legacy_unmatched": [
+      "ren-booklet-p7-q5",
+      "ren-booklet-p15-q120",
+      "ren-booklet-p18-q5"
+    ],
+    "self_check": 610,
+    "needs_figure_or_context": 20,
+    "embedded_mcq_candidates": 0,
+    "answer_anchors_not_question_counts": 297
+  }
+}
