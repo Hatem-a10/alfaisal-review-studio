@@ -18,7 +18,7 @@ export function questionHistory(records,practice={}){
   const canonical=idOf(q.bookletCanonicalId)||idOf(q.canonicalId);
   if(canonical&&canonical!==id)aliases.set(id,canonical);
  }
- const canonical=id=>{if(!idOf(id))return null;const seen=new Set();let next=id;while(aliases.has(next)&&!seen.has(next)){seen.add(next);next=aliases.get(next)}return seen.has(next)?[...seen].sort()[0]:next};
+ const canonical=id=>{if(!idOf(id))return null;const seen=new Map(),chain=[];let next=id;while(aliases.has(next)&&!seen.has(next)){seen.set(next,chain.length);chain.push(next);next=aliases.get(next)}return seen.has(next)?chain.slice(seen.get(next)).sort()[0]:next};
  for(const[id,r]of Object.entries(object(records))){
   for(const a of array(r?.learning?.attempts))if(a)put(a.at,canonical(a.q));
   for(const a of array(r?.mcqs)){
