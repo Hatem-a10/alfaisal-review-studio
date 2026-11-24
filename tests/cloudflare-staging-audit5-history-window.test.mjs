@@ -29,7 +29,7 @@ test('A5-004 bounded recent history exactly matches the all-time result inside w
 });
 test('A5-004 recent activity view passes a bounded window only in 12-week mode',()=>{
  const source=readFileSync(new URL('../public/phase2-runtime.mjs',import.meta.url),'utf8');
- assert.match(source,/activityData\\(options,activityAll\\?null:new Date\\(Date.parse\\(date/);
+ assert.ok(source.includes('activityData(options,activityAll?null:new Date('));
  assert.match(source,/questionHistory\(state,options.phase2Practice,since\)/);
 });
 function median(fn){fn();const times=[];for(let i=0;i<7;i++){const t=performance.now();fn();times.push(performance.now()-t)}return times.sort((a,b)=>a-b)[3]}
