@@ -7,7 +7,8 @@
  const tools=[...(extras?.querySelectorAll('button[data-view]')||[])].map(b=>({id:b.dataset.view,label:b.textContent.trim(),icon:b.querySelector('svg')?.outerHTML||navGlyph('extras')}));
  tools.sort((a,b)=>Number(b.id==='activity')-Number(a.id==='activity'));const ids=new Set(tools.map(t=>t.id)),other=document.createElement('button');other.dataset.view='other';other.id='otherToolsNav';other.innerHTML=otherIcon+'<span>Other</span>';other.title='Other study tools';other.setAttribute('aria-label','Other study tools');extras?.replaceWith(other);
  let selected=ids.has('activity')?'activity':tools[0]?.id;
- const previousGo=go;go=function(v){if(v==='other')v=selected;if(ids.has(v)){selected=v;localStorage.setItem('studio-other-tab',v);previousGo(v);history.replaceState(null,'','#other/'+v);return}return previousGo(v)};
+ try{const saved=localStorage.getItem('studio-other-tab');if(ids.has(saved))selected=saved}catch{}
+ const previousGo=go;go=function(v){if(v==='other')v=selected;if(ids.has(v)){selected=v;try{localStorage.setItem('studio-other-tab',v)}catch{}previousGo(v);history.replaceState(null,'','#other/'+v);return}return previousGo(v)};
  window.mountOtherTools=function(){
   const current=window.reviewViewingArchive?.()?'archive':view;
   const visible=ids.has(view)||current==='archive';
