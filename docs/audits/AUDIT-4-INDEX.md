@@ -1,6 +1,6 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 167 source-level findings and hardening cases; 333 remain to reach the target.** This is not a claim of 139 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 167 source-level findings and hardening cases; 333 remain to reach the target.** This is not a claim of 167 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
 Staging snapshot: `93a3223d1bf8da0db32d497a2d367526bdb199d8`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
