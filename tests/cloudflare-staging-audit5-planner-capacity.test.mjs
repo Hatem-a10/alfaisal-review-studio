@@ -48,3 +48,24 @@ test('A5 planning daily availability cache preserves assignment and reduces repe
  const before=median(base),after=median(run);
  console.log(JSON.stringify({label:'Audit5 planner capacity memo (extra; no counted register ID)',baselineMedianMs:before,candidateMedianMs:after,baselineCapacityReads:baselineCalls,candidateCapacityReads:candidateCalls}));
 });
+
+test('A5-124 realistic per-date record scans amortize under repeated placement probes',()=>{
+ const {day,items,events}=caseData();
+ const entries=Array.from({length:400},(_,i)=>({dates:['2026-11-'+String(i%30+1).padStart(2,'0'),'2026-12-'+String(i%20+1).padStart(2,'0')],done:i%3===0}));
+ const sessions=Array.from({length:70},(_,i)=>({date:'2026-11-'+String(i%30+1).padStart(2,'0'),start:540+i%7*45,end:600+i%7*45}));
+ let baseReads=0,optimizedReads=0;
+ const read=side=>(date,after=0)=>{
+  if(side==='baseline')baseReads++;else optimizedReads++;
+  let spent=0;
+  for(const row of entries)if(!row.done&&row.dates.includes(date))spent+=10;
+  let blocked=0;
+  for(const event of sessions)if(event.date===date)blocked+=(event.end-event.start)/20;
+  return Math.max(0,Math.min(120-spent/10-blocked,180-after/40));
+ };
+ const before=()=>assessment.spread(items,{},day,{budget:180},events,()=>false,read('baseline'),0);
+ const after=()=>assessment.spread(items,{},day,{budget:180},events,()=>false,candidate.memoCapacity(read('optimized')),0);
+ assert.deepEqual(normalize(after()),normalize(before()));
+ assert.ok(optimizedReads*10<baseReads,{baseReads,optimizedReads});
+ const baselineMs=median(before),candidateMs=median(after);
+ console.log(JSON.stringify({label:'A5-124 realistic planning capacity',baselineMedianMs:baselineMs,candidateMedianMs:candidateMs,baselineReads:baseReads,optimizedReads,records:entries.length,campusEvents:sessions.length}));
+});
