@@ -11,7 +11,7 @@ async function simulate(source){
  const fs={mkdirSync(){},existsSync:p=>p==='public/materials',readdirSync:()=>[{name:'fixture.png',isDirectory:()=>false}],readFileSync:p=>p.endsWith('heart.glb')?model:Buffer.alloc(40000),writeFileSync:(p,v)=>files.set(p,Buffer.from(v).toString('hex'))};
  const sharp=()=>{let width;const api={metadata:async()=>({width:1200,height:600,pages:1}),rotate:()=>api,resize:o=>{width=o.width;return api},webp:()=>api,toBuffer:async()=>Buffer.alloc(width,width===480?3:4)};return api};
  const counted=(...args)=>{hashes++;return createHash(...args)};
- const code=source.replace(/^import .*?;(?=import |\n|$)/gm,'').replaceAll("b80a727d022a4ab07ccfcf15caccc228eaccb6d69ec0e72923324946ac35a946",modelDigest);
+ const code=source.slice(source.indexOf('\n')+1).replaceAll("b80a727d022a4ab07ccfcf15caccc228eaccb6d69ec0e72923324946ac35a946",modelDigest);
  await runInNewContext('(async()=>{'+code+'})()',{fs,path,createHash:counted,sharp,process:{cwd:()=>'/fixture'},console:{log(){},warn(...args){throw Error(args.join(' '))}}});
  return {files:[...files],hashes};
 }
