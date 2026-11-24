@@ -50,9 +50,10 @@
   if(finalPlan&&!finalCatchup){if(!finalError)loadFinalCatchup();if(changed)persist();return changed}
   const balanced=planReady&&!finalWindow&&(auto.requestAssessmentBalance===true||auto.assessmentPlanVersion!==1&&auto.enabled!==false&&auto.undoDay!==current);
   const planSettings={...settings,hard:x=>Study.hard(rec(x)),canSkip:x=>{const m=Study.mcq(rec(x));return m.accuracy===null||m.accuracy>=85}};
-  const plan=finalPlan?finalCatchup(AssessmentPlan,scheduledItems,state,current,DATA.events,d=>capacity(d,d===current?clock.minute:0)):
-   balanced?AssessmentPlan.spread(scheduledItems,state,current,planSettings,DATA.events,mastered,capacity,clock.minute):
-   finalWindow?null:StudyAutopilot.automaticRebalance(scheduledItems,state,current,planSettings,DATA.events,mastered,capacity,{...auto,ready:planReady});
+  const capacityForRun=StudyAutopilot.memoCapacity(capacity);
+  const plan=finalPlan?finalCatchup(AssessmentPlan,scheduledItems,state,current,DATA.events,d=>capacityForRun(d,d===current?clock.minute:0)):
+   balanced?AssessmentPlan.spread(scheduledItems,state,current,planSettings,DATA.events,mastered,capacityForRun,clock.minute):
+   finalWindow?null:StudyAutopilot.automaticRebalance(scheduledItems,state,current,planSettings,DATA.events,mastered,capacityForRun,{...auto,ready:planReady});
   if(plan){const at=new Date().toISOString(),applied=plan.changes.length>0;
    if(applied){state=plan.records;changed=true}
    saveOptions({...opts,autopilot:{...auto,...(balanced?{assessmentPlanVersion:1,requestAssessmentBalance:false}:{}),...(finalPlan?{finalCatchupVersion:final+':3',requestFinalCatchup:false}:{}),lastAttemptDay:today(),...(applied||finalPlan||balanced?{lastPlanDay:today(),undoDay:null,lastPlan:{at,changes:plan.changes,unplaced:plan.unplaced,late:plan.late||[],assessmentBalanced:balanced,...(finalPlan?{final,firstPlaced:plan.firstPlaced,secondPlaced:plan.secondPlaced,focused:plan.focused}: {})},log:[{at,moved:plan.changes.filter(c=>c.field.startsWith('dates.')).length,optional:plan.omitted.length,unplaced:plan.unplaced.length},...(auto.log||[])].slice(0,8)}:{})}});

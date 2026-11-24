@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+import {performance} from 'node:perf_hooks';
+const read=name=>readFileSync(new URL('../public/'+name,import.meta.url),'utf8');
+const autopilot=vm.runInNewContext(read('study-autopilot-engine.js')+'\nStudyAutopilot',{structuredClone});
+const assessment=vm.runInNewContext(read('assessment-plan.js')+'\nAssessmentPlan',{structuredClone});
+const normalized=x=>JSON.parse(JSON.stringify(x));
+const median=fn=>{fn();const arr=[];for(let i=0;i<7;i++){const t=performance.now();fn();arr.push(performance.now()-t)}return arr.sort((a,b)=>a-b)[3]};
+test('A5-124 per-run planning capacity cache preserves distinct after-minute probes and resets per run',()=>{
+ let calls=0;
+ const read=(day,after=0)=>{calls++;return day.length*37-after/2};
+ const cached=autopilot.memoCapacity(read);
+ for(const date of ['2026-11-24','2026-11-25'])for(const after of [0,450,600,0,450])assert.equal(cached(date,after),date.length*37-after/2);
+ assert.equal(calls,6);
+ autopilot.memoCapacity(read)('2026-11-24',0);
+ assert.equal(calls,7);
+});
+test('A5-124 identical complete planning output with memoized capacity',()=>{
+ const items=Array.from({length:150},(_,i)=>({id:'REN-A'+(i+1),course:'REN',group:i%2?'Anatomy':'Physiology',dates:['2026-11-20','2026-11-24','2026-12-03']}));
+ const events=[{id:'r1',title:'REN Final Exam',date:'2026-12-15',detail:'09:00 am'}];
+ const settings={budget:180,hard:()=>false,canSkip:()=>false};
+ let baselineCalls=0,optimizedCalls=0;
+ const raw=(date,after=0)=>Math.max(0,240+(date.endsWith('5')?30:0)-after/45);
+ const base=(date,after=0)=>{baselineCalls++;return raw(date,after)};
+ const candidate=(date,after=0)=>{optimizedCalls++;return raw(date,after)};
+ const a=assessment.spread(items,{},'2026-11-24',settings,events,()=>false,base,0);
+ const b=assessment.spread(items,{},'2026-11-24',settings,events,()=>false,autopilot.memoCapacity(candidate),0);
+ assert.deepEqual(normalized(a),normalized(b));
+ assert.ok(optimizedCalls<baselineCalls);
+ console.log(JSON.stringify({label:'A5-124 planning capacity reads',baselineCalls,optimizedCalls,items:items.length}));
+ const run=(cached)=>assessment.spread(items,{},'2026-11-24',settings,events,()=>false,cached?autopilot.memoCapacity(raw):raw,0);
+ const before=median(()=>run(false)),after=median(()=>run(true));
+ console.log(JSON.stringify({label:'A5-124 planning spread combined',baselineMedianMs:before,candidateMedianMs:after}));
+ assert.match(read('study-autopilot.js'),/capacityForRun=StudyAutopilot\.memoCapacity\(capacity\)/);
+});
