@@ -1,3 +1,4 @@
+import {hasAnkiCollection} from '../../../lib/personal-upload';
 import {env} from 'cloudflare:workers';
 import {sameOrigin} from '../../../lib/academic-config.mjs';
 import {requestOwner} from '../../../lib/owner-access';
@@ -8,7 +9,7 @@ const prefix='shared-anki/v1/';
 export async function GET(request:Request){
  if(!request.headers.get('oai-authenticated-user-id'))return json({error:'Sign in required.'},401);
  if(!env.BUCKET)return json({error:'Shared decks unavailable.'},503);
- try { const decks=[]; let cursor:string|undefined; do { const options={prefix,include:['customMetadata'],cursor}; const page=await env.BUCKET.list(options); for(const obj of page.objects){const m=obj.customMetadata;if(m && /^[a-f0-9]{64}$/.test(obj.key.slice(prefix.length)))decks.push({id:obj.key.slice(prefix.length),name:m.name,bytes:obj.size,cardCount:Number(m.cards),createdAt:m.createdAt});} cursor=page.truncated?page.cursor:undefined; } while(cursor); decks.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)); return json({decks}); }catch{return json({error:'Shared decks unavailable.'},503)}
+ try { const decks=[]; let cursor:string|undefined; do { const options={prefix,include:['customMetadata'],cursor}; const page=await env.BUCKET.list(options); for(const obj of page.objects){const m=obj.customMetadata;if(m && /^[a-f0-9]{64}$/.test(obj.key.slice(prefix.length)))decks.push({id:obj.key.slice(prefix.length),name:m.name,bytes:obj.size,cardCount:Number(m.cards),cardCountVerified:false,createdAt:m.createdAt});} cursor=page.truncated?page.cursor:undefined; } while(cursor); decks.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)); return json({decks}); }catch{return json({error:'Shared decks unavailable.'},503)}
 }
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id'); if(!user)return json({error:'Sign in required.'},401);
@@ -25,7 +26,7 @@ export async function POST(request:Request){
   }catch{return json({error:'Invalid upload.'},400)}
   const file=form.get('file'),cards=Number(form.get('cards'));
   if(!(file instanceof File)||file.size<1||file.size>20971520||!/^.{1,240}\.(apkg|colpkg)$/i.test(file.name)||!Number.isSafeInteger(cards)||cards<1||cards>100000)return json({error:'Invalid Anki package.'},400);
-  const signature=new Uint8Array(await file.slice(0,4).arrayBuffer());if(signature.length<4||signature[0]!==0x50||signature[1]!==0x4b||!((signature[2]===3&&signature[3]===4)||(signature[2]===5&&signature[3]===6)||(signature[2]===7&&signature[3]===8)))return json({error:'Invalid Anki package.'},400);
+  if(!await hasAnkiCollection(file))return json({error:'Invalid Anki package: collection archive not found.'},400);
   const name=file.name.replace(/[\x00-\x1f\x7f/\\]/g,'_').slice(0,240), bytes=await file.arrayBuffer();
   const id=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
   const existing=await env.BUCKET.head(prefix+id); if(existing){const m=existing.customMetadata;return json({id,name:m?.name||name,bytes:existing.size,cardCount:Number(m?.cards||cards),createdAt:m?.createdAt});}
