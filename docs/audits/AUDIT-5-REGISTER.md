@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 56 newly merged candidates with CI passed (54 runtime/build scopes and 2 measurement capabilities); 40 existing mechanisms reviewed, 1 submitted (#162 A5-199), 203 remaining. Extra optimizations #150 (capacity memo) and #163 (immutable gzip decode) are merged but not counted under an unmatched candidate ID. Archived CVP demand loading #149 is a separate bugfix. Previous #155 was superseded by integrated #158; no duplicate credit. Combined synthetic benchmarks do not prove individual production latency.
+Status at this evidence update: 56 newly merged candidates from previous verified receipt (54 runtime scopes and 2 measurement capabilities), 50 existing mechanisms reviewed, 1 previously submitted candidate (#162 A5-199, subsequently merged; reconciliation pending), 193 remaining in this snapshot. #164/A5-040, #166/A5-282 and #167/A5-203 were merged after the base register update and will be reconciled in the next receipt. Extra #150/#163 are uncounted. All existing classifications in this PR are narrower source-verified mechanisms, not newly measured speed gains.
 
 ## Activity analytics
 
@@ -138,7 +138,7 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
 | A5-085 | Sample questions without shuffling full bank where distribution unchanged | Unassessed |
 | A5-086 | Render only active timed-exam question where interface permits | Unassessed |
-| A5-087 | Isolate timer rendering from exam content | Unassessed |
+| A5-087 | Isolate classic mock timer updates from question content rebuilds | Existing coverage; etTick updates timer and dock separately |
 | A5-088 | Cache Anki due-card queue with precise invalidation | Unassessed |
 | A5-089 | Reuse progress snapshot for Anki rating and deck-library rendering | Merged #142; CI passed; narrowed scope |
 | A5-090 | Incrementally calculate mastery without rescoring entire bank | Unassessed |
@@ -298,8 +298,8 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | ID | Candidate | Status |
 |---|---|---|
 | A5-191 | Batch read-only IndexedDB lookups in one transaction | Existing coverage; reviewed scope in evidence |
-| A5-192 | Reuse account-scoped IndexedDB connection with lifecycle cleanup | Unassessed |
-| A5-193 | Avoid rehydrating untouched stores during route changes | Unassessed |
+| A5-192 | Reuse Anki IndexedDB connection with versionchange cleanup | Existing coverage; ankiDBPromise single-flight, versionchange closes connection |
+| A5-193 | Avoid device-store rehydration on routine view navigation | Existing coverage; device hydrate on boot or explicit account switch |
 | A5-194 | Load companion stores on first feature access | Unassessed |
 | A5-195 | Store stable index metadata alongside records when validated | Unassessed |
 | A5-196 | Use cursor iteration for large local collections | Unassessed |
@@ -319,7 +319,7 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-205 | Skip cache enumeration on unrelated fetch requests | Existing coverage; reviewed scope in evidence |
 | A5-206 | Restrict activation cleanup to relevant old cache names | Existing coverage; reviewed scope in evidence |
 | A5-207 | Batch cache warmup within network budget | Existing coverage; reviewed scope in evidence |
-| A5-208 | Avoid caching resources that will never be reused | Unassessed |
+| A5-208 | Exclude ephemeral authenticated API requests from service-worker caches | Existing narrower coverage; cacheKind denies unrelated APIs |
 | A5-209 | Use versioned offline fallback without repeated network probe | Unassessed |
 | A5-210 | Benchmark offline bundle download concurrency | Unassessed |
 
@@ -346,11 +346,11 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-222 | Bound cached question-pool count | Unassessed |
 | A5-223 | Bound source search query cache by entries and estimated bytes | Merged #132; CI passed; estimated retention only |
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Unassessed |
-| A5-225 | Clear inactive view-specific cached derived data | Unassessed |
+| A5-225 | Release inactive search result/index caches on dialog close | Existing coverage; search close clears index/results and pending callbacks |
 | A5-226 | Release image decode references on route exit | Unassessed |
 | A5-227 | Avoid retaining detached DOM through closures | Unassessed |
 | A5-228 | Reuse immutable source objects across views | Unassessed |
-| A5-229 | Bound activity history memo lifetime to one calculation | Unassessed |
+| A5-229 | Bound question-history memo maps to one calculation | Existing coverage; local Map lifetimes in questionHistory |
 | A5-230 | Profile heap growth across repeated navigation and optimize retained allocations | Unassessed |
 
 ## HTTP request efficiency
@@ -373,13 +373,13 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | ID | Candidate | Status |
 |---|---|---|
 | A5-241 | Reuse validated request parsing result across middleware | Unassessed |
-| A5-242 | Avoid multiple parsing passes on large progress request bodies | Unassessed |
+| A5-242 | Parse each bounded progress PUT/PATCH request once before validation | Existing coverage; one JSON.parse per request body |
 | A5-243 | Precompute constant response metadata | Unassessed |
 | A5-244 | Cache compiled schema validators per runtime | Unassessed |
 | A5-245 | Avoid repeated string normalization after validated canonical lookup | Unassessed |
 | A5-246 | Batch R2 metadata lookups with bounded concurrency | Existing coverage; reviewed scope in evidence |
 | A5-247 | Single-pass study-asset status report counts | Merged #127; CI passed; operation counts |
-| A5-248 | Avoid sorting server results already ordered by database | Unassessed |
+| A5-248 | Use D1 sort order directly for per-account deck listing | Existing narrower coverage; GET /api/decks already ORDER BY created_at DESC |
 | A5-249 | Limit intermediate allocations during response serialization | Unassessed |
 | A5-250 | Reuse immutable study-asset and publisher-pack lookup indexes per isolate | Merged #127; CI passed; operation counts |
 
@@ -421,7 +421,7 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-272 | Deduplicate shared dependency chunks | Unassessed |
 | A5-273 | Remove unused transitive runtime dependency imports after evidence | Unassessed |
 | A5-274 | Minify eligible shipped JS while keeping debugging maps private | Existing coverage; reviewed scope in evidence |
-| A5-275 | Exclude test fixtures from runtime distribution | Unassessed |
+| A5-275 | Exclude tests outside public startup source graph | Existing narrower coverage; startup bundler resolves only public sources |
 | A5-276 | Exclude development tooling from production Worker dependency graph | Unassessed |
 | A5-277 | Avoid copying unchanged assets during local staging build | Unassessed |
 | A5-278 | Upload only changed immutable asset objects during release | Existing coverage; reviewed scope in evidence |
@@ -441,7 +441,7 @@ Status at this evidence update: 56 newly merged candidates with CI passed (54 ru
 | A5-287 | Measure memory peak during large exam review | Unassessed |
 | A5-288 | Measure cold versus warm cache startup separately | Unassessed |
 | A5-289 | Use deterministic seeded data for reproducible benchmarks | Unassessed |
-| A5-290 | Record equivalence assertions beside each performance measurement | Unassessed |
+| A5-290 | Assert baseline equivalence within each measured optimization fixture | Existing coverage; benchmark tests compare exact outputs |
 
 ## Scale and cost tuning
 
