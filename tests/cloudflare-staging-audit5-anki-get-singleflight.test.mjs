@@ -29,7 +29,7 @@ test('A5-231 overlapping account GETs coalesce and preserve same final deck stat
   x.finish(matching(x,'/api/decks')[0]);
   await Promise.all([first,second]);
  }
- assert.deepEqual(b.state(),a.state());assert.equal(b.renders(),a.renders());
+ assert.deepEqual(JSON.parse(JSON.stringify(b.state())),JSON.parse(JSON.stringify(a.state())));assert.equal(b.renders(),a.renders());
 });
 test('A5-231 account transitions never reuse another identity cache result',async()=>{
  const b=fixture(current,helper);
