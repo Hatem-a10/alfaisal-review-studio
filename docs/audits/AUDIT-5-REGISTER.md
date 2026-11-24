@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate scopes (113 speed-oriented changes and 20 measurement capabilities), 97 pre-existing mechanisms source-reviewed, 10 rejected/not-applicable items, 0 submitted candidates and 60 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate scopes (114 speed-oriented changes and 21 measurement capabilities), 99 pre-existing mechanisms source-reviewed, 18 rejected/not-applicable items, 0 submitted candidates and 48 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -50,7 +50,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Merged #120; CI passed; combined benchmark |
 | A5-027 | Avoid cloning already-isolated mock history attempts again | Merged #139; CI passed; narrowed scope |
 | A5-028 | Delegate search result row clicks to the result list | Merged #128; CI passed; narrowed scope |
-| A5-029 | Avoid duplicate JSON serialization of study records | Unassessed; structural comparison variant rejected; see evidence |
+| A5-029 | Avoid duplicate JSON serialization of study records | Rejected; prior A5-029 structural comparator benchmark regressed 75.9 to 103.1 ms |
 | A5-030 | Yield between long computation batches | Merged #205; staging CI passed; scoped optimization |
 
 ## Rendering
@@ -121,7 +121,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-072 | Separate teaching text from question data loading | Unassessed |
 | A5-073 | Defer detailed explanation loading until review | Unassessed |
 | A5-074 | Fetch diagrams independently from lesson text | Existing; source-reviewed public/learning-ui.js; no new merge credit |
-| A5-075 | Idle-prefetch next likely lesson within data budget | Unassessed |
+| A5-075 | Idle-prefetch next likely lesson within data budget | Rejected; course packs load per course, no independent next-lesson fetch to prefetch |
 | A5-076 | Pre-index lecture question associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-077 | Pre-index source document associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-078 | Share identical immutable metadata across course packs | Unassessed |
@@ -149,7 +149,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 |---|---|---|
 | A5-091 | Generate responsive image sizes | Existing coverage; reviewed scope in evidence |
 | A5-092 | Optimize medical diagram compression subject to visual equivalence | Unassessed |
-| A5-093 | Evaluate AVIF for appropriate photos | Unassessed |
+| A5-093 | Evaluate AVIF for appropriate photos | Merged #245; CI passed; measurement-only AVIF/WebP synthetic codec comparison |
 | A5-094 | Brotli-compress eligible text responses | Unassessed |
 | A5-095 | Immutable-cache fingerprinted public assets | Merged #222; staging CI passed; scoped optimization |
 | A5-096 | Use conditional requests for versioned resources | Existing coverage; reviewed scope in evidence |
@@ -185,7 +185,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-116 | Debounce expensive search work without delaying keystrokes | Existing coverage; reviewed scope in evidence |
 | A5-117 | Cancel superseded asynchronous search work | Merged #205; staging CI passed; scoped optimization |
 | A5-118 | Reuse the last normalized query result per search-index session | Merged #128; CI passed; narrowed scope |
-| A5-119 | Move large full-text index preparation off main thread | Unassessed |
+| A5-119 | Move large full-text index preparation off main thread | Merged #244; CI passed; abortable same-origin search index Web Worker |
 | A5-120 | Load search index only on first search intent | Existing coverage; reviewed scope in evidence |
 
 ## Timetable
@@ -223,15 +223,15 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-141 | Pre-index concept IDs for adaptive question selection | Merged #143; CI passed; narrowed scope |
-| A5-142 | Precompute ordered lesson section offsets | Unassessed |
+| A5-142 | Precompute ordered lesson section offsets | Rejected; lesson reader uses native section anchors, no JS offset scan |
 | A5-143 | Reuse parsed rich-text representation across identical lesson versions | Merged #198; staging CI passed; scoped optimization |
 | A5-144 | Cache sanitized static exam question markup fragments by source object | Merged #157; CI passed; narrow scope |
 | A5-145 | Defer optional figure captions until corresponding figure is displayed | Unassessed |
 | A5-146 | Reuse question option nodes between selection changes | Unassessed |
 | A5-147 | Update progress-bar width without rebuilding lesson | Unassessed |
 | A5-148 | Compute remaining section count from incremental completion changes | Unassessed |
-| A5-149 | Avoid remeasuring unchanged reading pane on navigation | Unassessed |
-| A5-150 | Persist reading position at bounded intervals and exit | Unassessed |
+| A5-149 | Avoid remeasuring unchanged reading pane on navigation | Rejected; current reading pane performs no repeated JS geometry measurement |
+| A5-150 | Persist reading position at bounded intervals and exit | Rejected; no scroll-position persistence writes exist to throttle |
 
 ## Exam engine
 
@@ -257,7 +257,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-163 | Precompute category-eligible OSPE circuit pools in one pass | Existing coverage; OspeCore.circuit uses category Map; reviewed |
 | A5-164 | Reuse decoded current-station image when moving back | Unassessed |
 | A5-165 | Prefetch next authorized station image under memory budget | Unassessed |
-| A5-166 | Reuse stable mask geometry for unchanged viewport | Unassessed |
+| A5-166 | Reuse stable mask geometry for unchanged viewport | Existing coverage; stationMarkupCache reuses precomputed masks and arrow SVG markup |
 | A5-167 | Accumulate OSPE station scoring summary in one traversal | Existing coverage; OspeCore.score aggregates one pass; reviewed |
 | A5-168 | Render only active OSPE review station image | Existing coverage; ospe review() renders one selected station; reviewed |
 | A5-169 | Cache rubric tokenization without changing matching rules | Rejected (not applicable): OSPE uses explicit human marking; no text-token rubric matcher |
@@ -342,7 +342,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-221 | Release large temporary arrays after pack indexing | Unassessed |
+| A5-221 | Release large temporary arrays after pack indexing | Rejected; pack temporary arrays are invocation-scoped and not retained |
 | A5-222 | Bound cached question-pool count | Unassessed |
 | A5-223 | Bound source search query cache by entries and estimated bytes | Merged #132; CI passed; estimated retention only |
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Merged #192; staging CI passed; scoped optimization |
@@ -365,7 +365,7 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-236 | Avoid redundant HEAD before known GET resources | Merged #194; staging CI passed; scoped optimization |
 | A5-237 | Prioritize critical requests over speculative prefetch | Merged #208; staging CI passed; scoped optimization |
 | A5-238 | Limit concurrent speculative downloads by connection conditions | Merged #208; staging CI passed; scoped optimization |
-| A5-239 | Use lightweight version checks before fetching unchanged catalogs | Unassessed |
+| A5-239 | Use lightweight version checks before fetching unchanged catalogs | Existing coverage; timetable no-cache HTTP revalidation avoids unconditional full downloads when validators exist |
 | A5-240 | Avoid automatic retries for nonessential canceled work | Existing coverage; superseded search index work aborts without background retry |
 
 ## Server data processing
@@ -409,8 +409,8 @@ Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate
 | A5-265 | Deduplicate identical generated public asset bytes by digest | Merged #191; staging CI passed; scoped optimization |
 | A5-266 | Avoid reading archived inputs for active-only builds | Rejected; active-only build target absent and archived CVP is intentionally accessible |
 | A5-267 | Precompute normalized question option indexes | Merged #192; staging CI passed; scoped optimization |
-| A5-268 | Serialize large generated tables in deterministic streaming order | Unassessed |
-| A5-269 | Cache validated source schema results by content hash | Unassessed |
+| A5-268 | Serialize large generated tables in deterministic streaming order | Rejected; generated registry and variant tables are ~134 KB and 94 KB, not streaming scale |
+| A5-269 | Cache validated source schema results by content hash | Rejected; lab manifest parsed once, no repeated costly schema validation to cache |
 | A5-270 | Skip writes when generated output is byte-identical | Existing coverage; reviewed scope in evidence |
 
 ## Packaging and delivery
@@ -721,6 +721,28 @@ Not applicable until the product supports their prerequisites:
 - **A5-259:** The Students view currently shows account-scoped paginated rows, not a repeatedly recomputed group-roster total. No current total calculation needs memoization.
 
 No changes to student records, scoring, authorization rules or live production deployment are claimed from this register update.
+
+## Audit 5 continuation — two merges and ten evidence-based dispositions (24 November 2026)
+
+Verified merged candidate scopes:
+- **A5-119:** [PR #244](https://github.com/Hatem-a10/alfaisal-review-studio/pull/244), passing [staging CI 45446482860](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45446482860). Large ungraded search indexes are built in an abortable same-origin module Web Worker; main-thread cooperative fallback handles unsupported browser/CSP/clone cases and small searches. Source/index order and user session cancellation are tested.
+- **A5-093:** [PR #245](https://github.com/Hatem-a10/alfaisal-review-studio/pull/245), passing [staging CI 45446646478](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45446646478). **Measurement-only:** Sharp produces synthetic AVIF/WebP codecs, compares dimensions, byte sizes, encode duration and channel error; the production medical diagram WebP pipeline is deliberately unchanged.
+
+Already covered in active source:
+- **A5-166:** `public/ospe.js` caches `uncachedStationFigure` markup in `stationMarkupCache` by station, revealed/covered mode and zoom. Those cached SVG fragments include normalized mask rectangles and arrow geometry, avoiding recomputation on return to an unchanged station. This is markup/geometry reuse, not a guarantee the browser retained decoded image pixels.
+- **A5-239:** `public/schedule-ui.js` requests `/group-timetables.json` with `cache:'no-cache'`, instructing browser HTTP cache revalidation rather than unconditional unvalidated download. Conditional 304 savings depend on CDN/server validators; no additional application HEAD/version endpoint is justified without transfer measurements.
+
+Not justified as *current* optimizations:
+- **A5-029:** The previously trialed structural comparator cut serialization calls from 3,016 to 2 but increased synthetic runtime from 75.878 ms to 103.059 ms (earlier candidate CI 45390095233); reverted and not credited. Reattempt only if a different measured approach beats the baseline.
+- **A5-075:** `scripts/course-packs.mjs` emits a course-level payload, not per-lecture resource requests. Once the selected course is loaded there is no independent next-lecture request to idle-prefetch; speculative other-course transfers would add traffic.
+- **A5-142:** `public/learning-ui.js` navigates sections through native anchor IDs and a single `scrollIntoView`, without recomputing section offsets in JavaScript; adding an offsets cache removes no existing work.
+- **A5-149:** `public/reading-tools.js` has no `getBoundingClientRect`, `offsetTop` or `ResizeObserver` loop for a reading pane. Avoiding repeated pane measurements has no current target.
+- **A5-150:** The reader does not save scroll positions on every scroll; implementing bounded position persistence would be a separate feature, not optimization of a costly existing write.
+- **A5-221:** `scripts/client-scripts.mjs` holds source arrays only within one synchronous `optimizeClientScripts` build invocation and returns compiled output. A manual early array clear would mostly release references also held by the active split/pack output, with no measured peak-memory benefit.
+- **A5-268:** Current generated `lib/study-asset-registry.ts` (~134 KB) and `public/diagram-variants.json` (~94 KB) are too small to justify a new streaming JSON serializer, ordering contract and failure surface absent heap-pressure evidence.
+- **A5-269:** `scripts/client-scripts.mjs` parses `lab-curriculum.json` once per build. There is no repeated costly source-schema validation whose result could be content-hash cached; adding a second hash/cache lookup would be needless work.
+
+Rejecting a current no-op is not permission to remove any academic asset, validation, account check or feature. All 300 IDs remain distinct; GitHub merges have not deployed production or touched student data.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
