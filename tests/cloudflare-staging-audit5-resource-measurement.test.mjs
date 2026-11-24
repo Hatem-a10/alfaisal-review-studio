@@ -70,7 +70,7 @@ test('A5-285 measures actual full and ranged R2 response bytes using the authori
  const asset={path:'materials/synthetic.pdf',size:1048576,sha:'a'.repeat(64)};
  const s=read('lib/site-assets.ts'),out=ts.transpileModule(s,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
  const module={exports:{}};new Function('require','module','exports',out)(name=>({
-  './site-assets-manifest':{SITE_ASSETS:[asset]},'../public/renal-materials.json':[],
+  './site-assets-manifest':{SITE_ASSETS:[asset]},'../public/renal-materials.json':[],'./active-booklet-assets.json':[],
   './renal-booklet-asset.json':asset,'../public/mol-study-assets.json':{booklet:asset,assessments:asset,sources:[]},
   './renal-assessment-assets.json':[]
  })[name],module,module.exports);
