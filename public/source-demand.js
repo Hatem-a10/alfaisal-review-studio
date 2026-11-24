@@ -23,13 +23,17 @@
   for(const [term,rows] of Object.entries(data.terms))if(!term||!Array.isArray(rows)||rows.some(i=>!Number.isSafeInteger(i)||i<0||i>=data.pages.length))throw Error('Invalid search index posting');
   return data;
  }
- let searchIndex=null,searchIndexURL=null;const termCache=new Map();function pagesFor(term){if(termCache.has(term))return termCache.get(term);const seen=new Set();if(term.length===1){for(const i of searchIndex.terms[term]||[])seen.add(i)}else{for(const[word,rows]of Object.entries(searchIndex.terms))if(word.includes(term))for(const i of rows)seen.add(i)}if(termCache.size>=100)termCache.delete(termCache.keys().next().value);termCache.set(term,seen);return seen}
+ let searchIndex=null,searchIndexURL=null;const termCache=new Map(),termCacheMaxEntries=100,termCacheMaxBytes=2*1024*1024;let termCacheBytes=0;
+ // Conservative retained-size accounting: UTF-16 key plus estimated Set entry/collection overhead.
+ function termCost(term,pages){return 128+term.length*2+pages.size*32}
+ function rememberTerm(term,pages){const bytes=termCost(term,pages);if(bytes>termCacheMaxBytes)return;while(termCache.size&&(termCache.size>=termCacheMaxEntries||termCacheBytes+bytes>termCacheMaxBytes)){const oldest=termCache.keys().next().value;termCacheBytes-=termCost(oldest,termCache.get(oldest));termCache.delete(oldest)}termCache.set(term,pages);termCacheBytes+=bytes}
+ function pagesFor(term){if(termCache.has(term))return termCache.get(term);const seen=new Set();if(term.length===1){for(const i of searchIndex.terms[term]||[])seen.add(i)}else{for(const[word,rows]of Object.entries(searchIndex.terms))if(word.includes(term))for(const i of rows)seen.add(i)}rememberTerm(term,seen);return seen}
  // Intersect from the smallest posting set; retain the first term's insertion order for stable result ties.
  function intersectPages(sets){if(!sets.length)return [];if(sets.length===1)return [...sets[0]];const ordered=[...sets].sort((a,b)=>a.size-b.size),matches=new Set(),rest=ordered.slice(1);for(const page of ordered[0])if(rest.every(set=>set.has(page)))matches.add(page);if(!matches.size)return [];return [...sets[0]].filter(page=>matches.has(page))}
  const beforeSearch=searchPassages;searchPassages=function(){
   if(window.reviewCourseScope==='REN')return beforeSearch();
   const url=LEARNING.searchIndexURL;if(!url)return beforeSearch();
-  if(searchIndexURL!==url){searchIndexURL=url;searchIndex=null;termCache.clear()}
+  if(searchIndexURL!==url){searchIndexURL=url;searchIndex=null;termCache.clear();termCacheBytes=0}
   if(!searchIndex){if(!errors.has(url))request(url,data=>{if(searchIndexURL===url&&LEARNING.searchIndexURL===url)searchIndex=checkedSearchIndex(data)});return message(url)}
   const terms=[...new Set(sourceSearch.toLowerCase().normalize('NFKC').match(/[\p{L}\p{N}]+/gu)||[])];if(!terms.length)return '<p>Enter a search term.</p>';
   let results=intersectPages(terms.map(pagesFor)).map(i=>({...searchIndex.pages[i],score:terms.length,indexed:true}));
