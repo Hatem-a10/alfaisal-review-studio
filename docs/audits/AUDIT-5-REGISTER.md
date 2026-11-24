@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 23 newly merged candidates with candidate CI passed; 3 submitted; 32 previously existing mechanisms reviewed (not new measured improvements); 242 unassessed. Existing and narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
+Status at this evidence update: 30 newly merged candidates with candidate CI passed (29 runtime/build optimization changes and 1 measurement capability); 32 previously existing mechanisms reviewed (not new measured improvements); 238 unassessed. Existing and narrowed scopes are explicitly documented below; broader variants remain open for evaluation. A5-003 has inconclusive timing. Combined benchmarks do not establish individual per-change latency.
 
 ## Activity analytics
 
@@ -122,8 +122,8 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 | A5-073 | Defer detailed explanation loading until review | Unassessed |
 | A5-074 | Fetch diagrams independently from lesson text | Unassessed |
 | A5-075 | Idle-prefetch next likely lesson within data budget | Unassessed |
-| A5-076 | Pre-index lecture question associations in changelog generator | Submitted #129; CI pending |
-| A5-077 | Pre-index source document associations in changelog generator | Submitted #129; CI pending |
+| A5-076 | Pre-index lecture question associations in changelog generator | Merged #129; CI passed; combined benchmark |
+| A5-077 | Pre-index source document associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-078 | Share identical immutable metadata across course packs | Unassessed |
 | A5-079 | Version-cache immutable lesson structures locally | Unassessed |
 | A5-080 | Exclude archived CVP content from active startup dependencies | Existing coverage; reviewed scope in evidence |
@@ -180,7 +180,7 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 | A5-111 | Normalize matching searchable titles once per unchanged index entry | Merged #117; CI passed |
 | A5-112 | Pre-tokenize searchable resource text at build time | Existing coverage; reviewed scope in evidence |
 | A5-113 | Index exact title and resource ID lookup separately | Unassessed |
-| A5-114 | Intersect smallest posting lists first | Submitted #130; CI pending |
+| A5-114 | Intersect smallest posting lists first | Merged #130; CI passed |
 | A5-115 | Limit top-k result sorting with equivalent stable ranking | Merged #122; CI passed |
 | A5-116 | Debounce expensive search work without delaying keystrokes | Existing coverage; reviewed scope in evidence |
 | A5-117 | Cancel superseded asynchronous search work | Unassessed |
@@ -214,7 +214,7 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 | A5-135 | Derive next actionable lesson without sorting full curriculum | Unassessed |
 | A5-136 | Reuse progress denominators for static lesson sets | Unassessed |
 | A5-137 | Update countdown labels at displayed precision only | Unassessed |
-| A5-138 | Share derived dashboard summary across cards | Unassessed |
+| A5-138 | Share one saved-options and date snapshot across study activity view | Merged #135; CI passed; narrowed scope |
 | A5-139 | Reuse normalized student group profile across timetable filtering | Merged #118; CI passed |
 | A5-140 | Recompute only affected course progress after lesson change | Unassessed |
 
@@ -344,7 +344,7 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 |---|---|---|
 | A5-221 | Release large temporary arrays after pack indexing | Unassessed |
 | A5-222 | Bound cached question-pool count | Unassessed |
-| A5-223 | Bound search query cache by entries and bytes | Unassessed |
+| A5-223 | Bound source search query cache by entries and estimated bytes | Merged #132; CI passed; estimated retention only |
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Unassessed |
 | A5-225 | Clear inactive view-specific cached derived data | Unassessed |
 | A5-226 | Release image decode references on route exit | Unassessed |
@@ -403,7 +403,7 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 | ID | Candidate | Status |
 |---|---|---|
 | A5-261 | Parse source manifests once per build invocation | Unassessed |
-| A5-262 | Hash source files once and reuse digest for outputs | Unassessed |
+| A5-262 | Reuse model and generated variant SHA-256 digests in asset generator | Merged #133; CI passed; narrowed scope |
 | A5-263 | Avoid re-encoding unchanged generated JSON files | Unassessed |
 | A5-264 | Use bounded parallelism for independent image generation | Unassessed |
 | A5-265 | Deduplicate identical generated public asset bytes by digest | Unassessed |
@@ -417,7 +417,7 @@ Status at this evidence update: 23 newly merged candidates with candidate CI pas
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-271 | Measure gzip and Brotli sizes per feature entry | Unassessed |
+| A5-271 | Measure gzip and Brotli sizes for startup and deferred course entries | Merged #134; CI passed; measurement capability only |
 | A5-272 | Deduplicate shared dependency chunks | Unassessed |
 | A5-273 | Remove unused transitive runtime dependency imports after evidence | Unassessed |
 | A5-274 | Minify eligible shipped JS while keeping debugging maps private | Existing coverage; reviewed scope in evidence |
@@ -469,18 +469,14 @@ Median of three measured executions unless otherwise indicated, on the candidate
 | **A5-003** | 8.996 ms | 8.524 ms | No complete date-key sort; bounded display-mode scan | #116 |
 | **A5-023** | 47.404 ms | 5.200 ms | 9,000 lecture lookups → 51 per fixture execution | [#117](https://github.com/Hatem-a10/alfaisal-review-studio/pull/117) |
 | **A5-111** | 92.421 ms | 17.608 ms | WeakMap cache follows entry lifetime and title changes; warm searches only | #117 |
-
 | **A5-128** | 45.150 ms | 1.055 ms | 2,880 formatter constructions → 1 across four fixture executions | [#118](https://github.com/Hatem-a10/alfaisal-review-studio/pull/118) |
 | **A5-139** | 16.862 ms | 14.944 ms | 8,002 profile reads → 2 per timetable fixture | #118 |
-
 | **A5-084** | 28.906 ms | 16.048 ms | 124-question deduplication fixture (historical label A5-074) | #120 |
 | **A5-026 + A5-178** | 89.299 ms | 11.492 ms | Combined cross-link workload, 30 lectures and 8 decks | #120 |
 | **A5-008** | 19.739 ms | 1.255 ms | 4,000 → 2 date format calls; seven measured runs after warmup | #121 |
 | **A5-005 + A5-008** | 34.900 ms | 16.700 ms | Combined workload; 10,000 aggregate array entries → 0; seven runs | #121 |
 | **A5-115** | 49.769 ms | 2.265 ms | 20,300 matched entries; maximum retained ranking entries 40; seven runs | #122 |
-
 | **A5-160** | 29.268 ms | 3.138 ms | 47,392 → 2,376 timestamp parses, 2,500 synthetic mocks; seven runs | #123 |
-
 | **A5-154** | 0.674 ms | 0.361 ms | 12,000-row receipt verification, 3 intermediate arrays → 0; seven runs | #125 |
 | **A5-173** | 560.426 ms | 0.584 ms | 10,398 progress reads → 1; 750-card fixed-time synthetic queue; five runs | #126 |
 | **A5-161** | 24.064 ms | 2.143 ms | 2,000 station-map entries → 0 per lookup; five runs | #126 |
@@ -498,7 +494,14 @@ Median of three measured executions unless otherwise indicated, on the candidate
 - #126: candidate `bb57af557e835db0537f99147047c549382ec842`, [CI 45384988779](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45384988779), 1,330 tests passed; merge `dce18a1df0ff05293cb1a2f68a9119676bedf870`. A5-173 uses a fixed queue-build timestamp rather than repeated wall-clock reads; no persistent due index. A5-161 uses reverse lookup, not a persistent station index.
 - #127: candidate `6b614cf536fbe53b466f046c59b38c910d3c1bd8`, [CI 45385197576](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45385197576), 1,330 tests passed; merge `b47a296a81a447a7630b5612c328164b0a042611`. A5-055 one D1 row per GET (consistent read point, CAS unchanged); A5-250 30,000 warm manifest key reads → 0 per fixture; A5-247 two intermediate filter arrays per batch → 0. Provider latency unmeasured.
 - #128: candidate `5ebe90ef7e6452e8cb491ada8e22ede75b7ec7c2`, [CI 45385508587](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45385508587), 1,331 tests passed; merge `b71b5883a612f77d1eb4a2faac3552ed39456826`. Search navigation fixture creates 1,000 → 0 new result buttons; one delegated listener instead of per-row handlers and one result-set memo per index/session; actual DOM/device timing unmeasured.
-- #129 and #130 submitted; integrated verification pending.
+- #129: candidate `5a044be747f90d3add886bb1c1034c0524eb1ec0`, [CI 45385633870](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45385633870), 1,332 full-suite tests passed; merge `7536e11418260d652a8a1225228596811311de53`. Combined A5-076/A5-077 changelog indexing: 141.307 → 45.102 ms; digest calls 20,000 → 10,000 (200 lessons, 10,000 questions, 1,600 sources).
+- #130: candidate `061b0eb85069db54c73c9ebb50e6bff8c7e38a28`, [CI 45385790698](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45385790698), 1,335 full-suite tests passed; merge `226494b1e3ca7ecd1737502de885dbadcf30dca2`. A5-114 selective source search 10.383 → 1.566 ms; first-term insertion order preserved; union map 40,001 entries avoided, 2 matches retained.
+- #131: evidence-only [CI 45386011456](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386011456) passed; merge `7b0ae45479a0771d7e733f9a4b410ecf733ea095`.
+- #132: candidate `ed99bad9ba63a25367a002a9817b71225b9b4c87`, [CI 45386304913](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386304913), 1,340 full-suite tests passed; merge `ed50e19cb92f49bb0b3f2703086e3dfa2fe0fab9`. A5-223 bounded cache: 100 entries and estimated 2,097,152 retained bytes, fixture estimate 2,560,260 → 1,280,130; actual JS heap unmeasured.
+- #133: candidate `292fd06082451aa2c493228e99dedbf970a11477`, [CI 45386422070](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386422070), 1,339 full-suite tests passed; merge `f167fb6483365e40cb4881a376a85e3e2651f04a`. A5-262 model and generated variant SHA-256 digest calls 6 → 3, identical synthetic registry and output bytes; real asset generation not run.
+- #134: candidate `abda03eff3718b43570598ceca213f430baac33b`, [CI 45386540888](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386540888), 1,339 full-suite tests passed; merge `99274b6cbafff2c2a6c53d2d75c5aacff244a9d5`. A5-271 measurement only: startup 861,638 raw / 237,435 gzip / 209,807 Brotli quality-5 bytes; MOL 3,254,527 / 652,263 / 432,696; archived CVP 3,208,610 / 761,385 / 623,070. No transfer encoding change, no new speed claim.
+- #135: candidate `c5beffccb65807ba20cc0f6e2af4e3185368a75b`, [CI 45386617986](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45386617986), 1,339 full-suite tests passed; merge `065069391180a6e6c10ba7e8890244191835f475`. A5-138 activity view options reads 369 → 1, clock reads 612 → 1; identical markup for four metrics and two ranges with fixed date; no whole-dashboard or actual-device timing claim.
+- Combined latest staging tree requires independent integrated CI and browser/Worker profiling. Per-PR test counts differ because several branches were opened in parallel. No live deployment or production performance claim.
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
