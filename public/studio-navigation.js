@@ -36,8 +36,47 @@
  const before=render;render=function(...args){const result=before.apply(this,args);window.mountOtherTools();return result};
  function restore(){const hash=location.hash.slice(1),id=hash.startsWith('other/')?hash.slice(6):hash==='other'?selected:null;if(ids.has(id)){selectOther(id);if(id==='weakness'&&typeof filters==='object'&&filters)filters.status='weak';else if(id==='lectures'&&typeof filters==='object'&&filters?.status==='weak')filters.status='all';if(view!==id){view=id;render()}}}
  for(const e of ['popstate','hashchange'])window.addEventListener(e,restore);restore();
- const mobile=document.querySelector('.ui-mobile-nav');if(mobile){mobile.querySelector('#hubMore')?.remove();mobile.querySelectorAll('[data-mobile-extra]').forEach(b=>{if(b.id==='mobileSyncSettings'){b.hidden=false;b.removeAttribute('data-mobile-extra')}else b.remove()});mobile.querySelector('#hubMobileExtras')?.remove();const a=anatomy?.cloneNode(true);if(a){a.classList.remove('active');a.removeAttribute('aria-current');a.hidden=false;a.removeAttribute('data-mobile-extra');mobile.insertBefore(a,mobile.querySelector('[data-view="anki"]'))}const b=other.cloneNode(true);b.removeAttribute('id');b.classList.remove('active');b.removeAttribute('aria-current');mobile.append(b);
-  const home=mobile.querySelector('[data-view="dashboard"]');
-  if(home){home.querySelector('svg')?.remove();home.insertAdjacentHTML('afterbegin',homeIcon);}
-}
+ const mobile=document.querySelector('.ui-mobile-nav');
+ if(!mobile)return;
+ const primary=['dashboard','learning','calendar','practice'];
+ const shortcuts=primary.map(id=>mobile.querySelector('[data-view="'+id+'"]')).filter(Boolean);
+ const home=shortcuts[0];
+ if(home?.dataset.view==='dashboard'){home.querySelector('svg')?.remove();home.insertAdjacentHTML('afterbegin',homeIcon);}
+ const sync=mobile.querySelector('#mobileSyncSettings');
+ const more=document.createElement('button');
+ more.type='button';more.id='mobileMoreTools';more.setAttribute('aria-haspopup','dialog');
+ more.innerHTML=otherIcon+'<span>More</span>';
+ mobile.classList.add('simple-mobile-nav');mobile.replaceChildren(...shortcuts,more);
+ const menu=document.createElement('dialog');
+ menu.id='mobileToolsMenu';menu.setAttribute('aria-labelledby','mobileToolsTitle');
+ menu.innerHTML='<div class="section-head"><h2 id="mobileToolsTitle">More tools</h2><button type="button" aria-label="Close more tools">✕</button></div><div class="mobile-tools-grid"></div>';
+ document.body.append(menu);
+ const grid=menu.querySelector('.mobile-tools-grid');
+ menu.querySelector('[aria-label="Close more tools"]').onclick=()=>menu.close();
+ function populate(){
+  const links=[
+   {id:'anki',label:'Anki',icon:navGlyph('book')},
+   {id:'library',label:'Library',icon:navGlyph('library')},
+   ...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:otherIcon}]:[]),
+   {id:'booklet',label:'Booklet',icon:navGlyph('book')},
+   {id:'labs',label:'Labs',icon:navGlyph('book')},
+   {id:'ospe',label:'OSPE',icon:navGlyph('practice')},
+   {id:'countdowns',label:'Countdowns',icon:navGlyph('calendar')},
+   ...(anatomy?[{id:'anatomy',label:anatomy.textContent.trim(),icon:anatomy.querySelector('svg')?.outerHTML||''}]:[]),
+  ];
+  const included=new Set(links.map(tool=>tool.id));
+  links.push(...tools.filter(tool=>!included.has(tool.id)));
+  grid.innerHTML=links.map(tool=>'<button type="button" data-view="'+tool.id+'">'+tool.icon+'<span>'+esc(tool.label)+'</span></button>').join('');
+  if(sync){sync.hidden=false;sync.removeAttribute('data-mobile-extra');grid.append(sync);}
+ }
+ more.onclick=()=>{populate();menu.showModal();};
+ grid.addEventListener('click',e=>{if(e.target.closest('button'))menu.close();},true);
+ const previousRender=render;
+ render=function(...args){
+  const result=previousRender.apply(this,args);
+  const active=!primary.includes(view)||window.reviewViewingArchive?.();
+  more.classList.toggle('active',Boolean(active));
+  if(active)more.setAttribute('aria-current','page');else more.removeAttribute('aria-current');
+  return result;
+ };
 })();

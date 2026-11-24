@@ -15,34 +15,39 @@
  window.reviewStainFor=event=>{if(!event?.date)return null;const i=assessmentDates().indexOf(event.date);return i<0?null:i%8};
  window.reviewNextStain=()=>{try{const c=assessmentClock();return window.reviewStainFor(nextAssessment(DATA.events,c.date))??0}catch{return 0}};
  function assessmentStyle(event){if(!event)return {theme:0,icon:'✳'};const index=Math.max(0,assessmentDates().indexOf(event.date));return {theme:index%8,icon:['✳','◈','✦','◉','✺','◇','✷','⌁'][index%8]}};
- function homeDaySchedule(){const events=campusWeekEvents(campusWeekStart(day),false).filter(e=>e.date===day&&!/prayer|lunch/i.test(e.title||'')).sort((a,b)=>a.start-b.start);const guides=DATA.events.filter(e=>e.date===day&&e.type==='MOL assessment guide'&&!events.some(x=>/MOL/i.test(x.title)&&(/TBL/i.test(x.title)===/TBL/i.test(e.title))));const rows=events.map(e=>`<button class="home-agenda-row" data-campus-event="${esc(e.id)}"><span class="home-agenda-time">${esc(campusTime(e.start))}</span><span class="agenda-dot campus-${esc(e.kind)}"></span><span class="home-agenda-copy"><strong>${esc(campusEventTitle(e).title)}</strong><small>${esc(campusEventTitle(e).detail||campusCategoryLabel(e.kind))}</small></span></button>`).join('')+guides.map(e=>`<div class="home-agenda-row home-guide-event"><span class="home-agenda-time">${esc((e.detail||'').match(/\d{2}:\d{2}–\d{2}:\d{2}/)?.[0]||'Time not listed')}</span><span class="agenda-dot campus-assessment"></span><span class="home-agenda-copy"><strong>${esc(e.title)}</strong><small>${esc(e.detail||'Assessment guide')}</small></span></div>`).join('');return `<section class="home-insights-card home-agenda"><div class="home-agenda-heading"><h2>Today’s schedule</h2><span>${esc(fmt(day))}</span></div><div class="home-agenda-list">${rows||'<p class="home-agenda-empty">No classes or events listed for this day.</p>'}</div><button class="home-text-link" data-view="calendar">Full schedule</button></section>`}
+ function homeDaySchedule(date=day){const events=campusWeekEvents(campusWeekStart(date),false).filter(e=>e.date===date&&!/prayer|lunch/i.test(e.title||'')).sort((a,b)=>a.start-b.start);const guides=DATA.events.filter(e=>e.date===date&&e.type==='MOL assessment guide'&&!events.some(x=>/MOL/i.test(x.title)&&(/TBL/i.test(x.title)===/TBL/i.test(e.title))));const rows=events.map(e=>`<button class="home-agenda-row" data-campus-event="${esc(e.id)}"><span class="home-agenda-time">${esc(campusTime(e.start))}</span><span class="agenda-dot campus-${esc(e.kind)}"></span><span class="home-agenda-copy"><strong>${esc(campusEventTitle(e).title)}</strong><small>${esc(campusEventTitle(e).detail||campusCategoryLabel(e.kind))}</small></span></button>`).join('')+guides.map(e=>`<div class="home-agenda-row home-guide-event"><span class="home-agenda-time">${esc((e.detail||'').match(/\d{2}:\d{2}–\d{2}:\d{2}/)?.[0]||'Time not listed')}</span><span class="agenda-dot campus-assessment"></span><span class="home-agenda-copy"><strong>${esc(e.title)}</strong><small>${esc(e.detail||'Assessment guide')}</small></span></div>`).join('');return `<section class="home-insights-card home-agenda"><div class="home-agenda-heading"><h2>Today’s schedule</h2><span>${esc(fmt(date))}</span></div><div class="home-agenda-list">${rows||'<p class="home-agenda-empty">No classes or events listed for this day.</p>'}</div><button class="home-text-link" data-view="calendar">Full schedule</button></section>`}
  // Active courses for progress: open (not closed after their final) and not archived.
  function homeCourses(){const items=DATA.items||[],seen=[...new Set(items.map(x=>x.course).filter(Boolean))];return seen.filter(c=>!window.reviewCourseClosed?.(c)&&!window.reviewArchivedStudyItem?.({course:c})&&(!window.reviewCourseConfig?.(c)?.unscheduled||items.some(x=>x.course===c&&(dates(x).some(reviewCalendarDay)||completed(x)>0))))}
- function homeSummary(due,overdue,event,diff){
-  const parts=[];
-  if(overdue)parts.push(overdue+' '+(overdue===1?'review':'reviews')+' overdue');
-  if(due)parts.push(due+' due today');
-  if(!due&&!overdue)parts.push('No reviews waiting');
-  let line=parts.join(', ')+'.';
-  if(event)line+=' '+(diff===0?event+' is today.':event+' is in '+diff+' '+(diff===1?'day.':'days.'));
-  return line;
+ function nextLesson(){
+  const eligible=DATA.items.filter(item=>!window.reviewCourseClosed?.(item.course)&&window.reviewStudyItemVisible?.(item)!==false);
+  const current=eligible.filter(item=>item.course==='REN');
+  const candidates=current.length?current:eligible;
+  return candidates.find(item=>!done(item,0))||candidates[0];
  }
  dashboard=function(){
-  const b=datedReviewBuckets(),event=nextAssessment(DATA.events,day),remaining=b.due.length,overdue=b.overdue.length,done=b.complete.length;
-  const details=event?.detail?event.detail.replace(/\s*·\s*\d{2}:\d{2}.*$/,''):'';
-  const label=event?event.title.replace(/\s+/g,' ').trim():'';
-  const eventName=event&&/^TBL/i.test(label)&&/CVP/i.test(event.source||'')?'CVP 112 · '+label:label;
-  const diff=event?Study.gap(event.date,day):null;
-  const style=assessmentStyle(event);
-  const countdown=event?(diff===0?'Today':diff+' '+(diff===1?'day':'days')+' away'):'No assessment scheduled';
-  const lead=overdue?{n:overdue,l:overdue===1?'review overdue':'reviews overdue',tone:'late'}:{n:remaining,l:remaining===1?'review due today':'reviews due today',tone:''};
-  const group=window.reviewGroupLabel?.()||'Made by Hatem';
-  const courses=homeCourses();
-  return `<header class="home-top"><div>${group==='Made by Hatem'?'':`<span class="home-kicker" data-profile-group>${esc(group)}</span>`}<h1>${esc(fullDate(day).replace(/\s\d{4}$/,''))}</h1><p class="home-summary">${esc(homeSummary(remaining,overdue,eventName,diff))}</p></div></header>
-  <div class="home-feature-grid"><section class="home-spotlight assessment-theme-${style.theme}"><div class="home-spotlight-content"><div class="home-overline"><span class="home-overline-dot"></span> Next assessment</div><h2>${event?esc(eventName):'Your next milestone'}</h2><div class="home-countdown">${esc(countdown)}</div><p>${event?esc(fullDate(event.date)+(details?' · '+details:'')):'No later TBL or exam is listed in your supplied schedule.'}</p><button data-view="calendar" ${event?'data-day="'+esc(event.date)+'"':''}>Open schedule</button></div><div class="home-orbit" aria-hidden="true"><i></i><i></i><i></i><span>${style.icon}</span></div></section>
-  <section class="home-focus-card ${lead.tone}"><h2 class="home-card-label">Review queue</h2><div class="home-focus-value">${lead.n}<small>${lead.l}</small></div><dl class="home-focus-meta">${overdue?`<div><dt>Due today</dt><dd>${remaining}</dd></div>`:`<div><dt>Overdue</dt><dd>0</dd></div>`}<div><dt>Today’s tasks completed</dt><dd>${done}</dd></div></dl><button class="home-text-link" data-view="planner">Open daily tasks</button></section></div>
-  <nav class="home-shortcuts" aria-label="Study tools"><button class="home-shortcut" data-view="learning"><span class="home-short-icon">${navGlyph('book')}</span><span><strong>Lessons</strong><small>Teaching and topic quizzes</small></span></button><button class="home-shortcut" data-view="practice"><span class="home-short-icon">${navGlyph('practice')}</span><span><strong>Practice</strong><small>Question sets, mocks, past papers</small></span></button><button class="home-shortcut" data-view="anki"><span class="home-short-icon">${navGlyph('library')}</span><span><strong>Flashcards</strong><small>Anki decks and review queue</small></span></button></nav>
-  <div class="home-content-grid"><div class="home-tasks"><div class="home-section-title"><h2>Today’s reviews</h2><button class="home-text-link" data-view="planner">Full plan</button></div>${dayTaskPanels()}</div><div class="home-insights">${homeDaySchedule()}<section class="home-insights-card"><div class="home-agenda-heading"><h2>Progress</h2></div><p>Completed review passes in your current courses.</p>${courses.map(c=>progress(c)).join('')||'<p class="home-agenda-empty">No scheduled reviews in your current courses.</p>'}<button class="home-text-link" data-view="learning">Open lessons</button></section><details class="home-more"><summary>Readiness and study activity</summary><div class="home-more-content">${courses.map(c=>readinessCard(c)).join('')}${scoreExplanation()}${heatmap()}</div></details></div></div>`;
+  const date=today(),reviews=datedReviewBuckets(date),event=nextAssessment(DATA.events,date);
+  const group=window.reviewGroupLabel?.();
+  const courses=homeCourses(),lesson=nextLesson();
+  const reviewSummary=reviews.due.length?reviews.due.length+' due today':reviews.overdue.length?'No reviews due today.':'You’re caught up. No reviews due.';
+  const start=lesson?`<h2>${lesson.course==='REN'&&isFirstRenalLesson(lesson)?'Start your first Renal lesson':'Open your next lesson'}</h2><p>${esc(lesson.code+' · '+title(lesson))}</p><button class="primary" type="button" data-lesson="${esc(lesson.id)}">Open lesson</button>`:
+    '<h2>Ready to study?</h2><button class="primary" type="button" data-view="learning">Browse lessons</button>';
+  const expanded=document.querySelector('#homeStudyOverview')?.open;
+  return `<header class="home-top"><div>${group&&group!=='Made by Hatem'?`<span class="home-kicker" data-profile-group>${esc(group)}</span>`:''}<h1>Home</h1><p class="home-summary">${esc(fullDate(date))}</p></div></header>
+  <section class="panel home-next-action" id="homeNextAction">${start}</section>
+  <div class="home-content-grid home-daily-grid">${homeDaySchedule(date)}
+   <section class="panel home-reviews"><div class="section-head"><h2>Today’s reviews</h2><button type="button" class="home-text-link" data-view="planner" data-day="${esc(date)}">Full plan</button></div>
+    <p>${esc(reviewSummary)}${reviews.overdue.length?' '+reviews.overdue.length+' overdue.':''}</p>
+    ${reviews.due.slice(0,3).map(datedReviewItem).join('')}
+   </section>
+  </div>
+  <details class="home-more" id="homeStudyOverview" ${expanded?'open':''}><summary>Progress and upcoming assessments</summary>
+   <div class="home-more-content">${event?`<section class="panel"><h2>Next assessment</h2><p>${esc(event.title+' · '+fullDate(event.date))}</p><button type="button" data-view="calendar" data-day="${esc(event.date)}">Open schedule</button></section>`:''}
+    ${courses.map(c=>progress(c)).join('')}${courses.map(c=>readinessCard(c)).join('')}${scoreExplanation()}${heatmap()}
+   </div>
+  </details>`;
  };
+ function isFirstRenalLesson(lesson){
+  return DATA.items.find(item=>item.course==='REN')?.id===lesson.id&&!DATA.items.some(item=>item.course==='REN'&&completed(item)>0);
+ }
  render();
 })();

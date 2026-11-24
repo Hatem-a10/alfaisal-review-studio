@@ -35,7 +35,12 @@ try{
   await evaluate(`document.querySelector('#content').insertAdjacentHTML('afterbegin','<figure class="lesson-figure" id="qaFigure"><a href="/ospe-figures/mock-1.webp" target="_blank"><img src="/ospe-figures/mock-1.webp" alt="QA figure"></a><figcaption><a href="/ospe-figures/mock-1.webp" target="_blank">Click to enlarge</a><button type="button" data-image-src="/ospe-figures/mock-1.webp">Enlarge diagram</button></figcaption></figure>');true`);
   for(const selector of ['#qaFigure figcaption a','#qaFigure figcaption button','#qaFigure>a']){await evaluate("document.querySelector('"+selector+"').click();true");await check(name+' '+selector+' opens same-page closable viewer',"!!document.querySelector('#uiImageViewer[open]')&&document.querySelector('#uiCloseImage').getBoundingClientRect().right<=innerWidth");await evaluate("document.querySelector('#uiCloseImage').click();true");await waitFor("!document.querySelector('#uiImageViewer').open")}
   await evaluate("document.querySelector('#qaFigure').remove();true");
-  if(name==='phone')await check('mobile keeps one scrollable dock with Other and primary anatomy',"document.querySelectorAll('.mobile-dock-shell .ui-mobile-nav').length===1&&!document.querySelector('#hubMore')&&!!document.querySelector('.ui-mobile-nav [data-view=other]')&&!!document.querySelector('.ui-mobile-nav [data-view=anatomy]')");
+  if(name==='phone'){
+   await check('five mobile destinations fit in the dock',"(()=>{const nav=document.querySelector('.simple-mobile-nav');return nav.scrollWidth<=nav.clientWidth+1&&[...nav.querySelectorAll('button span')].map(s=>s.textContent).join('|')==='Home|Learn|Schedule|Practice|More'})()");
+   await evaluate("document.querySelector('#mobileMoreTools').click();true");
+   await check('More includes Anatomy, Anki and Library',"!!document.querySelector('#mobileToolsMenu[open]')&&['anatomy','anki','library'].every(id=>document.querySelector('#mobileToolsMenu [data-view='+id+']'))");
+   await evaluate("document.querySelector('#mobileToolsMenu').close();true");
+  }
   const png=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await writeFile(path.join(out,name+'.png'),Buffer.from(png.data,'base64'));
  }
  const report={checks,errors:[...new Set(errors)]};await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:checks.filter(c=>c.passed).length,total:checks.length,failures:checks.filter(c=>!c.passed),errors:report.errors,output:out}));if(checks.some(c=>!c.passed)||errors.length)process.exitCode=1;

@@ -37,15 +37,17 @@ try{
  await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:2,mobile:true});await evaluate("settings.theme='light';applyTheme();day='2026-11-22';document.getElementById('day').value=day;go('calendar');true");
  check('phone day schedule and lecturer',await evaluate("!!document.querySelector('.campus-mobile-day')&&[...document.querySelectorAll('.campus-doctor')].some(x=>x.textContent.includes('Olena'))&&document.documentElement.scrollWidth<=innerWidth+1"));
  await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false}).then(r=>writeFile(path.join(out,'phone-schedule.png'),Buffer.from(r.data,'base64')));
- await evaluate("go('practice');document.querySelector('[data-et-tab=mock]')?.click();true");
+ await evaluate("go('practice');true");
+ for(let i=0;i<100;i++){if(await evaluate("!!document.querySelector('[data-et-tab=mock]')"))break;await new Promise(r=>setTimeout(r,60))}
+ await evaluate("document.querySelector('[data-et-tab=mock]')?.click();const customize=document.querySelector('#etMockCustomize');if(customize)customize.open=true;true");
  check('phone mode row aligns',await evaluate("(()=>{const e=[...document.querySelectorAll('.mock-mode-row>label')];return e.length===3&&Math.max(...e.map(x=>x.getBoundingClientRect().top))-Math.min(...e.map(x=>x.getBoundingClientRect().top))<2})()"));
  await evaluate("window.Phase2Exam.start(phase2MockPool().filter(q=>ExamEngine.usable(q)).slice(0,3),3,30,{presentation:'examplify',scope:'CVP'},true);render();if(document.querySelector('#xpExam').dataset.examTheme!=='light')document.querySelector('[data-xp-action=theme]').click();document.querySelector('[data-xp-action=colors]').click();true");
  check('Light Examplify selection rings',await evaluate("(()=>{const n=[...document.querySelectorAll('#xpNumbers>button')],sw=[...document.querySelectorAll('.xp-palette button')];return n.filter(x=>x.classList.contains('xp-current')).length===1&&n.filter(x=>!x.classList.contains('xp-current')).every(x=>getComputedStyle(x).borderColor==='rgba(0, 0, 0, 0)')&&sw.length===5&&sw.filter(x=>x.getAttribute('aria-pressed')==='false').every(x=>getComputedStyle(x).borderColor==='rgba(0, 0, 0, 0)')})()"));
  await evaluate("etExam=null;render();true");
  await evaluate("import('/student-profile.mjs?v=2').then(m=>{m.setup({reset:true,items:[]})})");
- check('welcome is compact and neutral',await evaluate("(()=>{const d=document.querySelector('#studentProfileSetup');return !!d&&!!d.querySelector('.welcome-feature-grid')&&d.getBoundingClientRect().height<innerHeight-10})()"));
+ check('welcome is compact and neutral',await evaluate("(()=>{const d=document.querySelector('#studentProfileSetup');return !!d&&!!d.querySelector('.student-setup-options')&&d.getBoundingClientRect().height<innerHeight-10})()"));
  await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false}).then(r=>writeFile(path.join(out,'phone-welcome.png'),Buffer.from(r.data,'base64')));
- await evaluate("document.querySelector('#studentProfileSetup [data-next]').click();true");
+ await evaluate("document.querySelector('.student-setup-options').open=true;document.querySelector('[name=englishEnabled]').click();true");
  check('English time below days',await evaluate("document.querySelector('[name=englishTime]').getBoundingClientRect().top>document.querySelector('[name=frequency]').getBoundingClientRect().bottom"));
  const counts={};
  const report={checks,errors:[...new Set(errors)]};await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:checks.filter(c=>c.passed).length,total:checks.length,failures:checks.filter(c=>!c.passed),errors:report.errors,counts}));if(checks.some(c=>!c.passed)||errors.length)process.exitCode=1;
