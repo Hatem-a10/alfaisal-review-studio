@@ -31,7 +31,8 @@ const HubDomain=(()=>{
  function attention(session,after=-1){const pending=session.questions.map((q,i)=>i).filter(i=>session.graded[i]?session.answers[i]!==session.questions[i].answer:!Number.isInteger(session.answers[i]));return pending.find(i=>i>after)??pending[0]??-1}
  function reviewAttention(session,seen=[],includeOptional=false){const eligible=(q)=>includeOptional||!q.duplicateOf,wrong=session.questions.map((q,i)=>i).filter(i=>eligible(session.questions[i])&&session.graded[i]&&session.answers[i]!==session.questions[i].answer);if(wrong.length)return wrong.find(i=>!seen.includes(i))??-1;return session.questions.findIndex((q,i)=>eligible(q)&&!session.graded[i]&&!Number.isInteger(session.answers[i]))}
  function lessonIdsForDay(tasks,date,overdue=false){return [...new Set(tasks.filter(t=>!t.done&&typeof t.date==='string'&&(overdue?t.date<date:t.date===date)).map(t=>t.x.id))]}
- function timeLabel(now=new Date()){return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now)}
+ let timeFormatter;
+ function timeLabel(now=new Date()){return (timeFormatter??=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',hourCycle:'h23'})).format(now)}
  function jumpDirection(rect,viewport){return rect.top+rect.height/2<viewport/2?'up':'down'}
  function nextSunday(date){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+(7-d.getUTCDay()||7));return d.toISOString().slice(0,10)}
  function countdownCategory(event){const text=[event.kind,event.type,event.title].filter(Boolean).join(' ');if(/ospe|practical/i.test(text))return 'ospe';if(/course start|begins/i.test(text))return 'starts';if(/tbl/i.test(text))return 'tbls';if(/exam|final|midterm/i.test(text))return 'exams';return 'other'}

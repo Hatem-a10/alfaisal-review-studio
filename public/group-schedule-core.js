@@ -9,10 +9,10 @@ const GroupSchedules=(()=>{
   settings=settings||{};const legacy=settings.legacyProfile===true&&!settings.groupConfigured;
   return {group:validGroup(settings.studentGroup)?settings.studentGroup:legacy?'M1':'',section:validSection(settings.studentSection)?settings.studentSection:legacy?'A':'',lab:typeof settings.labGroup==='string'&&settings.labGroup?settings.labGroup:legacy&&!settings.labGroupConfigured?'1.6':''};
  }
- function assigned(event,settings){
-  const p=profile(settings);
+ function assignedProfile(event,p){
   return !!event&&!!p.group&&Array.isArray(event.studentGroups)&&event.studentGroups.includes(p.group)&&(!event.studentSection||event.studentSection===p.section)&&(event.labGroups===undefined||Array.isArray(event.labGroups)&&(!event.labGroups.length||event.labGroups.includes(p.lab)));
  }
+ function assigned(event,settings){return assignedProfile(event,profile(settings))}
  function english(start,settings={}){
   if(!validDay(start)||settings?.englishEnabled===false)return [];
   const days=settings?.englishFrequency===3?[0,2,4]:[1,3],time=settings?.englishStartTime==='17:00'?1020:1050;
@@ -32,7 +32,7 @@ const GroupSchedules=(()=>{
   if(!validDay(start))return [];
   const end=new Date(start+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+4);const last=end.toISOString().slice(0,10),p=profile(settings);
   const old=p.group==='M1'&&p.section==='A'?array(legacy).filter(e=>timed(e)&&(!e.shared||shared)&&(p.lab==='1.6'||!['lab','shared'].includes(e.kind))):[];
-  const official=array(catalog?.events).filter(e=>timed(e)&&assigned(e,settings)&&(!e.shared||shared));
+  const official=array(catalog?.events).filter(e=>timed(e)&&assignedProfile(e,p)&&(!e.shared||shared));
   const byId=new Map(),withoutId=[];for(const e of old.concat(official)){if(typeof e.id==='string'&&e.id)byId.set(e.id,e);else withoutId.push(e)}
   const resolved=authoritative([...byId.values(),...withoutId]);
   return resolved.filter(e=>e.date>=start&&e.date<=last).concat(english(start,settings)).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
