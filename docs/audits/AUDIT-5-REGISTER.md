@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate scopes (110 speed-oriented changes and 19 measurement capabilities), 93 pre-existing mechanisms source-reviewed, 6 rejected/not-applicable items, 0 submitted candidates and 72 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 133 newly merged candidate scopes (113 speed-oriented changes and 20 measurement capabilities), 97 pre-existing mechanisms source-reviewed, 10 rejected/not-applicable items, 0 submitted candidates and 60 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -73,8 +73,8 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-041 | Serve eligible public static assets without Worker invocation | Unassessed |
-| A5-042 | Reduce Worker bundle initialization footprint | Unassessed |
-| A5-043 | Lazy-initialize route-specific server modules | Unassessed |
+| A5-042 | Reduce Worker bundle initialization footprint | Merged #240; CI passed; route-specific Admin feature imports |
+| A5-043 | Lazy-initialize route-specific server modules | Merged #239; CI passed; lazy Admin-only module loading |
 | A5-044 | Edge-cache approved nonpersonal academic metadata | Unassessed |
 | A5-045 | Parallel independent D1 and R2 operations | Merged #199; staging CI passed; scoped optimization |
 | A5-046 | Deduplicate authentication lookups per request | Existing coverage; authenticate once at managed Worker entry |
@@ -94,7 +94,7 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 | A5-055 | Eliminate duplicate progress D1 read on a changed revision | Merged #127; CI passed; narrowed scope |
 | A5-056 | Batch compatible D1 statements | Existing; source-reviewed app/api/academic-config/route.ts; no new merge credit |
 | A5-057 | Cursor-paginate large Admin datasets | Unassessed |
-| A5-058 | Incrementally maintain costly analytics aggregates | Unassessed |
+| A5-058 | Incrementally maintain costly analytics aggregates | Existing coverage; event counters increment control_daily rows at ingestion |
 | A5-059 | Evaluate read replication with required consistency | Unassessed |
 | A5-060 | Align hot filters and orderings with index structure | Merged #206; staging CI passed; scoped optimization |
 
@@ -273,7 +273,7 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 | A5-174 | Keep Anki deck-library list out of active card flips | Existing coverage; active-deck branch bypasses library list; reviewed |
 | A5-175 | Reuse sanitized card template until card version changes | Merged #197; staging CI passed; scoped optimization |
 | A5-176 | Defer Anki media decode until displayed card face | Merged #153; CI passed |
-| A5-177 | Reuse permitted object URLs during same account session | Unassessed |
+| A5-177 | Reuse permitted object URLs during same account session | Existing coverage; account-scoped Anki background object URL reused until changed |
 | A5-178 | Reuse per-card course scope within an Anki cross-link computation | Merged #120; CI passed; combined benchmark |
 | A5-179 | Incrementally maintain per-deck review counters | Unassessed |
 | A5-180 | Skip rebuilding unchanged study-control DOM between flips | Unassessed |
@@ -312,7 +312,7 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-201 | Benchmark cache-first for immutable approved public assets | Unassessed |
+| A5-201 | Benchmark cache-first for immutable approved public assets | Merged #241; CI passed; measurement-only real SW cache-first benchmark |
 | A5-202 | Avoid redundant service-worker update checks | Existing narrower: offline registration has no app-level repeated service-worker update poll |
 | A5-203 | Coalesce identical in-flight cache population requests | Merged #167; CI passed; public fingerprinted asset scope |
 | A5-204 | Use navigation preload for eligible routes | Merged #170; CI passed; eligible navigation preload |
@@ -320,7 +320,7 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 | A5-206 | Restrict activation cleanup to relevant old cache names | Existing coverage; reviewed scope in evidence |
 | A5-207 | Batch cache warmup within network budget | Existing coverage; reviewed scope in evidence |
 | A5-208 | Exclude ephemeral authenticated API requests from service-worker caches | Existing narrower coverage; cacheKind denies unrelated APIs |
-| A5-209 | Use versioned offline fallback without repeated network probe | Unassessed |
+| A5-209 | Use versioned offline fallback without repeated network probe | Merged #242; CI passed; release-specific offline public-core cache |
 | A5-210 | Benchmark offline bundle download concurrency | Merged #173; CI passed; measurement-only |
 
 ## CSS and typography
@@ -329,7 +329,7 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 |---|---|---|
 | A5-211 | Remove proven unused selector rules from active bundles | Unassessed |
 | A5-212 | Minify shipped CSS while preserving cascade | Existing coverage; reviewed scope in evidence |
-| A5-213 | Split rarely used feature styles from entry stylesheet | Unassessed |
+| A5-213 | Split rarely used feature styles from entry stylesheet | Existing coverage; Admin CSS loaded only when Control Center opens |
 | A5-214 | Deduplicate identical keyframe declarations | Rejected / not applicable; no duplicate keyframe names across public CSS sources |
 | A5-215 | Reduce expensive broad descendant selectors in hot views | Merged #212; staging CI passed; scoped optimization |
 | A5-216 | Avoid animating layout-affecting properties | Merged #236; CI passed; compositor transform without sidebar width animation |
@@ -388,14 +388,14 @@ Status reconciled against GitHub on 24 November 2026: 129 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-251 | Load student count before optional detailed breakdown | Merged #231; CI passed; overview only fetches account summary SELECT |
-| A5-252 | Query only requested report date range | Unassessed |
+| A5-252 | Query only requested report date range | Rejected; reports have no user-requested date-range filter |
 | A5-253 | Aggregate report metrics in database when equivalent | Existing coverage; database-side SQL COUNT/SUM/GROUP BY analytics |
-| A5-254 | Stream large authorized export output | Unassessed |
-| A5-255 | Defer offscreen chart series computations | Unassessed |
-| A5-256 | Reuse report filter options per dataset revision | Unassessed |
+| A5-254 | Stream large authorized export output | Rejected; no current bulk Admin export endpoint to stream |
+| A5-255 | Defer offscreen chart series computations | Existing coverage; detailed Analytics loaded only on selected view |
+| A5-256 | Reuse report filter options per dataset revision | Rejected; report filter status choices are static, not dataset-derived |
 | A5-257 | Index audit event lists by timestamp and type | Existing coverage; audit timestamp/id index and chronological paging; no type filter |
 | A5-258 | Batch permission-scoped student metadata reads | Existing coverage; one permission-scoped students JOIN and projection |
-| A5-259 | Avoid repeatedly recomputing unchanged group roster totals | Unassessed |
+| A5-259 | Avoid repeatedly recomputing unchanged group roster totals | Rejected; no group-roster total recalculation in current Students view |
 | A5-260 | Cache derived report chart points within one view session | Merged #225; CI passed; cache stable Admin storage chart HTML |
 
 ## Academic generators
@@ -699,6 +699,28 @@ Two ideas are **not applicable to the current product**:
 - **A5-266:** Current staging and production-candidate builds must retain the user-accessible archived CVP material. There is no separate active-only build target that can exclude those inputs without removing the archive; skip this optimization rather than breaking preservation.
 
 A5-039 compositor-friendly keyframes was **previously source-reviewed and counted once**; this entry does not credit it again. No production deployment or student-data changes.
+
+## Audit 5 continuation — four verified PR merges, eight reviewed dispositions (24 November 2026)
+
+Newly merged:
+- **A5-043**: [PR #239](https://github.com/Hatem-a10/alfaisal-review-studio/pull/239), passing [staging CI 45443881206](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45443881206). Lazy-import the academic, content, and resource feature modules only when a Control Center route is requested.
+- **A5-042**: [PR #240](https://github.com/Hatem-a10/alfaisal-review-studio/pull/240), passing [staging CI 45444577384](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45444577384). A subsequent independent optimization selects only the requested Admin module; built-in overview, analytics, audit and site views load none of the optional feature modules. Actual cold-start latency still needs browser/Worker runtime measurement.
+- **A5-201**: [PR #241](https://github.com/Hatem-a10/alfaisal-review-studio/pull/241), passing [staging CI 45444865529](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45444865529). **Measurement-only:** VM-execute the real service-worker fetch handler with a simulated Cache API and network to demonstrate first-request network transfer, warm cache hits, bounded concurrent single-flight and private-path exclusions.
+- **A5-209**: [PR #242](https://github.com/Hatem-a10/alfaisal-review-studio/pull/242), passing [staging CI 45445377061](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45445377061). On a reliable browser-declared offline state, read only nonpersonal core assets from the versioned service-worker cache before attempting a network request. Private and navigation routes preserve independent identity/freshness checks.
+
+Existing coverage, not additional new speed changes:
+- **A5-058:** `lib/admin-control.mjs` `countControlEvent` incrementally updates `control_daily` with an atomic SQL UPSERT. Analytics aggregates from these maintained counters, avoiding repeated event-history scans.
+- **A5-177:** `public/anki.js` reuses the same account-scoped `ankiBgUrl` object URL for the active background until its image changes, and calls `URL.revokeObjectURL` on replacement/removal. This review covers only background media; face-specific media uses separate handling.
+- **A5-213:** `public/admin-control-center.mjs` injects `/admin-control-center.css` on Control Center open; `public/index.html` does not preload the Admin stylesheet.
+- **A5-255:** `public/admin-control-center.mjs` invokes `analytics()` only for its selected view; the overview uses the summary-only query from A5-251. Inactive Admin analytic tables are neither fetched nor built during ordinary dashboard rendering.
+
+Not applicable until the product supports their prerequisites:
+- **A5-252:** Report moderation's filter UI currently supports query text and status, not a date-range selector; there is no requested report date range to push into SQL.
+- **A5-254:** The Admin report UI uses paginated results and contains no large Admin export endpoint. Material and private resource downloads already use independent streaming handlers.
+- **A5-256:** Report filter choices are fixed moderation statuses rather than a derived dataset-revision list; caching a nonexistent computed list would add state without removing work.
+- **A5-259:** The Students view currently shows account-scoped paginated rows, not a repeatedly recomputed group-roster total. No current total calculation needs memoization.
+
+No changes to student records, scoring, authorization rules or live production deployment are claimed from this register update.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
