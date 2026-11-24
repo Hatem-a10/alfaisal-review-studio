@@ -1,3 +1,4 @@
+import {boundedForm,RequestTooLarge} from '../../../lib/bounded-request';
 import {env} from 'cloudflare:workers';
 import {fileDigest,hasZipHeader,reservePersonalUpload} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
@@ -9,7 +10,7 @@ export async function POST(request:Request){
  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
  if(!env.DB||!env.BUCKET)return json({error:'Cloud deck storage unavailable.'},503);
  if(Number(request.headers.get('content-length'))>53000000)return json({error:'Deck limit is 50 MB. Export subdecks for larger collections.'},413);
- let form;try{form=await request.formData()}catch{return json({error:'Invalid deck upload.'},400)}
+ let form;try{form=await boundedForm(request,53000000)}catch(e){if(e instanceof RequestTooLarge)return json({error:'Upload request is too large.'},413);return json({error:'Invalid deck upload.'},400)}
  const file=form.get('file'),hash=String(form.get('hash')||''),cards=Number(form.get('cards'));
  if(!(file instanceof File)||!/^.{1,240}\.(apkg|colpkg)$/i.test(file.name)||file.size<1||file.size>50000000||!/^[a-f0-9]{64}$/.test(hash)||!Number.isSafeInteger(cards)||cards<1||cards>100000)return json({error:'Invalid Anki package.'},400);
  if(!await hasZipHeader(file)||await fileDigest(file)!==hash)return json({error:'The Anki package is invalid or its checksum did not match. Export and import it again.'},400);
