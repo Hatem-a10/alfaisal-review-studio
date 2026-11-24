@@ -5,12 +5,16 @@
  const pending=new Map(),errors=new Map();
  function request(url,apply,consumer=url){
   const existing=pending.get(url);if(existing){existing.callbacks.set(consumer,apply);return existing.promise}
-  errors.delete(url);const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000),entry={callbacks:new Map([[consumer,apply]])};
-  entry.promise=fetch(url,{signal:controller.signal,credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('Could not load this reading');return decode(r)}).then(data=>{
+  errors.delete(url);const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000),entry={controller,cancelled:false,callbacks:new Map([[consumer,apply]])};
+  entry.promise=fetch(url,{signal:controller.signal,credentials:'same-origin'}).then(r=>{if(!r.ok)throw Error('Could not load this reading');return decode(r)}).then(data=>{if(entry.cancelled)return;
    for(const callback of entry.callbacks.values())try{callback(data)}catch(e){errors.set(url,e.message||'Invalid reading data')}
-  }).catch(e=>errors.set(url,e.name==='AbortError'?'Loading timed out.':e.message)).finally(()=>{pending.delete(url);clearTimeout(timeout);if(view==='library')render()});
+  }).catch(e=>{if(!entry.cancelled)errors.set(url,e.name==='AbortError'?'Loading timed out.':e.message)}).finally(()=>{if(pending.get(url)===entry)pending.delete(url);clearTimeout(timeout);if(view==='library'&&!entry.cancelled)render()});
   pending.set(url,entry);return entry.promise;
  }
+ // Requests here serve only the Library. Reopening the same URL starts a new
+ // request after cancellation; no aborted callback may mutate another view.
+ function cancelInactive(){if(view==='library')return;for(const [url,entry]of pending){entry.cancelled=true;entry.callbacks.clear();pending.delete(url);entry.controller.abort()}}
+ const priorRender=render;render=function(...args){cancelInactive();return priorRender.apply(this,args)};
  function source(s){return s?.readingURL&&!s.readingLoaded}
  function readingMap(rows){if(!Array.isArray(rows))throw Error('Invalid reading data');const map=new Map();for(const p of rows){if(!p||!Number.isSafeInteger(p.page)||p.page<1||typeof p.text!=='string'||map.has(p.page))throw Error('Invalid reading data');map.set(p.page,p.text)}return map}
  function load(s){const url=s.readingURL;return request(url,rows=>{if(s.readingURL!==url)return;const map=readingMap(rows);if(!Array.isArray(s.pages)||s.pages.some(p=>!p||(!map.has(p.page)&&!p.text)))throw Error('Incomplete reading data');s.pages.forEach(p=>p.text=map.get(p.page)??p.text);s.readingLoaded=true},s)}
