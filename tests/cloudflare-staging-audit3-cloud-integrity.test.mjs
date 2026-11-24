@@ -24,7 +24,7 @@ test('bounded multipart keeps fields and rejects excessive envelope',async()=>{
 });
 test('PATCH reuses the snapshot it already loaded and uncertain saves do not remove referenced objects',()=>{
  const s=readFileSync(new URL('../app/api/progress/route.ts',import.meta.url),'utf8');
- assert.match(s,/writeSnapshot\(id,body.revision,snapshot,prior\)/);
+ assert.match(s,/writeSnapshot\(id,body.revision,snapshot,prior(?:,true)?\)/);
  assert.match(s,/current\?\.revision===revision\+1&&current.snapshot===snapshot/);
  assert.match(s,/validCompanion\(k,v.value\?\?null\)/);
 });

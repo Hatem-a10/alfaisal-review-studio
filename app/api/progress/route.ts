@@ -26,7 +26,7 @@ export async function PUT(request:Request){
  let raw:string;try{raw=new TextDecoder().decode(await readBounded(request,12000000))}catch(e){return json({error:e instanceof RequestTooLarge?'Progress backup is too large.':'Could not read progress data.'},e instanceof RequestTooLarge?413:400)}
  let data;try{data=JSON.parse(raw)}catch{return json({error:'Invalid JSON.'},400)}
  if(!Number.isSafeInteger(data?.revision)||data.revision<0||data.snapshot?.app!=='alfaisal-review-studio'||data.snapshot?.version!==2||!data.snapshot.records||Array.isArray(data.snapshot.records)||typeof data.snapshot.records!=='object'||Object.keys(data.snapshot.records).length>lectureCourses.size||!validSnapshot(data.snapshot))return json({error:'Invalid progress format.'},400);
- return writeSnapshot(id,data.revision,data.snapshot);
+ return writeSnapshot(id,data.revision,data.snapshot,undefined,true);
 }
 function validPointer(key:unknown,id:string):key is string{return typeof key==='string'&&key.startsWith('progress/'+id+'/')&&/^[0-9a-f-]{36}$/i.test(key.slice(('progress/'+id+'/').length))}
 async function readSnapshot(raw:string,id:string){
@@ -34,14 +34,17 @@ async function readSnapshot(raw:string,id:string){
  if(!snapshot||snapshot.app!=='alfaisal-review-studio'||snapshot.version!==2||!snapshot.records||typeof snapshot.records!=='object'||Array.isArray(snapshot.records))throw Error('Invalid stored snapshot');
  return snapshot;
 }
-async function writeSnapshot(id:string,revision:number,data:any,prior?:any){
+async function writeSnapshot(id:string,revision:number,data:any,prior?:any,validated=false){
+ // A5-241: PUT and PATCH already validated the body. Recheck only if the
+ // receipt-recovery merge changes its structure before persistence.
+ let requiresValidation=!validated;
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  if(data.extras===undefined||!data.extras.stores.options?.value?.answerReceipts){
   try{const existing=prior===undefined?await env.DB.prepare('SELECT snapshot FROM study_snapshots WHERE user_id = ?').bind(id).first<{snapshot:string}>():null;const previous=prior??(existing?await readSnapshot(existing.snapshot,id):null);
-   if(previous?.extras){if(data.extras===undefined)data.extras=previous.extras;else if(previous.extras.stores?.options?.value?.answerReceipts){const options=data.extras.stores.options;if(options?.value)options.value.answerReceipts=previous.extras.stores.options.value.answerReceipts;else if(!options)data.extras.stores.options=previous.extras.stores.options}}
+   if(previous?.extras){if(data.extras===undefined){data.extras=previous.extras;requiresValidation=true;}else if(previous.extras.stores?.options?.value?.answerReceipts){const options=data.extras.stores.options;if(options?.value){options.value.answerReceipts=previous.extras.stores.options.value.answerReceipts;requiresValidation=true;}else if(!options){data.extras.stores.options=previous.extras.stores.options;requiresValidation=true;}}}
   }catch{return json({error:'Previous cloud data could not be read. Your device copy is retained.'},503)}
  }
- if(!validSnapshot(data))return json({error:'Invalid progress format.'},400);
+ if(requiresValidation&&!validSnapshot(data))return json({error:'Invalid progress format.'},400);
  const content=JSON.stringify(data),at=new Date().toISOString(),size=new TextEncoder().encode(content).length;
  if(size>12000000)return json({error:'Combined progress backup is too large.'},413);
  let snapshot=content,r2Key:string|null=null;
@@ -128,5 +131,5 @@ export async function PATCH(request:Request){
  if(!row||row.revision!==body.revision)return json({error:'Cloud progress changed.'},409);
  let prior;try{prior=await readSnapshot(row.snapshot,id)}catch{return json({error:'Cloud snapshot unavailable. Your device copy is retained.'},503)}
  let snapshot;try{snapshot=ProgressDelta.apply(prior,body.patch);if(!validSnapshot(snapshot))throw Error()}catch{return json({error:'Invalid progress patch.'},400)}
- return writeSnapshot(id,body.revision,snapshot,prior);
+ return writeSnapshot(id,body.revision,snapshot,prior,true);
 }
