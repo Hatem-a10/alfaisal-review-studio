@@ -11,15 +11,20 @@ const categories={
 const fmt=value=>{const bytes=Number(value);return Number.isFinite(bytes)&&bytes>=0?(bytes/1048576).toFixed(bytes<10485760?2:1)+' MiB':'Unavailable'};
 const escape=text=>String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
+const storageChartCache=new WeakMap();
 export function storageDetails(build,limit){
  const info=build.breakdown;
  if(!info)return '';
+ // A5-260: build breakdown and private-media metadata are immutable until refresh.
+ // Cache only this page-local, nonpersonal presentation; dynamic admin counters stay live.
+ const prior=storageChartCache.get(build);
+ if(prior?.info===info&&prior.limit===limit&&prior.measured===build.measuredExpandedBytes&&prior.media===build.privateMedia)return prior.html;
  const rows=Object.entries({...info.categories,metadata:info.metadataBytes})
   .filter(([key,bytes])=>categories[key]&&Number.isSafeInteger(bytes)&&bytes>0)
   .map(([key,bytes])=>[...categories[key],bytes]).sort((a,b)=>b[2]-a[2]);
  const free=Math.max(0,limit-build.measuredExpandedBytes);
  const largest=(info.largest||[]).slice(0,8);
- return `<div class="storage-breakdown">
+ const html=`<div class="storage-breakdown">
   <div class="storage-chart" role="img" aria-label="${escape(rows.map(([name,,bytes])=>name+' '+fmt(bytes)).join(', ')+', Available '+fmt(free))}">
    ${[...rows,['Available','var(--storage-free)',free]].map(([name,color,bytes])=>`<span style="--segment-color:${color};flex-grow:${bytes}" title="${name} · ${fmt(bytes)}"></span>`).join('')}
   </div>
@@ -33,6 +38,8 @@ export function storageDetails(build,limit){
    ${info.categories.figures>0?`<p><strong>Move older course figures to private storage</strong><span>${fmt(info.categories.figures)} of figures are currently bundled. Offload verified copies while keeping frequently used thumbnails in the app.</span></p>`:''}
   </div>
  </div>`;
+ storageChartCache.set(build,{info,limit,measured:build.measuredExpandedBytes,media:build.privateMedia,html});
+ return html;
 }
 
 export function bindMigration(dialog){
