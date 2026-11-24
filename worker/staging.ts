@@ -16,15 +16,22 @@ import {managedDashboardLanding} from '../lib/managed-login-landing.mjs';
 // A5-043: only Control Center requests load their academic/content/resource
 // handler modules; ordinary student boot, assets and progress routes avoid eagerly
 // evaluating these Admin-only dependencies. ESM caching makes subsequent calls cheap.
-async function controlHandlers(student:boolean){
+// A5-042: narrow Control Center module loading to the handlers needed by the
+// specific authorized route. Shared built-in overview/analytics/audit routes need
+// none. Student routes retain their original three-handler precedence.
+async function controlHandlers(student:boolean,section:string){
+ if(!student){
+  if(section==='academics')return [(await import('../lib/admin-academics.mjs')).academicAdmin];
+  if(section==='resources')return [(await import('../lib/admin-resources.mjs')).resourceAdmin];
+  if(section==='reports'||section==='announcements')return [(await import('../lib/admin-content.mjs')).contentAdmin];
+  return [];
+ }
  const [academic,content,resource]=await Promise.all([
   import('../lib/admin-academics.mjs'),
   import('../lib/admin-content.mjs'),
   import('../lib/admin-resources.mjs')
  ]);
- return student
-  ?[academic.academicStudent,content.contentStudent,resource.resourceStudent]
-  :[academic.academicAdmin,content.contentAdmin,resource.resourceAdmin];
+ return [academic.academicStudent,content.contentStudent,resource.resourceStudent];
 }
 
 const stagingWorker = {
@@ -98,7 +105,7 @@ const stagingWorker = {
    if(canonical.startsWith('api/control-center/')){
     const student=canonical.startsWith('api/control-center/student/');
     let handlers;
-    try{handlers=await controlHandlers(student)}catch{return adminResponse({error:'Admin feature modules unavailable.'},503)}
+    try{handlers=await controlHandlers(student,canonical.split('/')[student?4:2])}catch{return adminResponse({error:'Admin feature modules unavailable.'},503)}
     const response=await controlRoute({request,env:config,user:auth.user,row,owner,path:'/'+canonical,handlers});
     const download=/^api\/control-center\/student\/resources\/([a-f0-9-]{36})\/download$/i.exec(canonical);
     if(response?.ok&&download)ctx.waitUntil(countControlEvent(env.DB,'resource-open:'+download[1]).catch(()=>{}));
