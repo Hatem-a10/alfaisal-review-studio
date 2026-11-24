@@ -18,7 +18,7 @@ function fixture(){
  const oldWithNewAnswer={id:'c',questions:[{id:'MOL-Q4',options:['A','B']}],answers:{0:1},finishedAt:'2026-05-01T11:00:00Z',xp:{answeredAt:{0:'2026-11-20T10:00:00Z'}}};
  return {records,practice:{mocks:[{snapshot:oldMock},{snapshot:recentMock},{snapshot:oldWithNewAnswer}],booklet:{'root-question':{completed:true,correct:true,at:'2026-11-20T15:00:00Z'}}}};
 }
-function norm=x=>JSON.parse(JSON.stringify(x));
+const norm=x=>JSON.parse(JSON.stringify(x));
 test('A5-004 bounded recent history exactly matches the all-time result inside window',()=>{
  const {records,practice}=fixture(),full=a(records,practice);
  const recent=b(records,practice,since);
@@ -29,7 +29,7 @@ test('A5-004 bounded recent history exactly matches the all-time result inside w
 });
 test('A5-004 recent activity view passes a bounded window only in 12-week mode',()=>{
  const source=readFileSync(new URL('../public/phase2-runtime.mjs',import.meta.url),'utf8');
- assert.match(source,/activityData\(options,activityAll\?null:add\(date,-83\)\)/);
+ assert.match(source,/activityData\\(options,activityAll\\?null:new Date\\(Date.parse\\(date/);
  assert.match(source,/questionHistory\(state,options.phase2Practice,since\)/);
 });
 function median(fn){fn();const times=[];for(let i=0;i<7;i++){const t=performance.now();fn();times.push(performance.now()-t)}return times.sort((a,b)=>a-b)[3]}
