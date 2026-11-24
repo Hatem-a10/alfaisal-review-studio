@@ -125,6 +125,28 @@ function libraryDocuments(snapshot=libraryLookup()) {
  return snapshot.sources.filter(source=>librarySourceInCourse(source,snapshot.scope,snapshot.references)&&libraryDocumentURL(source,1,snapshot.lookup));
 }
 
+// Index only associations that libraryMaterials already requires; build once per list render.
+// IDs can be duplicated in the source catalog, so keep source indices and canonical order.
+function libraryLectureCandidates(sources,items,lookup=lessonById){
+ const ids=new Map(),positions=new Map();
+ const add=(lecture,index)=>{if(typeof lecture!=='string'||!lecture)return;let set=positions.get(lecture);if(!set){set=new Set();positions.set(lecture,set)}set.add(index)};
+ sources.forEach((source,index)=>{
+  if(!ids.has(source.id))ids.set(source.id,[]);
+  ids.get(source.id).push(index);
+  add(source.lectureId,index);
+  if(Array.isArray(source.lectureIds))for(const id of source.lectureIds)add(id,index);
+  else if(typeof source.lectureIds==='string')for(const item of items)if(source.lectureIds.includes(item.id))add(item.id,index);
+  for(const range of Array.isArray(source.lectureRanges)?source.lectureRanges:[])add(range?.lectureId,index);
+ });
+ for(const item of items){
+  const lesson=lookup(item.id),coverage=lesson?.coverage;
+  const references=[...(lesson?.references||[]),...(coverage?.slideSources||[])];
+  if(coverage?.transcriptSource)references.push({source:coverage.transcriptSource});
+  for(const ref of references)for(const index of ids.get(ref?.source)||[])add(item.id,index);
+ }
+ return new Map([...positions].map(([id,indexes])=>[id,[...indexes].sort((a,b)=>a-b).map(i=>sources[i])]));
+}
+
 function searchRenalDocuments() {
  const terms=sourceSearch.toLowerCase().split(/\s+/).filter(Boolean);
  const snapshot=libraryLookup(),matches=libraryDocuments(snapshot).filter(source=>{
@@ -139,13 +161,13 @@ function searchRenalDocuments() {
 
 function libraryLectureLists() {
  const scope=globalThis.reviewCourseScope;
- const snapshot=libraryLookup(scope),sources = libraryDocuments(snapshot);
+ const snapshot=libraryLookup(scope),sources = libraryDocuments(snapshot),candidates=libraryLectureCandidates(sources,DATA.items);
  const covered = new Set();
  const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine'], ['REN-A','Renal Anatomy & Histology'], ['REN-P','Renal Physiology']];
  const lists = groups.filter(([prefix])=>scope?prefix.startsWith(scope+'-'):!prefix.startsWith('REN-')&&(!prefix.startsWith('CVP-')||!globalThis.reviewCvpArchived?.())).map(([prefix,label]) => {
   const rows = DATA.items.filter(item => item.id.startsWith(prefix)).sort((a,b) => Number(a.id.slice(prefix.length)) - Number(b.id.slice(prefix.length)));
   return `<section class="material-list"><h2>${label}</h2><ol>${rows.map(item => {
-   const selections = libraryMaterials(item, lessonById(item.id), sources);
+   const selections = libraryMaterials(item, lessonById(item.id), candidates.get(item.id)||[]);
    const actions = (list, label) => {
     if (!list.length) return `<button disabled title="${label} unavailable">${label} unavailable</button>`;
     const button = ({source,page}, caption) => {
