@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 56 newly merged candidates recorded, 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 2 prior submitted items and 180 unassessed candidates. Evidence-only review; merges newer than the register require reconciliation. No performance gain attributed to an existing feature without measurement.
+Status reconciled against merged PRs on 24 November 2026: 70 newly merged candidate scopes (66 speed-oriented changes and 4 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 0 submitted candidates and 168 unassessed. The 300 distinct IDs remain intact; no production changes or student-data edits.
 
 ## Activity analytics
 
@@ -15,13 +15,13 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | A5-001 | Reuse Riyadh Intl date formatter across timestamps | Merged #116; CI passed |
 | A5-002 | Memoize resolved question alias chains within one history calculation | Merged #116; CI passed |
 | A5-003 | Find earliest history date by linear scan rather than sorting | Merged #116; CI passed; modest timing signal |
-| A5-004 | Avoid scanning history outside requested display window where safe | Unassessed |
+| A5-004 | Avoid scanning history outside requested display window where safe | Merged #169; CI passed; 12-week activity scope |
 | A5-005 | Accumulate aggregate counts without allocating intermediate values arrays | Merged #121; CI passed; allocation count evidence |
 | A5-006 | Avoid rebuilding attempt lists when only date range changes | Unassessed |
 | A5-007 | Index daily aggregate identities at ingestion | Unassessed |
 | A5-008 | Reuse normalized date keys from validated records | Merged #121; CI passed |
 | A5-009 | Incrementally update daily unique-question sets | Unassessed |
-| A5-010 | Cache activity chart geometry between data changes | Unassessed |
+| A5-010 | Cache activity chart geometry between data changes | Merged #180; CI passed; cached activity heatmap dates |
 
 ## Startup
 
@@ -66,7 +66,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | A5-037 | Apply CSS containment to independent sections | Unassessed |
 | A5-038 | Skip rendering offscreen content via content-visibility | Unassessed |
 | A5-039 | Use compositor-friendly animation properties | Unassessed |
-| A5-040 | Suspend nonessential hidden-tab visual updates | Unassessed |
+| A5-040 | Suspend nonessential hidden-tab visual updates | Merged #164; CI passed; hidden classic mock DOM scope |
 
 ## Cloudflare execution
 
@@ -136,7 +136,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | A5-082 | Update question analytics incrementally after answers | Unassessed |
 | A5-083 | Index wrong-answer records by question within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
-| A5-085 | Sample questions without shuffling full bank where distribution unchanged | Unassessed |
+| A5-085 | Sample questions without shuffling full bank where distribution unchanged | Merged #175; CI passed; sparse partial mock sampling |
 | A5-086 | Render only active timed-exam question where interface permits | Unassessed |
 | A5-087 | Isolate classic mock timer updates from question content rebuilds | Existing coverage; etTick updates timer and dock separately |
 | A5-088 | Cache Anki due-card queue with precise invalidation | Unassessed |
@@ -179,7 +179,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 |---|---|---|
 | A5-111 | Normalize matching searchable titles once per unchanged index entry | Merged #117; CI passed |
 | A5-112 | Pre-tokenize searchable resource text at build time | Existing coverage; reviewed scope in evidence |
-| A5-113 | Index exact title and resource ID lookup separately | Unassessed |
+| A5-113 | Index exact title and resource ID lookup separately | Merged #183; CI passed; per-render exact lesson ID lookups |
 | A5-114 | Intersect smallest posting lists first | Merged #130; CI passed |
 | A5-115 | Limit top-k result sorting with equivalent stable ranking | Merged #122; CI passed |
 | A5-116 | Debounce expensive search work without delaying keystrokes | Existing coverage; reviewed scope in evidence |
@@ -196,7 +196,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | A5-122 | Index group timetable rows by group identifier | Unassessed |
 | A5-123 | Cache week calculations keyed by academic calendar version | Unassessed |
 | A5-124 | Precompute recurrence expansion for bounded visible weeks | Unassessed |
-| A5-125 | Reuse overlap layout until visible event set changes | Unassessed |
+| A5-125 | Reuse overlap layout until visible event set changes | Merged #171; CI passed; timetable lane geometry |
 | A5-126 | Sort timetable event lanes once per calendar day | Existing coverage; campusLayout groups by day before sorting; reviewed |
 | A5-127 | Avoid rebuilding hidden timetable views on clock tick | Existing narrower: second-tick timer toggles live event classes without rebuilding timetable board |
 | A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Merged #118; CI passed |
@@ -268,7 +268,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | ID | Candidate | Status |
 |---|---|---|
 | A5-171 | Index local deck cloud IDs for remote membership lookup | Merged #142; CI passed; narrowed scope |
-| A5-172 | Group cards by deck in one traversal | Unassessed |
+| A5-172 | Group cards by deck in one traversal | Merged #178; CI passed; per-deck Anki label projection |
 | A5-173 | Precompute Anki due keys and read progress once per queue rebuild | Merged #126; CI passed; narrowed scope |
 | A5-174 | Keep Anki deck-library list out of active card flips | Existing coverage; active-deck branch bypasses library list; reviewed |
 | A5-175 | Reuse sanitized card template until card version changes | Unassessed |
@@ -305,7 +305,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | A5-196 | Use cursor iteration for large local collections | Unassessed |
 | A5-197 | Avoid copying large binary blobs into JS arrays | Existing narrower: source streams assembled once into bounded Uint8Array, not copied into JS byte arrays |
 | A5-198 | Bound in-memory decoded resource cache by bytes | Unassessed |
-| A5-199 | Evict bounded source-search term cache by true LRU | Submitted #162; CI pending |
+| A5-199 | Evict bounded source-search term cache by true LRU | Merged #162; CI passed; bounded true LRU |
 | A5-200 | Reuse service-worker cache manifest parsing per version | Existing coverage; reviewed scope in evidence |
 
 ## Service worker
@@ -314,14 +314,14 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 |---|---|---|
 | A5-201 | Benchmark cache-first for immutable approved public assets | Unassessed |
 | A5-202 | Avoid redundant service-worker update checks | Existing narrower: offline registration has no app-level repeated service-worker update poll |
-| A5-203 | Coalesce identical in-flight cache population requests | Unassessed |
-| A5-204 | Use navigation preload for eligible routes | Unassessed |
+| A5-203 | Coalesce identical in-flight cache population requests | Merged #167; CI passed; public fingerprinted asset scope |
+| A5-204 | Use navigation preload for eligible routes | Merged #170; CI passed; eligible navigation preload |
 | A5-205 | Skip cache enumeration on unrelated fetch requests | Existing coverage; reviewed scope in evidence |
 | A5-206 | Restrict activation cleanup to relevant old cache names | Existing coverage; reviewed scope in evidence |
 | A5-207 | Batch cache warmup within network budget | Existing coverage; reviewed scope in evidence |
 | A5-208 | Exclude ephemeral authenticated API requests from service-worker caches | Existing narrower coverage; cacheKind denies unrelated APIs |
 | A5-209 | Use versioned offline fallback without repeated network probe | Unassessed |
-| A5-210 | Benchmark offline bundle download concurrency | Submitted benchmark PR (measurement only); CI pending |
+| A5-210 | Benchmark offline bundle download concurrency | Merged #173; CI passed; measurement-only |
 
 ## CSS and typography
 
@@ -357,8 +357,8 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-231 | Deduplicate identical concurrent account-scoped GET requests | Unassessed |
-| A5-232 | Cancel superseded read requests on route changes | Unassessed |
+| A5-231 | Deduplicate identical concurrent account-scoped GET requests | Merged #174; CI passed; account-scoped Anki listing deduplication |
+| A5-232 | Cancel superseded read requests on route changes | Merged #176; CI passed; cancel stale Library reads |
 | A5-233 | Combine compatible small metadata reads | Unassessed |
 | A5-234 | Reduce oversized response field sets per view | Unassessed |
 | A5-235 | Reuse stable response schema encoding | Unassessed |
@@ -433,7 +433,7 @@ Status at this evidence update: 56 newly merged candidates recorded, 61 pre-exis
 | ID | Candidate | Status |
 |---|---|---|
 | A5-281 | Record bounded local-only p50 and p95 view render timings | Merged #161; CI passed; measurement capability only |
-| A5-282 | Capture long-task duration by study view | Unassessed |
+| A5-282 | Capture long-task duration by study view | Merged #166; CI passed; measurement-only |
 | A5-283 | Measure IndexedDB write amplification on synthetic data | Unassessed |
 | A5-284 | Measure D1 rows read per common request | Unassessed |
 | A5-285 | Measure R2 transferred bytes per resource journey | Unassessed |
@@ -557,6 +557,29 @@ Median of three measured executions unless otherwise indicated, on the candidate
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
+
+## Audit 5 merge reconciliation — 24 November 2026
+
+The fourteen previously unrecorded candidate scopes below are merged into `cloudflare-staging`, with successful candidate-head staging CI. These PR links document narrowed scopes and benchmarks; passing synthetic CI is not evidence of production-wide latency gains.
+
+- **A5-199**: [merged PR #162](https://github.com/Hatem-a10/alfaisal-review-studio/pull/162); [successful staging CI 45398589141](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398589141).
+- **A5-040**: [merged PR #164](https://github.com/Hatem-a10/alfaisal-review-studio/pull/164); [successful staging CI 45398779135](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398779135).
+- **A5-282**: [merged PR #166](https://github.com/Hatem-a10/alfaisal-review-studio/pull/166); [successful staging CI 45399097226](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45399097226). Measurement-only capability, not a speed gain.
+- **A5-203**: [merged PR #167](https://github.com/Hatem-a10/alfaisal-review-studio/pull/167); [successful staging CI 45399222206](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45399222206).
+- **A5-004**: [merged PR #169](https://github.com/Hatem-a10/alfaisal-review-studio/pull/169); [successful staging CI 45400751470](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45400751470).
+- **A5-204**: [merged PR #170](https://github.com/Hatem-a10/alfaisal-review-studio/pull/170); [successful staging CI 45400048125](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45400048125).
+- **A5-125**: [merged PR #171](https://github.com/Hatem-a10/alfaisal-review-studio/pull/171); [successful staging CI 45400534132](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45400534132).
+- **A5-210**: [merged PR #173](https://github.com/Hatem-a10/alfaisal-review-studio/pull/173); [successful staging CI 45400615774](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45400615774). Measurement-only capability, not a speed gain.
+- **A5-085**: [merged PR #175](https://github.com/Hatem-a10/alfaisal-review-studio/pull/175); [successful staging CI 45401595267](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45401595267).
+- **A5-172**: [merged PR #178](https://github.com/Hatem-a10/alfaisal-review-studio/pull/178); [successful staging CI 45402010575](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45402010575).
+- **A5-010**: [merged PR #180](https://github.com/Hatem-a10/alfaisal-review-studio/pull/180); [successful staging CI 45403909856](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45403909856).
+- **A5-231**: [merged PR #174](https://github.com/Hatem-a10/alfaisal-review-studio/pull/174); [successful staging CI 45403810122](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45403810122).
+- **A5-232**: [merged PR #176](https://github.com/Hatem-a10/alfaisal-review-studio/pull/176); [successful staging CI 45404176204](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45404176204).
+- **A5-113**: [merged PR #183](https://github.com/Hatem-a10/alfaisal-review-studio/pull/183); [successful staging CI 45404544379](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45404544379); merge `7bf85e0b8fab5be7055814a2344c09ff6fa2075c`.
+
+[#177](https://github.com/Hatem-a10/alfaisal-review-studio/pull/177) corrected a flaky hard timing assertion for A5-199 while keeping strict behavior and operation-count checks, not an extra candidate. [#181](https://github.com/Hatem-a10/alfaisal-review-studio/pull/181) added six source-verified existing mechanisms, not newly implemented gains. Candidate **A5-113** was merged in [PR #183](https://github.com/Hatem-a10/alfaisal-review-studio/pull/183) after staging CI passed and is credited as one speed-oriented implementation. Archived-CVP load correction remains outside Audit 5. No production release, migrations, or student-data changes.
+
+**70 merged + 61 existing + 1 rejected + 0 submitted + 168 unassessed = 300.** Of merged items, 66 target performance and 4 are measurement-only.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
