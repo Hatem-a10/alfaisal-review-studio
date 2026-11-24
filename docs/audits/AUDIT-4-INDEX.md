@@ -1,8 +1,8 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 187 source-level findings and hardening cases; 313 remain to reach the target.** This is not a claim of 187 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 221 source-level findings and hardening cases; 279 remain to reach the target.** This is not a claim of 221 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
-Staging snapshot: `dd38d567e5f18722574a789585afb50dc9d4915e`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
+Staging snapshot: `803ebc92217626f145c4451e87d248258a637c78`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
 ## Candidate verification receipts
 
@@ -16,6 +16,10 @@ Staging snapshot: `dd38d567e5f18722574a789585afb50dc9d4915e`. Only active course
 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) | 19 | [Details](audit-4-upload-anki-boundaries.md) | [Run 45360070913](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360070913) | `8b9a2ec835a98613d7ad41bb066607665b708c9a` |
 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) | 28 | [Details](AUDIT-4-LEDGER.md) | [Run 45360550106](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360550106) | `93a3223d1bf8da0db32d497a2d367526bdb199d8` |
 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) | 20 | [Details](audit-4-choice-controls.md) | [Run 45361587002](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45361587002) | `dd38d567e5f18722574a789585afb50dc9d4915e` |
+| [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) | 8 | [Details](audit-4-delayed-recall.md) | [Run 45365284749](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365284749) | `b1655e6890b747cfec358e09e7398401e5f35312` |
+| [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) | 12 | [Details](audit-4-hub-calculations.md) | [Run 45365224270](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365224270) | `f0a80b5f47b8a0d964d32cd8fb9f8832c4d8bda1` |
+| [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) | 6 | [Details](audit-4-renal-library.md) | [Run 45365486667](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365486667) | `bf53a264f74276ff7639376ccd99da47fe5c9e2b` |
+| [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) | 8 | [Details](audit-4-source-index.md) | [Run 45365856162](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365856162) | `803ebc92217626f145c4451e87d248258a637c78` |
 
 Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
 
@@ -210,6 +214,40 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 | A4-185 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-18 | Low — zoom action before image loads computes a 1-pixel width | Ignore until natural width available | Merged; candidate CI passed |
 | A4-186 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-19 | Low — src attribute can override browser-selected responsive image | Prefer currentSrc after explicit full-size source | Merged; candidate CI passed |
 | A4-187 | [#69](https://github.com/Hatem-a10/alfaisal-review-studio/pull/69) / CH-20 | Low — previous width persists during next image load | Reset sizing and scale | Merged; candidate CI passed |
+| A4-188 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-01 | retentionPanel and submit call .filter on retentionAttempts without verifying an array | Guard shape and preserve unreadable stored data | Merged; candidate CI passed |
+| A4-189 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-02 | Invalid timestamp on a correct retest can reach localDate/formatting | Exclude invalid chronology from recall evidence | Merged; candidate CI passed |
+| A4-190 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-03 | Truthy non-boolean correct flags report successful retest | Require explicit boolean flags | Merged; candidate CI passed |
+| A4-191 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-04 | retentionState assumes the last array item is the latest | Sort validated records without mutating the input | Merged; candidate CI passed |
+| A4-192 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-05 | Invalid practice timestamps fall back to epoch, unlocking recall prematurely | Require timestamped practice | Merged; candidate CI passed |
+| A4-193 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-06 | Truthy non-boolean practice flags unlock recall | Require explicit true | Merged; candidate CI passed |
+| A4-194 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-07 | History and stale forms are scoped only to topic ID, not lesson; a stale lesson/topic can also be dereferenced | Include lesson ID in new records and forms, guard missing lesson/topic, keep legacy records matching a question in that topic | Merged; candidate CI passed |
+| A4-195 | [#71](https://github.com/Hatem-a10/alfaisal-review-studio/pull/71) / DR-08 | Numeric coercion of blank, hexadecimal or decimal choice strings admits invalid submissions | Require canonical nonnegative safe integer choice within options | Merged; candidate CI passed |
+| A4-196 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-01 | HubDomain.grades coerces blank, null and boolean marks or weights to numbers | Require finite numeric inputs | Merged; candidate CI passed |
+| A4-197 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-02 | Classic grade engine permits repeated assessment IDs | Reject duplicates | Merged; candidate CI passed |
+| A4-198 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-03 | Classic grade engine permits invalid target values | Validate 0–100 numeric target | Merged; candidate CI passed |
+| A4-199 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-04 | Required raw marks divides by zero for an upcoming zero-weight assessment | Return not applicable | Merged; candidate CI passed |
+| A4-200 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-05 | Equal-mark wrong-question allowance accepts fractional question counts | Require safe positive integers | Merged; candidate CI passed |
+| A4-201 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-06 | Countdown only matches two-digit 24-hour start times with narrow delimiters | Support single-digit clocks, spaced ranges and explicit AM/PM | Merged; candidate CI passed |
+| A4-202 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-07 | Invalid explicit clocks produce NaN countdown digits | Reject invalid clocks | Merged; candidate CI passed |
+| A4-203 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-08 | Past same-day countdown sort uses remaining seconds, which are all zero | Sort using absolute start timestamp | Merged; candidate CI passed |
+| A4-204 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-09 | Nonfinite or nonpositive session durations contaminate activity totals or active-day counts | Count finite positive durations only | Merged; candidate CI passed |
+| A4-205 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-10 | Malformed activity records or history arrays can throw during the dashboard render | Guard containers and entries | Merged; candidate CI passed |
+| A4-206 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-11 | Current-period highlight coerces missing interval bounds to numbers | Require finite bounds | Merged; candidate CI passed |
+| A4-207 | [#72](https://github.com/Hatem-a10/alfaisal-review-studio/pull/72) / HC-12 | Periodic dashboard paint rebuilds timetable and assessment catalog separately for every card | Build lookups once per tick | Merged; candidate CI passed |
+| A4-208 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-01 | Manifest processing appends source rows before validating later rows; failure leaves a partial catalogue | Build and validate the full list before publishing | Merged; candidate CI passed |
+| A4-209 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-02 | Initial URL set is not updated during iteration, admitting duplicate URLs within a manifest | Reject repeated manifest paths | Merged; candidate CI passed |
+| A4-210 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-03 | Repeated manifest IDs or collisions with existing canonical source IDs create ambiguous source lookup | Reject repeated IDs and preserve existing canonical IDs | Merged; candidate CI passed |
+| A4-211 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-04 | Non-object rows, invalid path shapes and malformed fields reach source construction | Validate manifest and relative REN material paths before constructing sources | Merged; candidate CI passed |
+| A4-212 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-05 | Manifest session mappings are discarded and generic lecture kind is not eligible for original lecture actions | Retain stable mapped IDs and original-lecture category; do not invent page ranges | Merged; candidate CI passed |
+| A4-213 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) / RL-06 | A stalled manifest request can leave the course library permanently loading | Apply a 15-second request deadline and preserve retry path | Merged; candidate CI passed |
+| A4-214 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-01 | URL-keyed pending request drops later consumers when sources share the same content hash | Fan out one response to each distinct consumer | Merged; candidate CI passed |
+| A4-215 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-02 | Reading payload allows duplicate and invalid page numbers, silently keeping last duplicate | Validate positive unique page identities | Merged; candidate CI passed |
+| A4-216 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-03 | Missing reading pages still set readingLoaded true | Require text or matching payload for each expected page before mutation | Merged; candidate CI passed |
+| A4-217 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-04 | Index page metadata accepted without validating source, page or snippet | Validate page records | Merged; candidate CI passed |
+| A4-218 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-05 | Index term posting arrays and offsets are unchecked | Validate term shape and in-range integer indices | Merged; candidate CI passed |
+| A4-219 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-06 | Index and term cache survive a changed content-addressed URL | Invalidate both caches and reject stale response installation | Merged; candidate CI passed |
+| A4-220 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-07 | Unicode-normalized local matches use unnormalized string offsets; empty positions produce blank previews | Reuse normalized text for offsets and bound preview start | Merged; candidate CI passed |
+| A4-221 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) / SI-08 | No-matches fallback is unreachable because the prefixed HTML string is always truthy | Explicit no-results feedback | Merged; candidate CI passed |
 
 ## Verification boundaries
 
@@ -219,3 +257,5 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 - #67: full 1,106-test candidate run passed, plus 618 isolation checks and 4 course checks; exact candidate includes all prior batches.
 - The consolidated branch requires its own CI run. A successful candidate run and a merged PR do not establish authenticated hosted staging behavior. No production verification/deployment has been performed.
 - Previous audit follow-up remains separate from the target: #54–#57 are merged with successful CI. Retention policy/cleanup, authoritative server-side SQLite card counts, precise session attribution and authenticated browser/device verification remain outstanding. Browser package parsing, upload shape checks, figure omission reporting and safer capacity estimates improve behavior without claiming those remaining limitations are solved.
+
+- #74 also fixes one-letter postings in the search-index generator as a previous-audit follow-up; this is not a new registered finding.
