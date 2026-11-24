@@ -1,13 +1,15 @@
 import {polishExam} from './ui-hotfix.mjs';
 /* global render, view, DATA, ankiDecks, lessonId, lessonById, chooseLesson, go, etQuestionMarkup, conceptQuestionMarkup, toast */
 import {matchDecks} from './phase3-crosslinks.mjs';
+import {createLectureChangeDetector} from './phase3-lecture-change.mjs';
 import {installOffline} from './phase3-offline.mjs';
 import {mountRenalHistologyPractice} from './renal-histology-practice.mjs';
 import {createNavigationMetrics} from './phase3-navigation-metrics.mjs';
 import {createLongTaskMetrics} from './phase3-longtask-metrics.mjs';
-let deckIdentity,lectureFingerprint='',links=new Map();
+let deckIdentity,links=new Map();
+const lectureCatalogChanged=createLectureChangeDetector();
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function matches(){const decks=typeof ankiDecks==='undefined'?null:ankiDecks,items=Array.isArray(DATA?.items)?DATA.items:[],fingerprint=JSON.stringify(items.map(x=>[x?.id,x?.title]));if(deckIdentity!==decks||lectureFingerprint!==fingerprint){deckIdentity=decks;lectureFingerprint=fingerprint;links=matchDecks(items,decks)}return links}
+function matches(){const decks=typeof ankiDecks==='undefined'?null:ankiDecks,items=Array.isArray(DATA?.items)?DATA.items:[],changed=lectureCatalogChanged(items);if(deckIdentity!==decks||changed){deckIdentity=decks;links=matchDecks(items,decks)}return links}
 function visibleLecture(id){return typeof id==='string'&&!!lessonById(id)&&window.reviewStudyItemVisible?.({id,lectureIds:[id]})!==false}
 function actions(ids){const valid=[...new Set(Array.isArray(ids)?ids:[])].filter(visibleLecture);if(!valid.length)return '';return '<div class="phase3-context-links">'+valid.slice(0,2).map(id=>{const deck=matches().get(id)?.[0];return '<button type="button" data-p3-lecture="'+escape(id)+'">Open '+escape(id)+' lecture</button>'+(deck?'<button type="button" data-p3-cards="'+escape(id)+'">Practice '+deck.count+' Anki cards</button>':'')}).join('')+'</div>'}
 const questionBefore=etQuestionMarkup;etQuestionMarkup=function(q,i,answers,finished,...rest){const html=questionBefore(q,i,answers,finished,...rest);return finished?html.replace('</article>',actions(q.lectureIds)+'</article>'):html};
