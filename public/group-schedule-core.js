@@ -34,13 +34,13 @@ const GroupSchedules=(()=>{
  function rememberWeek(catalog,legacy,eventRows,start,settings,p,shared){
   if(weekMemo.length>=24)return;
   const key=JSON.stringify([start,shared,p.group,p.section,p.lab,settings?.englishFrequency,settings?.englishStartTime,settings?.englishEnabled]);
-  weekMemo.push({catalog,events:catalog?.events,legacy,key,rows:eventRows.map(e=>e.custom?{...e}:e)});
+  weekMemo.push({catalog,events:catalog?.events,eventsLength:catalog?.events?.length??-1,legacy,legacyLength:legacy?.length??-1,key,rows:eventRows.map(e=>e.custom?{...e}:e)});
   if(!weekReset){weekReset=true;(typeof queueMicrotask==='function'?queueMicrotask:fn=>Promise.resolve().then(fn))(()=>{weekMemo.length=0;weekReset=false})}
  }
  function selected(start,settings,catalog,legacy,shared=false){
   if(!validDay(start))return [];
   const p=profile(settings),key=JSON.stringify([start,shared,p.group,p.section,p.lab,settings?.englishFrequency,settings?.englishStartTime,settings?.englishEnabled]);
-  const hit=weekMemo.find(entry=>entry.catalog===catalog&&entry.events===catalog?.events&&entry.legacy===legacy&&entry.key===key);
+  const hit=weekMemo.find(entry=>entry.catalog===catalog&&entry.events===catalog?.events&&entry.eventsLength===(catalog?.events?.length??-1)&&entry.legacy===legacy&&entry.legacyLength===(legacy?.length??-1)&&entry.key===key);
   if(hit)return hit.rows.map(e=>e.custom?{...e}:e);
   const end=new Date(start+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+4);const last=end.toISOString().slice(0,10);
   const old=p.group==='M1'&&p.section==='A'?array(legacy).filter(e=>timed(e)&&(!e.shared||shared)&&(p.lab==='1.6'||!['lab','shared'].includes(e.kind))):[];
