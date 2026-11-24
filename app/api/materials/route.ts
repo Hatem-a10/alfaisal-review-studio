@@ -28,11 +28,11 @@ export async function POST(request:Request){
  // A5-045: the account-scoped D1 listing and immutable built-in R2 match check
  // are independent; overlap them for ordinary uploads without weakening checks.
  // Handle D1 rejection immediately so early duplicate returns never leave an unhandled promise.
- const rowsPromise=materialRows(env.DB,user).then(rows=>({rows}),error=>({error}));
+ const rowsPromise=materialRows(env.DB,user).then(rows=>({ok:true as const,rows}),error=>({ok:false as const,error}));
  const known=await knownOriginal(env.BUCKET,sha,bytes.byteLength);
  if(known&&form.get('attachKnown')!=='1')return json({duplicate:true,builtin:true,url:known.url,name:known.name});
- const candidates=await rowsPromise;if(candidates.error)throw candidates.error;
- const existing=await duplicateMaterial(env.BUCKET,user,candidates.rows!.filter(row=>row.lectureId===lectureId),sha,bytes.byteLength);if(existing)return json({...withMaterialLectureLinks(existing),duplicate:true});
+ const candidates=await rowsPromise;if(!candidates.ok)throw candidates.error;
+ const existing=await duplicateMaterial(env.BUCKET,user,candidates.rows.filter(row=>row.lectureId===lectureId),sha,bytes.byteLength);if(existing)return json({...withMaterialLectureLinks(existing),duplicate:true});
  const id=crypto.randomUUID(),base='materials/'+user+'/'+id,createdAt=new Date().toISOString();
  const quotaError=()=>json({error:'Your personal cloud storage is full (500 MB). Contact the site owner about space or remove unused cloud decks.'},413);
  if(!await withinPersonalQuota(env.DB,user,file.size))return quotaError();
