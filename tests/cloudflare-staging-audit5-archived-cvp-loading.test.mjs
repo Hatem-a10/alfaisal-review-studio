@@ -98,7 +98,7 @@ test('split active academic pack preserves every MOL question and restores canon
  assert.deepEqual(JSON.parse(source('lesson-expansion-data-active.json')),Object.fromEntries(Object.entries(JSON.parse(source('lesson-expansion-data.json'))).filter(([id])=>id.startsWith('MOL-'))));
  assert.deepEqual(JSON.parse(source('topic-takeaways-active.json')),Object.fromEntries(Object.entries(JSON.parse(source('topic-takeaways.json'))).filter(([id])=>id.startsWith('MOL-'))));
  const paths=[],win={REVIEW_STUDIO_FRESH_ACCOUNTS:true,reviewViewingArchive:()=>false,reviewArchiveEnabled:()=>false,addEventListener:()=>{}};
- const learning={questions:[]},ctx=vm.createContext({window:win,view:'learning',render:()=>{},LEARNING:learning,TOPIC_CHECKS:{},TEACHING:{guides:{}},inlineLessonCache:{clear(){}},applyLessonExpansion:()=>{},document:{getElementById:()=>({innerHTML:''}),addEventListener:()=>{}},esc:String,fetch:async path=>{paths.push(path);return{ok:true,json:async()=>JSON.parse(source(path.replace(/^\\//,'').replace(/\\?v=.+$/,'')))}}});
+ const learning={questions:[]},ctx=vm.createContext({window:win,view:'learning',render:()=>{},LEARNING:learning,TOPIC_CHECKS:{},TEACHING:{guides:{}},inlineLessonCache:{clear(){}},applyLessonExpansion:()=>{},document:{getElementById:()=>({innerHTML:''}),addEventListener:()=>{}},esc:String,fetch:async path=>{paths.push(path);return{ok:true,json:async()=>JSON.parse(source(path.split('?')[0].slice(1)))}}});
  vm.runInContext(source('supplemental-objectives.js'),ctx);
  await win.ensureObjectivePack();
  assert.equal(learning.questions.length,mol.length);
