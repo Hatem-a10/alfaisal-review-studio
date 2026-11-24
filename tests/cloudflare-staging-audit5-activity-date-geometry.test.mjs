@@ -5,7 +5,8 @@ import {readFileSync} from 'node:fs';
 import {performance} from 'node:perf_hooks';
 import {historyDates as candidate} from '../public/activity-metrics.mjs';
 const baseline="function historyDates(end,days,baseline,questions,all=true){const valid=d=>/^\\d{4}-\\d{2}-\\d{2}$/.test(d)&&Number.isFinite(Date.parse(d+'T12:00:00Z'))&&new Date(d+'T12:00:00Z').toISOString().slice(0,10)===d;if(!valid(end))return [];let first=null;if(all)for(const source of [days,baseline,questions])for(const d of Object.keys(source||{}))if(d<=end&&(first===null||d<first)&&valid(d))first=d;const last=Date.parse(end+'T12:00:00Z'),earliest=first!==null?Date.parse(first+'T12:00:00Z'):last-83*86400000,start=Math.max(earliest,last-(all?365:83)*86400000),count=Math.max(1,Math.round((last-start)/86400000)+1);return Array.from({length:count},(_,i)=>new Date(start+i*86400000).toISOString().slice(0,10))}";
-const original=vm.runInNewContext(baseline+'\nhistoryDates',{Date,Math,Array,Object,Number,RegExp});
+const baselineVm=vm.runInNewContext(baseline+'\nhistoryDates',{Date,Math,Array,Object,Number,RegExp});
+const original=(...args)=>Array.from(baselineVm(...args));
 const median=fn=>{fn();const times=[];for(let i=0;i<7;i++){const start=performance.now();fn();times.push(performance.now()-start)}return times.sort((a,b)=>a-b)[3]};
 test('A5-010 cached activity chart dates preserve exact day, year and 12-week handling',()=>{
  for(const end of ['2026-11-24','2028-03-01','2025-01-01','2026-02-29','x','2024-02-29']){
