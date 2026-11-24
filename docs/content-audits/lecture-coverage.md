@@ -15,7 +15,6 @@
 - **MOL-15 Glycolysis I** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, figure-review, visual-practice-review, source-document-availability.
 - **CVP-A14 Embryology of Aortic Arch** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, figure-review, visual-practice-review.
 - **CVP-P24 Pulmonary Circulation** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, question-integrity, source-document-availability.
-- **MOL-22 Reactive Oxygen Species and Cellular Antioxidants** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, revision-summary, question-integrity, source-document-availability.
 - **CVP-A23 Clinical Embryology / Review** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
 - **CVP-P15 Interactive Session II (TBL Special)** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
 - **CVP-P23 Pulmonary Gas Exchange** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, source-document-availability.
@@ -23,17 +22,18 @@
 - **CVP-P28 Control of Breathing** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
 - **CVP-P6 Cardiac Cycle** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
 - **CVP-P8 Hemodynamics I** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
+- **CVP-P9 Hemodynamics II** has 0 under-target topics and these flags: objective-map-needs-editor, difficulty-review, citation-review, revision-summary, source-document-availability.
 
 Triage unauthorized or unavailable assets and invalid keys/citations before expansion. Then address genuinely uncovered teaching, missing application and visual tasks. Validate lexical matches and add justified lecture-specific goals against the original sources.
 
 ## Gap counts
 
 - citation-review: 14 lectures
-- difficulty-review: 79 lectures
+- difficulty-review: 73 lectures
 - figure-review: 3 lectures
 - objective-map-needs-editor: 79 lectures
-- question-integrity: 2 lectures
-- revision-summary: 24 lectures
+- question-integrity: 1 lectures
+- revision-summary: 15 lectures
 - source-document-availability: 35 lectures
 - visual-practice-review: 6 lectures
 
@@ -113,7 +113,7 @@ Triage unauthorized or unavailable assets and invalid keys/citations before expa
 | MOL-19 Gluconeogenesis | Molecular Medicine | 4 / 4 | 12 / 12 | 60 / 57 / 1 | 0 (min 2) | 8 / 8 | 12 | 0 / 0 | Pending |
 | MOL-20 Glycogen Metabolism | Molecular Medicine | 4 / 3 | 7 / 7 | 35 / 25 / 0 | 0 (min 2) | 0 / 0 | 7 | 0 / 0 | Pending |
 | MOL-21 Pentose Phosphate Pathway | Molecular Medicine | 3 / 3 | 6 / 6 | 30 / 23 / 0 | 0 (min 2) | 0 / 0 | 6 | 0 / 0 | Pending |
-| MOL-22 Reactive Oxygen Species and Cellular Antioxidants | Molecular Medicine | 3 / 3 | 6 / 6 | 29 / 20 / 0 | 0 (min 2) | 0 / 0 | 6 | 0 / 0 | Pending |
+| MOL-22 Reactive Oxygen Species and Cellular Antioxidants | Molecular Medicine | 3 / 3 | 6 / 6 | 30 / 21 / 0 | 0 (min 2) | 0 / 0 | 6 | 0 / 0 | Pending |
 | MOL-23 Alternative Pathway of Carbohydrate Metabolism | Molecular Medicine | 3 / 2 | 6 / 6 | 30 / 27 / 0 | 0 (min 2) | 0 / 0 | 6 | 0 / 0 | Pending |
 | MOL-24 Alcohol Metabolism | Molecular Medicine | 2 / 2 | 5 / 5 | 25 / 22 / 0 | 0 (min 2) | 0 / 0 | 5 | 0 / 0 | Pending |
 | MOL-25 Vitamins Part I | Molecular Medicine | 3 / 3 | 6 / 6 | 30 / 27 / 0 | 0 (min 2) | 0 / 0 | 6 | 0 / 0 | Pending |
