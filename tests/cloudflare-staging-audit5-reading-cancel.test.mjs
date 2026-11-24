@@ -46,3 +46,15 @@ test('A5-232 only Library exit triggers cancellation, unrelated views remain nor
  assert.match(s,/entry.cancelled=true;entry.callbacks.clear\(\);pending.delete\(url\);entry.controller.abort\(\)/);
  assert.match(s,/render=function\(\.\.\.args\)\{cancelInactive\(\);return priorRender.apply\(this,args\)\}/);
 });
+
+test('A5-232 closes all distinct Library reads on exit without leaking timers or callbacks',async()=>{
+ const b=fixture(candidate);let applied=0;
+ const paths=['/library/reading-a','/library/questions-b','/library/index-c'];
+ const work=paths.map(path=>b.start(path,()=>applied++));await flush();
+ assert.equal(b.queries.length,3);assert.equal(b.pending.size,3);
+ b.leave();assert.equal(b.pending.size,0);
+ assert.equal(b.queries.filter(q=>q.signal.aborted).length,3);
+ for(const q of b.queries)respond(q,{pages:[]});
+ await Promise.all(work);
+ assert.equal(applied,0);assert.equal(b.errors.size,0);assert.equal(b.clears(),3);
+});
