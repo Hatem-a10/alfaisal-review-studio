@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate scopes (114 speed-oriented changes and 21 measurement capabilities), 99 pre-existing mechanisms source-reviewed, 18 rejected/not-applicable items, 0 submitted candidates and 48 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate scopes (114 speed-oriented changes and 23 measurement capabilities), 102 pre-existing mechanisms source-reviewed, 22 rejected/not-applicable items, 0 submitted candidates and 39 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -46,7 +46,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | A5-022 | Tree-shake modular dependencies | Unassessed |
 | A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
 | A5-024 | Reuse latest learning results per lesson within weak-topic calculation | Merged #137; CI passed; narrowed scope |
-| A5-025 | Offload expensive question-bank processing to worker | Unassessed |
+| A5-025 | Offload expensive question-bank processing to worker | Rejected; duplicate large search-index worker scope already merged as A5-119 (#244); grading unchanged |
 | A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Merged #120; CI passed; combined benchmark |
 | A5-027 | Avoid cloning already-isolated mock history attempts again | Merged #139; CI passed; narrowed scope |
 | A5-028 | Delegate search result row clicks to the result list | Merged #128; CI passed; narrowed scope |
@@ -58,7 +58,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-031 | Retain search result rows when only selection or status changes | Merged #128; CI passed; allocation counts |
-| A5-032 | Virtualize large question lists | Unassessed |
+| A5-032 | Virtualize large question lists | Rejected; exam selection and restored runs are strictly capped at 200 questions |
 | A5-033 | Virtualize material-library list | Unassessed |
 | A5-034 | Reuse unchanged dashboard DOM cards | Unassessed |
 | A5-035 | Batch DOM reads and writes | Merged #220; staging CI passed; scoped optimization |
@@ -72,7 +72,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-041 | Serve eligible public static assets without Worker invocation | Unassessed |
+| A5-041 | Serve eligible public static assets without Worker invocation | Rejected; authenticated site assets cannot bypass the Worker's access gate |
 | A5-042 | Reduce Worker bundle initialization footprint | Merged #240; CI passed; route-specific Admin feature imports |
 | A5-043 | Lazy-initialize route-specific server modules | Merged #239; CI passed; lazy Admin-only module loading |
 | A5-044 | Edge-cache approved nonpersonal academic metadata | Unassessed |
@@ -168,7 +168,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | A5-104 | Parallelize independent regression suites | Merged #195; staging CI passed; scoped optimization |
 | A5-105 | Balance test shards by observed durations | Unassessed |
 | A5-106 | Reuse verified immutable build artifacts across stages | Existing coverage; versioned checksum-verified transform artifact reuse |
-| A5-107 | Reduce unnecessary production diagnostic payloads | Unassessed |
+| A5-107 | Reduce unnecessary production diagnostic payloads | Existing coverage; bounded allowlisted client-error payload only |
 | A5-108 | Instrument startup navigation sync and API timing | Merged #216; staging CI passed; measurement only |
 | A5-109 | Establish automated performance budgets | Existing coverage; reviewed scope in evidence |
 | A5-110 | Load-test representative synthetic concurrent students | Merged #233; staging CI passed; measurement-only synthetic concurrent D1 sync |
@@ -226,7 +226,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | A5-142 | Precompute ordered lesson section offsets | Rejected; lesson reader uses native section anchors, no JS offset scan |
 | A5-143 | Reuse parsed rich-text representation across identical lesson versions | Merged #198; staging CI passed; scoped optimization |
 | A5-144 | Cache sanitized static exam question markup fragments by source object | Merged #157; CI passed; narrow scope |
-| A5-145 | Defer optional figure captions until corresponding figure is displayed | Unassessed |
+| A5-145 | Defer optional figure captions until corresponding figure is displayed | Existing coverage; caption and figure HTML created only for current guide topic |
 | A5-146 | Reuse question option nodes between selection changes | Unassessed |
 | A5-147 | Update progress-bar width without rebuilding lesson | Unassessed |
 | A5-148 | Compute remaining section count from incremental completion changes | Unassessed |
@@ -304,7 +304,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | A5-195 | Store stable index metadata alongside records when validated | Unassessed |
 | A5-196 | Use cursor iteration for large local collections | Unassessed |
 | A5-197 | Avoid copying large binary blobs into JS arrays | Existing narrower: source streams assembled once into bounded Uint8Array, not copied into JS byte arrays |
-| A5-198 | Bound in-memory decoded resource cache by bytes | Unassessed |
+| A5-198 | Bound in-memory decoded resource cache by bytes | Rejected; no separate decoded in-memory resource cache to cap |
 | A5-199 | Evict bounded source-search term cache by true LRU | Merged #162; CI passed; bounded true LRU |
 | A5-200 | Reuse service-worker cache manifest parsing per version | Existing coverage; reviewed scope in evidence |
 
@@ -343,7 +343,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-221 | Release large temporary arrays after pack indexing | Rejected; pack temporary arrays are invocation-scoped and not retained |
-| A5-222 | Bound cached question-pool count | Unassessed |
+| A5-222 | Bound cached question-pool count | Existing coverage; weak-keyed question normalization caches do not retain evicted banks |
 | A5-223 | Bound source search query cache by entries and estimated bytes | Merged #132; CI passed; estimated retention only |
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Merged #192; staging CI passed; scoped optimization |
 | A5-225 | Release inactive search result/index caches on dialog close | Existing coverage; search close clears index/results and pending callbacks |
@@ -447,7 +447,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-291 | Benchmark simultaneous device sync under realistic account isolation | Unassessed |
+| A5-291 | Benchmark simultaneous device sync under realistic account isolation | Merged #248; staging CI passed; synthetic concurrent account-scope measurement only |
 | A5-292 | Benchmark burst load at timetable transitions | Merged #218; staging CI passed; measurement only |
 | A5-293 | Measure cache hit ratio by eligible resource class | Merged #203; staging CI passed; measurement only |
 | A5-294 | Measure private PDF range transfer versus full response | Existing coverage; A5-285 full versus range byte test |
@@ -455,7 +455,7 @@ Status reconciled against GitHub on 24 November 2026: 135 newly merged candidate
 | A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Unassessed |
 | A5-297 | Measure D1 index storage cost versus read savings | Merged #206; staging CI passed; measurement only |
 | A5-298 | Evaluate storage compression cost versus transfer savings | Merged #218; staging CI passed; measurement only |
-| A5-299 | Measure rollback artifact size and optimize redundant copies | Unassessed |
+| A5-299 | Measure rollback artifact size and optimize redundant copies | Merged #247; staging CI passed; rollback inventory measurement only |
 | A5-300 | Tune synthetic regression dataset size for stable signal without excess CI runtime | Merged #218; staging CI passed; measurement only |
 
 ## Benchmark and verification receipts
@@ -743,6 +743,20 @@ Not justified as *current* optimizations:
 - **A5-269:** `scripts/client-scripts.mjs` parses `lab-curriculum.json` once per build. There is no repeated costly source-schema validation whose result could be content-hash cached; adding a second hash/cache lookup would be needless work.
 
 Rejecting a current no-op is not permission to remove any academic asset, validation, account check or feature. All 300 IDs remain distinct; GitHub merges have not deployed production or touched student data.
+
+## Audit 5 continuation — 137 verified merges and seven source-reviewed dispositions
+
+- **A5-291 measurement-only:** [PR #248](https://github.com/Hatem-a10/alfaisal-review-studio/pull/248), [green CI](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45465480860): 192 synthetic progress GET requests across 24 account-scoped mock D1 identities. This is **not** a real Cloudflare D1 load test or a speed increase.
+- **A5-299 measurement-only:** [PR #247](https://github.com/Hatem-a10/alfaisal-review-studio/pull/247), [green CI](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45447449720): static rollback inventory and duplicate asset references; no bytes have been removed from production.
+- **A5-025 rejected as duplicate scope:** [`public/phase1-search.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/phase1-search.mjs) already delegates large source/question *search-index* preparation to the abortable worker merged as A5-119 in [PR #244](https://github.com/Hatem-a10/alfaisal-review-studio/pull/244). The separate near-duplicate question logic remains synchronous for grading fidelity. No second generic worker is justified by measured CPU in this audit.
+- **A5-032 rejected for current bounded exam view:** [`public/exam-engine.js`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/exam-engine.js) validates both created and restored exams at **at most 200 questions**. Virtualization would make keyboard navigation and accessibility materially more complex; no demonstrated 200-item paint hotspot was supplied.
+- **A5-041 rejected for the protected deployment:** [`worker/staging.ts`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/worker/staging.ts) authenticates before serving material and app assets through `env.ASSETS.fetch`. Bypassing the Worker at an unrestricted public route could expose course resources to signed-out users. Existing verified client-side caching does not weaken this gate.
+- **A5-107 existing:** [`lib/client-error.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/lib/client-error.mjs) already rejects oversized bodies (4,000 bytes default) and emits only allowlisted kind, bounded line/column and release version; arbitrary messages, stacks, URLs and account strings are excluded.
+- **A5-145 existing, lesson-guide scope:** [`public/learning-ui.js`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/learning-ui.js) renders only `sectionCard(x,sections[guideTopic],guideTopic)` in the guide reader. `guideFigure` creates the associated figure and caption only when that section is rendered. No claim is made about other gallery types.
+- **A5-198 rejected (no cache to bound):** the present resource caching layer in [`public/review-sw.js`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/review-sw.js) stores browser `Response` objects and [`phase3-cache-policy.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/phase3-cache-policy.mjs) caps a single candidate cache entry at 12,000,000 bytes. There is no separate application-level decoded resource-object cache identified by this review; do **not** interpret this as a total-cache-byte cap.
+- **A5-222 existing, weak-keyed scope:** [`public/phase2-question-quality.mjs`](https://github.com/Hatem-a10/alfaisal-review-studio/blob/cloudflare-staging/public/phase2-question-quality.mjs) stores parsed question and option normalizations in `WeakMap` instances, so those memo entries cannot independently pin unused question-bank objects. This is not a general memory ceiling on all loaded academic question data.
+
+The register has **300 unique candidate IDs**: 137 merged (114 speed-oriented, 23 measurement-only), 102 existing source-reviewed, 22 rejected/not applicable, and 39 still unassessed. These source dispositions do not claim new speed gains. Production remains unchanged.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
