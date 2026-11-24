@@ -38,7 +38,7 @@ test('A5-101 altered teaching content and damaged cached gzip are detected and r
   writeFileSync(outputPath,'// corrupted payload');
   assert.equal(buildLearningPayload({inputPath,outputPath}),true);
   assert.equal(readFileSync(outputPath,'utf8'),originalSource(Buffer.from('let lesson="second"')));
-  const valid=readFileSync(outputPath,'utf8');writeFileSync(outputPath,valid.replace(/A/g,'B'));
+  const valid=readFileSync(outputPath,'utf8');writeFileSync(outputPath,valid.slice(0,-3)+'!'+valid.slice(-3));
   assert.equal(buildLearningPayload({inputPath,outputPath}),true);
   assert.equal(readFileSync(outputPath,'utf8'),valid);
   assert.equal(reusableLearningPayload('export const payload="abc";\n',Buffer.from('x')),false);
