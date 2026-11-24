@@ -4,6 +4,12 @@ import {courses} from './course-registry.mjs';
 import {renalTeachingPack} from './renal-lessons.mjs';
 
 const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
+// A5-133: immutable course registry order is stable; compute it once, not on every selector render.
+const orderedCourses=Object.entries(courses).sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'));
+const activeCourseEntries=orderedCourses.filter(([,c])=>!c.archived);
+const archiveCourseEntries=orderedCourses.filter(([id])=>id==='CVP');
+const ospeCourseEntries=activeCourseEntries.filter(([,c])=>!c.noOspe);
+
 const scopedViews=new Set(['practice','library','labs','booklet','ospe']);
 const enabled=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
 const archiveEnabled=()=>enabled()&&window.reviewManagedFlags?.archiveCvp===true;
@@ -17,7 +23,7 @@ if(window.REVIEW_STUDIO_FRESH_ACCOUNTS){
  Object.assign(TEACHING.guides,renalTeaching.guides);
 }
 window.reviewCourseConfig=id=>typeof id==='string'&&Object.hasOwn(courses,id)?courses[id]:undefined;
-window.reviewLessonCourseOptions=()=>[['all','All available courses'],...Object.entries(courses).filter(([id,c])=>!enabled()||context?.course==='CVP'?(!enabled()||id==='CVP'):!c.archived).map(([id,c])=>[id,c.label])];
+window.reviewLessonCourseOptions=()=>[['all','All available courses'],...(!enabled()?Object.entries(courses):context?.course==='CVP'?archiveCourseEntries:activeCourseEntries).map(([id,c])=>[id,c.label])];
 window.reviewAllowsUnscheduledDates=id=>typeof id==='string'&&window.reviewCourseConfig(id.split('-')[0])?.unscheduled===true;
 window.reviewCvpArchived=enabled;
 window.reviewArchiveEnabled=archiveEnabled;
@@ -31,9 +37,7 @@ let context=null,renalLessonId='REN-A1',lastMOLLesson='MOL-1';
 function courseSelector(route){
  if(!enabled()||!context||!scopedViews.has(route)||route==='practice'&&document.querySelector('#etMockScope,#etScope'))return '';
  const active=context?.course||'REN';
- const options=Object.entries(courses)
-  .filter(([id,course])=>active==='CVP'?id==='CVP':!course.archived&&!(route==='ospe'&&course.noOspe))
-  .sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'))
+ const options=(active==='CVP'?archiveCourseEntries:route==='ospe'?ospeCourseEntries:activeCourseEntries)
   .map(([id,course])=>[id,course.label+(course.archived?' · Archive':'')]);
  return '<label class="workspace-course-select">Course <select aria-label="Course" data-workspace-course="'+route+'">'+options.map(([key,label])=>
   '<option value="'+key+'" '+(key===active?'selected':'')+'>'+label+'</option>').join('')+'</select></label>'+
