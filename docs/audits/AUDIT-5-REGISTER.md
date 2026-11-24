@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate scopes (89 speed-oriented changes and 11 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 0 submitted candidates and 138 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 122 newly merged candidate scopes (105 speed-oriented changes and 17 measurement capabilities), 71 pre-existing mechanisms source-reviewed, 2 rejected/not-applicable items, 0 submitted candidates and 105 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -29,7 +29,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 |---|---|---|
 | A5-011 | Minimal essential dashboard entry bundle | Existing coverage; reviewed scope in evidence |
 | A5-012 | Defer nonessential startup scripts | Existing coverage; reviewed scope in evidence |
-| A5-013 | Parallel independent boot requests | Unassessed |
+| A5-013 | Parallel independent boot requests | Merged #211; staging CI passed; scoped optimization |
 | A5-014 | Preload essential module graph | Existing coverage; reviewed scope in evidence |
 | A5-015 | Render shell before academic payload | Unassessed |
 | A5-016 | Lazy-load authorized Admin implementation | Existing coverage; reviewed scope in evidence |
@@ -51,7 +51,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-027 | Avoid cloning already-isolated mock history attempts again | Merged #139; CI passed; narrowed scope |
 | A5-028 | Delegate search result row clicks to the result list | Merged #128; CI passed; narrowed scope |
 | A5-029 | Avoid duplicate JSON serialization of study records | Unassessed; structural comparison variant rejected; see evidence |
-| A5-030 | Yield between long computation batches | Unassessed |
+| A5-030 | Yield between long computation batches | Merged #205; staging CI passed; scoped optimization |
 
 ## Rendering
 
@@ -61,11 +61,11 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-032 | Virtualize large question lists | Unassessed |
 | A5-033 | Virtualize material-library list | Unassessed |
 | A5-034 | Reuse unchanged dashboard DOM cards | Unassessed |
-| A5-035 | Batch DOM reads and writes | Unassessed |
-| A5-036 | Frame-align visual updates | Unassessed |
+| A5-035 | Batch DOM reads and writes | Merged #220; staging CI passed; scoped optimization |
+| A5-036 | Frame-align visual updates | Merged #213; staging CI passed; scoped optimization |
 | A5-037 | Apply CSS containment to independent sections | Unassessed |
 | A5-038 | Skip rendering offscreen content via content-visibility | Unassessed |
-| A5-039 | Use compositor-friendly animation properties | Unassessed |
+| A5-039 | Use compositor-friendly animation properties | Existing; source-reviewed public/redesign.css, public/phase3-ui.css; no new merge credit |
 | A5-040 | Suspend nonessential hidden-tab visual updates | Merged #164; CI passed; hidden classic mock DOM scope |
 
 ## Cloudflare execution
@@ -80,23 +80,23 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-046 | Deduplicate authentication lookups per request | Unassessed |
 | A5-047 | Reuse request-scoped configuration and authorization results | Unassessed |
 | A5-048 | Benchmark Smart Placement for database-heavy routes | Unassessed |
-| A5-049 | Stream large resources without full memory buffering | Unassessed |
-| A5-050 | Eliminate unnecessary internal server API round trips | Unassessed |
+| A5-049 | Stream large resources without full memory buffering | Existing; source-reviewed lib/site-assets.ts, app/api/study-assets/[id]/route.ts; no new merge credit |
+| A5-050 | Eliminate unnecessary internal server API round trips | Existing; source-reviewed app/api/materials/route.ts; no new merge credit |
 
 ## D1 queries
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-051 | Profile hot queries with EXPLAIN QUERY PLAN | Unassessed |
-| A5-052 | Add justified account-scoped composite indexes | Unassessed |
+| A5-051 | Profile hot queries with EXPLAIN QUERY PLAN | Merged #206; staging CI passed; measurement only |
+| A5-052 | Add justified account-scoped composite indexes | Merged #206; staging CI passed; scoped optimization |
 | A5-053 | Remove demonstrably redundant indexes | Unassessed |
-| A5-054 | Project only necessary database columns | Unassessed |
+| A5-054 | Project only necessary database columns | Existing; source-reviewed app/api/materials/route.ts, app/api/decks/route.ts; no new merge credit |
 | A5-055 | Eliminate duplicate progress D1 read on a changed revision | Merged #127; CI passed; narrowed scope |
-| A5-056 | Batch compatible D1 statements | Unassessed |
+| A5-056 | Batch compatible D1 statements | Existing; source-reviewed app/api/academic-config/route.ts; no new merge credit |
 | A5-057 | Cursor-paginate large Admin datasets | Unassessed |
 | A5-058 | Incrementally maintain costly analytics aggregates | Unassessed |
 | A5-059 | Evaluate read replication with required consistency | Unassessed |
-| A5-060 | Align hot filters and orderings with index structure | Unassessed |
+| A5-060 | Align hot filters and orderings with index structure | Merged #206; staging CI passed; scoped optimization |
 
 ## Synchronization
 
@@ -104,12 +104,12 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 |---|---|---|
 | A5-061 | Transfer deltas instead of unnecessary complete snapshots | Existing coverage; reviewed scope in evidence |
 | A5-062 | Coalesce closely spaced progress updates | Existing coverage; reviewed scope in evidence |
-| A5-063 | Persist only changed record values | Unassessed |
+| A5-063 | Persist only changed record values | Existing; source-reviewed public/progress-delta.js, app/api/progress/route.ts; no new merge credit |
 | A5-064 | Skip unchanged companion-store writes | Existing narrower: unchanged StudyVault companion values skip storage writes; source/test verified |
 | A5-065 | Batch compatible IndexedDB writes | Existing coverage; reviewed scope in evidence |
 | A5-066 | Adapt sync cadence to connectivity and pending changes | Unassessed |
 | A5-067 | Pause unnecessary inactive-tab polling | Existing coverage; reviewed scope in evidence |
-| A5-068 | Index frequently accessed local study records | Unassessed |
+| A5-068 | Index frequently accessed local study records | Existing; source-reviewed public/device-storage.js; no new merge credit |
 | A5-069 | Compress large recovery snapshots with verified decoding | Unassessed |
 | A5-070 | Incrementally fingerprint unchanged snapshot subtrees | Unassessed |
 
@@ -120,7 +120,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-071 | Chunk large course packs by lecture | Unassessed |
 | A5-072 | Separate teaching text from question data loading | Unassessed |
 | A5-073 | Defer detailed explanation loading until review | Unassessed |
-| A5-074 | Fetch diagrams independently from lesson text | Unassessed |
+| A5-074 | Fetch diagrams independently from lesson text | Existing; source-reviewed public/learning-ui.js; no new merge credit |
 | A5-075 | Idle-prefetch next likely lesson within data budget | Unassessed |
 | A5-076 | Pre-index lecture question associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-077 | Pre-index source document associations in changelog generator | Merged #129; CI passed; combined benchmark |
@@ -137,7 +137,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-083 | Index wrong-answer records by question within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
 | A5-085 | Sample questions without shuffling full bank where distribution unchanged | Merged #175; CI passed; sparse partial mock sampling |
-| A5-086 | Render only active timed-exam question where interface permits | Unassessed |
+| A5-086 | Render only active timed-exam question where interface permits | Existing; source-reviewed public/examplify-mode.js; no new merge credit |
 | A5-087 | Isolate classic mock timer updates from question content rebuilds | Existing coverage; etTick updates timer and dock separately |
 | A5-088 | Cache Anki due-card queue with precise invalidation | Unassessed |
 | A5-089 | Reuse progress snapshot for Anki rating and deck-library rendering | Merged #142; CI passed; narrowed scope |
@@ -151,7 +151,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-092 | Optimize medical diagram compression subject to visual equivalence | Unassessed |
 | A5-093 | Evaluate AVIF for appropriate photos | Unassessed |
 | A5-094 | Brotli-compress eligible text responses | Unassessed |
-| A5-095 | Immutable-cache fingerprinted public assets | Unassessed |
+| A5-095 | Immutable-cache fingerprinted public assets | Merged #222; staging CI passed; scoped optimization |
 | A5-096 | Use conditional requests for versioned resources | Existing coverage; reviewed scope in evidence |
 | A5-097 | Lazy-load offscreen thumbnails and images | Existing coverage; reviewed scope in evidence |
 | A5-098 | Subset fonts while preserving required glyphs | Unassessed |
@@ -162,14 +162,14 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-101 | Cache unchanged curriculum generator outputs | Unassessed |
+| A5-101 | Cache unchanged curriculum generator outputs | Merged #215; staging CI passed; scoped optimization |
 | A5-102 | Rebuild only changed academic pack inputs | Unassessed |
 | A5-103 | Cache CI dependencies by lockfile | Existing coverage; reviewed scope in evidence |
 | A5-104 | Parallelize independent regression suites | Merged #195; staging CI passed; scoped optimization |
 | A5-105 | Balance test shards by observed durations | Unassessed |
 | A5-106 | Reuse verified immutable build artifacts across stages | Unassessed |
 | A5-107 | Reduce unnecessary production diagnostic payloads | Unassessed |
-| A5-108 | Instrument startup navigation sync and API timing | Unassessed |
+| A5-108 | Instrument startup navigation sync and API timing | Merged #216; staging CI passed; measurement only |
 | A5-109 | Establish automated performance budgets | Existing coverage; reviewed scope in evidence |
 | A5-110 | Load-test representative synthetic concurrent students | Unassessed |
 
@@ -183,7 +183,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-114 | Intersect smallest posting lists first | Merged #130; CI passed |
 | A5-115 | Limit top-k result sorting with equivalent stable ranking | Merged #122; CI passed |
 | A5-116 | Debounce expensive search work without delaying keystrokes | Existing coverage; reviewed scope in evidence |
-| A5-117 | Cancel superseded asynchronous search work | Unassessed |
+| A5-117 | Cancel superseded asynchronous search work | Merged #205; staging CI passed; scoped optimization |
 | A5-118 | Reuse the last normalized query result per search-index session | Merged #128; CI passed; narrowed scope |
 | A5-119 | Move large full-text index preparation off main thread | Unassessed |
 | A5-120 | Load search index only on first search intent | Existing coverage; reviewed scope in evidence |
@@ -239,7 +239,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 |---|---|---|
 | A5-151 | Index question IDs to attempt positions in learning provenance checks | Merged #147; CI passed |
 | A5-152 | Incrementally count original exam responses across active answer edits | Merged #158; CI passed; narrowed scope |
-| A5-153 | Cache exam review filter membership per attempt revision | Unassessed |
+| A5-153 | Cache exam review filter membership per attempt revision | Merged #217; staging CI passed; scoped optimization |
 | A5-154 | Count exam receipt scoring and validation tallies in one pass | Merged #125; CI passed |
 | A5-155 | Precompute static option permutations at attempt creation | Existing: exam option and rationale permutations fixed when mock created |
 | A5-156 | Index original exam source metadata for one render | Merged #154; CI passed; narrowed original exam scope |
@@ -253,7 +253,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-161 | Avoid whole-station-map allocation for one OSPE part lookup | Merged #126; CI passed; narrowed scope |
-| A5-162 | Reuse validated station figure metadata | Unassessed |
+| A5-162 | Reuse validated station figure metadata | Merged #219; staging CI passed; scoped optimization |
 | A5-163 | Precompute category-eligible OSPE circuit pools in one pass | Existing coverage; OspeCore.circuit uses category Map; reviewed |
 | A5-164 | Reuse decoded current-station image when moving back | Unassessed |
 | A5-165 | Prefetch next authorized station image under memory budget | Unassessed |
@@ -288,7 +288,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-184 | Paginate large private-material listings with stable order | Unassessed |
 | A5-185 | Defer media metadata extraction until needed | Unassessed |
 | A5-186 | Deduplicate concurrent authorized reads for same immutable asset | Existing coverage; reviewed scope in evidence |
-| A5-187 | Stream authorized upload hashing where supported | Unassessed |
+| A5-187 | Stream authorized upload hashing where supported | Existing; source-reviewed lib/personal-upload.ts; no new merge credit |
 | A5-188 | Avoid duplicate client upload buffers | Unassessed |
 | A5-189 | Batch verified metadata lookup for resource cards | Unassessed |
 | A5-190 | Cache account-scoped material filter result until mutation | Unassessed |
@@ -330,8 +330,8 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-211 | Remove proven unused selector rules from active bundles | Unassessed |
 | A5-212 | Minify shipped CSS while preserving cascade | Existing coverage; reviewed scope in evidence |
 | A5-213 | Split rarely used feature styles from entry stylesheet | Unassessed |
-| A5-214 | Deduplicate identical keyframe declarations | Unassessed |
-| A5-215 | Reduce expensive broad descendant selectors in hot views | Unassessed |
+| A5-214 | Deduplicate identical keyframe declarations | Rejected / not applicable; no duplicate keyframe names across public CSS sources |
+| A5-215 | Reduce expensive broad descendant selectors in hot views | Merged #212; staging CI passed; scoped optimization |
 | A5-216 | Avoid animating layout-affecting properties | Unassessed |
 | A5-217 | Guard redundant root theme CSS and dataset assignments | Merged #141; CI passed; DOM operation counts |
 | A5-218 | Reuse derived palette for unchanged accent and theme | Merged #141; CI passed |
@@ -351,7 +351,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-227 | Avoid retaining detached DOM through closures | Existing narrower: closing quick-search dialog releases results and DOM buttons |
 | A5-228 | Reuse immutable source objects across views | Existing narrower: library snapshots reuse canonical source objects within a single render |
 | A5-229 | Bound question-history memo maps to one calculation | Existing coverage; local Map lifetimes in questionHistory |
-| A5-230 | Profile heap growth across repeated navigation and optimize retained allocations | Unassessed |
+| A5-230 | Profile heap growth across repeated navigation and optimize retained allocations | Merged #209; staging CI passed; scoped optimization |
 
 ## HTTP request efficiency
 
@@ -363,8 +363,8 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | A5-234 | Reduce oversized response field sets per view | Unassessed |
 | A5-235 | Reuse stable response schema encoding | Merged #193; staging CI passed; scoped optimization |
 | A5-236 | Avoid redundant HEAD before known GET resources | Merged #194; staging CI passed; scoped optimization |
-| A5-237 | Prioritize critical requests over speculative prefetch | Unassessed |
-| A5-238 | Limit concurrent speculative downloads by connection conditions | Unassessed |
+| A5-237 | Prioritize critical requests over speculative prefetch | Merged #208; staging CI passed; scoped optimization |
+| A5-238 | Limit concurrent speculative downloads by connection conditions | Merged #208; staging CI passed; scoped optimization |
 | A5-239 | Use lightweight version checks before fetching unchanged catalogs | Unassessed |
 | A5-240 | Avoid automatic retries for nonessential canceled work | Unassessed |
 
@@ -419,7 +419,7 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 |---|---|---|
 | A5-271 | Measure gzip and Brotli sizes for startup and deferred course entries | Merged #134; CI passed; measurement capability only |
 | A5-272 | Deduplicate shared dependency chunks | Unassessed |
-| A5-273 | Remove unused transitive runtime dependency imports after evidence | Unassessed |
+| A5-273 | Remove unused transitive runtime dependency imports after evidence | Merged #221; staging CI passed; scoped optimization |
 | A5-274 | Minify eligible shipped JS while keeping debugging maps private | Existing coverage; reviewed scope in evidence |
 | A5-275 | Exclude tests outside public startup source graph | Existing narrower coverage; startup bundler resolves only public sources |
 | A5-276 | Exclude development tooling from production Worker dependency graph | Unassessed |
@@ -448,15 +448,15 @@ Status reconciled against GitHub on 24 November 2026: 100 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-291 | Benchmark simultaneous device sync under realistic account isolation | Unassessed |
-| A5-292 | Benchmark burst load at timetable transitions | Unassessed |
+| A5-292 | Benchmark burst load at timetable transitions | Merged #218; staging CI passed; measurement only |
 | A5-293 | Measure cache hit ratio by eligible resource class | Merged #203; staging CI passed; measurement only |
 | A5-294 | Measure private PDF range transfer versus full response | Unassessed |
 | A5-295 | Tune bounded background prefetch using measured hit rates | Unassessed |
 | A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Unassessed |
-| A5-297 | Measure D1 index storage cost versus read savings | Unassessed |
-| A5-298 | Evaluate storage compression cost versus transfer savings | Unassessed |
+| A5-297 | Measure D1 index storage cost versus read savings | Merged #206; staging CI passed; measurement only |
+| A5-298 | Evaluate storage compression cost versus transfer savings | Merged #218; staging CI passed; measurement only |
 | A5-299 | Measure rollback artifact size and optimize redundant copies | Unassessed |
-| A5-300 | Tune synthetic regression dataset size for stable signal without excess CI runtime | Unassessed |
+| A5-300 | Tune synthetic regression dataset size for stable signal without excess CI runtime | Merged #218; staging CI passed; measurement only |
 
 ## Benchmark and verification receipts
 
@@ -604,7 +604,30 @@ Each line below credits only numbered candidate scopes actually merged on `cloud
 
 **A5-286, A5-288, A5-293**: [merged PR #203](https://github.com/Hatem-a10/alfaisal-review-studio/pull/203); [passing staging CI 45414603438](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45414603438); merge `8ef8ca2f5e3dec9afc1b86af7aee06c8c4c6eab4`. These are measurement-only capabilities with synthetic timing proxies; not direct speed gains.
 
-**Snapshot reconciliation: 100 merged + 61 existing + 1 rejected + 0 submitted + 138 unassessed = 300.** Eleven merged scopes are measurement-only, and 89 are speed-oriented; production remains untouched.
+**Snapshot reconciliation: 122 merged + 71 existing + 2 rejected + 0 submitted + 105 unassessed = 300.** Seventeen merged scopes are measurement-only, and 105 are speed-oriented. D1 index migration is not yet applied; production remains untouched.
+
+
+## Audit 5 continuation (100 → 122) — PR and CI receipts
+
+Only the newly merged IDs below add new candidate credit. Each linked PR passed the full staging CI on its head; benchmark fixtures are synthetic unless the PR explicitly describes a different runtime. No live production performance claims are inferred. The index migration was committed, not executed on staging or production D1.
+
+- **A5-030, A5-117**: [PR #205](https://github.com/Hatem-a10/alfaisal-review-studio/pull/205), [passing CI 45416612222](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45416612222); cooperative search index building and superseded-session cancellation.
+- **A5-051, A5-052, A5-060, A5-297**: [PR #206](https://github.com/Hatem-a10/alfaisal-review-studio/pull/206), [passing CI 45418427995](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45418427995); D1 index plan/size measurements and an account/time index migration; migration not applied to staging or production.
+- **A5-237, A5-238**: [PR #208](https://github.com/Hatem-a10/alfaisal-review-studio/pull/208), [passing CI 45418273747](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45418273747); offline shell priority and connectivity-bounded precache concurrency.
+- **A5-230**: [PR #209](https://github.com/Hatem-a10/alfaisal-review-studio/pull/209), [passing CI 45418702585](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45418702585); allocation-light lecture crosslink invalidation.
+- **A5-013**: [PR #211](https://github.com/Hatem-a10/alfaisal-review-studio/pull/211), [passing CI 45419430582](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45419430582); parallel critical module downloads while preserving execution order.
+- **A5-215**: [PR #212](https://github.com/Hatem-a10/alfaisal-review-studio/pull/212), [passing CI 45419817593](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45419817593); skip already decorated modal/tab/completion nodes.
+- **A5-036**: [PR #213](https://github.com/Hatem-a10/alfaisal-review-studio/pull/213), [passing CI 45420034920](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45420034920); frame-align mobile scroll geometry measurements.
+- **A5-101**: [PR #215](https://github.com/Hatem-a10/alfaisal-review-studio/pull/215), [passing CI 45420354616](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45420354616); reuse verified unchanged learning gzip output.
+- **A5-108**: [PR #216](https://github.com/Hatem-a10/alfaisal-review-studio/pull/216), [passing CI 45420670088](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45420670088); local-only API timing categorization, no identifiers (measurement only).
+- **A5-153**: [PR #217](https://github.com/Hatem-a10/alfaisal-review-studio/pull/217), [passing CI 45421066289](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45421066289); one exam state snapshot per navigation paint.
+- **A5-292, A5-298, A5-300**: [PR #218](https://github.com/Hatem-a10/alfaisal-review-studio/pull/218), [passing CI 45421747663](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45421747663); synthetic timetable/transfer benchmarks and bounded fixture sizing (measurement only).
+- **A5-162**: [PR #219](https://github.com/Hatem-a10/alfaisal-review-studio/pull/219), [passing CI 45422058496](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45422058496); cache static station figure markup in all reveal/zoom modes.
+- **A5-035**: [PR #220](https://github.com/Hatem-a10/alfaisal-review-studio/pull/220), [passing CI 45422463954](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45422463954); batch DOM selection reads before copy removal.
+- **A5-273**: [PR #221](https://github.com/Hatem-a10/alfaisal-review-studio/pull/221), [passing CI 45422917031](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45422917031); checksum-verified minifier output reuse across unchanged builds.
+- **A5-095**: [PR #222](https://github.com/Hatem-a10/alfaisal-review-studio/pull/222), [passing CI 45423240968](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45423240968); immutable caching for exact fingerprinted public course and stylesheet packs.
+
+Additional source review (no new optimization credit): A5-039, A5-049, A5-050, A5-054, A5-056, A5-063, A5-068, A5-074, A5-086, A5-187. Checks are scoped to cited source files, not comprehensive real-device performance validation. A5-214 was marked not applicable because public CSS has no duplicate declared keyframe names.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
