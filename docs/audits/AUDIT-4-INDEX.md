@@ -1,8 +1,8 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 230 source-level findings and hardening cases; 270 remain to reach the target.** This is not a claim of 230 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 254 source-level findings and hardening cases; 246 remain to reach the target.** This is not a claim of 254 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
-Staging snapshot: `e9cd05f6dd231a331e8a0ee30c24885563897e52`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
+Staging snapshot: `4db5ac7f3c91ee6aa59585f37ec654355866be59`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
 ## Candidate verification receipts
 
@@ -21,8 +21,12 @@ Staging snapshot: `e9cd05f6dd231a331e8a0ee30c24885563897e52`. Only active course
 | [#73](https://github.com/Hatem-a10/alfaisal-review-studio/pull/73) | 6 | [Details](audit-4-renal-library.md) | [Run 45365486667](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365486667) | `bf53a264f74276ff7639376ccd99da47fe5c9e2b` |
 | [#74](https://github.com/Hatem-a10/alfaisal-review-studio/pull/74) | 8 | [Details](audit-4-source-index.md) | [Run 45365856162](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45365856162) | `803ebc92217626f145c4451e87d248258a637c78` |
 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) | 9 | [Details](audit-4-offline-account.md) | [Run 45366867059](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45366867059) | `e9cd05f6dd231a331e8a0ee30c24885563897e52` |
+| [#78](https://github.com/Hatem-a10/alfaisal-review-studio/pull/78) | 1 | [Details](audit-4-managed-login-landing.md) | [Run 45367926422](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45367926422) | `ad4a871ab039b90cadc40c753cfdcdb983802e0d` |
+| [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) | 10 | [Details](audit-4-mixed-practice-scope.md) | [Run 45368293498](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45368293498) | `95e6dcc4c6df47102fd96d603bad9f985b06aee3` |
+| [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) | 5 | [Details](audit-4-device-startup.md) | [Run 45368405808](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45368405808) | `bce03f2de2c6e3ee48d439ea9939bba0fae7830f` |
+| [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) | 8 | [Details](audit-4-managed-profile-sync.md) | [Run 45368631078](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45368631078) | `4db5ac7f3c91ee6aa59585f37ec654355866be59` |
 
-Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
+Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents. #78 ML-01 and ML-02 are conservatively combined into one Safari login finding; duplicate #79 was closed.
 
 ## Findings
 
@@ -258,6 +262,30 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 | A4-228 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-07 | CLEAR_OFFLINE reports cleared:true without an account binding | Report actual success/failure | Merged; candidate CI passed |
 | A4-229 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-08 | In-flight downloads/cache writes can repopulate a cache after clearing | Track account epochs, wait for active writes and guard late writes and fallback | Merged; candidate CI passed |
 | A4-230 | [#75](https://github.com/Hatem-a10/alfaisal-review-studio/pull/75) / OA-09 | Cache-size validation does not release the stream reader | Release reader in finally | Merged; candidate CI passed |
+| A4-231 | [#78](https://github.com/Hatem-a10/alfaisal-review-studio/pull/78) / ML-01 + ML-02 | Reported Safari sign-in sends encoded dashboard path into server routing | Use fragment-free same-origin root and exact legacy alias recovery | Merged; candidate CI passed |
+| A4-232 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-01 | The sets selector hardcodes MOL and CVP; REN mapped lessons cannot be selected | Use the currently selected course and registered label | Merged; candidate CI passed |
+| A4-233 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-02 | Mixed-set candidate construction bypasses the archived-item visibility check for supplemental questions | Enforce the shared visibility predicate on every candidate | Merged; candidate CI passed |
+| A4-234 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-03 | Deduplicating mixed-bank rows before checking usable question structure allows an invalid duplicate to replace usable evidence | Reject unusable rows before deduplication | Merged; candidate CI passed |
+| A4-235 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-04 | Mock lesson counts derive from a different pool than the verified-source generator, omitting original-only candidates | Use unselected verified mock candidates for the selector | Merged; candidate CI passed |
+| A4-236 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-05 | Bulk selection uses a different bank from the displayed lesson rows, including lessons not displayed or omitting supplemental-only lessons | Drive the bulk action from the displayed eligible rows | Merged; candidate CI passed |
+| A4-237 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-06 | Selection count includes stale and duplicate lesson IDs across course switches | Count only unique currently eligible IDs | Merged; candidate CI passed |
+| A4-238 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-07 | Mixed-set candidate filtering does not require all mapped lectures to belong to the current course | Restrict all mapped IDs to the selected course | Merged; candidate CI passed |
+| A4-239 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-08 | A stale lesson control can insert an unavailable or out-of-scope ID | Validate the selected ID against the eligible rows | Merged; candidate CI passed |
+| A4-240 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-09 | Toggling mock mix mode clears an unrelated in-progress concept set | Clear the concept set only when its own selection changes | Merged; candidate CI passed |
+| A4-241 | [#80](https://github.com/Hatem-a10/alfaisal-review-studio/pull/80) / MX-10 | Unrecognized mix mode event data can dereference an undefined selection | Guard event modes | Merged; candidate CI passed |
+| A4-242 | [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) / DS-01 | Online account verification can stall indefinitely before study startup | Apply a bounded abort deadline to the identity fetch | Merged; candidate CI passed |
+| A4-243 | [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) / DS-02 | Account key regex coerces arrays or other non-string values into strings | Require a string with the exact account-key format | Merged; candidate CI passed |
+| A4-244 | [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) / DS-03 | A blocked main device IndexedDB open has no rejection handler and late success can leave an unused connection | Report blocked startup and close late connections | Merged; candidate CI passed |
+| A4-245 | [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) / DS-04 | The offline logout lock is removed before verified-account storage hydration completes | Retain or install the lock until successful hydration and account-key publication | Merged; candidate CI passed |
+| A4-246 | [#81](https://github.com/Hatem-a10/alfaisal-review-studio/pull/81) / DS-05 | Recovery-copy confirmation can remove a raw localStorage value different from the verified IndexedDB value, or associated with a changed account | Compare raw value, durable value, in-memory value and account marker before pruning | Merged; candidate CI passed |
+| A4-247 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-01 | Profile-change event during an active profile save is discarded | Queue and drain the latest profile after the active request | Merged; candidate CI passed |
+| A4-248 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-02 | A failed profile save has no reconnect/focus retry unless another profile edit occurs | Retry on reconnect and focus using the acknowledged fingerprint | Merged; candidate CI passed |
+| A4-249 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-03 | Changing the analytics checkbox submits a potentially stale or empty profile alongside the privacy preference | Send only the privacy preference and applicable analytics | Merged; candidate CI passed |
+| A4-250 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-04 | Opting out still sends study counts unnecessarily | Omit analytics entirely on opt-out | Merged; candidate CI passed |
+| A4-251 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-05 | Null or malformed study records and nonintegral or nonfinite totals can crash or distort count aggregation | Guard record shapes and bound safe integer counts | Merged; candidate CI passed |
+| A4-252 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-06 | A forced status refresh during a pending request is silently coalesced into an older response | Queue another status fetch after the active request | Merged; candidate CI passed |
+| A4-253 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-07 | An unsuccessful status fetch starts the full one-minute success cooldown | Only throttle after a valid response | Merged; candidate CI passed |
+| A4-254 | [#82](https://github.com/Hatem-a10/alfaisal-review-studio/pull/82) / MP-08 | A malformed flags payload can break control rendering | Validate flags before installing status | Merged; candidate CI passed |
 
 ## Verification boundaries
 
@@ -271,3 +299,5 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 - #74 also fixes one-letter postings in the search-index generator as a previous-audit follow-up; this is not a new registered finding.
 
 - #76 combined candidate: 1,135 full regression tests, 647 isolation/authentication tests and 4 course integration checks passed; these counts are separate suites and not additional findings. #75 candidate passed all CI stages after updating the existing hashed-cache assertion. Hosted cross-account/offline verification remains outstanding.
+
+- Safari login fix is merged and candidate-CI-passed; a real authenticated Safari production sign-in remains unverified, and no production release has been performed.
