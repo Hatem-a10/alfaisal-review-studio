@@ -31,7 +31,10 @@ test('A5-052/A5-060 account index removes full scans and sorting for the exact h
  const db=create();try{fill(db);const old=statements.map(([,sql,args])=>db.prepare(sql).all(...args));
   const bytesBefore=db.prepare('PRAGMA page_count').get().page_count*db.prepare('PRAGMA page_size').get().page_size;
   db.exec(migration);db.exec(migration);const current=statements.map(([,sql,args])=>db.prepare(sql).all(...args));
-  assert.deepEqual(current,old);
+  const canonical=rows=>rows.map(item=>[...item].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
+  // SQL orders by created_at only; ties had no promised row order before the index.
+  assert.deepEqual(canonical(current),canonical(old));
+  for(const rows of current.slice(0,2))for(let i=1;i<rows.length;i++)assert.ok(rows[i-1].created_at>=rows[i].created_at);
   for(const [name,sql,args] of statements){const plan=explain(db,sql,args);assert.match(plan,/SEARCH study_materials USING INDEX study_materials_user_created_idx/);
    if(name!=='quota')assert.doesNotMatch(plan,/USE TEMP B-TREE/);
   }
