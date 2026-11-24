@@ -4,9 +4,9 @@
  const save=saveOriginalRun;
  saveOriginalRun=function(){
   if(!originalRun)return save();
-  let stored={};try{stored=JSON.parse(localStorage.getItem(originalRunsKey)||'{}')||{}}catch{}
+  let stored={};try{const parsed=JSON.parse(localStorage.getItem(originalRunsKey)||'{}');if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Invalid saved exam data');stored=parsed}catch{toast('Saved exams could not be read. No existing exam was overwritten.');return}
   const prior=stored[originalRun.setId];
-  if(prior&&prior.startedAt===originalRun.startedAt&&prior.finishedAt&&!originalRun.finishedAt){toast('This exam was completed in another tab. Open its saved results before continuing.');return}
+  if(prior&&prior.startedAt===originalRun.startedAt&&prior.finishedAt){toast('This exam was completed in another tab. Open its saved results before continuing.');return}
   if(prior&&prior.startedAt!==originalRun.startedAt&&Date.parse(prior.startedAt)>Date.parse(originalRun.startedAt)){toast('A newer attempt is open in another tab. Reopen the exam to avoid overwriting it.');return}
   originalRun=AnswerIntegrity.reconcile(originalRun,baseline,prior);originalRuns={...originalRuns,...stored,[originalRun.setId]:originalRun};
   save();baseline=structuredClone(originalRun);
@@ -15,12 +15,12 @@
  hydrateStudyStores=function(){
   const activeOriginal=originalRun&&!originalRun.finishedAt?originalRun:null,activeSet=etSet&&!etSet.finished?etSet:null;
   hydrate();let restoreOriginal=false,restoreSet=false;
-  if(activeOriginal&&(!originalRun||originalRun.startedAt!==activeOriginal.startedAt||JSON.stringify(originalRun.answers)!==JSON.stringify(activeOriginal.answers))){
+  if(activeOriginal&&(!originalRun||originalRun.setId!==activeOriginal.setId||originalRun.startedAt!==activeOriginal.startedAt||JSON.stringify(originalRun.answers)!==JSON.stringify(activeOriginal.answers))){
    const remote=originalRuns[activeOriginal.setId];
-   if(!remote||!remote.finishedAt){originalRun=AnswerIntegrity.reconcile(activeOriginal,baseline,remote);originalRuns[originalRun.setId]=originalRun;restoreOriginal=true}
+   if(!remote||!remote.finishedAt&&Date.parse(remote.startedAt)<=Date.parse(activeOriginal.startedAt)){originalRun=AnswerIntegrity.reconcile(activeOriginal,baseline,remote);originalRuns[originalRun.setId]=originalRun;restoreOriginal=true}
   }
   if(activeSet&&(!etSet||JSON.stringify(etSet)!==JSON.stringify(activeSet))){etSet=activeSet;restoreSet=true}
-  if(restoreOriginal||restoreSet)setTimeout(()=>{if(restoreOriginal&&originalRun&&!originalRun.finishedAt)saveOriginalRun();if(restoreSet&&etSet&&!etSet.finished)savePracticeDraft()},0);
+  if(restoreOriginal||restoreSet){const original=originalRun,set=etSet;setTimeout(()=>{if(restoreOriginal&&originalRun===original&&!original.finishedAt)saveOriginalRun();if(restoreSet&&etSet===set&&!set.finished)savePracticeDraft()},0);}
  };
  // Correct verified errors without presenting an unreliable key as certain.
  const fixes={'original-mol-exam-1-1':{answer:2,issue:'The original printed key is incorrect; mismatch repair is the supported answer.'},'original-mol-exam-1-25':{answer:3,issue:'The original printed key is incorrect; disrupted membrane integrity is the supported answer.'},'original-mol-exam-1-6':{answer:null,issue:'No displayed choice correctly describes the arginine modification; self-check only.'},'original-mol-exam-1-20':{answer:null,issue:'Feedback inhibition and allosteric regulation overlap in these choices; self-check only.'},'original-mol-exam-1-22':{answer:null,issue:'No displayed choice clearly states zidovudine chain termination; self-check only.'},'original-mol-exam-1-26':{answer:null,issue:'The displayed sequences omit the correct starting order; self-check only.'},'original-mol-exam-1-29':{answer:null,issue:'The displayed choices do not clearly match the stated insulin glargine changes; self-check only.'},'original-mol-exam-1-32':{answer:null,issue:'The choices do not clearly explain protein thermostability; self-check only.'}};
