@@ -25,7 +25,8 @@ test('A5-144 repeated 200-question markup benchmark and sanitization call counts
  const a=fixture(baseline),b=fixture(candidate),qs=Array.from({length:200},(_,i)=>make(i));
  const run=f=>qs.map((q,i)=>f.run(q,i,{},false,'mock')).join('');
  assert.equal(run(a),run(b));
- const baselineCalls=a.calls(),candidateCalls=b.calls();
+ const beforeA=a.calls(),beforeB=b.calls();run(a);run(b);
+ const baselineCalls=a.calls()-beforeA,candidateCalls=b.calls()-beforeB;
  assert.ok(candidateCalls<baselineCalls);
  const baselineMedianMs=median(()=>run(a)),candidateMedianMs=median(()=>run(b));
  console.log(JSON.stringify({label:'A5-144 exam static markup',baselineMedianMs,candidateMedianMs,baselineEscapingCalls:baselineCalls,candidateEscapingCalls:candidateCalls,questions:qs.length}));
