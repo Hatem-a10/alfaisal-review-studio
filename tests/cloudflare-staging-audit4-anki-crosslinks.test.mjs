@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {matchDecks} from '../public/phase3-crosslinks.mjs';
+import {createLectureChangeDetector} from '../public/phase3-lecture-change.mjs';
 const lectures=[{id:'MOL-14',title:'Introduction to Metabolism'},{id:'REN-A1',title:'Posterior abdominal wall'},{id:'CVP-A1',title:'Posterior abdominal wall'}];
 test('crosslinks tolerate malformed data and duplicate deck or lecture identities',()=>{
  const d={id:'d',name:'MOL 114 14',cards:[null,{id:'a'},{id:'a'},{id:'s',schedule:{queue:-1}},{id:3}]};
@@ -26,7 +27,7 @@ test('whole-title boundaries avoid substring matches in unrelated card tags',()=
 test('runtime invalidates cached lecture matching when curriculum changes and hides inaccessible links',()=>{
  const source=readFileSync(new URL('../public/phase3-runtime.mjs',import.meta.url),'utf8');
  const start=source.indexOf('let deckIdentity,'),end=source.indexOf('const questionBefore=',start);
- const ctx={DATA:{items:[lectures[0]]},ankiDecks:[{id:'d',name:'REN 123 A1',cards:[{id:'a'}]}],matchDecks,lessonById:id=>lectures.find(l=>l.id===id),window:{reviewStudyItemVisible:item=>item.id!=='CVP-A1'}};
+ const ctx={DATA:{items:[lectures[0]]},ankiDecks:[{id:'d',name:'REN 123 A1',cards:[{id:'a'}]}],matchDecks,createLectureChangeDetector,lessonById:id=>lectures.find(l=>l.id===id),window:{reviewStudyItemVisible:item=>item.id!=='CVP-A1'}};
  const api=runInNewContext(source.slice(start,end)+'\n({matches,actions,visibleLecture})',ctx);
  assert.equal(api.matches().has('REN-A1'),false);
  ctx.DATA.items.push(lectures[1]);assert.equal(api.matches().has('REN-A1'),true);
