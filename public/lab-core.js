@@ -11,13 +11,13 @@ const LabCore=(()=>{
  function score(questions,answers){const qs=array(questions),values=object(answers),correct=qs.filter(q=>validChoice(q,q?.answer)&&validChoice(q,values[q.id])&&values[q.id]===q.answer).length,total=qs.length;return {correct,total,percent:total?correct*100/total:0,complete:total>0&&qs.every(q=>validId(q?.id)&&validChoice(q,q.answer)&&validChoice(q,values[q.id]))}}
  function visualPassed(questions, answers) {
   const visual = array(questions).filter(question => question?.visual || question?.figure);
-  return !visual.length || visual.some(question => validChoice(question,question.answer)&&validChoice(question,answers?.[question.id])&&answers[question.id]===question.answer);
+  return !visual.length || visual.some(question => Number.isSafeInteger(question.answer)&&question.answer>=0&&(!Array.isArray(question.options)||validChoice(question,question.answer))&&answers?.[question.id]===question.answer);
  }
  function mastered(data,topic) {
   const qs=array(topic?.questions);if(!validId(topic?.id)||!qs.length)return false;
   const earned = data?.mastery?.[topic.id];
   const hasVisual = qs.some(question => question?.visual || question?.figure);
-  if (earned && Number.isFinite(stamp(earned)) && (!hasVisual || earned.visual===true)) return true;
+  if (earned && typeof earned==='object' && (earned.at===undefined||Number.isFinite(stamp(earned))) && (!hasVisual || earned.visual===true)) return true;
   return array(data?.attempts).some(attempt => {
    if(!attempt||attempt.topic!==topic.id||attempt.kind!=='mcq'||attempt.total!==qs.length||!Number.isSafeInteger(attempt.correct)||attempt.correct<0||attempt.correct>attempt.total||attempt.correct/attempt.total<.85)return false;
    if(attempt.answers!==undefined){const checked=score(qs,attempt.answers);if(!checked.complete||checked.correct!==attempt.correct)return false}
