@@ -54,7 +54,8 @@ const StudyAutopilot=(()=>{
       const chosen=tb>ta||(!ta&&!tb&&fallbackB>fallbackA)?b:a;
       c.dates=[...chosen.dates];
       // An empty schedule is an atomic intentional unscheduling operation.
-      for(let p=0;p<3;p++)retainClock(c._changed,a,b,'dates.'+p);
+      const newest=[0,1,2].map(p=>chosen._changed?.['dates.'+p]).filter(t=>time(t)).sort((a,b)=>time(b)-time(a))[0];
+      for(let p=0;p<3;p++){const k='dates.'+p;if(newest)c._changed[k]=newest;else delete c._changed[k]}
       continue;
      }
      c[key]=key==='dates'?[]:{};
