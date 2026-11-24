@@ -7,7 +7,7 @@ const AnswerIntegrity=(()=>{
  const validClock=v=>Number.isSafeInteger(v)&&v>=0?v:0;
  const answers=v=>Object.fromEntries(Object.entries(object(v)?v:{}).filter(([k,x])=>keyOK(k)&&(typeof x==='string'||Number.isSafeInteger(x)&&x>=0)));
  const clocks=v=>Object.fromEntries(Object.entries(object(v)?v:{}).filter(([k,x])=>keyOK(k)&&Number.isSafeInteger(x)&&x>=0));
- const sameAttempt=(a,b)=>!!a&&!!b&&(typeof a.startedAt==='string'&&Number.isFinite(Date.parse(a.startedAt))||Number.isSafeInteger(a.startedAt)&&a.startedAt>0)&&a.startedAt===b.startedAt&&(!a.id||!b.id||a.id===b.id)&&(!a.setId||!b.setId||a.setId===b.setId);
+ const sameAttempt=(a,b)=>!!a&&!!b&&((typeof a.startedAt==='string'&&Number.isFinite(Date.parse(a.startedAt))||Number.isSafeInteger(a.startedAt)&&a.startedAt>=0)||Number.isSafeInteger(a.startedAt)&&a.startedAt>0)&&a.startedAt===b.startedAt&&(!a.id||!b.id||a.id===b.id)&&(!a.setId||!b.setId||a.setId===b.setId);
  function reconcile(run,baseline,persisted,now=Date.now()){
   if(!run||!object(run.answers))return run;
   const current=answers(run.answers),prev=sameAttempt(baseline,run)?answers(baseline.answers):current;
