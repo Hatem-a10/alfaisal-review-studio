@@ -26,9 +26,10 @@ function __reviewMergeKeys(path,target,entries){
  __REVIEW_ORDER.set(path,order);
 }
 (()=>{
- const packs=globalThis.REVIEW_COURSE_PACKS||{},loaded=new Set(),pending={},failed={};
- const has=c=>!packs[c]||loaded.has(c);
+ const packs=globalThis.REVIEW_COURSE_PACKS||{},loaded=new Set(),pending=Object.create(null),failed=Object.create(null);
+ const owns=c=>typeof c==='string'&&Object.hasOwn(packs,c),has=c=>!owns(c)||loaded.has(c)&&!failed[c];
  window.__reviewCourseReady=course=>{
+  if(!owns(course)||!pending[course]||failed[course]||loaded.has(course))return;
   loaded.add(course);
   try{inlineLessonCache.clear()}catch{}
   window.dispatchEvent(new CustomEvent('review-course-loaded',{detail:{course}}));
@@ -36,13 +37,27 @@ function __reviewMergeKeys(path,target,entries){
  function load(course){
   if(has(course))return Promise.resolve();
   if(failed[course])return Promise.reject(failed[course]);
-  return pending[course]??=new Promise((resolve,reject)=>{
-   const script=document.createElement('script');
+  if(pending[course])return pending[course];
+  let resolve,reject,script,timer,settled=false;
+  const promise=new Promise((yes,no)=>{resolve=yes;reject=no});
+  pending[course]=promise;
+  const finish=(error,fatal=false)=>{
+   if(settled)return;settled=true;
+   if(timer!==undefined)clearTimeout(timer);
+   delete pending[course];
+   if(script){script.onload=script.onerror=null;try{script.remove()}catch{}}
+   if(error){if(fatal)failed[course]=error;reject(error)}else resolve();
+  };
+  try{
+   script=document.createElement('script');
    script.src=packs[course];script.async=false;
-   script.onload=()=>loaded.has(course)?resolve():reject(failed[course]=Error('The '+course+' course did not finish loading.'));
-   script.onerror=()=>{delete pending[course];script.remove();reject(Error('Could not download the '+course+' course. Check your connection and try again.'))};
+   script.onload=()=>loaded.has(course)?finish():finish(Error('The '+course+' course did not finish loading.'),true);
+   script.onerror=()=>finish(Error('Could not download the '+course+' course. Check your connection and try again.'));
+   // A timed-out script may already have executed partially. Require a reload rather than replaying it.
+   timer=setTimeout(()=>finish(Error('Loading '+course+' timed out. Reload to retry safely.'),true),30000);
    document.head.append(script);
-  });
+  }catch{finish(Error('Could not start loading '+course+'. Try again.'))}
+  return promise;
  }
  // Packs run one after another so merges and replays never interleave.
  let chain=Promise.resolve();
@@ -65,13 +80,13 @@ function __reviewMergeKeys(path,target,entries){
   const inArchive=window.reviewViewingArchive?.()===true&&window.reviewArchiveEnabled?.()===true;
   const archived=c=>c==='CVP'&&(window.reviewCvpArchived?.()===true||window.reviewArchiveEnabled?.()===true)&&!inArchive;
   const active=all.filter(c=>!archived(c)),courseOf=id=>typeof id==='string'?id.split('-')[0]:'';
-  const known=c=>c==='REN'||Boolean(window.reviewCourseConfig?.(c))||Boolean(packs[c]);
+  const known=c=>c==='REN'||Boolean(window.reviewCourseConfig?.(c))||owns(c);
   const scope=window.reviewCourseScope;
   if(everything.has(current))return active;
   // Learn always needs every active course: its catalogue checks today's due lessons across courses.
   // An old selected lecture must not load a hidden course pack on an active-course screen.
-  if(current==='learning')return [...new Set([...active,courseOf(typeof lessonId==='string'?lessonId:'')])].filter(c=>packs[c]&&!archived(c));
-  if(typeof scope==='string'&&known(scope))return packs[scope]&&!archived(scope)?[scope]:[];
+  if(current==='learning')return [...new Set([...active,courseOf(typeof lessonId==='string'?lessonId:'')])].filter(c=>owns(c)&&!archived(c));
+  if(typeof scope==='string'&&known(scope))return owns(scope)&&!archived(scope)?[scope]:[];
   return active;
  }
  let painted='',renderRequest=0;
