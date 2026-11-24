@@ -34,14 +34,14 @@ try{
  await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
  check('large reading mobile fits',await evaluate("document.documentElement.scrollWidth<=innerWidth+1"));
  await evaluate("import('/student-profile.mjs').then(m=>{window.phase1Wizard=m.setup({items:[{id:'CVP-P1',code:'P1',title:'Synthetic lecture'}]});return true})");
- check('wizard six steps',await evaluate("document.querySelectorAll('#studentProfileSetup [data-step-indicator]').length===6"));
- await evaluate("document.querySelector('#studentProfileSetup [data-next]').click();document.querySelector('#studentProfileSetup [name=name]').value='Synthetic Student';document.querySelector('#studentProfileSetup [name=number]').value='TEST';document.querySelector('#studentProfileSetup [name=group]').value='F2';document.querySelector('#studentProfileSetup [name=group]').dispatchEvent(new Event('change'));true");
- check('unverified labs not invented',await evaluate("document.querySelector('#studentProfileSetup [name=lab]').options.length===1"));
- check('English frequency options',await evaluate("[...document.querySelector('#studentProfileSetup [name=frequency]').options].map(x=>x.value).join(',')==='2,3'"));
+ check('setup opens with optional choices collapsed',await evaluate("!!document.querySelector('#studentProfileSetup[open]')&&!document.querySelector('.student-setup-options').open"));
+ await evaluate("const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=name]').value='Synthetic Student';d.querySelector('[name=group]').value='F2';d.querySelector('[name=group]').dispatchEvent(new Event('change'));true");
+ check('lab choices wait for an academic section',await evaluate("document.querySelector('#studentProfileSetup [name=lab]').disabled"));
+ await evaluate("const d=document.querySelector('#studentProfileSetup');d.querySelector('[name=section]').value='A';d.querySelector('[name=section]').dispatchEvent(new Event('change'));d.querySelector('[name=lab]').value='2.1';d.querySelector('.student-setup-options').open=true;true");
+ check('English frequencies remain available and optional',await evaluate("[...document.querySelector('#studentProfileSetup [name=frequency]').options].map(x=>x.value).join(',')==='2,3'&&!document.querySelector('[name=englishEnabled]').checked"));
+ check('appearance picker is available without auto focus',await evaluate("document.activeElement.type!=='color'&&!!document.querySelector('#studentProfileSetup input[type=color]')"));
  await evaluate("document.querySelector('#studentProfileSetup [data-next]').click();true");
- check('wizard appearance picker not auto focused',await evaluate("document.activeElement.type!=='color'&&document.querySelector('#studentProfileSetup [data-step=\"2\"]').hidden===false"));
- for(let i=0;i<4;i++)await evaluate("document.querySelector('#studentProfileSetup [data-next]').click();true");
- check('wizard returns neutral new identity',await evaluate("window.phase1Wizard.then(p=>p.profileName==='Synthetic Student'&&p.studentGroup==='F2'&&p.englishFrequency===2&&p.budget===180)"));
+ check('one-page setup preserves schedule selections',await evaluate("window.phase1Wizard.then(p=>p.profileName==='Synthetic Student'&&p.studentGroup==='F2'&&p.studentSection==='A'&&p.labGroup==='2.1'&&p.englishEnabled===false)"));
  await call('Page.navigate',{url:base+'#dashboard'});for(let i=0;i<100;i++){await new Promise(r=>setTimeout(r,60));if(await evaluate("document.documentElement.dataset.boot==='ready'"))break}
  check('reading preferences survive refresh',await evaluate("document.querySelector('[data-reading-setting=font]').value==='24'&&document.documentElement.style.getPropertyValue('--reading-size')==='24px'"));
  const report={checks,errors:[...new Set(errors)]};await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({passed:checks.filter(c=>c.passed).length,total:checks.length,failures:checks.filter(c=>!c.passed),errors:report.errors,output:out}));if(checks.some(c=>!c.passed)||errors.length)process.exitCode=1;
