@@ -27,7 +27,7 @@ function setup(){
  const media=load('lib/private-media.ts',{'./private-media-manifest.json':manifest});
  const ownerAccess=load('lib/owner-access.ts',{'cloudflare:workers':{env},'./academic-config.mjs':academicConfig});
  const owner=load('lib/shared-upload-owner.ts',{'cloudflare:workers':{env},'./academic-config.mjs':academicConfig,'./owner-access':ownerAccess});
- return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media,'../../../lib/shared-upload-owner':owner}),env,files};
+ return {media,api:load('app/api/private-media/route.ts',{'cloudflare:workers':{env},'../../../lib/private-media':media,'../../../lib/shared-upload-owner':owner,'../../../lib/bounded-request':load('lib/bounded-request.ts',{})}),env,files};
 }
 
 const get=(path,headers=auth)=>new Request(origin+path,{headers});
@@ -58,3 +58,5 @@ test('verified bytes retain their original URL and MIME type in the private work
  assert.equal((await media.readPrivateMedia(get('/'+manifest[0].path,{}),env.BUCKET)).status,401);
  assert.equal(await media.readPrivateMedia(get('/unrelated'),env.BUCKET),null);
 });
+
+test('duplicate private migration paths fail before any write',async()=>{const {api,files}=setup();const form=new FormData();for(let i=0;i<2;i++)form.append(manifest[0].path,new Blob([body]),'model.glb.gz');const req=new Request(origin+'/api/private-media',{method:'POST',headers:{...auth,origin},body:form});assert.equal((await api.POST(req)).status,400);assert.equal(files.size,0)});

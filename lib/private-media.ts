@@ -19,12 +19,12 @@ export async function readPrivateMedia(request:Request,bucket:R2Bucket|undefined
  if(!request.headers.get('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});
  if(!bucket)return null;
  const key=mediaKey(asset.sha);
- const file=request.method==='HEAD'?await bucket.head(key):await bucket.get(key);
+ const tag='"'+asset.sha+'"',unchanged=request.headers.get('if-none-match')===tag,headOnly=request.method==='HEAD'||unchanged;
+ const file=headOnly?await bucket.head(key):await bucket.get(key);
  if(!file||file.size!==asset.size||file.customMetadata?.sha!==asset.sha)return null;
- const tag='"'+asset.sha+'"';
  const headers={'Content-Type':asset.type,'Content-Length':String(file.size),'ETag':tag,
   'Cache-Control':'private, max-age=3600, must-revalidate','X-Content-Type-Options':'nosniff'};
- if(request.headers.get('if-none-match')===tag){
+ if(unchanged){
   const cacheHeaders=new Headers(headers);cacheHeaders.delete('Content-Length');
   return new Response(null,{status:304,headers:cacheHeaders});
  }
