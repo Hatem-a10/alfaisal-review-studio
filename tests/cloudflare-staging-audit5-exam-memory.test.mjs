@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {analytics,rankWeakQuestions} from '../public/phase2-practice-core.mjs';
+import {createReviewMemorySampler,syntheticReviewBank} from '../scripts/audit5-exam-memory.mjs';
+test('A5-287 stage-sampled exam review reports memory lower bound without identifiers',()=>{
+ const sampler=createReviewMemorySampler();
+ sampler.checkpoint('before-bank');
+ const questions=syntheticReviewBank(640);
+ sampler.checkpoint('bank-ready');
+ const answers={};for(let i=0;i<questions.length;i++)answers[i]=i%4;
+ const attempts=[{id:'synthetic-attempt',finishedAt:'2026-11-24T12:00:00Z',questions,answers}];
+ const group=analytics({},[{id:'synthetic-mock',attempts}],questions,[]);
+ sampler.checkpoint('analytics-ready');
+ const ranked=rankWeakQuestions(questions,group,[]);
+ sampler.checkpoint('review-ranked');
+ assert.equal(ranked.length,questions.length);
+ assert.ok(group.length>0);
+ const measured=sampler.summary();
+ assert.equal(measured.samples.length,4);
+ assert.equal(measured.kind,'discrete-stage-sampled-lower-bound');
+ assert.ok(measured.maxSampledHeapUsed>=Math.max(...measured.samples.map(x=>x.heapUsed)));
+ assert.ok(measured.samples.every(x=>x.elapsedMs>=0));
+ assert.ok(!JSON.stringify(measured).includes('synthetic-attempt'));
+ console.log(JSON.stringify({label:'A5-287 synthetic large exam review sampled heap',questionCount:questions.length,groupCount:group.length,heapBytesHighWaterLowerBound:measured.maxSampledHeapUsed,sampledStages:measured.samples.map(x=>x.stage),warning:'Discrete heap sampling is not a continuous/production peak'}));
+});
+test('A5-287 only stage labels and aggregate bytes may be sampled',()=>{
+ let n=0;const readings=[{heapUsed:100,external:4,heapTotal:120},{heapUsed:130,external:8,heapTotal:140},{heapUsed:110,external:6,heapTotal:140}];
+ const m=createReviewMemorySampler({memory:()=>readings[n++],clock:()=>n*2});
+ m.checkpoint('start');m.checkpoint('render');m.checkpoint('complete');
+ const s=m.summary();assert.equal(s.maxSampledHeapUsed,130);assert.equal(s.maxSampledExternal,8);
+ assert.deepEqual(s.samples.map(x=>x.stage),['start','render','complete']);
+ assert.throws(()=>m.checkpoint('account@example.com'),/non-identifying/);
+ assert.throws(()=>syntheticReviewBank(5001),/Unsafe/);
+});
