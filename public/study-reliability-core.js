@@ -2,7 +2,7 @@
 const StudioReliability=(()=>{
  const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(16)};
  // Count the same keyed, correct and scored rows in one pass without intermediate arrays.
- function tally(rows){let keyed=0,correct=0,scored=0;for(const q of rows){if(q.key===null)continue;keyed++;if(q.selected===q.key)correct++;if(Number.isInteger(q.selected))scored++}return {keyed,correct,scored}}
+ function tally(rows){let keyed=0,correct=0,scored=0;rows.forEach(q=>{if(q.key===null)return;keyed++;if(q.selected===q.key)correct++;if(Number.isInteger(q.selected))scored++});return {keyed,correct,scored}}
  function receipt(id,kind,questions,answers,at=new Date().toISOString()){
   const rows=questions.map((q,i)=>{const key=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length?q.answer:null,raw=answers[kind==='original'?q.id:i],selected=Number.isInteger(raw)&&raw>=0&&raw<q.options.length?raw:key===null&&typeof raw==='string'?raw:null;return {id:q.id,question:q.question,options:[...q.options],letters:Array.isArray(q.letters)?[...q.letters]:q.options.map((_,i)=>String.fromCharCode(65+i)),selected,key,keyNote:q.sourceIssue||q.printedAnswer||'Authored study key'}});
   const {keyed,correct,scored}=tally(rows);
