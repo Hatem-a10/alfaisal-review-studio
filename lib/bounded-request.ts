@@ -1,6 +1,6 @@
 /** Bounded request decoding: count actual bytes, regardless of Content-Length. */
 export class RequestTooLarge extends Error {}
-export async function readBounded(request:Request,limit:number):Promise<Uint8Array<ArrayBuffer>>{
+export async function readBounded(request:Pick<Request,'headers'|'body'>,limit:number):Promise<Uint8Array<ArrayBuffer>>{
  const declared=request.headers.get('content-length');
  if(declared!==null&&Number(declared)>limit)throw new RequestTooLarge('Request is too large.');
  const reader=request.body?.getReader(),chunks:Uint8Array[]=[];let size=0;
