@@ -60,8 +60,27 @@ async function writeSnapshot(id:string,revision:number,data:any,prior?:any){
 type LearningEntry = {q:string;c:string;ok:boolean;choice:number;at:unknown};
 type ProgressRecord = {title?:string;notes?:string;confidence?:number;difficult?:boolean;dates?:unknown[];done?:Record<string,unknown>;learning?:{results?:Record<string,LearningEntry>;read?:unknown[];attempts?:LearningEntry[]};resources?:unknown[];mcqs?:{id:string;total:number;correct:number;date:unknown;createdAt:unknown;source:string}[];sessions?:{startedAt:unknown;endedAt:unknown;seconds:number}[]};
 type SnapshotWire = {extras?:{version:number;stores:Record<string,{at:string;value:unknown}>};settings?:{studentGroup:string;studentSection:string;groupConfigured:boolean;profileName:string;studentNumber:string;profileCreatedAt:string|null;labGroup:string;labGroupConfigured:boolean;englishFrequency:number;englishStartTime:string;onboardingDate:string|null;legacyProfile:boolean;englishEnabled:boolean;examNames:Record<string,unknown>;calendarColors:Record<string,unknown>;profilePhoto:string};records:Record<string,ProgressRecord>};
+// Validate the same companion-store envelope as the client, without changing historical IDs.
+function validCompanion(name:string,value:unknown):boolean{
+ if(value===null)return true;
+ const obj=(x:unknown):x is Record<string,any>=>!!x&&typeof x==='object'&&!Array.isArray(x);
+ const stamp=(x:unknown)=>typeof x==='string'&&Number.isFinite(Date.parse(x));
+ const question=(q:unknown)=>obj(q)&&typeof q.id==='string'&&typeof q.question==='string'&&Array.isArray(q.lectureIds)&&q.lectureIds.every((id:unknown)=>typeof id==='string')&&Array.isArray(q.options)&&q.options.length>=2&&q.options.length<=8&&q.options.every((v:unknown)=>typeof v==='string')&&Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length&&typeof q.explanation==='string'&&Array.isArray(q.reasons)&&q.reasons.length===q.options.length;
+ const run=(x:unknown)=>obj(x)&&Array.isArray(x.questions)&&x.questions.length>0&&x.questions.length<=200&&x.questions.every(question)&&obj(x.answers);
+ if(name==='history')return Array.isArray(value)&&value.length<=100&&value.every(x=>obj(x)&&typeof x.id==='string'&&Number.isFinite(x.correct)&&Number.isFinite(x.total)&&x.correct>=0&&x.total>=x.correct);
+ if(!obj(value))return false;
+ if(name==='mock')return run(value)&&Number.isFinite(value.deadline)&&obj(value.flags)&&typeof value.id==='string';
+ if(name==='practice')return !value.set||run(value.set);
+ if(name==='wrongBank')return Array.isArray(value.entries)&&value.entries.every(x=>obj(x)&&question(x.question)&&(x.choice===null||Number.isInteger(x.choice)))&&Array.isArray(value.exams)&&value.exams.every((x:unknown)=>typeof x==='string');
+ if(name==='drafts')return Object.values(value).every(x=>obj(x)&&Array.isArray(x.ids)&&Array.isArray(x.orders)&&obj(x.answers)&&obj(x.graded));
+ if(name==='originals')return Object.values(value).every(x=>obj(x)&&Array.isArray(x.ids)&&x.ids.length<=800&&x.ids.every((id:unknown)=>typeof id==='string')&&obj(x.answers));
+ if(name==='anki')return obj(value.cards)&&Object.entries(value.cards).every(([k,x])=>/^[a-f0-9]{64}:\d+$/.test(k)&&obj(x)&&Number.isFinite(x.due)&&Number.isFinite(x.interval)&&Number.isFinite(x.reps)&&(!x.at||stamp(x.at)));
+ if(name==='queue')return obj(value.items)&&Object.values(value.items).every(x=>obj(x)&&typeof x.id==='string'&&Array.isArray(x.candidates)&&x.candidates.length<=500&&Array.isArray(x.scanned));
+ if(name==='visual')return obj(value.exercises)&&obj(value.results);
+ return true;
+}
 function validSnapshot(s: SnapshotWire): boolean {
- if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000)return false}}
+ if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000||!validCompanion(k,v.value??null))return false}}
  if(s.settings?.studentGroup!==undefined&&!['','M1','M2','F1','F2'].includes(s.settings.studentGroup))return false;
  if(s.settings?.studentSection!==undefined&&!['','A','B'].includes(s.settings.studentSection))return false;
  if(s.settings?.groupConfigured!==undefined&&typeof s.settings.groupConfigured!=='boolean')return false;
