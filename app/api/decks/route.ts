@@ -1,9 +1,9 @@
 import {boundedForm,RequestTooLarge} from '../../../lib/bounded-request';
 import {env} from 'cloudflare:workers';
-import {fileDigest,hasZipHeader,reservePersonalUpload} from '../../../lib/personal-upload';
+import {fileDigest,hasAnkiCollection,reservePersonalUpload} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
 const json=(v:unknown,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
-export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to view decks.'},401);if(!env.DB)return json({error:'Cloud deck storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id,name,bytes,page_count AS cardCount,created_at AS createdAt FROM study_materials WHERE user_id=? AND lecture_id='ANKI' ORDER BY created_at DESC").bind(user).all();return json({decks:rows.results})}
+export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to view decks.'},401);if(!env.DB)return json({error:'Cloud deck storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id,name,bytes,page_count AS cardCount,created_at AS createdAt FROM study_materials WHERE user_id=? AND lecture_id='ANKI' ORDER BY created_at DESC").bind(user).all();return json({decks:rows.results.map(row=>({...row,cardCountVerified:false}))})}
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id');
  if(!user)return json({error:'Sign in to save decks.'},401);
@@ -13,7 +13,7 @@ export async function POST(request:Request){
  let form;try{form=await boundedForm(request,53000000)}catch(e){if(e instanceof RequestTooLarge)return json({error:'Upload request is too large.'},413);return json({error:'Invalid deck upload.'},400)}
  const file=form.get('file'),hash=String(form.get('hash')||''),cards=Number(form.get('cards'));
  if(!(file instanceof File)||!/^.{1,240}\.(apkg|colpkg)$/i.test(file.name)||file.size<1||file.size>50000000||!/^[a-f0-9]{64}$/.test(hash)||!Number.isSafeInteger(cards)||cards<1||cards>100000)return json({error:'Invalid Anki package.'},400);
- if(!await hasZipHeader(file)||await fileDigest(file)!==hash)return json({error:'The Anki package is invalid or its checksum did not match. Export and import it again.'},400);
+ if(!await hasAnkiCollection(file)||await fileDigest(file)!==hash)return json({error:'The Anki package is invalid or its checksum did not match. Export and import it again.'},400);
  const scopedHash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(user+':'+hash)))].map(b=>b.toString(16).padStart(2,'0')).join('');
  const id='anki-'+scopedHash,key='materials/'+user+'/'+id+'/original',at=new Date().toISOString();
  const find=()=>env.DB!.prepare("SELECT id,name,bytes,page_count AS cardCount,created_at AS createdAt FROM study_materials WHERE user_id=? AND id=? AND lecture_id='ANKI'").bind(user,id).first<{id:string;name:string;bytes:number;cardCount:number;createdAt:string}>();
@@ -28,5 +28,5 @@ export async function POST(request:Request){
  // Retain the reservation on an uncertain write: retrying this package safely repairs it.
  try{await env.BUCKET.put(key,file.stream(),{httpMetadata:{contentType:'application/octet-stream'}})}
  catch{return json({error:'Cloud deck upload did not finish. Your local deck is retained; retry saving it to cloud.'},503)}
- return json(row);
+ return json({...row,cardCountVerified:false});
 }

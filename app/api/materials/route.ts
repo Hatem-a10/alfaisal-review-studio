@@ -32,7 +32,7 @@ export async function POST(request:Request){
  const name=file.name.slice(0,250),pageCount=parsed.pages.length;
  const submittedFigures=Array.isArray(parsed.figures)?parsed.figures:[];
  const figures=submittedFigures.filter((f:any)=>f&&Number.isInteger(f.page)&&f.page>0&&f.page<=pageCount&&typeof f.image==='string'&&f.image.length<200000&&/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(f.image)).slice(0,60);
- const omittedFigures=submittedFigures.length-figures.length;
+ const clientOmitted=parsed.omittedFigures===undefined?0:parsed.omittedFigures;if(!Number.isSafeInteger(clientOmitted)||clientOmitted<0||clientOmitted>100000)return json({error:'Invalid omitted figure count.'},400);const omittedFigures=clientOmitted+submittedFigures.length-figures.length;
  try{
   if(known)await env.BUCKET.put(base+'/original-alias',JSON.stringify({key:known.key,sha,bytes:bytes.byteLength}),{httpMetadata:{contentType:'application/json'}});else await env.BUCKET.put(base+'/original',bytes,{httpMetadata:{contentType:mime},customMetadata:{sha256:sha}});
   await env.BUCKET.put(base+'/text',JSON.stringify({pages:parsed.pages,pack:parsed.pack||null,figures,omittedFigures}),{httpMetadata:{contentType:'application/json'}});

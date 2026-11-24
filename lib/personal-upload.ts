@@ -28,3 +28,30 @@ export async function hasPdfHeader(file:File){
  const bytes=new Uint8Array(await file.slice(0,1024).arrayBuffer());
  return new TextDecoder().decode(bytes).includes('%PDF-');
 }
+
+// Structural ZIP validation, not a claim that a compressed database has valid card rows.
+// Central directory is bounded, then the recognized collection's local header is checked.
+export async function hasAnkiCollection(file:File):Promise<boolean>{
+ if(file.size<22||file.size>50000000)return false;
+ const tailStart=Math.max(0,file.size-65557),tail=new Uint8Array(await file.slice(tailStart).arrayBuffer()),v=new DataView(tail.buffer);
+ let e=-1;for(let i=tail.length-22;i>=0;i--)if(v.getUint32(i,true)===0x06054b50&&i+22+v.getUint16(i+20,true)===tail.length){e=i;break}
+ if(e<0||v.getUint16(e+4,true)!==0||v.getUint16(e+6,true)!==0)return false;
+ const count=v.getUint16(e+10,true),size=v.getUint32(e+12,true),start=v.getUint32(e+16,true);
+ if(!count||count>30000||v.getUint16(e+8,true)!==count||size>16000000||start+size!==tailStart+e)return false;
+ const dir=new Uint8Array(await file.slice(start,start+size).arrayBuffer()),d=new DataView(dir.buffer),decoder=new TextDecoder();
+ const names=new Set<string>();let pos=0,expanded=0,collection:{name:string;offset:number;bytes:number}|null=null;
+ for(let i=0;i<count;i++){
+  if(pos+46>dir.length||d.getUint32(pos,true)!==0x02014b50)return false;
+  const flags=d.getUint16(pos+8,true),method=d.getUint16(pos+10,true),compressed=d.getUint32(pos+20,true),raw=d.getUint32(pos+24,true),nameLen=d.getUint16(pos+28,true),extra=d.getUint16(pos+30,true),comment=d.getUint16(pos+32,true),offset=d.getUint32(pos+42,true),end=pos+46+nameLen+extra+comment;
+  if(end>dir.length||!nameLen||flags&1||![0,8].includes(method)||offset+30+compressed>start||d.getUint16(pos+34,true)!==0)return false;
+  expanded+=raw;if(expanded>250000000)return false;
+  const name=decoder.decode(dir.subarray(pos+46,pos+46+nameLen));if(names.has(name))return false;names.add(name);
+  if(['collection.anki2','collection.anki21','collection.anki21b'].includes(name)&&compressed>0&&raw>0)collection={name,offset,bytes:compressed};
+  pos=end;
+ }
+ if(pos!==dir.length||!collection)return false;
+ const header=new Uint8Array(await file.slice(collection.offset,collection.offset+30).arrayBuffer());if(header.length!==30)return false;
+ const h=new DataView(header.buffer),length=h.getUint16(26,true),extra=h.getUint16(28,true);
+ if(h.getUint32(0,true)!==0x04034b50||collection.offset+30+length+extra+collection.bytes>start)return false;
+ return decoder.decode(await file.slice(collection.offset+30,collection.offset+30+length).arrayBuffer())===collection.name;
+}
