@@ -259,7 +259,8 @@ test('P2 Topic 7 updates the displayed count after a checked correction even wit
  const score=load('inline-topics.js').split('\n').find(line=>line.startsWith('function inlineTopicScore'));
  const wrapper=load('study-workflows.js').split('\n').find(line=>line.startsWith('const minBefore='));
  const context={inlineLatest:()=>new Map(),storeOptions:()=>({minimumQuestions:3})};
- const calculate=vm.runInNewContext(score+'\n'+wrapper+'\ninlineTopicScore',context);
+ const minimum=load('study-workflows.js').split('\n').find(line=>line.startsWith('function minimumCoreQuestions'));
+ const calculate=vm.runInNewContext(score+'\n'+minimum+'\n'+wrapper+'\ninlineTopicScore',context);
  const record={learning:{results:{[questions[0].id]:{ok:false}}}};
  const session={graded:{0:true,1:true},answers:{0:questions[0].answer,1:questions[1].answer}};
  const result=calculate(lesson,questions,record,session);
