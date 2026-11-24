@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 const content=readFileSync(new URL('../lib/site-assets.ts',import.meta.url),'utf8');
 const file={path:'materials/fixture.pdf',size:50,sha:'a'.repeat(64)};
 const compile=source=>{const m={exports:{}};const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
- new Function('require','module','exports',js)(name=>({'./site-assets-manifest':{SITE_ASSETS:[file]},'../public/renal-materials.json':[],'./renal-booklet-asset.json':file,'../public/mol-study-assets.json':{booklet:file,assessments:file,sources:[]},'./renal-assessment-assets.json':[]})[name],m,m.exports);return m.exports;};
+ new Function('require','module','exports',js)(name=>({'./site-assets-manifest':{SITE_ASSETS:[file]},'../public/renal-materials.json':[],'./active-booklet-assets.json':[],'./renal-booklet-asset.json':file,'../public/mol-study-assets.json':{booklet:file,assessments:file,sources:[]},'./renal-assessment-assets.json':[]})[name],m,m.exports);return m.exports;};
 const before=compile(content.replace('headOnly||request.headers.get(\'if-none-match\')===tag','headOnly||status===206||request.headers.get(\'if-none-match\')===tag'));
 const after=compile(content);
 const url='https://example.test/api/site-assets/'+file.path,tag='"'+file.sha+'"';
