@@ -78,7 +78,7 @@ function __reviewMergeKeys(path,target,entries){
   // Archive visibility and archive permission are different: a hidden CVP course is
   // still archived when the owner has disabled access to the archive itself.
   const inArchive=window.reviewViewingArchive?.()===true&&window.reviewArchiveEnabled?.()===true;
-  const archived=c=>c==='CVP'&&(window.reviewCvpArchived?.()===true||window.reviewArchiveEnabled?.()===true)&&!inArchive;
+  const archived=c=>c==='CVP'&&(window.REVIEW_STUDIO_FRESH_ACCOUNTS===true||window.reviewCvpArchived?.()===true||window.reviewArchiveEnabled?.()===true)&&!inArchive;
   const active=all.filter(c=>!archived(c)),courseOf=id=>typeof id==='string'?id.split('-')[0]:'';
   const known=c=>c==='REN'||Boolean(window.reviewCourseConfig?.(c))||owns(c);
   const scope=window.reviewCourseScope;
