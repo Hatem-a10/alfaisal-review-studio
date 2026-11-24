@@ -8,7 +8,26 @@ const dateOf=value=>{
 const array=value=>Array.isArray(value)?value:[];
 const object=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
 const idOf=value=>typeof value==='string'&&value.length>0?value:null;
-function attemptsOf(practice){return array(practice?.mocks).flatMap(m=>m?Array.isArray(m.attempts)?m.attempts:[m.snapshot]:[]).filter(Boolean)}
+const attemptLists=new WeakMap();
+// A5-006: reuse an exact flattened list when toggling recent/all activity ranges.
+// Compare every attempt reference so nested list replacements and in-place mutations remain visible.
+function attemptsOf(practice){
+ const mocks=practice?.mocks;if(!Array.isArray(mocks))return [];
+ const prior=attemptLists.get(mocks);
+ if(prior){
+  let at=0,unchanged=true;
+  outer:for(const m of mocks)if(m){
+   const list=Array.isArray(m.attempts)?m.attempts:[m.snapshot];
+   for(const attempt of list)if(attempt){
+    if(prior[at]!==attempt){unchanged=false;break outer}
+    at++;
+   }
+  }
+  if(unchanged&&at===prior.length)return prior;
+ }
+ const next=mocks.flatMap(m=>m?Array.isArray(m.attempts)?m.attempts:[m.snapshot]:[]).filter(Boolean);
+ attemptLists.set(mocks,next);return next;
+}
 // Unique recorded question identities per day; do not infer unsaved historical attempts.
 export function questionHistory(records,practice={},since=null){
  const days=new Map(),aliases=new Map(),attempts=attemptsOf(practice),dateKeys=new Map();
