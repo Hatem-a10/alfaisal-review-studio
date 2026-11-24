@@ -13,7 +13,7 @@ test('A5-043 ordinary Worker route initialization does not import Admin feature 
   assert.ok(worker.includes("import('"+path+"')"),path);
  }
  const pathBlock=worker.slice(worker.indexOf("if(canonical.startsWith('api/control-center/'))"),worker.indexOf("if(canonical==='auth/admin/accounts')"));
- assert.match(pathBlock,/await controlHandlers\(student\)/);
+ assert.match(pathBlock,/await controlHandlers\(student,canonical\.split\('\/'\)\[student\?3:2\]\)/);
  assert.match(pathBlock,/await controlRoute\(\{request,env:config,user:auth\.user,row,owner,path:'\/'\+canonical,handlers\}\)/);
  assert.match(pathBlock,/catch\{return adminResponse\(\{error:'Admin feature modules unavailable\.'\},503\)\}/);
 });
@@ -24,11 +24,22 @@ test('A5-043 lazy loading returns identical ordered Student and Admin handlers a
  let loads=[];const ctx=vm.createContext({Promise,fakeImport:async p=>{loads.push(p);return originals[p]}});
  vm.runInContext(code,ctx);
  assert.deepEqual(loads,[],'module definitions must not be evaluated at Worker startup');
- const student=await ctx.get(true);
+ const student=await ctx.get(true,'resources');
  assert.deepEqual(Array.from(student),[originals[modules[0]].academicStudent,originals[modules[1]].contentStudent,originals[modules[2]].resourceStudent]);
  assert.deepEqual(loads,modules);
- loads=[];const admin=await ctx.get(false);
- assert.deepEqual(Array.from(admin),[originals[modules[0]].academicAdmin,originals[modules[1]].contentAdmin,originals[modules[2]].resourceAdmin]);
- assert.deepEqual(loads,modules);
- console.log(JSON.stringify({label:'A5-043 optional Admin module import',startupAdminModuleImportsBefore:3,after:0,onAdminRouteModules:3,handlersPerRoute:3}));
+ loads=[];const admin=await ctx.get(false,'academics');
+ assert.deepEqual(Array.from(admin),[originals[modules[0]].academicAdmin]);
+ assert.deepEqual(loads,[modules[0]]);
+ loads=[];const resource=await ctx.get(false,'resources');
+ assert.deepEqual(Array.from(resource),[originals[modules[2]].resourceAdmin]);assert.deepEqual(loads,[modules[2]]);
+ loads=[];for(const section of ['reports','announcements']){
+  const content=await ctx.get(false,section);
+  assert.deepEqual(Array.from(content),[originals[modules[1]].contentAdmin]);
+ }
+ assert.deepEqual(loads,[modules[1],modules[1]]);
+ loads=[];for(const section of ['overview','students','roles','analytics','audit','site','unknown']){
+  assert.deepEqual(Array.from(await ctx.get(false,section)),[]);
+ }
+ assert.deepEqual(loads,[]);
+ console.log(JSON.stringify({label:'A5-042 selective Admin module import',startupAdminImports:0,builtinAdminRouteImports:0,featureRouteImports:1,studentRouteImports:3}));
 });
