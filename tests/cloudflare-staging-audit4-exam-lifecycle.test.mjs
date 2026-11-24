@@ -58,3 +58,17 @@ test('exam keyboard handler is scoped to active view and full choice number rang
  assert.match(s,/\[1-8\]/);assert.match(s,/data-xp-written'\)\)\{if\(remaining\(\)<=0\)/);
  assert.match(source,/if\(!etRetrySnapshot\(\)\)return/);assert.match(read('phase2-practice.mjs'),/cancelMock\(exam\)/);
 });
+
+test('cancel refuses to discard current answers until saved cancellation succeeds',()=>{
+ const line=source.split('\n').find(l=>l.startsWith('function etCancelExam(')),attempt={id:'active',answers:{0:1}},ctx={etExam:attempt,confirm:()=>true,window:{Phase2Practice:{cancelMock:()=>false}},toast(){},etSaveExam(){},render(){},etTick(){}};
+ const cancel=runInNewContext(line+'\netCancelExam',ctx);assert.equal(cancel(),false);assert.equal(ctx.etExam,attempt);
+ ctx.window.Phase2Practice.cancelMock=()=>true;assert.equal(cancel(),true);assert.equal(ctx.etExam,null);
+});
+test('original grading rejects invalid choices and incomplete deferred banks cannot trigger low-score deletion',()=>{
+ const s=read('original-exams.js'),a=s.split('\n').find(l=>l.startsWith('function originalGrade(')),b=s.split('\n').find(l=>l.startsWith('function originalLowScore('));
+ const q={...question('valid'),type:'mcq'},ctx={ORIGINAL_EXAMS:{questions:[q,{...question('invalid'),type:'mcq',answer:99}]}};
+ const funcs=runInNewContext(a+'\n'+b+'\n({originalGrade,originalLowScore})',ctx);
+ const run={ids:['valid','invalid','deferred'],answers:{valid:99,invalid:99},finishedAt:'2026-11-24T00:00:00Z'};
+ const grade=funcs.originalGrade(run);assert.equal(grade.keyed,1);assert.equal(grade.answered,0);assert.equal(grade.correct,0);assert.equal(funcs.originalLowScore(run),false);
+ assert.equal(funcs.originalLowScore({...run,ids:['valid','invalid']}),true);
+});
