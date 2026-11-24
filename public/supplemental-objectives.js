@@ -41,7 +41,7 @@ function applyTopicTakeaways(teaching, points) {
 }
 
 (()=>{
- let request, ready = false, error = '', packs = null;
+ let request, ready = false, error = '', packs = null, cvpRequest, cvpReady = false;
  // Course packs load on demand: apply only to loaded courses, and again whenever another course arrives.
  // Every step below is idempotent (keyed by id), so repeating it for earlier courses changes nothing.
  const loaded=id=>window.reviewCourseLoaded?.(String(id).split(/[-:]/)[0])??true;
@@ -57,28 +57,40 @@ function applyTopicTakeaways(teaching, points) {
  }
  window.addEventListener?.('review-course-loaded',()=>{if(ready)applyLoaded()});
  const views = new Set(['learning','practice','original-exams','wrong-bank']);
+ const needsCvp=()=>window.REVIEW_STUDIO_FRESH_ACCOUNTS!==true||window.reviewViewingArchive?.()===true&&window.reviewArchiveEnabled?.()===true;
  const priorRender = render;
+ const load=async path=>{
+  const response=await fetch(path,{credentials:'same-origin'});
+  if(!response.ok)throw Error('Could not load the lesson content.');
+  return response.json();
+ };
+ function ensureCvpWalkthrough(){
+  if(!needsCvp()||cvpReady)return Promise.resolve();
+  if(cvpRequest)return cvpRequest;
+  cvpRequest=load('/cvp-source-walkthroughs.json?v=2').then(lab=>{
+   packs.lab=lab;
+   applyLoaded();
+   cvpReady=true;
+  }).catch(e=>{error='Could not load CVP archive walkthroughs. Check your connection and retry.';throw e})
+   .finally(()=>{cvpRequest=null;if(views.has(view))render()});
+  return cvpRequest;
+ }
  window.ensureObjectivePack=function(){
-  if(ready)return Promise.resolve();
-  if(request)return request;
+  if(ready)return ensureCvpWalkthrough();
+  if(request)return request.then(ensureCvpWalkthrough);
   error='';
-  const load=async path=>{
-   const response=await fetch(path,{credentials:'same-origin'});
-   if(!response.ok)throw Error('Could not load the lesson content.');
-   return response.json();
-  };
-  request ??= Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1'),load('/cvp-source-walkthroughs.json?v=2')])
-   .then(([pack,expansion,takeaways,lab])=>{
-    packs={pack,expansion,takeaways,lab};
+  request=Promise.all([load('/supplemental-objective-questions.json?v=3'),load('/lesson-expansion-data.json?v=1'),load('/topic-takeaways.json?v=1')])
+   .then(([pack,expansion,takeaways])=>{
+    packs={pack,expansion,takeaways,lab:{}};
     applyLoaded();
-    ready = true;
+    ready=true;
    })
    .catch(e=>{error='Could not load the question bank. Check your connection and retry.';throw e})
    .finally(()=>{request=null;if(views.has(view))render()});
-  return request;
+  return request.then(ensureCvpWalkthrough);
  };
  render=function(){
-  if(!views.has(view)||ready)return priorRender();
+  if(!views.has(view)||ready&&(!needsCvp()||cvpReady))return priorRender();
   const content=document.getElementById('content');
   if(error){content.innerHTML='<div class="panel notice" role="status">'+esc(error)+' <button id="retryObjectivePack">Retry</button></div>';return}
   content.innerHTML='<div class="panel notice" role="status">Loading your question bank…</div>';
