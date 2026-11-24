@@ -6,15 +6,15 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status: A5-001–003 selected for the first code batch; all others are candidates, not yet assessed.
+Status at this evidence update: 5 candidates implemented, benchmarked and candidate-CI verified; 2 submitted for CI; 293 unassessed. See receipts below. A5-003 has a small observed timing difference and requires repeated measurements to establish its magnitude.
 
 ## Activity analytics
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-001 | Reuse Riyadh Intl date formatter across timestamps | Selected |
-| A5-002 | Memoize resolved question alias chains within one history calculation | Selected |
-| A5-003 | Find earliest history date by linear scan rather than sorting | Selected |
+| A5-001 | Reuse Riyadh Intl date formatter across timestamps | Merged #116; CI passed |
+| A5-002 | Memoize resolved question alias chains within one history calculation | Merged #116; CI passed |
+| A5-003 | Find earliest history date by linear scan rather than sorting | Merged #116; CI passed; modest timing signal |
 | A5-004 | Avoid scanning history outside requested display window where safe | Unassessed |
 | A5-005 | Accumulate aggregate counts without allocating intermediate values arrays | Unassessed |
 | A5-006 | Avoid rebuilding attempt lists when only date range changes | Unassessed |
@@ -44,7 +44,7 @@ Status: A5-001–003 selected for the first code batch; all others are candidate
 |---|---|---|
 | A5-021 | Eliminate provably unreachable runtime code | Unassessed |
 | A5-022 | Tree-shake modular dependencies | Unassessed |
-| A5-023 | Replace repeated hot lookup scans with maps | Unassessed |
+| A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
 | A5-024 | Memoize expensive pure selectors with precise invalidation | Unassessed |
 | A5-025 | Offload expensive question-bank processing to worker | Unassessed |
 | A5-026 | Hoist repeated regular expression construction | Unassessed |
@@ -177,7 +177,7 @@ Status: A5-001–003 selected for the first code batch; all others are candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-111 | Normalize searchable lecture titles once per version | Unassessed |
+| A5-111 | Normalize matching searchable titles once per unchanged index entry | Merged #117; CI passed |
 | A5-112 | Pre-tokenize searchable resource text at build time | Unassessed |
 | A5-113 | Index exact title and resource ID lookup separately | Unassessed |
 | A5-114 | Intersect smallest posting lists first | Unassessed |
@@ -199,7 +199,7 @@ Status: A5-001–003 selected for the first code batch; all others are candidate
 | A5-125 | Reuse overlap layout until visible event set changes | Unassessed |
 | A5-126 | Sort event lanes once per day rather than per card | Unassessed |
 | A5-127 | Avoid rebuilding hidden timetable views on clock tick | Unassessed |
-| A5-128 | Cache date-label formatter per locale and timezone | Unassessed |
+| A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Submitted #118; CI pending |
 | A5-129 | Memoize event category counts per selected group | Unassessed |
 | A5-130 | Render only visible calendar range with preserved navigation | Unassessed |
 
@@ -215,7 +215,7 @@ Status: A5-001–003 selected for the first code batch; all others are candidate
 | A5-136 | Reuse progress denominators for static lesson sets | Unassessed |
 | A5-137 | Update countdown labels at displayed precision only | Unassessed |
 | A5-138 | Share derived dashboard summary across cards | Unassessed |
-| A5-139 | Reuse student group-filtered event projection | Unassessed |
+| A5-139 | Reuse normalized student group profile across timetable filtering | Submitted #118; CI pending |
 | A5-140 | Recompute only affected course progress after lesson change | Unassessed |
 
 ## Learning and reading
@@ -457,3 +457,21 @@ Status: A5-001–003 selected for the first code batch; all others are candidate
 | A5-298 | Evaluate storage compression cost versus transfer savings | Unassessed |
 | A5-299 | Measure rollback artifact size and optimize redundant copies | Unassessed |
 | A5-300 | Tune synthetic regression dataset size for stable signal without excess CI runtime | Unassessed |
+
+## Benchmark and verification receipts
+
+Median of three measured executions on the candidate CI runner after an equivalence comparison; synthetic workloads, not site-wide or production timings. Retained memory and real-device performance require separate testing.
+
+| ID | Baseline | Candidate | Operation-count evidence | Receipt |
+|---|---:|---:|---|---|
+| A5-001 | 62.733 ms | 2.489 ms | 4,800 formatter constructions → 1 across four fixture executions | [#116](https://github.com/Hatem-a10/alfaisal-review-studio/pull/116) |
+| A5-002 | 22.761 ms | 9.859 ms | Per-call alias resolution memo; cycle and invalidation assertions | #116 |
+| A5-003 | 8.996 ms | 8.524 ms | No complete date-key sort; bounded display-mode scan | #116 |
+| A5-023 | 47.404 ms | 5.200 ms | 9,000 lecture lookups → 51 per fixture execution | [#117](https://github.com/Hatem-a10/alfaisal-review-studio/pull/117) |
+| A5-111 | 92.421 ms | 17.608 ms | WeakMap cache follows entry lifetime and title changes; warm searches only | #117 |
+
+- #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
+- #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
+- #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, pending candidate CI at this update.
+
+No production release, migrations, student-data edits or archived curriculum edits.
