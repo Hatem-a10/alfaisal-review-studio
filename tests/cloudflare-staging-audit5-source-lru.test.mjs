@@ -10,7 +10,7 @@ function fixture(pagesForSource,large=false){
  const calls=new Map(),terms={};
  const names=large?Array.from({length:3000},(_,i)=>'unused'+i).concat(['hotkey','bbkey','cckey','ddkey']):['a','b','c','d'];
  names.forEach((k,i)=>Object.defineProperty(terms,k,{enumerable:true,get(){calls.set(k,(calls.get(k)||0)+1);return [i,i+1]}}));
- const context=vm.createContext({});vm.runInContext(`let searchIndex={terms:globalThis.terms};`+helpers.replace('termCacheMaxEntries=100','termCacheMaxEntries=3')+'\n'+pagesForSource+';this.run=pagesFor;this.cache=termCache;',Object.assign(context,{terms}));
+ const context=vm.createContext({});vm.runInContext(helpers.replace('searchIndex=null','searchIndex={terms:globalThis.terms}').replace('termCacheMaxEntries=100','termCacheMaxEntries=3')+'\n'+pagesForSource+';this.run=pagesFor;this.cache=termCache;',Object.assign(context,{terms}));
  return {run:t=>Array.from(context.run(t)),keys:()=>Array.from(context.cache.keys()),calls:()=>Object.fromEntries(calls)};
 }
 test('A5-199 hot term survives the eviction window and results remain identical to FIFO',()=>{
