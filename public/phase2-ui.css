@@ -108,3 +108,15 @@ html:has(#xpExam),body:has(#xpExam){overflow:hidden!important;scrollbar-width:no
 .phase2-booklet .answer-option{white-space:normal;overflow-wrap:anywhere;min-height:44px;touch-action:manipulation}
 .phase2-booklet img{display:block;object-fit:contain;height:auto;max-width:100%}
 @media(max-width:760px){.phase2-booklet :is(textarea,select){font-size:16px}.booklet-filters{align-items:stretch}.booklet-modes{width:100%}.phase2-booklet .et-exam-actions button{min-height:44px}}
+
+.phase2-zoom-viewport { touch-action: none; cursor: grab; width: min(86vw, 78rem); height: min(70dvh, 50rem); }
+.phase2-zoom-viewport:active { cursor: grabbing; }
+
+.study-next-panel h2 { margin-top: 0; }
+.study-next-panel li { margin-block: .4rem; }
+.study-next-actions,.study-next-resume { display: flex; flex-wrap: wrap; gap: .4rem; }
+.study-next-resume button { flex: 1 1 12rem; text-align: start; }
+.study-next-resume button span { display: block; padding-top: .2rem; color: var(--muted); overflow-wrap: anywhere; }
+.study-next-dialog { width: min(42rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; }
+#studySyncDetails dt { color: var(--muted); font-size: .85em; }
+#studySyncDetails dd { margin: 0 0 .45rem; }

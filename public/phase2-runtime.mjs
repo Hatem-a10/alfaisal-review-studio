@@ -5,7 +5,7 @@ import {clearUnanswered} from './phase2-bank.mjs';
 import {installImageZoom} from './phase2-image-zoom.mjs';
 import {snapshotDay,dayCompletion,mergeDaily} from './phase2-daily.mjs';
 import {mergePractice} from './phase2-practice-core.mjs';
-let practiceReady=false,practicePending;
+let practiceReady=false,practicePending,mockBanksPending,mockBanksLoaded=false,mockBanksFailed=false;
 window.mergePhase2Options=(older,recent,merged)=>({...merged,dailyBaselines:mergeDaily(older.dailyBaselines,recent.dailyBaselines),...((older.phase2Practice||recent.phase2Practice)?{phase2Practice:mergePractice(older.phase2Practice,recent.phase2Practice)}:{})});
 function requiredToday(date){const selected=day;let required;try{day=date;required=tasks()}finally{day=selected}return required.filter(t=>t.date===date).map(t=>({id:t.x.id+':'+t.p,lectureId:t.x.id,pass:t.p,title:(typeof title==='function'?title(t.x):t.x.title)+' · Review '+(t.p+1),completedAt:state[t.x.id]?.done?.[t.p]||null,optional:t.optional===true,required:t.required!==false})).concat((storeOptions().requiredPlannerTasks||[]).filter(t=>!t.deleted&&t.date===date).map(t=>({id:'planner:'+t.id,title:t.title||t.name,completedAt:t.completedAt||null,optional:t.optional===true,required:t.required!==false})))}
 function capture(){const date=today(),options=storeOptions(),previous=options.dailyBaselines?.[date],next=snapshotDay(date,requiredToday(date),previous);if(JSON.stringify(previous?.required)===JSON.stringify(next.required))return;saveOptions({...options,dailyBaselines:{...options.dailyBaselines,[date]:next}})}
@@ -16,11 +16,21 @@ function activityView(){const options=storeOptions(),date=today(),{days,question
 function describe(row){if(row.metric)return row.date+' · '+Number(row.value.toFixed(1))+' '+(row.metric==='questions'?'unique recorded questions':row.metric==='minutes'?'recorded minutes':'completed reviews')+' · '+(row.activity?.reviews||0)+' reviews';return row.date+' · '+(row.required===null?'Historical schedule unknown':row.required===0?'Rest day':row.completed+' / '+row.required+' required tasks · '+(Math.floor(row.percent*10)/10)+'%')+' · '+(row.activity?(row.activity.reviews||0)+' recorded reviews, '+(row.activity.practice||0)+' practice records, '+(row.activity.minutes||0).toFixed(0)+' minutes':'No recorded activity')}
 function detail(row){return '<p>'+esc(describe(row))+'</p>'+(row.tasks.length?'<ul>'+row.tasks.map(t=>'<li>'+esc(t.title)+' · '+(dayCompletion(row.date,{required:[t]}).completed===1?'Completed':'Incomplete')+'</li>').join('')+'</ul>':'')}
 const oldGo=go;go=function(next){if(next==='practice'&&view!=='practice')etPracticeTab=etExam&&!etExam.finishedAt?'mock':originalRun&&!originalRun.finishedAt?'original':'mock';return oldGo(next)};
-const before=render;render=function(...args){if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return before.apply(this,args);capture();if((view==='practice'||view==='booklet')&&!practiceReady){document.getElementById('content').innerHTML='<section class="panel" role="status">Opening practice…</section>';practicePending??=Promise.all([
+const before=render;render=function(...args){if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return before.apply(this,args);capture();
+ if(view==='practice'&&etPracticeTab==='mock'&&!mockBanksLoaded&&!mockBanksFailed){
+  window.reviewPreparingMockSources=true;
+  mockBanksPending??=Promise.all([
+   import('./faculty-questions.mjs').then(module=>module.loadFacultyQuestions()),
+   import('./tbl19-runtime.mjs').then(module=>module.loadTbl19()),
+  ]).then(()=>{mockBanksLoaded=true;window.reviewPreparingMockSources=false;if(view==='practice'&&etPracticeTab==='mock')render();}).catch(()=>{mockBanksPending=null;mockBanksFailed=true;window.reviewMockSourcesFailed=true;window.reviewPreparingMockSources=false;if(view==='practice'&&etPracticeTab==='mock')render();});
+ }
+ if((view==='practice'||view==='booklet')&&!practiceReady){document.getElementById('content').innerHTML='<section class="panel" role="status">Opening practice…</section>';practicePending??=Promise.all([
  import('./study-insights.js?v=1498'),
- import('./faculty-questions.mjs').then(module=>module.loadFacultyQuestions()),
- import('./tbl19-runtime.mjs').then(module=>module.loadTbl19()),
  ]).then(()=>import('./phase2-practice.mjs')).then(m=>{m.install();practiceReady=true;render()}).catch(e=>{practicePending=null;document.getElementById('content').innerHTML='<section class="panel" role="alert">Practice could not load. Reopen this section to retry.</section>';console.error(e)});return}if(view==='booklet'){const y=scrollY;document.body.classList.remove('schedule-expanded');document.getElementById('content').innerHTML=window.Phase2Practice.booklet();document.querySelectorAll('nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view==='booklet'));requestAnimationFrame(()=>scrollTo({top:y,behavior:'instant'}));return}const value=before.apply(this,args);if(view==='activity'){const tabs=document.getElementById('otherToolsTabs');document.getElementById('content').innerHTML=activityView();if(tabs)document.getElementById('content').prepend(tabs)}return value};
+document.addEventListener('click',event=>{
+ if(!event.target.closest('#retryMockSources'))return;
+ mockBanksFailed=false;window.reviewMockSourcesFailed=false;render();
+});
 const previousBank=wrongBankPanel;wrongBankPanel=function(){const html=previousBank();if(wrongEntriesInView().length!==wrongBank.entries.length||!wrongBank.entries.some(x=>!Number.isInteger(x.choice)))return html;return html.replace('</h2>','</h2><button type="button" id="clearUnansweredBank">Clear unanswered only</button>')};
 document.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.id==='clearUnansweredBank'&&wrongEntriesInView().length===wrongBank.entries.length){const next=clearUnanswered(wrongBank);try{localStorage.setItem(wrongBankKey,JSON.stringify(next));wrongBank=next;render();toast('Unanswered entries cleared')}catch{toast('Could not save the bank. No entries were removed.')}}if(button.dataset.phase2Day){const date=button.dataset.phase2Day,options=storeOptions();document.getElementById('phase2DayDetail').innerHTML=detail(activityRow(date,activityData(options).days,options.dailyBaselines||{}))}});
 window.addEventListener('study-vault-restored',()=>{capture();if(view==='activity')render()});setInterval(()=>{capture();if(view==='activity')render()},60000);

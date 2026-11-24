@@ -89,6 +89,7 @@ function open(course,route){
  show(next);
  render();
 }
+window.reviewOpenCourse=(course,route)=>courses[course]&&open(courses[course].slug,route);
 const beforeTasks=tasks;
 tasks=function(items=DATA.items){return beforeTasks(items.filter(item=>hasReviewDates(item)&&(!enabled()||item.course!=='CVP')));};
 const previousWeek=campusWeekEvents;

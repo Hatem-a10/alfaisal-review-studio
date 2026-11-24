@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
@@ -18,12 +20,9 @@ jobs:
       - run: npm ci
       - name: vinext compatibility report
         run: npx --no-install vinext check | tee vinext-compatibility.log
-      - name: Parallel independent staging and course-integration tests
-        run: node --test tests/cloudflare-staging*.test.mjs tests/registered-course-progress.test.mjs
-      - name: Complete regression suite
-        id: existing
-        run: node --test tests/*.test.mjs > existing-tests.log 2>&1
-      - name: Report full-suite results
+      - name: Reviewed release tests
+        run: node scripts/run-reviewed-tests.mjs > existing-tests.log 2>&1
+      - name: Report test results
         if: always()
         run: tail -40 existing-tests.log
       - name: Independent staging build

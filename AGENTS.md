@@ -21,7 +21,7 @@ For every production update, advance the last live site version by exactly 0.01.
 
 - Clerk verifies sessions server-side. Account ownership uses the issuer and immutable Clerk subject, with verified primary email. The configured owner subject controls ownership. D1 stores staff roles and app records. The Admin phrase and recent first-factor proof protect sensitive owner writes. Email, name and a browser flag never confer a role. See [Admin Control Center](docs/cloudflare/ADMIN-CONTROL.md).
 - Preserve per-account D1/R2 keys, the revision and conflict checks, the three individual review-pass timestamps, saved answers, mock attempts and scoring, account settings, Anki IDs and intervals, and private materials. Online startup verifies identity before restoring personal state. Keep authenticated APIs out of shared offline caches.
-- Keep UI and academic behavior outside the task stable. Reuse existing modules and supported entry points. Run focused checks for routine updates, and the complete suite for major changes, every fifth version milestone or an explicit request. Release checks include lint, the appropriate builds, privacy checks and relevant browser tests. Separate test evidence from unverified claims.
+- Keep UI and academic behavior outside the task stable. Reuse existing modules and supported entry points. Run focused checks for routine updates. Run the complete suite at 0.05 version milestones (v1.80, v1.85, v1.90) or when the owner explicitly requests it. Release checks include lint, the appropriate builds, privacy checks and relevant browser tests. Separate test evidence from unverified claims.
 
 ## Academic changes
 

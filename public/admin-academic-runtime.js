@@ -18,7 +18,7 @@
   for(const item of published.events||[]){
    const dates=item.date?[item.date]:Array.from({length:5},(_,i)=>{const d=new Date(start+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);return d.toISOString().slice(0,10)}).filter(date=>new Date(date+'T12:00:00Z').getUTCDay()===dayIndex[item.day]);
    for(const date of dates){if(date<start||date>last)continue;
-    result.push({id:'admin-'+item.id+'-'+date,date,title:escText(item.title),start:minutes(item.startTime),end:minutes(item.endTime),kind:eventKind(item),course:item.course==='REN 123'?'REN':item.course,doctor:item.lecturer||'',detail:item.lecturer?'Lecturer: '+item.lecturer:'',source:'Admin-published academic revision',custom:false,studentGroups:item.studentGroup?[item.studentGroup]:['M1','M2','F1','F2'],studentSection:item.studentSection||undefined,labGroups:item.labGroup?[item.labGroup]:[],replacesId:item.replacesId||''});
+    result.push({id:'admin-'+item.id+'-'+date,date,title:escText(item.title),start:minutes(item.startTime),end:minutes(item.endTime),kind:eventKind(item),course:item.course==='REN 123'?'REN':item.course,doctor:item.lecturer||'',detail:[item.lecturer?'Lecturer: '+item.lecturer:'',item.room?'Room '+item.room:''].filter(Boolean).join(' · '),room:item.room||'',source:'Admin-published academic revision',custom:false,studentGroups:item.studentGroup?[item.studentGroup]:['M1','M2','F1','F2'],studentSection:item.studentSection||undefined,labGroups:item.labGroup?[item.labGroup]:[],replacesId:item.replacesId||''});
    }
   }
   return result;
@@ -55,6 +55,7 @@
    return published;
   }catch{return null}
  }
+ window.reviewPublishedAcademic=()=>published;
  window.reviewStudioReloadAcademicSchedule=load;
  load();
 })();
