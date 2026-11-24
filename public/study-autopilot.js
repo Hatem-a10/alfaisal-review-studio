@@ -14,12 +14,10 @@
  const baseSchedule=scheduleSync;scheduleSync=function(){syncMeta.localUpdatedAt=new Date().toISOString();baseSchedule()};
  const baseAdopt=adoptCloud;adoptCloud=function(remote){busy=true;try{baseAdopt(remote)}finally{busy=false}baseline=structuredClone(state);settingsBaseline=structuredClone(settings);planReady=true;if(runAutopilot())render()};
  window.resolveAutoConflict=function(remote){
-  try{try{recoverBackup()}catch{}const localAt=syncMeta.localUpdatedAt||saved.updatedAt||'',remoteAt=remote.updatedAt||'';
-   state=StudyAutopilot.mergeRecords(state,validateBackup(remote.snapshot),localAt,remoteAt,mergeRecords);
-   settings=StudyAutopilot.mergeSettings(settings,cleanSettings(remote.snapshot.settings),localAt,remoteAt);
-   StudyVault.apply(StudyVault.merge(StudyVault.snapshot(),remote.snapshot.extras));
+  const oldState=state,oldSettings=settings;try{recoverBackup();const localAt=syncMeta.localUpdatedAt||saved.updatedAt||'',remoteAt=remote.updatedAt||'';
+   const next=StudyAutopilot.mergeRecords(state,validateBackup(remote.snapshot),localAt,remoteAt,mergeRecords),nextSettings=StudyAutopilot.mergeSettings(settings,cleanSettings(remote.snapshot.settings),localAt,remoteAt),extras=StudyVault.merge(StudyVault.snapshot(),remote.snapshot.extras);state=next;settings=nextSettings;StudyVault.apply(extras);
    baseline=structuredClone(state);settingsBaseline=structuredClone(settings);syncMeta={...syncMeta,revision:remote.revision,dirty:true};syncConflict=null;$('#syncConflict').hidden=true;storeLocalOnly();saveSyncMeta();planReady=true;scheduleSync();render();return true;
-  }catch(e){syncConflict=null;syncMessage('Sync retry needed · device copy retained');console.error('Sync reconciliation failed',e.message);return false}
+  }catch(e){state=oldState;settings=oldSettings;syncConflict=remote;$('#syncConflict').hidden=false;syncMessage('Sync needs review · both copies retained');if(typeof toast==='function')toast(e.message);return false}
  };
  const baseMessage=syncMessage;syncMessage=function(message){baseMessage(message);if(/Cloud saved|Cloud ready|unavailable|Sign in|Offline/i.test(message)){planReady=true;queueMicrotask(()=>{if(runAutopilot())render()})}};
  const finalDate=()=>AssessmentPlan.cvpFinalDate(DATA.events);
