@@ -28,3 +28,17 @@ test('turning off study totals preserves separately measured active time',async(
  assert.equal(stored.analytics_opt_in,0);
  assert.deepEqual(JSON.parse(stored.analytics_json),{activeMinutes:8,lastActiveMinute:1234});
 });
+
+
+test('privacy-only write preserves concurrently updated profile instead of replaying stale row',async()=>{
+ const db=database(),stale=await managedAccount(db,user);db.db.prepare('UPDATE review_accounts SET profile_json=? WHERE id=?').run(JSON.stringify({name:'Newer profile'}),user.id);
+ const r=await managedAccountRoute(request('/auth/account','POST',{analyticsOptIn:true}),{DB:db},user,stale);
+ assert.equal(r.status,200);assert.equal(JSON.parse(db.db.prepare('SELECT profile_json FROM review_accounts WHERE id=?').get(user.id).profile_json).name,'Newer profile');
+});
+test('anonymous owner-shaped requests and missing account rows fail cleanly',async()=>{
+ const db=database();assert.equal((await managedAccountRoute(request('/api/admin-auth','GET',undefined,true),{DB:db},null,null)).status,401);assert.equal((await managedAccountRoute(request('/auth/account'),{DB:db},user,null)).status,503);
+});
+test('corrupt account profiles are retained and invalid profile values rejected',async()=>{
+ const db=database(),row=await managedAccount(db,user);row.profile_json='null';assert.equal((await managedAccountRoute(request('/auth/account'),{DB:db},user,row)).status,503);
+ assert.equal((await managedAccountRoute(request('/auth/account','POST',{profile:[]}),{DB:db},user,row)).status,400);
+});
