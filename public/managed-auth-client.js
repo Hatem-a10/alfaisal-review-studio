@@ -6,7 +6,11 @@
  await window.Clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}});
  const mode=document.body.dataset.authPage,mount=document.getElementById('managedAuthMount');
  if(mode==='sign-out'){
-  mount.replaceChildren();const button=document.createElement('button');button.textContent='Sign out on this device';button.onclick=async()=>{button.disabled=true;try{localStorage.setItem('review-studio-managed-signed-out','1')}catch{}await window.Clerk.signOut({redirectUrl:'/auth/sign-in'})};mount.append(button);return;
+  mount.replaceChildren();const button=document.createElement('button'),status=document.createElement('p');button.type='button';button.textContent='Sign out on this device';status.setAttribute('role','status');button.onclick=async()=>{
+   if(button.disabled)return;button.disabled=true;status.textContent='Signing out…';
+   try{localStorage.setItem('review-studio-managed-signed-out','1')}catch{}
+   try{await window.Clerk.signOut({redirectUrl:'/auth/sign-in'})}catch{status.textContent='Sign-out did not finish. Reconnect and try again.';button.disabled=false}
+  };mount.append(button,status);return;
  }
  if(mode){mount.replaceChildren();const options={routing:'hash',forceRedirectUrl:new URL('/',window.location.origin).href,signInUrl:'/auth/sign-in',...(cfg.registrationClosed?{}:{signUpUrl:'/auth/sign-up'})};if(mode==='sign-up')window.Clerk.mountSignUp(mount,options);else window.Clerk.mountSignIn(mount,options);return}
  installManagedApp();
@@ -125,33 +129,40 @@
     return shared+existing.apply(this,args);
    };
   }
+  let resourceDialog=null;
   async function showResources(){
-   const dialog=document.createElement('dialog');dialog.className='acc-dialog acc-dialog-small';dialog.setAttribute('aria-label','Shared academic resources');
+   if(resourceDialog?.open){resourceDialog.querySelector('button')?.focus();return}
+   const dialog=document.createElement('dialog');resourceDialog=dialog;dialog.className='acc-dialog acc-dialog-small';dialog.setAttribute('aria-label','Shared academic resources');
    if(!document.querySelector('link[href="/admin-control-center.css"]')){const link=document.createElement('link');link.rel='stylesheet';link.href='/admin-control-center.css';document.head.append(link);}
    const heading=document.createElement('h2');heading.textContent='Shared academic resources';
-   const close=document.createElement('button');close.textContent='Close';close.onclick=()=>dialog.close();
+   const close=document.createElement('button');close.type='button';close.textContent='Close';close.onclick=()=>dialog.close();
    const list=document.createElement('ul'),status=label('Loading…');status.setAttribute('role','status');
-   const next=document.createElement('button');next.textContent='Load more';next.hidden=true;
-   let offset=0;
+   const next=document.createElement('button');next.type='button';next.textContent='Load more';next.hidden=true;
+   let offset=0,loading=false,controller=null;const seen=new Set();
    async function load(){
-    next.disabled=true;
+    if(loading||!dialog.open)return;
+    loading=true;next.disabled=true;status.textContent='Loading…';
+    controller=typeof AbortController==='function'?new AbortController():null;
     try{
-     const response=await fetch(api+'resources?limit=25&offset='+offset,{cache:'no-store'});
+     const response=await fetch(api+'resources?limit=25&offset='+offset,{cache:'no-store',...(controller?{signal:controller.signal}:{})});
      const data=await response.json();
-     if(!response.ok)throw Error(data.error||'The library could not load.');
+     if(!dialog.open||resourceDialog!==dialog)return;
+     if(!response.ok)throw Error('The library could not load.');
+     if(!Array.isArray(data?.resources)||data.resources.length>25||!Number.isSafeInteger(data.total)||data.total<0||data.offset!==offset||data.resources.some(r=>!r||typeof r.title!=='string'||typeof r.downloadUrl!=='string'||!/^\/api\/control-center\/student\/resources\/[a-f0-9-]{36}\/download$/i.test(r.downloadUrl)))throw Error('Invalid resource page.');
      for(const resource of data.resources){
-      if(!/^\/api\/control-center\/student\/resources\/[a-f0-9-]+\/download$/i.test(resource.downloadUrl))continue;
+      if(seen.has(resource.downloadUrl))continue;
       const item=document.createElement('li'),link=document.createElement('a');
       link.href=resource.downloadUrl;link.textContent=resource.title;
-      item.append(link,document.createTextNode(' · '+[resource.course,resource.lectureId,resource.topic].filter(Boolean).join(' / ')));list.append(item);
+      item.append(link,document.createTextNode(' · '+[resource.course,resource.lectureId,resource.topic].filter(v=>typeof v==='string'&&v).join(' / ')));list.append(item);seen.add(resource.downloadUrl);
      }
-     offset+=data.resources.length;next.hidden=offset>=data.total;
-     status.textContent=offset?'':'No shared resources have been published yet.';
-    }catch(error){status.textContent=error.message;}
-    finally{next.disabled=false;}
+     offset+=data.resources.length;next.textContent='Load more';next.hidden=offset>=data.total||!data.resources.length;
+     status.textContent=!data.resources.length&&offset<data.total?'The resource list changed. Close and reopen it to refresh.':offset?'':'No shared resources have been published yet.';
+    }catch{if(dialog.open&&resourceDialog===dialog){status.textContent='The library could not load. Try again.';next.textContent='Retry';next.hidden=false}}
+    finally{loading=false;controller=null;next.disabled=false;}
    }
    next.onclick=load;dialog.append(heading,close,status,list,next);document.body.append(dialog);
-   dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();await load();
+   dialog.addEventListener('close',()=>{controller?.abort();if(resourceDialog===dialog)resourceDialog=null;dialog.remove()},{once:true});
+   try{dialog.showModal();await load()}catch{if(resourceDialog===dialog)resourceDialog=null;dialog.remove()}
   }
   function recordError(){
    if(Date.now()-lastError<60000)return;
