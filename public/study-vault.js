@@ -6,9 +6,9 @@ const StudyVault=(()=>{
  const known=name=>typeof name==='string'&&Object.hasOwn(byName,name),stamp=v=>typeof v==='string'&&Number.isFinite(Date.parse(v)),object=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
  try{const raw=JSON.parse(localStorage.getItem(metaKey)||'{}');if(object(raw))meta=Object.fromEntries(Object.entries(raw).filter(([name,at])=>known(name)&&stamp(at)))}catch{}
  function safeTree(value){
-  const stack=[[value,0]],seen=new Set();
-  while(stack.length){const [v,depth]=stack.pop();if(depth>64)throw Error('Study data is too deeply nested');if(v===null||typeof v==='string'||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v))continue;
-   if(!v||typeof v!=='object'||seen.has(v))throw Error('Invalid saved study value');seen.add(v);
+  const stack=[[value,0]];let count=0;
+  while(stack.length){const [v,depth]=stack.pop();if(depth>64||++count>2000000)throw Error('Study data is too deeply nested or large');if(v===undefined&&depth>0)continue;if(v===null||typeof v==='string'||typeof v==='boolean'||typeof v==='number'&&Number.isFinite(v))continue;
+   if(!v||typeof v!=='object')throw Error('Invalid saved study value');
    for(const k of Object.keys(v)){if(['__proto__','constructor','prototype'].includes(k))throw Error('Unsafe study data field');stack.push([v[k],depth+1])}
   }
  }
