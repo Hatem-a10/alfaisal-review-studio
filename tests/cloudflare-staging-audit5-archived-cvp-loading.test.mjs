@@ -70,11 +70,11 @@ function supplemental({fresh=true,archive=false,permitted=false}={}){
 }
 test('CVP-specific walkthrough is fetched only after explicitly authorized archive visit',async()=>{
  const a=supplemental();await a.init();
- assert.deepEqual(a.paths.sort(),['/lesson-expansion-data.json?v=1','/supplemental-objective-questions.json?v=3','/topic-takeaways.json?v=1'].sort());
+ assert.deepEqual(a.paths.sort(),['/lesson-expansion-data-active.json?v=1','/supplemental-objective-questions-active.json?v=1','/topic-takeaways-active.json?v=1'].sort());
  a.render();assert.ok(a.counts().normal>0);
  a.setArchive(true,false);await a.init();assert.equal(a.paths.length,3);
  a.setArchive(true,true);await a.init();assert.deepEqual(a.paths.filter(x=>x.includes('cvp-source')),[ '/cvp-source-walkthroughs.json?v=2' ]);
- await a.init();assert.equal(a.paths.length,4);
+ await a.init();assert.equal(a.paths.length,7);
  const b=supplemental({fresh:false});await b.init();assert.equal(b.paths.length,4);
  const c=supplemental({fresh:true,archive:true,permitted:true});await c.init();assert.equal(c.paths.length,4);
 });
@@ -86,4 +86,27 @@ test('enriched search does not trigger archived bank requests before workspace p
  vm.runInContext(expr+'\nthis.readingData=readingData',ctx);
  await ctx.readingData({enrich:true});
  assert.deepEqual(JSON.parse(JSON.stringify(calls)),[['courses',['MOL','REN']],['objectives']]);
+});
+
+test('split active academic pack preserves every MOL question and restores canonical CVP order',async()=>{
+ const original=JSON.parse(source('supplemental-objective-questions.json')),active=JSON.parse(source('supplemental-objective-questions-active.json'));
+ const mol=original.questions.filter(q=>q.lectureIds.every(id=>id.startsWith('MOL-')));
+ assert.equal(active.questions.length,624);
+ assert.deepEqual(active.questions,mol);
+ assert.deepEqual(active.mappings,Object.fromEntries(Object.entries(original.mappings).filter(([,value])=>JSON.stringify(value).includes('MOL-'))));
+ assert.deepEqual(active.append,Object.fromEntries(Object.entries(original.append).filter(([id])=>/mol/i.test(id))));
+ assert.deepEqual(JSON.parse(source('lesson-expansion-data-active.json')),Object.fromEntries(Object.entries(JSON.parse(source('lesson-expansion-data.json'))).filter(([id])=>id.startsWith('MOL-'))));
+ assert.deepEqual(JSON.parse(source('topic-takeaways-active.json')),Object.fromEntries(Object.entries(JSON.parse(source('topic-takeaways.json'))).filter(([id])=>id.startsWith('MOL-'))));
+ const paths=[],win={REVIEW_STUDIO_FRESH_ACCOUNTS:true,reviewViewingArchive:()=>false,reviewArchiveEnabled:()=>false,addEventListener:()=>{}};
+ const learning={questions:[]},ctx=vm.createContext({window:win,view:'learning',render:()=>{},LEARNING:learning,TOPIC_CHECKS:{},TEACHING:{guides:{}},inlineLessonCache:{clear(){}},applyLessonExpansion:()=>{},document:{getElementById:()=>({innerHTML:''}),addEventListener:()=>{}},esc:String,fetch:async path=>{paths.push(path);return{ok:true,json:async()=>JSON.parse(source(path.replace(/^\\//,'').replace(/\\?v=.+$/,'')))}}});
+ vm.runInContext(source('supplemental-objectives.js'),ctx);
+ await win.ensureObjectivePack();
+ assert.equal(learning.questions.length,mol.length);
+ assert.deepEqual(learning.questions.map(q=>q.id),mol.map(q=>q.id));
+ win.reviewViewingArchive=()=>true;win.reviewArchiveEnabled=()=>true;
+ await win.ensureObjectivePack();
+ assert.equal(learning.questions.length,original.questions.length);
+ assert.deepEqual(learning.questions.map(q=>q.id),original.questions.map(q=>q.id));
+ assert.equal(paths.filter(p=>p.includes('cvp-source')).length,1);
+ assert.equal(paths.filter(p=>p.includes('supplemental-objective-questions.json')).length,1);
 });
