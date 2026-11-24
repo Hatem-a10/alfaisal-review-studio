@@ -17,5 +17,5 @@ test('Examplify selected-answer mark replaces the eye control and shortcuts live
  assert.ok(start>=0&&end>start,'practice instructions renderer exists');
  const render=vm.runInNewContext('('+source.slice(start,end).trim()+')',{isOriginal:()=>false});
  const html=render();
- for(const key of ['Keyboard shortcuts','A–E','1–5','flag or unflag','these instructions'])assert.ok(html.includes(key),key);
+ for(const key of ['Keyboard shortcuts','A–E','1–8','flag or unflag','these instructions'])assert.ok(html.includes(key),key);
 });
