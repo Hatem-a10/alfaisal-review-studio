@@ -9,7 +9,8 @@ export function assetFor(path:string){return byPath.get(path)}
 export function dataKey(sha:string){return 'site-assets/data/'+sha}
 export function proofKey(sha:string){return 'site-assets/verified/'+sha}
 export const migrated=true;
-export function contentType(path:string){const e=path.split('.').pop()?.toLowerCase();return ({pdf:'application/pdf',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',m4a:'audio/mp4',ppt:'application/vnd.ms-powerpoint',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',json:'application/json'} as Record<string,string>)[e||'']||'application/octet-stream'}
+const STATIC_CONTENT_TYPES:Readonly<Record<string,string>>=Object.freeze({pdf:'application/pdf',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',m4a:'audio/mp4',ppt:'application/vnd.ms-powerpoint',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',json:'application/json'});
+export function contentType(path:string){const e=path.slice(path.lastIndexOf('.')+1).toLowerCase();return STATIC_CONTENT_TYPES[e]||'application/octet-stream'}
 export async function serveAsset(request:Request,bucket:R2Bucket,path:string,headOnly=false){
  const asset=assetFor(path),error=(message:string,status:number)=>new Response(message,{status,headers:{'Cache-Control':'no-store'}});if(!asset)return error('Not found',404);
  const size=asset.size,tag='"'+asset.sha+'"',ifRange=request.headers.get('if-range'),range=!headOnly&&(!ifRange||ifRange===tag)?request.headers.get('range'):null;
