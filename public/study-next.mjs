@@ -39,12 +39,15 @@ function resumeCard(){
  const booklet=saved.studyNextBooklet;if(booklet)entries.push({...booklet,kind:'booklet',title:'Booklet',position:booklet.index});
  const lesson=saved.studyNextLesson;
  if(lesson&&itemById(lesson.id))entries.push({...lesson,kind:'lesson',course:itemById(lesson.id).course,title:itemById(lesson.id).title});
- const slots=entries.filter(e=>e&&!hiddenCourse(e.course));
- if(!slots.length)return;
- html('studyNextResume','<h2>Continue studying</h2><div class="study-next-resume">'+slots.map(e=>{
-  const position=e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
-  return `<button data-study-resume="${e.kind}"><strong>${esc(e.title)}</strong><span>${esc([label(e.course),position].filter(Boolean).join(' · '))}</span></button>`;
- }).join('')+'</div>');
+ const slots=entries.filter(e=>e&&!(e.course==='CVP'&&window.reviewCvpArchived?.()));
+ const host=document.getElementById('homeNextAction');
+ if(!host||!slots.length)return;
+ const [current,...other]=slots.sort((a,b)=>Number(['mock','original'].includes(b.kind))-Number(['mock','original'].includes(a.kind))||String(b.at||'').localeCompare(String(a.at||'')));
+ if(host.querySelector('details[open]'))return;
+ const position=e=>e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
+ const details=e=>[label(e.course),e.title,position(e)].filter(Boolean).join(' · ');
+ host.innerHTML='<h2>Continue studying</h2><p>'+esc(details(current))+'</p><button type="button" class="primary" data-study-resume="'+current.kind+'">Resume '+(current.kind==='original'||current.kind==='mock'?'exam':current.kind)+'</button>'+
+ (other.length?'<details class="home-resume-options"><summary>More to resume</summary>'+other.map(e=>`<button type="button" data-study-resume="${e.kind}">${esc(details(e))}</button>`).join('')+'</details>':'');
 }
 async function openTopic(id,index){
  const course=itemById(id)?.course;

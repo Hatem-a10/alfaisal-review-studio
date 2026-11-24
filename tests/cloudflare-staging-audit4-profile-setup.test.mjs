@@ -38,10 +38,12 @@ test('legacy switch rollback retains current copy on quota failure',async()=>{
  const h=accountHarness({[prefix+'-account']:'a',[prefix]:'keep',['review-studio-account-copy:b']:JSON.stringify({[prefix]:'other',[prefix+'-account']:'b'})},{},(k,v)=>k===prefix&&v==='other');
  await assert.rejects(h.switchAccount('b'),/recovery copy/);assert.equal(h.storage[prefix],'keep');assert.equal(h.storage[prefix+'-account'],'a');assert.equal(JSON.parse(h.storage['review-studio-account-copy:a'])[prefix],'keep');assert.equal(h.reloads(),0);
 });
-test('profile setup guards legacy defaults, empty normalized identifiers and canceled appearance',()=>{
+test('profile setup keeps legacy defaults and validates the required managed schedule before saving',()=>{
  assert.match(source,/legacy=settings.legacyProfile&&!settings.groupConfigured/);
  assert.match(source,/Object.assign\(settings,initialAppearance\);applyTheme\(\)/);
- assert.match(source,/step===1\|\|step===5/);
+ assert.match(source,/const required=\[name,\.\.\.\(managed&&!reset\?\[group,section,lab\]:\[\]\)\]/);
+ assert.match(source,/required.find\(input=>!input.value.trim\(\)\)/);
+ assert.match(source,/lab.value=values.includes\(preferred\)\?preferred:''/);
  assert.match(source,/loadGroups\(\).then\(\(\)=>fill\(true\)\)/);
 });
 const entry=readFileSync(new URL('../public/profile-entry.js',import.meta.url),'utf8');
