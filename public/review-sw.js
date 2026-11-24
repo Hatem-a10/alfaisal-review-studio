@@ -29,7 +29,7 @@ self.addEventListener('install',event=>{event.waitUntil((async()=>{
  const cache=await caches.open(CORE),r=await fetch('/offline-assets.json',{cache:'no-store'});
  if(!r.ok)throw Error('Offline manifest unavailable');const {assets}=await r.json();
  // Critical shell and executable assets run before speculative offline resources.
- const eligible=prioritizeOfflineAssets((assets||[]).filter(path=>['core','navigation'].includes(cacheKind(new URL(path,self.location.origin).pathname)));
+ const eligible=prioritizeOfflineAssets((assets||[]).filter(path=>['core','navigation'].includes(cacheKind(new URL(path,self.location.origin).pathname))));
  const width=offlinePrecacheWidth(self.navigator?.connection);
  for(let i=0;i<eligible.length;i+=width)await Promise.all(eligible.slice(i,i+width).map(async path=>{
   try{const response=await fetch(path,{cache:'reload',credentials:'same-origin'});await store(cache,path,response)}catch{/* optional asset may be unavailable */}
