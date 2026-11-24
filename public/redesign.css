@@ -306,3 +306,92 @@ html:root body:not(.xp-exam-active) .update-prompt .update-reload:disabled{opaci
 html:root[data-theme=amoled] body:not(.xp-exam-active) .update-prompt{background:#0c0e12;color:#f1f3f6;box-shadow:0 12px 32px rgba(0,0,0,.6)}
 @keyframes update-in{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 @media (prefers-reduced-motion:reduce){html:root body:not(.xp-exam-active) .update-prompt{animation:none}}
+
+/* ===== Bench refinement (v1.77) =====================================================
+   One bold element per screen (the stained assessment slide); everything else quieter:
+   hairlines instead of shadows, radius by hierarchy (18 section / 12 item / 10 control),
+   a fixed type scale, no decorative labels above titles. Same Examplify-safe scope. */
+html:root:not([data-theme=amoled]) body:not(.xp-exam-active){
+  --rs-canvas:#f3f4f1;--rs-sunken:#eceee9;--rs-line:#dcdfe3;--rs-line-strong:#c4c9cf;
+  --rs-ink:#14161b;--rs-ink-2:#30363f;--rs-muted:#59606c;--rs-late:#9a4518;
+}
+html:root[data-theme=amoled] body:not(.xp-exam-active){--rs-late:#f0a36b}
+html:root body:not(.xp-exam-active){--rs-r-sec:18px;--rs-r-item:12px;--rs-r-ctl:10px}
+
+/* Type scale: 13 / 15 / 17 / 21 / 28 / 44. Counts use aligned digits. */
+html:root body:not(.xp-exam-active) :is(.home-focus-value,.mastery-number,.stat .value,.home-focus-meta dd,.pill,.readiness-number){font-variant-numeric:tabular-nums}
+html:root body:not(.xp-exam-active) .intro .eyebrow{display:none}
+html:root body:not(.xp-exam-active) .intro h1{font-size:clamp(2rem,1.45rem + 1.8vw,2.75rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 .35em}
+html:root body:not(.xp-exam-active) .intro > p{font-size:1.0625rem;color:var(--rs-ink-2);max-width:62ch}
+
+/* Sidebar: tighter rows, smaller identity block. */
+html:root body:not(.xp-exam-active) #mainSidebar nav{gap:2px}
+html:root body:not(.xp-exam-active) #mainSidebar nav button{min-height:40px;padding:8px 12px;gap:12px;border-radius:var(--rs-r-ctl);font-size:.9375rem;font-weight:550}
+html:root body:not(.xp-exam-active) #mainSidebar nav button .nav-icon{width:19px;height:19px}
+html:root body:not(.xp-exam-active) #mainSidebar .profile-brand .brandmark{width:42px;height:42px;border-radius:12px;font-size:1.05rem}
+html:root body:not(.xp-exam-active) #mainSidebar .profile-name{font-size:1.0625rem;letter-spacing:-.01em}
+html:root body:not(.xp-exam-active) #mainSidebar .student{font-size:.8125rem;line-height:1.45;margin-bottom:18px}
+
+/* Surfaces: sections carry a hairline, items don't stack shadows. */
+html:root body:not(.xp-exam-active) .panel{box-shadow:none;border:1px solid var(--rs-line);border-radius:var(--rs-r-sec)}
+html:root body:not(.xp-exam-active) .panel .panel{border:0;border-radius:var(--rs-r-item)}
+html:root[data-theme=amoled] body:not(.xp-exam-active) .panel{border-color:#22262d}
+
+/* Second-level tabs read as tabs, not as another segmented pill. */
+html:root body:not(.xp-exam-active) .learning-tabs{background:transparent;border:0;border-bottom:1px solid var(--rs-line);border-radius:0;padding:0;gap:22px;box-shadow:none}
+html:root body:not(.xp-exam-active) .learning-tabs button{background:transparent;border:0;border-radius:0;box-shadow:none;padding:10px 0 11px;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--rs-muted);font-weight:600}
+html:root body:not(.xp-exam-active) .learning-tabs button:is(.selected,.active,[aria-selected=true]){color:var(--rs-ink);border-bottom-color:var(--accent-text,var(--accent));background:transparent}
+
+/* Lesson list: readable titles, quiet codes. */
+html:root body:not(.xp-exam-active) .catalog-list button{border-radius:var(--rs-r-item);padding:11px 12px}
+html:root body:not(.xp-exam-active) .catalog-list button strong,html:root body:not(.xp-exam-active) .catalog-list button b{font-size:.9375rem;line-height:1.3}
+html:root body:not(.xp-exam-active) .catalog-list button small{font-size:.8125rem}
+
+/* Planner: row actions are inline buttons, not tall tiles. */
+html:root body:not(.xp-exam-active) .dated-review-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+html:root body:not(.xp-exam-active) .dated-review-actions :is(button,a){min-height:34px;height:auto;padding:6px 12px;border-radius:var(--rs-r-ctl);font-size:.8125rem;line-height:1.2}
+
+/* Home. */
+html:root body:not(.xp-exam-active) .home-top{margin-bottom:28px}
+html:root body:not(.xp-exam-active) .home-top h1{font-size:clamp(2.25rem,1.5rem + 2.4vw,3.25rem);letter-spacing:-.035em;line-height:1;margin:0 0 12px}
+html:root body:not(.xp-exam-active) .home-summary{font-size:1.1875rem;line-height:1.4;color:var(--rs-ink-2);max-width:56ch;margin:0}
+html:root body:not(.xp-exam-active) .home-focus-card{display:flex;flex-direction:column;gap:14px;box-shadow:none;border:1px solid var(--rs-line);border-radius:var(--rs-r-sec)}
+html:root body:not(.xp-exam-active) .home-focus-card .home-card-label{font-size:.9375rem;font-weight:650;color:var(--rs-ink-2);margin:0;letter-spacing:0;text-transform:none}
+html:root body:not(.xp-exam-active) .home-focus-value{font-size:3.5rem;line-height:1;letter-spacing:-.04em;display:flex;flex-direction:column;gap:6px}
+html:root body:not(.xp-exam-active) .home-focus-value small{font-size:1rem;letter-spacing:0;font-weight:600;color:var(--rs-ink-2)}
+html:root body:not(.xp-exam-active) .home-focus-card.late .home-focus-value{color:var(--rs-late)}
+html:root body:not(.xp-exam-active) .home-focus-meta{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:auto 0 0;border-top:1px solid var(--rs-line);padding-top:12px}
+html:root body:not(.xp-exam-active) .home-focus-meta div{display:flex;flex-direction:column;gap:2px}
+html:root body:not(.xp-exam-active) .home-focus-meta dt{font-size:.8125rem;color:var(--rs-muted)}
+html:root body:not(.xp-exam-active) .home-focus-meta dd{margin:0;font-size:1.3125rem;font-weight:700}
+html:root body:not(.xp-exam-active) .home-shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:28px 0 36px;border-top:1px solid var(--rs-line);border-bottom:1px solid var(--rs-line)}
+html:root body:not(.xp-exam-active) .home-shortcut{display:flex;align-items:center;gap:12px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:16px 8px;text-align:left;min-height:0}
+html:root body:not(.xp-exam-active) .home-shortcut + .home-shortcut{border-left:1px solid var(--rs-line);padding-left:20px}
+html:root body:not(.xp-exam-active) .home-shortcut:hover strong{text-decoration:underline;text-underline-offset:3px}
+html:root body:not(.xp-exam-active) .home-short-icon{width:36px;height:36px;border-radius:var(--rs-r-ctl);background:var(--rs-accent-tint);color:var(--accent-text,var(--accent));display:grid;place-items:center;flex:none}
+html:root body:not(.xp-exam-active) .home-short-icon svg{width:18px;height:18px}
+html:root body:not(.xp-exam-active) .home-shortcut strong{display:block;font-size:.9375rem}
+html:root body:not(.xp-exam-active) .home-shortcut small{display:block;font-size:.8125rem;color:var(--rs-muted)}
+html:root body:not(.xp-exam-active) .home-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 14px}
+html:root body:not(.xp-exam-active) :is(.home-section-title,.home-agenda-heading) h2{font-size:1.3125rem;letter-spacing:-.015em;margin:0}
+html:root body:not(.xp-exam-active) .home-insights-card{box-shadow:none;border:1px solid var(--rs-line);border-radius:var(--rs-r-sec)}
+html:root[data-theme=amoled] body:not(.xp-exam-active) :is(.home-focus-card,.home-insights-card){border-color:#22262d}
+html:root body:not(.xp-exam-active) .home-more summary{font-weight:600}
+@media (max-width:820px){
+  html:root body:not(.xp-exam-active) .home-shortcuts{grid-template-columns:1fr;margin:20px 0 28px}
+  html:root body:not(.xp-exam-active) .home-shortcut + .home-shortcut{border-left:0;border-top:1px solid var(--rs-line);padding-left:8px}
+  html:root body:not(.xp-exam-active) .home-focus-value{font-size:2.75rem}
+  /* Keep the last content clear of the floating mobile dock. */
+  html:root body:not(.xp-exam-active) main{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+}
+html:root body:not(.xp-exam-active) .home-focus-value small{margin:0;padding:0}
+html:root body:not(.xp-exam-active) .home-focus-card .home-text-link{align-self:flex-start;margin:0;padding:0}
+html:root body:not(.xp-exam-active) .learning-tabs button:is(.selected,.active,[aria-selected=true]){box-shadow:none;outline:0;border-top:0;border-left:0;border-right:0;border-radius:0}
+html:root body:not(.xp-exam-active) .learning-tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more{min-height:0;height:auto;padding:0;border:0;background:transparent;box-shadow:none}
+html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more>summary{list-style:none;min-height:34px;min-width:38px;padding:4px 10px;border-radius:var(--rs-r-ctl);border:1px solid var(--rs-line);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more>summary::-webkit-details-marker{display:none}
+html:root body:not(.xp-exam-active) #content .learning-tabs button:is(.selected,.active,[aria-selected=true]){box-shadow:none;background:transparent}
+html:root body:not(.xp-exam-active) .dated-review-actions .ui-task-more>summary::before{content:none}
+/* A group name repeated above its own tabs adds nothing; the sidebar already says where you are. */
+html:root body:not(.xp-exam-active) #content .phase3-tabs > span:not([class]):first-child{display:none}
