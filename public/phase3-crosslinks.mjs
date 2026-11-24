@@ -14,7 +14,7 @@ export function matchDecks(lectures,decks){
  for(const deck of array(decks)){
   if(!identifier(deck?.id)||seenDecks.has(deck.id)||!Array.isArray(deck.cards))continue;
   seenDecks.add(deck.id);
-  const cardText=deck.cards.filter(card=>identifier(card?.id)&&!(Number(card.schedule?.queue)<0)).map(card=>({id:card.id,labels:cardLabels(deck,card)}));
+  const cardText=[];for(const card of deck.cards)if(identifier(card?.id)&&!(Number(card.schedule?.queue)<0))cardText.push({id:card.id,labels:cardLabels(deck,card)});
   for(const {lecture,name,course,letter,explicit,local} of validLectures){
    const ids=[...new Set(cardText.filter(card=>{
     const {labels}=card;if(labels.some(text=>explicit.test(text)))return true;
