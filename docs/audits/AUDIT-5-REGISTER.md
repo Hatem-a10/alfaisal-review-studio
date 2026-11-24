@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 126 newly merged candidate scopes (108 speed-oriented changes and 18 measurement capabilities), 83 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 87 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 127 newly merged candidate scopes (108 speed-oriented changes and 19 measurement capabilities), 88 pre-existing mechanisms source-reviewed, 4 rejected/not-applicable items, 0 submitted candidates and 81 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -107,7 +107,7 @@ Status reconciled against GitHub on 24 November 2026: 126 newly merged candidate
 | A5-063 | Persist only changed record values | Existing; source-reviewed public/progress-delta.js, app/api/progress/route.ts; no new merge credit |
 | A5-064 | Skip unchanged companion-store writes | Existing narrower: unchanged StudyVault companion values skip storage writes; source/test verified |
 | A5-065 | Batch compatible IndexedDB writes | Existing coverage; reviewed scope in evidence |
-| A5-066 | Adapt sync cadence to connectivity and pending changes | Unassessed |
+| A5-066 | Adapt sync cadence to connectivity and pending changes | Existing coverage; 300ms dirty debounce, offline gate, exponential sync retry |
 | A5-067 | Pause unnecessary inactive-tab polling | Existing coverage; reviewed scope in evidence |
 | A5-068 | Index frequently accessed local study records | Existing; source-reviewed public/device-storage.js; no new merge credit |
 | A5-069 | Compress large recovery snapshots with verified decoding | Unassessed |
@@ -163,15 +163,15 @@ Status reconciled against GitHub on 24 November 2026: 126 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-101 | Cache unchanged curriculum generator outputs | Merged #215; staging CI passed; scoped optimization |
-| A5-102 | Rebuild only changed academic pack inputs | Unassessed |
+| A5-102 | Rebuild only changed academic pack inputs | Existing coverage; verified gzip and per-input minifier transform caches |
 | A5-103 | Cache CI dependencies by lockfile | Existing coverage; reviewed scope in evidence |
 | A5-104 | Parallelize independent regression suites | Merged #195; staging CI passed; scoped optimization |
 | A5-105 | Balance test shards by observed durations | Unassessed |
-| A5-106 | Reuse verified immutable build artifacts across stages | Unassessed |
+| A5-106 | Reuse verified immutable build artifacts across stages | Existing coverage; versioned checksum-verified transform artifact reuse |
 | A5-107 | Reduce unnecessary production diagnostic payloads | Unassessed |
 | A5-108 | Instrument startup navigation sync and API timing | Merged #216; staging CI passed; measurement only |
 | A5-109 | Establish automated performance budgets | Existing coverage; reviewed scope in evidence |
-| A5-110 | Load-test representative synthetic concurrent students | Unassessed |
+| A5-110 | Load-test representative synthetic concurrent students | Merged #233; staging CI passed; measurement-only synthetic concurrent D1 sync |
 
 ## Search
 
@@ -425,8 +425,8 @@ Status reconciled against GitHub on 24 November 2026: 126 newly merged candidate
 | A5-276 | Exclude development tooling from production Worker dependency graph | Unassessed |
 | A5-277 | Avoid copying unchanged assets during local staging build | Merged #188; staging CI passed; scoped optimization |
 | A5-278 | Upload only changed immutable asset objects during release | Existing coverage; reviewed scope in evidence |
-| A5-279 | Verify artifact hashes without rereading same unchanged local files | Unassessed |
-| A5-280 | Parallelize independent release artifact checks | Unassessed |
+| A5-279 | Verify artifact hashes without rereading same unchanged local files | Existing coverage; verified transfer receipts skip already completed input re-reads |
+| A5-280 | Parallelize independent release artifact checks | Existing coverage; independent production asset proof checks run in 12 lanes |
 
 ## Reliability-preserving performance measurement
 
@@ -668,6 +668,19 @@ No production release, schema application, student-data editing, or academic/sco
 - **A5-257 existing, constrained:** `staging/admin-control.sql` defines `control_audit_recent(created_at DESC,id)`; `lib/admin-control.mjs` requests only the recent timestamp-window with identical ordering and bounded page size. The current audit UI has no action-type filter, so no speculative type index was added.
 
 These three reviewed mechanisms are **not newly implemented**. Staging-only GitHub merges do not establish production deployment or measured live performance.
+
+## Audit 5 continuation: verified synthetic sync and five source-reviewed existing paths (24 November 2026)
+
+- **A5-110 merged:** [PR #233](https://github.com/Hatem-a10/alfaisal-review-studio/pull/233), successful staging [CI 45441273300](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45441273300). A local Miniflare D1 workload tests 24 synthetic accounts, 96 progress writes and the revision-conflict guard; **measurement/verification only**, not a production load test or speed claim.
+
+The following are **already implemented** (not five additional gains):
+- **A5-066:** `public/app.js` `scheduleSync` coalesces edits at 300 ms; `syncCloud` respects conflicts, open editors, retry deadlines and exponential backoff. The visible online 5-second check retains freshness; further cadence adjustments would change product semantics.
+- **A5-102:** `scripts/learning-payload.mjs` verifies prior gzip decompresses byte-for-byte to unchanged learning source before skipping recompression; `scripts/client-scripts.mjs` uses a content-keyed minifier cache. This is input-granular build reuse, not a complete dependency graph.
+- **A5-106:** `scripts/minifier-cache.mjs` hashes esbuild version, transform settings and source, and verifies output SHA-256 prior to reuse, including compatible staging/production-candidate local transforms. It does not reuse unverified deployment binaries.
+- **A5-279:** `scripts/transfer-production-assets.mjs` skips entries with previously verified transfer receipts on resumption; all pending objects are still independently SHA-256 verified before transfer and after remote readback.
+- **A5-280:** The same transfer tool runs twelve bounded independent transfer/verification lanes. It does not parallelize account-sensitive database recovery.
+
+A5-108 was **already credited as a merged measurement capability in PR #216** and is intentionally **not counted again**. This documentation causes no schema, production or student-record changes.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
