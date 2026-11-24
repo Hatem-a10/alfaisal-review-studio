@@ -3,7 +3,8 @@ import {lectureCourses} from '../../../public/course-registry.mjs';
 import {ProgressDelta} from '../../../lib/progress-delta';
 import { env } from 'cloudflare:workers';
 export const dynamic = 'force-dynamic';
-const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
+const RESPONSE_HEADERS=Object.freeze({'Cache-Control':'no-store'});
+const json=(body:unknown,status=200)=>Response.json(body,{status,headers:RESPONSE_HEADERS});
 export async function GET(request:Request){
  const id=request.headers.get('oai-authenticated-user-id');if(!id)return json({error:'Sign in to sync your study progress.'},401);
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
