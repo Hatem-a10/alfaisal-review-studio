@@ -56,3 +56,37 @@ test('managed account fails closed if durable device isolation is unavailable',a
  const db=database();const d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:'b'.repeat(64)})}),indexedDB:{open(){throw Error('Unavailable')}}});
  assert.equal(d.api,undefined);assert.equal(d.raw.get(key),snapshot);assert.equal(d.raw.get(key+'-account'),account);
 });
+
+test('blocked IndexedDB startup fails safely and closes a late connection',async()=>{
+ const db=database(),initial={[key+'-account']:account,[key]:snapshot};let request,closed=0;
+ const d=await device(db,initial,{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:account})}),indexedDB:{open(){request={result:{close(){closed++}}};queueMicrotask(()=>request.onblocked());return request}}});
+ assert.equal(d.api,undefined);assert.equal(d.raw.get(key),snapshot);
+ request.onsuccess();assert.equal(closed,1);
+});
+test('managed identity requires an actual account string',async()=>{
+ const db=database(),d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:[account]})})});
+ assert.equal(d.api,undefined);assert.equal(db.stores.size,0);assert.equal(d.raw.get(key),snapshot);
+});
+test('failed account switch preserves offline lock until verified hydration succeeds',async()=>{
+ const db=database(),next='b'.repeat(64),initial={[key+'-account']:account,[key]:snapshot};
+ await device(db,initial);
+ db.setFailure((store,k)=>store==='meta'&&k==='initialized:'+next);
+ const opts={REVIEW_STUDIO_FRESH_ACCOUNTS:true,fetch:async()=>({ok:true,json:async()=>({accountKey:next})})};
+ const failed=await device(db,initial,opts);
+ assert.equal(failed.api,undefined);assert.equal(failed.raw.get('review-studio-managed-signed-out'),'1');assert.equal(failed.raw.get(key+'-account'),account);
+ db.setFailure(null);const recovered=await device(db,Object.fromEntries(failed.raw),opts);
+ assert.equal(recovered.api.available,true);assert.equal(recovered.raw.has('review-studio-managed-signed-out'),false);assert.equal(recovered.storage.getItem(key+'-account'),next);
+ assert.equal(recovered.storage.getItem(key),null);assert.equal(db.stores.get('values').get(account+'|'+key),snapshot);
+});
+test('confirmation does not prune a different or newer raw recovery copy',async()=>{
+ const db=database(),d=await device(db,{[key+'-account']:account,[key]:snapshot});
+ d.raw.set(key,'newer recovery');await d.api.confirmed();
+ assert.equal(d.raw.get(key),'newer recovery');assert.equal(d.storage.getItem(key),snapshot);
+ d.raw.set(key,snapshot);d.raw.set(key+'-account','b'.repeat(64));await d.api.confirmed();assert.equal(d.raw.get(key),snapshot);
+});
+test('managed account probe aborts stalled verification without opening storage',async()=>{
+ const db=database();let timer,cleared=false,signal;
+ class Controller{constructor(){this.signal={}}abort(){this.signal.abort()}}
+ const d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,AbortController:Controller,setTimeout(fn){timer=fn;return 1},clearTimeout(){cleared=true},fetch:async(url,options)=>new Promise((resolve,reject)=>{signal=options.signal;signal.abort=()=>reject(Error('aborted'));queueMicrotask(timer)})});
+ assert.ok(signal);assert.equal(cleared,true);assert.equal(d.api,undefined);assert.equal(db.stores.size,0);assert.equal(d.raw.get(key),snapshot);
+});
