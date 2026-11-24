@@ -39,8 +39,8 @@ test('A5-123 schedule week computation sorts only once per unchanged calendar id
  const context=vm.createContext({CAMPUS_SCHEDULE:{weeks:base},officialGroupSchedule:{weeks:official}});
  vm.runInContext(calendar.slice(start,end)+'\nthis.pick=campusScheduleWeeks;this.setOfficial=x=>officialGroupSchedule=x;',context);
  const first=Array.from(context.pick());const afterFirst=comparisons;const second=Array.from(context.pick());
- assert.deepEqual(first.map(x=>x.start),['2026-11-15','2026-11-22','2026-11-29','2026-12-06']);
  assert.equal(comparisons,afterFirst,'cache hit must avoid an additional sort');
+ assert.deepEqual(first.map(x=>x.start),['2026-11-15','2026-11-22','2026-11-29','2026-12-06']);
  assert.deepEqual(second,first);second.reverse();assert.deepEqual(Array.from(context.pick()),first,'caller must not mutate cache');
  context.setOfficial({weeks:[row('2026-12-13','REN')]});assert.deepEqual(Array.from(context.pick()).map(x=>x.start),['2026-11-15','2026-11-29','2026-12-13']);
  assert.ok(comparisons>afterFirst,'new calendar identity must re-sort');
