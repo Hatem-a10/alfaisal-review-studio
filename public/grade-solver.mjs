@@ -5,9 +5,9 @@ export function solveTarget(rows,target,mappings={}){
  const value=typeof target==='string'&&!/^\s*(?:\d+(?:\.\d*)?|\.\d+)\s*$/.test(target)?(Object.hasOwn(mappings,target.trim())?mappings[target.trim()]:NaN):number(target);
  if(!Number.isFinite(value)||value<0||value>100)return {valid:false,error:'Enter a percentage from 0 to 100 or configure the selected letter boundary.'};
  if(!Array.isArray(rows)||!rows.length)return {valid:false,error:'Add assessment rows first.'};
- let banked=0,remaining=0,total=0;for(const r of rows){if(!r||typeof r!=='object')return {valid:false,error:'Invalid assessment row.'};const w=number(r.weight),max=number(r.total),earned=number(r.earned);if(!Number.isFinite(w)||w<0||!Number.isFinite(max)||max<=0||(r.completed&&(!Number.isFinite(earned)||earned<0||earned>max)))return {valid:false,error:'Check assessment weights and marks.'};total+=w;if(r.completed)banked+=w*earned/max;else remaining+=w;}
+ const seen=new Set();let banked=0,remaining=0,total=0;for(const r of rows){if(!r||typeof r!=='object'||r.id&&seen.has(r.id))return {valid:false,error:'Invalid assessment row.'};if(r.id)seen.add(r.id);const w=number(r.weight),max=number(r.total),earned=number(r.earned);if(!Number.isFinite(w)||w<0||!Number.isFinite(max)||max<=0||(r.completed&&(!Number.isFinite(earned)||earned<0||earned>max)))return {valid:false,error:'Check assessment weights and marks.'};total+=w;if(r.completed)banked+=w*earned/max;else remaining+=w;}
  if(Math.abs(total-100)>1e-7)return {valid:false,error:'Assessment weights must total 100%.',total};
- const needed=Math.max(0,value-banked),maximum=banked+remaining,status=banked>=value?'secured':maximum+1e-9<value?'impossible':'possible';
+ const needed=Math.max(0,value-banked),maximum=banked+remaining,status=banked+1e-9>=value?'secured':maximum+1e-9<value?'impossible':'possible';
  return {valid:true,target:value,banked,remaining,maximum,status,requiredPercent:remaining?needed/remaining*100:(needed?Infinity:0),assessments:rows.filter(r=>!r.completed).map(r=>({id:r.id,name:r.name,minimumRaw:Number(r.weight)>0?Math.max(0,value-(maximum-Number(r.weight)))/Number(r.weight)*Number(r.total):null,assumption:'Full marks on every other remaining assessment; alternatives cannot be combined.'}))};
 }
 // Mount in the existing grade page; rows are read through the supplied callback, never changed.
