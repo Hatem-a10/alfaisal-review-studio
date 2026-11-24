@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 13 candidates merged with candidate CI passed; 1 submitted (#123); 286 unassessed. A5-003 has mixed timing across runs; its reduced sorting work is established, not a repeatable wall-time speedup. Combined benchmarks do not establish separate per-change speed gains. The evidence-only PR also exercises the integrated branch.
+Status at this evidence update: 14 candidates merged with candidate CI passed; 1 submitted (#125); 285 unassessed. A5-003 has mixed timing across runs; its reduced sorting work is established, not a repeatable wall-time speedup. Combined benchmarks do not establish separate per-change speed gains. The evidence-only PR also exercises the integrated branch.
 
 ## Activity analytics
 
@@ -240,13 +240,13 @@ Status at this evidence update: 13 candidates merged with candidate CI passed; 1
 | A5-151 | Index question IDs to attempt positions | Unassessed |
 | A5-152 | Compute answer counts incrementally on answer changes | Unassessed |
 | A5-153 | Cache exam review filter membership per attempt revision | Unassessed |
-| A5-154 | Use one pass for score and category breakdown | Unassessed |
+| A5-154 | Count exam receipt scoring and validation tallies in one pass | Submitted #125; CI pending |
 | A5-155 | Precompute static option permutations at attempt creation | Unassessed |
 | A5-156 | Avoid repeated parse of unchanged exam source metadata | Unassessed |
 | A5-157 | Reuse navigation grid cells on flag changes | Unassessed |
 | A5-158 | Defer explanation formatting until review pane opens | Unassessed |
 | A5-159 | Avoid recomputing elapsed time outside displayed timer interval | Unassessed |
-| A5-160 | Compute mock-history ordering keys once before history sort | Submitted #123; CI pending |
+| A5-160 | Compute mock-history ordering keys once before history sort | Merged #123; CI passed |
 
 ## OSPE and visual practice
 
@@ -479,6 +479,8 @@ Median of three measured executions unless otherwise indicated, on the candidate
 | **A5-005 + A5-008** | 34.900 ms | 16.700 ms | Combined workload; 10,000 aggregate array entries → 0; seven runs | #121 |
 | **A5-115** | 49.769 ms | 2.265 ms | 20,300 matched entries; maximum retained ranking entries 40; seven runs | #122 |
 
+| **A5-160** | 29.268 ms | 3.138 ms | 47,392 → 2,376 timestamp parses, 2,500 synthetic mocks; seven runs | #123 |
+
 - #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
 - #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
 - #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, [CI 45382764102](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382764102), 1,315 full-suite tests passed, merge `2ea6a62a7b5de71d6a621411e22d2b4457a7ce0c`. Candidate started before #117 merged; integrated CI still required.
@@ -486,7 +488,8 @@ Median of three measured executions unless otherwise indicated, on the candidate
 - #119: integrated evidence [CI 45383257697](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383257697) passed; merge `b1e9f880fbb5ccec0b735ffe8e82624647148921`.
 - #121: candidate `1f43138e578e38c525ea7f2448f24cf31c4ecbf3`, [CI 45383566906](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383566906), 1,321 full-suite tests passed; merge `25f147380b1584e08f08548f271773811373ffab`.
 - #122: candidate `82fa59042c8633472d797e67317e22810cc5921e`, [CI 45383782390](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45383782390), 1,320 full-suite tests passed; merge `f57523ba90fba855a569114a333627af68339bf2`. Candidate branched before #121 merged; integrated CI required.
-- #123: candidate `695898aa41c28302125261a75ba6fbd083a08292`, submitted; CI pending.
+- #123: candidate `695898aa41c28302125261a75ba6fbd083a08292`, [CI 45384086568](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45384086568), 1,323 full-suite tests passed; merge `4caf30bed0f74cf8c1814660975e4d37699f2513`. Candidate branched before #122 merged; integrated CI required.
+- #125: candidate `8c94868907278840a815b5e68d8a778063f18d3b`, submitted; CI pending.
 - The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
