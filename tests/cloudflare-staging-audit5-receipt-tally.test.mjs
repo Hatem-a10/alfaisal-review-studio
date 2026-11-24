@@ -25,3 +25,10 @@ test('A5-154 large receipt validation benchmark preserves acceptance',()=>{
  const baselineMs=median(()=>before.validReceipt(record)),candidateMs=median(()=>after.validReceipt(record));
  console.log(JSON.stringify({label:'A5-154 receipt validation',baselineMedianMs:baselineMs,candidateMedianMs:candidateMs,rows:questions.length,baselineIntermediateArrays:3,candidateIntermediateArrays:0}));
 });
+
+test('A5-154 sparse arrays retain prior receipt behavior',()=>{
+ const questions=fixture(8);delete questions[1];delete questions[3];
+ const answers=questions.map(q=>q.answer??'written');
+ const old=before.receipt('id','mock',questions,answers,at),next=after.receipt('id','mock',questions,answers,at);
+ assert.deepEqual(next,old);assert.equal(after.validReceipt(next),before.validReceipt(old));
+});
