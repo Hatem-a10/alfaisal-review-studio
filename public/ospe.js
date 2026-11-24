@@ -16,7 +16,19 @@ export async function mount(course='CVP'){
  function nav(){return learningAreaTabs('ospe')}
  function ref(s){if(!s.source)return '<span>'+esc(s.origin||'Existing practical')+' · '+(s.references||[]).map(r=>esc(r.source)+' p'+esc(r.page)).join(', ')+'</span>';const src=pack.sources.find(x=>x.id===s.source);if(src?.url)return '<a href="'+esc(src.url)+'#page='+s.page+'" target="_blank" rel="noopener noreferrer">'+esc(src.title)+' · p'+s.page+' ↗</a>';
   return '<span>'+esc(src?.title||'Source unavailable')+' · '+(src?.title?.endsWith('.pptx')?'slide ':'p')+s.page+(s.mockNumber?' · Q'+s.mockNumber:'')+'</span>'}
+ const stationMarkupCache=new WeakMap();
+ // A5-162: official station figure metadata is immutable for one mounted OSPE pack.
+ // Preserve both reveal and zoom modes; cache no account-specific answers or marks.
  function stationFigure(s,showLabels=false,zoom=false){
+  const key=(showLabels?'revealed':'covered')+(zoom?':zoom':''),
+   variants=stationMarkupCache.get(s);
+  if(variants?.has(key))return variants.get(key);
+  const html=uncachedStationFigure(s,showLabels,zoom),
+   cache=variants||new Map();
+  cache.set(key,html);if(!variants)stationMarkupCache.set(s,cache);
+  return html;
+ }
+ function uncachedStationFigure(s,showLabels=false,zoom=false){
   if(s.figures){
    const images=s.figures.map((f,i)=>'<img class="ospe-station-image" src="'+esc(f.image)+'" alt="Station figure '+(i+1)+'" width="'+f.width+'" height="'+f.height+'">').join('');
    return zoom?images:'<figure class="ospe-image">'+images+'<figcaption>Renal past-paper booklet · p'+s.page+'</figcaption><button data-ospe-zoom="'+s.id+'">Enlarge image</button></figure>';
