@@ -22,7 +22,7 @@ function draw(host){
  for(const part of s.parts)body.append(el('h4',part.prompt));
  s.figures.forEach((f,i)=>{
   const figure=el('figure','','lesson-figure'),frame=el('div');frame.style.overflow='auto';
-  const img=el('img');img.src=f.image;img.alt='Booklet station figure '+(i+1);img.width=f.width;img.height=f.height;img.loading='lazy';img.style.maxWidth='100%';img.style.height='auto';
+  const img=el('img');img.src=f.image;img.alt='Renal histology station, booklet page '+s.page+', figure '+(i+1)+'. Use the station prompt to identify the indicated structure.';img.width=f.width;img.height=f.height;img.loading='lazy';img.style.maxWidth='100%';img.style.height='auto';
   frame.append(img);figure.append(frame,el('figcaption','REN 123 Past Paper Booklet · page '+s.page));
   let enlarged=false;const zoom=button('Enlarge figure',()=>{enlarged=!enlarged;img.style.maxWidth=enlarged?'none':'100%';img.style.width=enlarged?Math.max(480,f.width)+'px':'';zoom.textContent=enlarged?'Fit figure':'Enlarge figure';zoom.setAttribute('aria-pressed',String(enlarged))});zoom.setAttribute('aria-pressed','false');figure.append(zoom);body.append(figure);
  });
