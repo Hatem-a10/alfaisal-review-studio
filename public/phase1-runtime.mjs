@@ -3,6 +3,8 @@ import {deriveAccent} from './phase1-accent.mjs';
 import {declutter} from './phase1-copy.mjs';
 import {mountAcademicAdmin} from './phase1-academic-admin.mjs';
 import {installSearch} from './phase1-search.mjs';
+import {preloadCriticalModules} from './phase1-critical-preloads.mjs';
+preloadCriticalModules(document,import.meta.url,navigator.connection);
 await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498")]);
 await import("./mobile-dock.js?v=1498");
 await import("./studio-navigation.js?v=1498");
