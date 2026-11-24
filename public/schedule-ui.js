@@ -18,7 +18,8 @@ function applyRenalScheduleAssessments(timetable){
 }
 function englishScheduleEvents(start){return GroupSchedules.english(start,settings)}
 function campusWeekEvents(start,shared=scheduleShared){return GroupSchedules.selected(start,settings,officialGroupSchedule,CAMPUS_SCHEDULE.events,shared)}
-function campusScheduleWeeks(){return [...CAMPUS_SCHEDULE.weeks,...(officialGroupSchedule?.weeks||[])].sort((a,b)=>a.start.localeCompare(b.start))}
+let campusWeekSnapshot=null;
+function campusScheduleWeeks(){const base=CAMPUS_SCHEDULE.weeks,official=officialGroupSchedule?.weeks||[];if(campusWeekSnapshot&&campusWeekSnapshot.base===base&&campusWeekSnapshot.official===official)return campusWeekSnapshot.weeks.slice();const weeks=[...base,...official].sort((a,b)=>a.start.localeCompare(b.start));campusWeekSnapshot={base,official,weeks};return weeks.slice()}
 function campusCurrentWeeks(start){const weeks=campusScheduleWeeks(),current=weeks.find(w=>w.start===start),renal=current?.course==='REN';return weeks.filter(w=>(w.course==='REN')===renal)}
 function campusGroupLabel(){const p=GroupSchedules.profile(settings);return p.group?(p.group+(p.section?'-'+p.section:'')+(p.lab?' · Lab '+p.lab:'')):'Select your academic group in Settings'}
 
