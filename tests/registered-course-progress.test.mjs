@@ -59,6 +59,7 @@ test('progress PUT and PATCH preserve archived history and accept Renal records 
  const hooks=registerHooks({resolve(specifier,context,next){
   if(specifier==='cloudflare:workers')return next('data:text/javascript,export const env=globalThis.courseSyncFixture;',context);
   if(specifier==='../../../lib/progress-delta')return next(specifier+'.js',context);
+  if(specifier==='../../../lib/bounded-request')return next(specifier+'.ts',context);
   return next(specifier,context);
  }});
  t.after(()=>{hooks.deregister();delete globalThis.courseSyncFixture;});
