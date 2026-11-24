@@ -14,6 +14,7 @@ import {assetFor,serveAsset} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
 import {readClientError} from '../lib/client-error.mjs';
 import {stampOfflineAccount} from '../lib/offline-account.mjs';
+import {managedDashboardLanding} from '../lib/managed-login-landing.mjs';
 
 const stagingWorker = {
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
@@ -30,6 +31,7 @@ const stagingWorker = {
   if(import.meta.env.DEV&&['127.0.0.1','localhost'].includes(new URL(incoming.url).hostname)){
    const h=new Headers(incoming.headers);h.set('CF-Connecting-IP','127.0.0.1');incoming=new Request(incoming,{headers:h});
   }
+  if(managed){const landing=managedDashboardLanding(incoming);if(landing)return landing;}
   const originalPath=new URL(incoming.url).pathname;
   let authPath;
   try{authPath=decodeURIComponent(originalPath).replace(/\/+$/,'');}
