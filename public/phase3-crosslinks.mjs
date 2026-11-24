@@ -1,2 +1,28 @@
-export const normalize=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-export function matchDecks(lectures,decks){const result=new Map();for(const deck of decks||[]){if(!deck?.id)continue;const cardText=(deck.cards||[]).filter(card=>card?.id&&!(card.schedule?.queue<0)).map(card=>({id:card.id,text:normalize([deck.name,card.deck,Array.isArray(card.tags)?card.tags.join(' '):card.tags].join(' '))}));for(const lecture of lectures){const code=lecture.id.match(/^(CVP|MOL|REN)-([AP]?)(\d+)$/),name=normalize(lecture.title);if(!code)continue;const course=code[1].toLowerCase(),letter=code[2].toLowerCase(),number=code[3],explicit=new RegExp('(?:^| )'+course+' (?:112 |114 |123 )?'+letter+' ?'+number+'(?: |$)'),local=new RegExp('(?:^| )'+letter+' ?'+number+'(?: |$)');const ids=[...new Set(cardText.filter(({text})=>explicit.test(text)||(letter&&new RegExp('(?:^| )'+course+'(?: |$)').test(text)&&local.test(text))||(name.length>=10&&text.includes(name))).map(c=>c.id))];if(ids.length){const list=result.get(lecture.id)||[];list.push({deckId:deck.id,cardIds:ids,count:ids.length,name:deck.name});result.set(lecture.id,list)}}}return result}
+export const normalize=value=>typeof value==='string'?value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim():'';
+const array=v=>Array.isArray(v)?v:[];
+const identifier=v=>typeof v==='string'&&v.length>0;
+const courses={cvp:'112',mol:'114',ren:'123'};
+function cardLabels(deck,card){return [deck.name,card.deck,...(Array.isArray(card.tags)?card.tags:[card.tags])].map(normalize).filter(Boolean)}
+function explicitlyScoped(text){return new Set([...text.matchAll(/(?:^| )(cvp|mol|ren)(?: |$)/g)].map(m=>m[1]))}
+export function matchDecks(lectures,decks){
+ const result=new Map(),seenDecks=new Set(),validLectures=array(lectures).filter(l=>identifier(l?.id)&&/^(CVP|MOL|REN)-([AP]?)(\d+)$/.test(l.id));
+ for(const deck of array(decks)){
+  if(!identifier(deck?.id)||seenDecks.has(deck.id)||!Array.isArray(deck.cards))continue;
+  seenDecks.add(deck.id);
+  const cardText=deck.cards.filter(card=>identifier(card?.id)&&!(Number(card.schedule?.queue)<0)).map(card=>({id:card.id,labels:cardLabels(deck,card)}));
+  for(const lecture of validLectures){
+   const code=lecture.id.match(/^(CVP|MOL|REN)-([AP]?)(\d+)$/),name=normalize(lecture.title),course=code[1].toLowerCase(),letter=code[2].toLowerCase(),number=code[3];
+   const explicit=new RegExp('(?:^| )'+course+' (?:'+courses[course]+' )?'+letter+' ?'+number+'(?: |$)');
+   const local=new RegExp('(?:^| )'+letter+' ?'+number+'(?: |$)');
+   const ids=[...new Set(cardText.filter(({labels})=>{
+    if(labels.some(text=>explicit.test(text)))return true;
+    const scoped=new Set(labels.flatMap(text=>[...explicitlyScoped(text)]));
+    if(scoped.size&&(!scoped.has(course)||scoped.size>1))return false;
+    if(letter&&scoped.has(course)&&labels.some(text=>local.test(text)))return true;
+    return name.length>=10&&labels.some(text=>(' '+text+' ').includes(' '+name+' '));
+   }).map(c=>c.id))];
+   if(ids.length){const list=result.get(lecture.id)||[];if(!list.some(row=>row.deckId===deck.id))list.push({deckId:deck.id,cardIds:ids,count:ids.length,name:deck.name});result.set(lecture.id,list)}
+  }
+ }
+ return result;
+}
