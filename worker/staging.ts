@@ -12,6 +12,7 @@ import {resourceAdmin,resourceStudent} from '../lib/admin-resources.mjs';
 import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
 import {assetFor,serveAsset} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
+import {readClientError} from '../lib/client-error.mjs';
 
 const stagingWorker = {
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
@@ -55,15 +56,13 @@ const stagingWorker = {
   const request=auth.request;let path;try{path=decodeURIComponent(new URL(request.url).pathname).slice(1)}catch{return new Response('Invalid path',{status:400})}
   let observe: ((response:Response)=>void)|undefined;
   let legacyAudit: ReturnType<typeof auditWriter>|undefined;
-  // Client error reports: logged to Worker logs only. No account id, no database write, size-capped.
+  // Client error reports are bounded, allowlisted and contain no arbitrary strings or URLs.
   if(path==='api/client-error'&&request.method==='POST'){
    if(!request.headers.has('oai-authenticated-user-id'))return adminResponse({error:'Sign in required.'},401);
    try{
-    const raw=await request.text();
-    if(raw.length<=4000){
-     const e=JSON.parse(raw),clip=(v:unknown,n:number)=>typeof v==='string'?v.replace(/[\u0000-\u001f]/g,' ').slice(0,n):'';
-     console.error('[client-error]',JSON.stringify({message:clip(e.message,300),source:clip(e.source,200).replace(/[?#].*$/,''),line:Number(e.line)||0,col:Number(e.col)||0,stack:clip(e.stack,1200),view:clip(e.view,40),version:clip(e.version,12),environment}));
-    }
+    if(production&&(!auth.user||!await allowProductionWrite(env.DB,auth.user.id,path,request.method)))return new Response(null,{status:429,headers:{'Cache-Control':'no-store'}});
+    const report=await readClientError(request);
+    if(report)console.error('[client-error]',JSON.stringify({...report,environment}));
    }catch{}
    return new Response(null,{status:204,headers:{'Cache-Control':'no-store'}});
   }
