@@ -12,13 +12,16 @@ const redundantIntroCopy = new Set([
 export function declutter(container) {
   if (!container?.querySelectorAll) return 0;
   let removed = 0;
-  for (const paragraph of container.querySelectorAll('.student-welcome [data-step] > p')) {
+  // A5-035: collect both independent DOM queries before mutating either list.
+  const welcome = container.querySelectorAll('.student-welcome [data-step] > p');
+  const intro = container.querySelectorAll('.intro > div > p');
+  for (const paragraph of welcome) {
     const step = paragraph.parentElement?.getAttribute('data-step');
     if (redundantWelcomeCopy.get(step) !== paragraph.textContent?.trim()) continue;
     paragraph.remove();
     removed++;
   }
-  for (const paragraph of container.querySelectorAll('.intro > div > p')) {
+  for (const paragraph of intro) {
     if (redundantIntroCopy.has(paragraph.textContent?.trim())) { paragraph.remove(); removed++; }
   }
   return removed;
