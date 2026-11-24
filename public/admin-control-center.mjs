@@ -360,6 +360,7 @@ export async function openAdminCenter(){
     field('studentGroup','Class',{choices:[['','All classes'],...classes],value:event.studentGroup}),
     field('studentSection','Section',{choices:[['','All sections'],'A','B'],value:event.studentSection}),
     field('labGroup','Lab group',{value:event.labGroup,maxLength:30}),
+    field('room','Room',{value:event.room,maxLength:100}),
     field('lecturer','Lecturer',{value:event.lecturer,maxLength:100}),
     field('categoryId','Category',{choices:[['','Uncategorized'],...config.categories.map(c=>[c.id,c.label])],value:event.categoryId}),
     field('replacesId','Existing schedule event ID to replace',{value:event.replacesId,maxLength:160}),

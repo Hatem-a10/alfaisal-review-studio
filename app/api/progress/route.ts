@@ -25,7 +25,9 @@ export async function PUT(request:Request){
  if(!env.DB)return json({error:'Cloud saving is unavailable.'},503);
  let raw:string;try{raw=new TextDecoder().decode(await readBounded(request,12000000))}catch(e){return json({error:e instanceof RequestTooLarge?'Progress backup is too large.':'Could not read progress data.'},e instanceof RequestTooLarge?413:400)}
  let data;try{data=JSON.parse(raw)}catch{return json({error:'Invalid JSON.'},400)}
- if(!Number.isSafeInteger(data?.revision)||data.revision<0||data.snapshot?.app!=='alfaisal-review-studio'||data.snapshot?.version!==2||!data.snapshot.records||Array.isArray(data.snapshot.records)||typeof data.snapshot.records!=='object'||Object.keys(data.snapshot.records).length>lectureCourses.size||!validSnapshot(data.snapshot))return json({error:'Invalid progress format.'},400);
+ if(!Number.isSafeInteger(data?.revision)||data.revision<0||data.snapshot?.app!=='alfaisal-review-studio'||data.snapshot?.version!==2||!data.snapshot.records||Array.isArray(data.snapshot.records)||typeof data.snapshot.records!=='object'||Object.keys(data.snapshot.records).length>lectureCourses.size )return json({error:'Invalid progress format.',issue:{area:'backup'}},400);
+ const issue:ValidationIssue={area:'backup'};
+ if(!validSnapshot(data.snapshot,issue))return json({error:'Invalid progress format.',issue},400);
  return writeSnapshot(id,data.revision,data.snapshot,undefined,true);
 }
 function validPointer(key:unknown,id:string):key is string{return typeof key==='string'&&key.startsWith('progress/'+id+'/')&&/^[0-9a-f-]{36}$/i.test(key.slice(('progress/'+id+'/').length))}
@@ -83,8 +85,11 @@ function validCompanion(name:string,value:unknown):boolean{
  if(name==='visual')return obj(value.exercises)&&obj(value.results);
  return true;
 }
-function validSnapshot(s: SnapshotWire): boolean {
- if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000||!validCompanion(k,v.value??null))return false}}
+type ValidationIssue = {area:string;recordId?:string};
+function validSnapshot(s: SnapshotWire, issue:ValidationIssue={area:'backup'}): boolean {
+ issue.area='study tools';
+ if(s.extras!==undefined){const e=s.extras;if(e?.version!==1||!e.stores||typeof e.stores!=='object'||Array.isArray(e.stores)||JSON.stringify(e).length>10000000)return false;const names=['wrongBank','history','mock','originals','drafts','resume','practice','queue','visual','anki','options'];for(const [k,v] of Object.entries(e.stores) as [string,{at:string;value:unknown}][]){issue.area=names.includes(k)?k:'study tools';if(!names.includes(k)||!v||typeof v.at!=='string'||!Number.isFinite(Date.parse(v.at))||JSON.stringify(v.value??null).length>7000000||!validCompanion(k,v.value??null))return false}}
+ issue.area='profile and settings';
  if(s.settings?.studentGroup!==undefined&&!['','M1','M2','F1','F2'].includes(s.settings.studentGroup))return false;
  if(s.settings?.studentSection!==undefined&&!['','A','B'].includes(s.settings.studentSection))return false;
  if(s.settings?.groupConfigured!==undefined&&typeof s.settings.groupConfigured!=='boolean')return false;
@@ -104,7 +109,10 @@ function validSnapshot(s: SnapshotWire): boolean {
  const stamp=(v:unknown)=>typeof v==='string'&&Number.isFinite(Date.parse(v));
  const date=(v:unknown)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&stamp(v)&&new Date(v).toISOString().slice(0,10)===v;
  for(const [id,record] of Object.entries(s.records)){
-  const course=lectureCourses.get(id);if(!course)return false;
+  const course=lectureCourses.get(id);
+  issue.area='lesson progress';
+  if(!course)return false;
+  issue.recordId=id;
   const r=record as ProgressRecord;if(!r||typeof r!=='object'||Array.isArray(r))return false;
   if(r.title!==undefined&&(typeof r.title!=='string'||r.title.length>300))return false;
   if(r.notes!==undefined&&(typeof r.notes!=='string'||r.notes.length>100000))return false;
@@ -130,6 +138,8 @@ export async function PATCH(request:Request){
  const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
  if(!row||row.revision!==body.revision)return json({error:'Cloud progress changed.'},409);
  let prior;try{prior=await readSnapshot(row.snapshot,id)}catch{return json({error:'Cloud snapshot unavailable. Your device copy is retained.'},503)}
- let snapshot;try{snapshot=ProgressDelta.apply(prior,body.patch);if(!validSnapshot(snapshot))throw Error()}catch{return json({error:'Invalid progress patch.'},400)}
+ let snapshot;try{snapshot=ProgressDelta.apply(prior,body.patch)}catch{return json({error:'Invalid progress patch.'},400)}
+ const issue:ValidationIssue={area:'backup'};
+ if(!validSnapshot(snapshot,issue))return json({error:'Invalid progress patch.',issue},400);
  return writeSnapshot(id,body.revision,snapshot,prior,true);
 }
