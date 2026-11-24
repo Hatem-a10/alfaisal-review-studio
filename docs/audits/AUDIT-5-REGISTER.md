@@ -321,7 +321,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-207 | Batch cache warmup within network budget | Existing coverage; reviewed scope in evidence |
 | A5-208 | Exclude ephemeral authenticated API requests from service-worker caches | Existing narrower coverage; cacheKind denies unrelated APIs |
 | A5-209 | Use versioned offline fallback without repeated network probe | Unassessed |
-| A5-210 | Benchmark offline bundle download concurrency | Unassessed |
+| A5-210 | Benchmark offline bundle download concurrency | Submitted benchmark PR (measurement only); CI pending |
 
 ## CSS and typography
 
