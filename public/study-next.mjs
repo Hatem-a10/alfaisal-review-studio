@@ -186,7 +186,7 @@ function tourEntry(){
  if(!options().welcomeTourSeen&&!window.reviewHasStudyEvidence?.(DATA.items)&&window.REVIEW_STUDIO_FRESH_ACCOUNTS){
   const hero=document.getElementById('homeNextAction');
   if(hero&&!document.getElementById('welcomeTourPrompt')){
-   hero.insertAdjacentHTML('afterend','<div id="welcomeTourPrompt"><button type="button" class="linkbtn" data-study-tour>Take a quick tour</button> <button type="button" class="linkbtn" data-study-hide-tour>Skip tour</button></div>');
+   (hero.closest('.home-priority-grid')||hero).insertAdjacentHTML('afterend','<div id="welcomeTourPrompt"><button type="button" class="linkbtn" data-study-tour>Take a quick tour</button> <button type="button" class="linkbtn" data-study-hide-tour>Skip tour</button></div>');
   }
  }else document.getElementById('welcomeTourPrompt')?.remove();
  const settings=document.querySelector('#siteAdmin .admin-frame');
