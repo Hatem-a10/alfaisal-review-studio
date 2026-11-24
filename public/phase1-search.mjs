@@ -3,6 +3,25 @@ export const normalize=value=>String(value??'').normalize('NFKD').replace(/[\u03
 const titleCache=new WeakMap();
 function normalizedTitle(item){const title=item.title;if(typeof title!=='string')return normalize(title);const cached=titleCache.get(item);if(cached?.title===title)return cached.normalized;const normalized=normalize(title);titleCache.set(item,{title,normalized});return normalized}
 export function buildIndex({lectures=[],objectives=[],questions=[],materials=[]}){const seen=new Set();return [['lecture',lectures],['objective',objectives],['question',questions],['material',materials]].flatMap(([kind,items])=>items.flatMap(item=>{const key=kind+':'+item.id;if(!item.id||!item.title||seen.has(key))return [];seen.add(key);const entry={...item,kind,key,search:normalize(item.title+' '+(item.context||''))};return [entry]}))}
+// A5-030/A5-117: cooperatively build large search indexes without blocking the
+// search dialog or publishing results from a closed/superseded session.
+// Keep the exact ordering, duplicate identity rule, and searchable fields of buildIndex.
+export async function buildIndexCooperatively(data,{allow=()=>true,yieldControl=()=>new Promise(resolve=>setTimeout(resolve,0)),batchSize=512}={}){
+ if(!Number.isSafeInteger(batchSize)||batchSize<1||batchSize>4096)throw Error('Invalid search indexing batch size');
+ const seen=new Set(),output=[];let processed=0;
+ for(const [kind,items] of [['lecture',data.lectures||[]],['objective',data.objectives||[]],['question',data.questions||[]],['material',data.materials||[]]]){
+  for(const item of items){
+   if(!allow())return null;
+   const key=kind+':'+item.id;
+   if(item.id&&item.title&&!seen.has(key)){
+    seen.add(key);
+    output.push({...item,kind,key,search:normalize(item.title+' '+(item.context||''))});
+   }
+   if(++processed%batchSize===0){await yieldControl();if(!allow())return null}
+  }
+ }
+ return allow()?output:null;
+}
 const compareRank=(a,b)=>b.rank-a.rank||a.item.title.localeCompare(b.item.title);
 export function searchIndex(index,query,limit=40){
  const text=normalize(query),words=text.split(' ').filter(Boolean);if(!words.length)return [];
@@ -33,7 +52,7 @@ export function installSearch({read,open,blocked,host=document.querySelector('he
  async function enrich(run){
   if(!initialReady||enriched||enriching||!input.value.trim()||!dialog.open||run!==request)return;
   enriching=true;loading=true;paint();
-  try{const loaded=await read({enrich:true});if(!dialog.open||run!==request)return;index=buildIndex(loaded);enriched=true;refresh(true)}
+  try{const loaded=await read({enrich:true});if(!dialog.open||run!==request)return;const built=await buildIndexCooperatively(loaded,{allow:()=>dialog.open&&run===request});if(!built)return;index=built;enriched=true;refresh(true)}
   catch{if(dialog.open&&run===request)failed=true}
   finally{if(dialog.open&&run===request){enriching=false;loading=false;paint()}}
  }
@@ -44,7 +63,7 @@ export function installSearch({read,open,blocked,host=document.querySelector('he
   try{
    const initial=await read();
    if(!dialog.open||run!==request)return;
-   index=buildIndex(initial);initialReady=true;loading=false;refresh();void enrich(run);
+   const built=await buildIndexCooperatively(initial,{allow:()=>dialog.open&&run===request});if(!built)return;index=built;initialReady=true;loading=false;refresh();void enrich(run);
   }catch{if(dialog.open&&run===request){loading=false;failed=true;paint()}}
  }
  list.addEventListener('click',e=>{const row=e.target?.closest?.('[role=option]');if(!row)return;const i=Array.prototype.indexOf.call(list.children,row);if(i>=0)activate(i)});input.addEventListener('input',()=>{clearTimeout(timer);const run=request;timer=setTimeout(()=>{if(!dialog.open||run!==request)return;refresh();void enrich(run)},75)});input.addEventListener('keydown',e=>{if(e.isComposing||e.keyCode===229)return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();flushQuery();if(results.length)selected=(selected+(e.key==='ArrowDown'?1:-1)+results.length)%results.length;paint()}else if(e.key==='Enter'){e.preventDefault();flushQuery();activate(selected)}});dialog.querySelector('[data-search-close]').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{if(dialog.open)return;clearTimeout(timer);request++;index=[];results=[];memoIndex=null;memoResults=null;memoQuery='';paintedResults=null;paintedSelected=-1;list.replaceChildren();loading=false;failed=false;previous?.focus?.({preventScroll:true})});button.onclick=show;document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();if(dialog.open)dialog.close();else show()}});return dialog;
