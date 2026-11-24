@@ -1,4 +1,5 @@
 import {env} from 'cloudflare:workers';
+import {lectureCourses} from '../../../public/course-registry.mjs';
 import {withMaterialLectureLinks} from '../../../lib/material-lecture-links';
 import type {MaterialRow} from '../../../lib/material-dedup';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
@@ -13,7 +14,7 @@ export async function POST(request:Request){
  if(Number(request.headers.get('content-length'))>29000000)return json({error:'Maximum file size is 25 MB.'},413);
  let form;try{form=await request.formData()}catch{return json({error:'Use a supported document upload.'},400)}
  const file=form.get('file');if(!(file instanceof File)||file.size>25000000||file.size<1)return json({error:'Choose a file up to 25 MB.'},400);
- const lectureId=String(form.get('lectureId')||'');if(!/^(MOL-(?:[1-9]|1\d|2[0-8])|CVP-P(?:[1-9]|1\d|2[0-8])|CVP-A(?:[1-9]|1\d|2[0-3]))$/.test(lectureId))return json({error:'Choose a known lecture.'},400);
+ const lectureId=String(form.get('lectureId')||'');if(!lectureCourses.has(lectureId))return json({error:'Choose a known lecture.'},400);
  let parsed;const raw=String(form.get('extraction')||'');if(raw.length>8000000)return json({error:'Extracted text is too large; split the document.'},413);try{parsed=JSON.parse(raw)}catch{return json({error:'Document text could not be parsed.'},400)}
  if(!parsed||typeof parsed!=='object'||!Array.isArray(parsed.pages)||parsed.pages.length<1||parsed.pages.length>1200||parsed.pages.some((p:{page:number;text:string})=>!Number.isInteger(p.page)||p.page<1||typeof p.text!=='string'||p.text.length>100000))return json({error:'Invalid extracted pages.'},400);
  const ext=file.name.toLowerCase().split('.').pop();
