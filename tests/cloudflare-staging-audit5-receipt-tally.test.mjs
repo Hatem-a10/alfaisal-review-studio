@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+import {performance} from 'node:perf_hooks';
+// Frozen pre-batch source c1cde032c66f701f3e1bce8c269accb7247f24a7, test-only.
+const baseline="'use strict';\nconst StudioReliability=(()=>{\n const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(16)};\n function receipt(id,kind,questions,answers,at=new Date().toISOString()){\n  const rows=questions.map((q,i)=>{const key=Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length?q.answer:null,raw=answers[kind==='original'?q.id:i],selected=Number.isInteger(raw)&&raw>=0&&raw<q.options.length?raw:key===null&&typeof raw==='string'?raw:null;return {id:q.id,question:q.question,options:[...q.options],letters:Array.isArray(q.letters)?[...q.letters]:q.options.map((_,i)=>String.fromCharCode(65+i)),selected,key,keyNote:q.sourceIssue||q.printedAnswer||'Authored study key'}});\n  const keyed=rows.filter(q=>q.key!==null),correct=keyed.filter(q=>q.selected===q.key).length,scored=keyed.filter(q=>Number.isInteger(q.selected)).length;\n  return {version:1,id,kind,at,keyVersion:hash(JSON.stringify(rows.map(q=>[q.id,q.options,q.key,q.keyNote]))),questions:rows,total:rows.length,keyed:keyed.length,correct,scored,percent:scored?correct/scored*100:0};\n }\n const luminance=hex=>{const c=hex.slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722};\n const contrast=(a,b)=>{const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};\n function colors(accent,dark){const bg=dark?'#15151e':'#ffffff',rgb=accent.slice(1).match(/../g).map(v=>parseInt(v,16));let text=accent;const toward=dark?255:0;for(let i=0;i<=100&&contrast(text,bg)<4.5;i++)text='#'+rgb.map(v=>Math.round(v+(toward-v)*i/100).toString(16).padStart(2,'0')).join('');return {accent,text,onAccent:contrast(accent,'#ffffff')>=contrast(accent,'#000000')?'#ffffff':'#000000'}};\n function verifyBackup(raw,validate,validateExtras,mergeRecords,mergeExtras){const original=JSON.stringify(raw),copy=JSON.parse(original),records=validate(copy),extras=validateExtras(copy.extras),restored={records:mergeRecords({},records),extras:mergeExtras({version:1,stores:{}},extras)};const second={records:mergeRecords({},restored.records),extras:mergeExtras({version:1,stores:{}},restored.extras)};if(JSON.stringify(restored)!==JSON.stringify(second)||JSON.stringify(raw)!==original)throw Error('Backup round-trip verification failed');for(const[id,r]of Object.entries(records))for(const[p,at]of Object.entries(r.done||{}))if(restored.records[id]?.done?.[p]!==at)throw Error('Completion timestamp changed');return {lectures:Object.keys(records).length,stores:Object.keys(extras.stores).length,bytes:new TextEncoder().encode(original).length}}\n function validReceipt(r){if(!r||r.version!==1||typeof r.id!=='string'||!['mock','set','original'].includes(r.kind)||!Number.isFinite(Date.parse(r.at))||typeof r.keyVersion!=='string'||!Number.isInteger(r.correct)||!Number.isInteger(r.total)||!Number.isInteger(r.keyed)||r.correct<0||r.correct>r.keyed||r.keyed>r.total||!Number.isFinite(r.percent)||r.percent<15||r.percent>100||!Array.isArray(r.questions)||r.questions.length!==r.total)return false;if(!r.questions.every(q=>q&&typeof q.id==='string'&&typeof q.question==='string'&&Array.isArray(q.options)&&q.options.every(o=>typeof o==='string')&&(q.selected===null||q.key===null&&typeof q.selected==='string'||Number.isInteger(q.selected)&&q.selected>=0&&q.selected<q.options.length)&&(q.key===null||Number.isInteger(q.key)&&q.key>=0&&q.key<q.options.length)))return false;const keyed=r.questions.filter(q=>q.key!==null),scored=keyed.filter(q=>Number.isInteger(q.selected)).length,correct=keyed.filter(q=>q.key===q.selected).length;return keyed.length===r.keyed&&correct===r.correct&&(r.scored===undefined||r.scored===scored)&&scored>0&&Math.abs(correct/scored*100-r.percent)<.000001}\n return {receipt,hash,luminance,contrast,colors,verifyBackup,validReceipt};\n})();\n";
+const candidate=readFileSync(new URL('../public/study-reliability-core.js',import.meta.url),'utf8');
+function load(source){return vm.runInThisContext('(function(){'+source+';return StudioReliability})()')}
+const before=load(baseline),after=load(candidate),at='2026-11-24T00:00:00Z';
+function fixture(n){return Array.from({length:n},(_,i)=>({id:'q'+i,question:'Question '+i,options:['a','b','c'],answer:i%5===0?null:i%3,letters:i%2?['A','B','C']:undefined,printedAnswer:i%7===0?'Printed':'',sourceIssue:i%13===0?'Uncertain':undefined}))}
+function median(fn){fn();const samples=[];for(let i=0;i<7;i++){const start=performance.now();fn();samples.push(performance.now()-start)}return samples.sort((a,b)=>a-b)[3]}
+test('A5-154 single-pass receipt tally preserves entire receipt, hash and verification',()=>{
+ for(const size of [0,1,5,20,200,2000])for(const kind of ['mock','set','original']){
+  const questions=fixture(size),answers=Object.fromEntries(questions.map((q,i)=>[kind==='original'?q.id:i,i%4===0?'written':i%6===0?null:i%11===0?99:i%3]));
+  const old=before.receipt('id',kind,questions,answers,at),next=after.receipt('id',kind,questions,answers,at);
+  assert.deepEqual(next,old);
+  for(const record of [next,{...next,scored:undefined},{...next,correct:next.correct+1},{...next,keyed:next.keyed+1},{...next,percent:next.percent+1},{...next,questions:[...next.questions,{id:'bad'}]}])assert.equal(after.validReceipt(record),before.validReceipt(record));
+ }
+});
+test('A5-154 large receipt validation benchmark preserves acceptance',()=>{
+ const questions=fixture(12000),answers=questions.map(q=>q.answer??'written');
+ const record=before.receipt('synthetic','mock',questions,answers,at);
+ assert.equal(before.validReceipt(record),true);assert.equal(after.validReceipt(record),true);
+ const baselineMs=median(()=>before.validReceipt(record)),candidateMs=median(()=>after.validReceipt(record));
+ console.log(JSON.stringify({label:'A5-154 receipt validation',baselineMedianMs:baselineMs,candidateMedianMs:candidateMs,rows:questions.length,baselineIntermediateArrays:3,candidateIntermediateArrays:0}));
+});
+
+test('A5-154 sparse arrays retain prior receipt behavior',()=>{
+ const questions=fixture(8);delete questions[1];delete questions[3];
+ const answers=questions.map(q=>q.answer??'written');
+ const old=before.receipt('id','mock',questions,answers,at),next=after.receipt('id','mock',questions,answers,at);
+ assert.deepEqual(next,old);assert.equal(after.validReceipt(next),before.validReceipt(old));
+});
