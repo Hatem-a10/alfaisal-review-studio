@@ -10,3 +10,37 @@ test('renamed identical uploads reuse existing sources and changed bytes remain 
 test('cleanup reclaims only identical original bytes, preserves IDs, separate extractions and authorization',async()=>{const f=fixture();f.add('a','owner','%PDF-1.7\nsame bytes','{"one":1}');f.add('b','owner','%PDF-1.7\nsame bytes','{"two":2}');f.add('c','other','%PDF-1.7\nsame bytes');assert.equal((await f.clean(clean(''))).status,401);assert.equal((await f.clean(clean('owner','https://evil.example'))).status,403);const r=await(await f.clean(clean('owner'))).json();assert.equal(r.duplicates,1);assert.equal(r.reclaimed,byte('%PDF-1.7\nsame bytes').length);assert.equal(f.rows.length,3);assert.equal(f.objects.has('materials/other/c/original'),true);assert.equal(await(await get(f,'a')).text(),'%PDF-1.7\nsame bytes');assert.equal(await(await get(f,'b')).text(),'%PDF-1.7\nsame bytes');assert.deepEqual(await(await get(f,'b','owner','?format=text')).json(),{two:2});assert.equal((await get(f,'b','other')).status,404);assert.equal((await(await f.clean(clean('owner'))).json()).duplicates,0);const again=await(await f.upload(upload('%PDF-1.7\nsame bytes'))).json();assert.equal(again.id,'a')});
 
 test('personal materials accept registered active-course lectures and reject unknown ones',async()=>{const f=fixture();for(const id of ['REN-A1','REN-P4','MOL-28']){const r=await f.upload(upload('%PDF-1.7\n'+id,'notes.pdf','owner',id));assert.equal(r.status,200);assert.equal((await r.json()).lectureId,id)}const invalid=await f.upload(upload('%PDF-1.7\nunknown','notes.pdf','owner','REN-A99'));assert.equal(invalid.status,400);assert.equal(f.rows.length,3)});
+
+test('malformed or oversized cleanup requests do not touch originals',async()=>{
+ const f=fixture();f.add('a','owner','%PDF-1.7\nkeep');
+ for(const body of ['bad','null','[]','{"offset":"0"}','{"offset":null}','{"offset":99}','{"other":0}',' '.repeat(5000)]){
+  const response=await f.clean(new Request('https://test.example/api/materials/deduplicate',{method:'POST',headers:headers(),body}));
+  assert.ok([400,409,413].includes(response.status),body.slice(0,40));assert.ok(f.objects.has('materials/owner/a/original'));
+ }
+});
+test('corrupt aliases reject null, foreign content and incorrect legacy bytes',async()=>{
+ const f=fixture();f.add('a','owner','%PDF-1.7\nAAAA');f.add('b','owner','%PDF-1.7\nBBBB');
+ f.objects.delete('materials/owner/a/original');const alias='materials/owner/a/original-alias',digest=sha('%PDF-1.7\nAAAA'),bytes=byte('%PDF-1.7\nAAAA').length;
+ for(const value of [null,{key:'materials/other/b/original',sha:digest,bytes},{key:'materials/owner/b/original',sha:digest,bytes},{key:'site-assets/data/'+digest,sha:digest,bytes}]){
+  f.objects.set(alias,byte(JSON.stringify(value)));assert.equal((await get(f,'a')).status,404);
+ }
+ f.objects.set(alias,byte(JSON.stringify({key:'materials/owner/b/original',sha:sha('%PDF-1.7\nBBBB'),bytes})));
+ assert.equal(await(await get(f,'a')).text(),'%PDF-1.7\nBBBB');
+});
+test('same-size mismatched known original is not returned as a built-in duplicate',async()=>{
+ const f=fixture(),original='%PDF-1.7\nexisting document';
+ f.objects.set('site-assets/data/'+sha(original),byte(original.replace('existing','EXISTING')));
+ const result=await(await f.upload(upload(original))).json();assert.equal(result.builtin,undefined);assert.equal(f.rows.length,1);
+});
+test('cleanup stops on inconsistent size and preserves originals; a canonical self-key is never deleted',async()=>{
+ const f=fixture();f.add('a','owner','%PDF-1.7\nkeep');f.rows[0].bytes++;
+ const response=await f.clean(clean('owner'));assert.equal(response.status,503);assert.equal((await response.json()).processed,0);assert.ok(f.objects.has('materials/owner/a/original'));
+ const g=fixture(),body='%PDF-1.7\ncanonical',id='content-'+sha(body);g.add(id,'owner',body);
+ assert.equal((await g.clean(clean('owner'))).status,200);assert.ok(g.objects.has('materials/owner/'+id+'/original'));
+});
+test('material downloads reject Anki rows and safely handle legacy mime and filename',async()=>{
+ const f=fixture();f.add('anki','owner','deck');f.rows[0].lectureId='ANKI';assert.equal((await get(f,'anki')).status,404);
+ f.add('doc','owner','private');f.rows[1].mime='text/html';f.rows[1].name="bad\ud800'file";
+ const response=await get(f,'doc');assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),'application/octet-stream');assert.match(response.headers.get('content-disposition'),/%EF%BF%BD%27/);
+ assert.match((await get(f,'missing')).headers.get('cache-control'),/no-store/);
+});
