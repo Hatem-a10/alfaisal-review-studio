@@ -31,6 +31,6 @@ test('A5-217/A5-218 unchanged theme avoids repeated palette work and root assign
  const a=fixture(baseline),b=fixture(candidate);
  const run=x=>{for(let i=0;i<300;i++)x.run()};
  run(a);run(b);assert.deepEqual(b.state(),a.state());
- const baseline=a.counts(),candidate=b.counts();assert.equal(baseline.derivations,301);assert.equal(candidate.derivations,1);assert.equal(candidate.writes,17);assert.equal(candidate.datasetWrites,2);
- console.log(JSON.stringify({label:'A5-217/A5-218 unchanged theme combined',baselineMedianMs:median(()=>run(a)),candidateMedianMs:median(()=>run(b)),baseline,candidate}));
+ const beforeCounts=a.counts(),afterCounts=b.counts();assert.equal(beforeCounts.derivations,301);assert.equal(afterCounts.derivations,1);assert.equal(afterCounts.writes,17);assert.equal(afterCounts.datasetWrites,2);
+ console.log(JSON.stringify({label:'A5-217/A5-218 unchanged theme combined',baselineMedianMs:median(()=>run(a)),candidateMedianMs:median(()=>run(b)),baseline:beforeCounts,candidate:afterCounts}));
 });
