@@ -6,7 +6,7 @@ const old="async function loadAnkiDecks(){const account=ankiAccount(),run=++anki
 const source=readFileSync(new URL('../public/anki.js',import.meta.url),'utf8');
 const helper=source.slice(source.indexOf('const ankiListingRequests=new Map();'),source.indexOf('async function loadAnkiDecks()'));
 const current=source.split('\n').find(l=>l.startsWith('async function loadAnkiDecks()'));
-const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve()};
+const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();await new Promise(resolve=>setImmediate(resolve))};
 function fixture(fn,helpers=''){
  let account='A',renders=0;
  const calls=[];
