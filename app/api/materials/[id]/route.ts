@@ -3,7 +3,8 @@ import {materialOriginal} from '../../../../lib/material-dedup';
 export const dynamic='force-dynamic';
 const json=(error:string,status:number)=>Response.json({error},{status,headers:{'Cache-Control':'private, no-store'}});
 const safeMime=(v:string)=>['application/pdf','application/json','text/plain','application/octet-stream'].includes(v)?v:'application/octet-stream';
-const filename=(v:string)=>encodeURIComponent(new TextDecoder().decode(new TextEncoder().encode(typeof v==='string'?v:'document'))).replace(/[!'()*]/g,c=>'%'+c.charCodeAt(0).toString(16).toUpperCase());
+// A5-245: normalize malformed surrogate code units without UTF-8 encode/decode allocations.
+const filename=(v:string)=>encodeURIComponent((typeof v==='string'?v:'document').toWellFormed()).replace(/[!'()*]/g,c=>'%'+c.charCodeAt(0).toString(16).toUpperCase());
 export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){
  const user=request.headers.get('oai-authenticated-user-id');if(!user)return json('Sign in required.',401);
  const {id}=await params;if(!/^[\w-]{1,80}$/.test(id))return json('Invalid document.',400);
