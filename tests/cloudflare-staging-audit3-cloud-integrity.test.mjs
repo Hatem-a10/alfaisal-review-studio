@@ -16,7 +16,9 @@ test('missing or misleading Content-Length does not bypass the stream limit',asy
 });
 test('bounded multipart keeps fields and rejects excessive envelope',async()=>{
  const f=new FormData();f.set('file',new Blob(['abc']),'a.txt');f.set('lectureId','REN-A1');
- const request=()=>new Request('https://example.test',{method:'POST',body:f});
+ // Encode the multipart body once: Node 24.22.1's FormData body stream errors asynchronously when cancelled mid-read.
+ const encoded=new Response(f),type=encoded.headers.get('content-type'),body=new Uint8Array(await encoded.arrayBuffer());
+ const request=()=>new Request('https://example.test',{method:'POST',body,headers:{'content-type':type}});
  const result=await boundedForm(request(),2048);assert.equal(result.get('lectureId'),'REN-A1');assert.equal(await result.get('file').text(),'abc');
  await assert.rejects(boundedForm(request(),5),RequestTooLarge);
 });
