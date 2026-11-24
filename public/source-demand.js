@@ -24,14 +24,15 @@
   return data;
  }
  let searchIndex=null,searchIndexURL=null;const termCache=new Map();function pagesFor(term){if(termCache.has(term))return termCache.get(term);const seen=new Set();if(term.length===1){for(const i of searchIndex.terms[term]||[])seen.add(i)}else{for(const[word,rows]of Object.entries(searchIndex.terms))if(word.includes(term))for(const i of rows)seen.add(i)}if(termCache.size>=100)termCache.delete(termCache.keys().next().value);termCache.set(term,seen);return seen}
+ // Intersect from the smallest posting set; retain the first term's insertion order for stable result ties.
+ function intersectPages(sets){if(!sets.length)return [];if(sets.length===1)return [...sets[0]];const ordered=[...sets].sort((a,b)=>a.size-b.size),matches=new Set(),rest=ordered.slice(1);for(const page of ordered[0])if(rest.every(set=>set.has(page)))matches.add(page);if(!matches.size)return [];return [...sets[0]].filter(page=>matches.has(page))}
  const beforeSearch=searchPassages;searchPassages=function(){
   if(window.reviewCourseScope==='REN')return beforeSearch();
   const url=LEARNING.searchIndexURL;if(!url)return beforeSearch();
   if(searchIndexURL!==url){searchIndexURL=url;searchIndex=null;termCache.clear()}
   if(!searchIndex){if(!errors.has(url))request(url,data=>{if(searchIndexURL===url&&LEARNING.searchIndexURL===url)searchIndex=checkedSearchIndex(data)});return message(url)}
-  const terms=[...new Set(sourceSearch.toLowerCase().normalize('NFKC').match(/[\p{L}\p{N}]+/gu)||[])],scores=new Map();if(!terms.length)return '<p>Enter a search term.</p>';
-  terms.forEach(term=>{for(const i of pagesFor(term))scores.set(i,(scores.get(i)||0)+1)});
-  let results=[...scores].filter(([,score])=>score===terms.length).map(([i,score])=>({...searchIndex.pages[i],score,indexed:true}));
+  const terms=[...new Set(sourceSearch.toLowerCase().normalize('NFKC').match(/[\p{L}\p{N}]+/gu)||[])];if(!terms.length)return '<p>Enter a search term.</p>';
+  let results=intersectPages(terms.map(pagesFor)).map(i=>({...searchIndex.pages[i],score:terms.length,indexed:true}));
   for(const s of LEARNING.sources.concat(uploads.map(u=>({...u,pages:uploadBodies[u.id]?.pages||[]}))))if(!s.readingURL)for(const p of s.pages||[]){const text=typeof p.text==='string'?p.text:'',normalized=text.toLowerCase().normalize('NFKC'),score=terms.filter(t=>normalized.includes(t)).length;if(score===terms.length){const starts=terms.map(t=>normalized.indexOf(t)).filter(i=>i>=0),start=Math.max(0,Math.min(text.length-1,starts.length?Math.min(...starts):0)-100);results.push({source:s.id,page:p.page,score,snippet:text.slice(start,start+650)})}}
   results=results.filter(r=>{const source=sourceById(r.source);return source&&librarySourceInCourse(source)&&libraryDocumentURL(source,r.page)});
   results.sort((a,b)=>b.score-a.score||a.source.localeCompare(b.source)||a.page-b.page);
