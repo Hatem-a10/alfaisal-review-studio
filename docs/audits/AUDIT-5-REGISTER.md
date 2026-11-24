@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against merged PRs on 24 November 2026: 70 newly merged candidate scopes (66 speed-oriented changes and 4 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 0 submitted candidates and 168 unassessed. The 300 distinct IDs remain intact; no production changes or student-data edits.
+Status reconciled against merged PRs on 24 November 2026: 71 newly merged candidate scopes (67 speed-oriented changes and 4 measurement capabilities), 61 pre-existing mechanisms source-reviewed, 1 rejected/not-applicable item, 0 submitted candidates and 167 unassessed. The 300 distinct IDs remain intact; no production changes or student-data edits.
 
 ## Activity analytics
 
@@ -212,7 +212,7 @@ Status reconciled against merged PRs on 24 November 2026: 70 newly merged candid
 | A5-133 | Precompute stable course display order | Unassessed |
 | A5-134 | Compute due overdue and completed task buckets in one traversal | Merged #137; CI passed |
 | A5-135 | Select next guided same-course lesson in one ordered scan | Merged #152; CI passed; narrowed to guided next lecture |
-| A5-136 | Reuse progress denominators for static lesson sets | Unassessed |
+| A5-136 | Reuse progress denominators for static lesson sets | Merged #186; CI passed; one-pass concept status counts |
 | A5-137 | Update countdown digits only when displayed markup changes | Merged #138; CI passed; DOM operation counts |
 | A5-138 | Share one saved-options and date snapshot across study activity view | Merged #135; CI passed; narrowed scope |
 | A5-139 | Reuse normalized student group profile across timetable filtering | Merged #118; CI passed |
@@ -560,7 +560,7 @@ No production release, migrations, student-data edits or archived curriculum edi
 
 ## Audit 5 merge reconciliation — 24 November 2026
 
-The fourteen previously unrecorded candidate scopes below are merged into `cloudflare-staging`, with successful candidate-head staging CI. These PR links document narrowed scopes and benchmarks; passing synthetic CI is not evidence of production-wide latency gains.
+The fifteen previously unrecorded candidate scopes below are merged into `cloudflare-staging`, with successful candidate-head staging CI. These PR links document narrowed scopes and benchmarks; passing synthetic CI is not evidence of production-wide latency gains.
 
 - **A5-199**: [merged PR #162](https://github.com/Hatem-a10/alfaisal-review-studio/pull/162); [successful staging CI 45398589141](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398589141).
 - **A5-040**: [merged PR #164](https://github.com/Hatem-a10/alfaisal-review-studio/pull/164); [successful staging CI 45398779135](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45398779135).
@@ -576,10 +576,11 @@ The fourteen previously unrecorded candidate scopes below are merged into `cloud
 - **A5-231**: [merged PR #174](https://github.com/Hatem-a10/alfaisal-review-studio/pull/174); [successful staging CI 45403810122](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45403810122).
 - **A5-232**: [merged PR #176](https://github.com/Hatem-a10/alfaisal-review-studio/pull/176); [successful staging CI 45404176204](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45404176204).
 - **A5-113**: [merged PR #183](https://github.com/Hatem-a10/alfaisal-review-studio/pull/183); [successful staging CI 45404544379](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45404544379); merge `7bf85e0b8fab5be7055814a2344c09ff6fa2075c`.
+- **A5-136**: [merged PR #186](https://github.com/Hatem-a10/alfaisal-review-studio/pull/186); [successful staging CI 45405171431](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45405171431); merge `e2a48fcf1f390377fc333dcb6aff3968a9f85568`. Narrowly covers single-pass runtime concept mastery status; no persistent cache or grading rule changes.
 
 [#177](https://github.com/Hatem-a10/alfaisal-review-studio/pull/177) corrected a flaky hard timing assertion for A5-199 while keeping strict behavior and operation-count checks, not an extra candidate. [#181](https://github.com/Hatem-a10/alfaisal-review-studio/pull/181) added six source-verified existing mechanisms, not newly implemented gains. Candidate **A5-113** was merged in [PR #183](https://github.com/Hatem-a10/alfaisal-review-studio/pull/183) after staging CI passed and is credited as one speed-oriented implementation. Archived-CVP load correction remains outside Audit 5. No production release, migrations, or student-data changes.
 
-**70 merged + 61 existing + 1 rejected + 0 submitted + 168 unassessed = 300.** Of merged items, 66 target performance and 4 are measurement-only.
+**71 merged + 61 existing + 1 rejected + 0 submitted + 167 unassessed = 300.** Of merged items, 67 target performance and 4 are measurement-only.
 
 ## Pre-existing implementation coverage (source review, not new speed gains)
 
