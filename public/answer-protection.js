@@ -6,7 +6,13 @@
   if(!originalRun)return save();
   let stored={};try{const parsed=JSON.parse(localStorage.getItem(originalRunsKey)||'{}');if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw Error('Invalid saved exam data');stored=parsed}catch{toast('Saved exams could not be read. No existing exam was overwritten.');return}
   const prior=stored[originalRun.setId];
-  if(prior&&prior.startedAt===originalRun.startedAt&&prior.finishedAt){toast('This exam was completed in another tab. Open its saved results before continuing.');return}
+  if(prior&&prior.startedAt===originalRun.startedAt&&prior.finishedAt){
+   const sameAnswers=Object.keys(prior.answers||{}).length===Object.keys(originalRun.answers||{}).length&&Object.entries(prior.answers||{}).every(([key,value])=>Object.hasOwn(originalRun.answers||{},key)&&originalRun.answers[key]===value);
+   if(prior.finishedAt!==originalRun.finishedAt||!sameAnswers){toast('This exam was completed in another tab. Open its saved results before continuing.');originalRun=structuredClone(prior);originalRuns={...originalRuns,...stored};baseline=structuredClone(prior);return}
+   // Permit only an idempotent save or an optional receipt enrichment of the same frozen result.
+   const receipt=originalRun.receipt;originalRun={...prior};
+   if(!prior.receipt&&typeof StudioReliability!=='undefined'&&StudioReliability.validReceipt(receipt)&&receipt.id==='original:'+prior.setId+':'+prior.startedAt)originalRun.receipt=receipt;
+  }
   if(prior&&prior.startedAt!==originalRun.startedAt&&Date.parse(prior.startedAt)>Date.parse(originalRun.startedAt)){toast('A newer attempt is open in another tab. Reopen the exam to avoid overwriting it.');return}
   originalRun=AnswerIntegrity.reconcile(originalRun,baseline,prior);originalRuns={...originalRuns,...stored,[originalRun.setId]:originalRun};
   save();baseline=structuredClone(originalRun);
