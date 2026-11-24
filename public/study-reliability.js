@@ -55,7 +55,7 @@
  panel.append(body);
  const tools=document.createElement('details');tools.className='settings-sync-tools';tools.innerHTML='<summary>Recovery tools</summary>';
  // The damaged-data export is created later in startup, so collect it whenever Settings opens.
- const collect=()=>{const damaged=document.getElementById('exportDamagedStudy');if(damaged&&damaged.parentElement!==tools){tools.append(damaged);panel.append(tools)}};
+ const collect=()=>{const damaged=document.getElementById('exportDamagedStudy');if(damaged&&damaged.parentElement!==tools){tools.append(damaged);panel.append(tools)}const repair=document.querySelector('#siteAdmin [data-sync-repair]');if(repair&&repair.parentElement!==tools){repair.classList.remove('panel');repair.querySelector('h3')?.remove();tools.append(repair);panel.append(tools)}};
  collect();open.addEventListener('click',collect);window.addEventListener('studio-ready',collect);
  frame.querySelector('.section-head')?.after(panel);
  open.hidden=true;open.style.display='none';widget.open=false;widget.classList.add('sync-status-only');
@@ -64,4 +64,7 @@
  summary?.addEventListener('click',e=>{e.preventDefault();open.click()});
  widget.addEventListener('toggle',()=>{if(widget.open)widget.open=false});
  const mobile=document.getElementById('mobileSyncSettings');if(mobile)mobile.onclick=()=>open.click();
+ // Keep Close reachable while scrolling: it sits on the dialog, outside the scrolling frame.
+ const close=document.getElementById('closeSiteAdmin'),dialog=document.getElementById('siteAdmin');
+ if(close&&dialog){close.classList.add('site-settings-close');dialog.prepend(close);}
 })();

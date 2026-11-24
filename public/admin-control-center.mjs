@@ -5,7 +5,26 @@ const tabs = {
  analytics:'Analytics', storage:'Storage & Backups', audit:'Security & Audit Logs', site:'Site Controls',
 };
 const classes = ['M1','M2','F1','F2'];
-const sectionIcons={overview:'◈',students:'◎',roles:'◇',academics:'▤',resources:'▣',reports:'⊙',announcements:'◁',analytics:'▥',storage:'▱',audit:'◉',site:'⚙'};
+const sectionIcons={
+ overview:'M3 3h7v8H3z M14 3h7v5h-7z M3 15h7v6H3z M14 12h7v9h-7z',
+ students:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M2 21a7 7 0 0 1 14 0 M17 11a3 3 0 1 0 0-6 M22 21a6 6 0 0 0-5-6',
+ roles:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z M9 12l2 2 4-4',
+ academics:'M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2z M8 2v4 M16 2v4 M3 10h18 M8 14h3 M8 17h6',
+ resources:'M3 4h4v16H3z M10 4h4v16h-4z M16 5l4-1 3 15-4 1z',
+ reports:'M4 4h16v12H8l-4 4z M12 7v4 M12 13.5h.01',
+ announcements:'M3 11v2a2 2 0 0 0 2 2h2l5 4V5L7 9H5a2 2 0 0 0-2 2z M16 8a5 5 0 0 1 0 8 M19 5a9 9 0 0 1 0 14',
+ analytics:'M3 20h18 M6 16v-5 M11 16V7 M16 16v-8 M21 16V4',
+ storage:'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6 M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6',
+ audit:'M12 3a9 9 0 1 0 9 9 M12 7v5l3 2 M17 3h4v4',
+ site:'M4 6h10 M18 6h2 M4 12h4 M12 12h8 M4 18h12 M20 18h0 M16 4v4 M10 10v4 M18 16v4',
+};
+// Navigation groups: Overview, then people, content, insights and site settings.
+const sectionGroups=[['','overview'],['People','students','roles'],['Content','academics','resources','reports','announcements'],['Insights','analytics','storage','audit'],['Site','site']];
+const sectionHints={students:'Find accounts and edit profiles',roles:'Editors, moderators and permissions',academics:'Groups, schedules and revisions',resources:'Shared files and their integrity',reports:'Question reports and corrections',announcements:'Messages to classes and groups',analytics:'Opt-in study activity',storage:'Usage and backups',audit:'Sign-ins and security events',site:'Flags, maintenance and course dates'};
+function sectionIcon(section){
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('class','acc-nav-icon');
+ const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',sectionIcons[section]||sectionIcons.overview);svg.append(path);return svg;
+}
 const css = '/admin-control-center.css';
 const formatDate = value => value && Number.isFinite(new Date(value).getTime()) ? new Date(value).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'}) : '—';
 const bytes = value => value==null?'Unavailable':new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(value/1048576)+' MiB';
@@ -22,11 +41,35 @@ function button(label, handler, cssClass) {
  el.addEventListener('click',handler);
  return el;
 }
-async function request(path, options={}) {
+async function request(path, options={}, retried=false) {
  const response=await fetch(apiRoot+path,{cache:'no-store',credentials:'same-origin',...options});
  const data=await response.json().catch(()=>({}));
+ // A stale sign-in is refreshed in place with an emailed code, then the request is retried once.
+ if(!response.ok&&data.reauthenticate===true&&!retried&&await reverifyIdentity())return request(path,options,true);
  if(!response.ok)throw Object.assign(new Error(data.error||'The request could not be completed.'),{status:response.status,reauthenticate:data.reauthenticate===true});
  return data;
+}
+/**
+ * Fresh first-factor verification without signing out: Clerk session reverification
+ * with an email code. The server still requires a verification from the last 10 minutes;
+ * this only changes how the owner provides it. Resolves true once the session token
+ * carries the new verification.
+ */
+export async function reverifyIdentity(clerk=globalThis.Clerk){
+ const session=clerk?.session,emailAddressId=clerk?.user?.primaryEmailAddressId,email=clerk?.user?.primaryEmailAddress?.emailAddress||'your email';
+ if(!session?.startVerification||!emailAddressId)return false;
+ const send=async()=>{await session.startVerification({level:'first_factor'});await session.prepareFirstFactorVerification({strategy:'email_code',emailAddressId});};
+ try{await send();}catch{return false;}
+ const code=field('code','Verification code',{required:true,maxLength:8});
+ const input=code.querySelector('input');input.inputMode='numeric';input.autocomplete='one-time-code';input.pattern='[0-9]{6,8}';
+ const resend=button('Send a new code',async event=>{event.currentTarget.disabled=true;try{await send();}finally{event.currentTarget.disabled=false;}},'acc-link');
+ const result=await openForm('Confirm it’s you',[node('p','Enter the code sent to '+email+'. You stay signed in.'),code,resend],'Verify',async values=>{
+  const attempt=await session.attemptFirstFactorVerification({strategy:'email_code',code:String(values.code||'').trim()});
+  if(attempt?.status!=='complete')throw new Error('That code did not complete verification. Check it and try again.');
+  await session.getToken({skipCache:true});
+  return true;
+ });
+ return result===true;
 }
 const json = payload => ({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
 const query = values => '?' + new URLSearchParams(values);
@@ -119,7 +162,7 @@ function openForm(title, fields, submitLabel='Save', submit) {
    }catch(error){
     status.textContent=error.message;
     if(error.reauthenticate){
-     const link=node('a','Sign out to verify again',{href:'/auth/sign-out'});
+     const link=node('a','Sign in again to verify',{href:'/auth/sign-out'});
      status.append(' ',link);
      link.focus();
     }
@@ -144,7 +187,7 @@ export async function openAdminCenter(){
  const header=node('header',null,{class:'acc-head'});
  const title=node('div');
  title.append(node('h2','Admin Control Center',{id:'acc-title'}),node('p',({owner:'Owner',editor:'Content editor',moderator:'Moderator'})[access.role],{class:'acc-role'}));
- const close=button('Close',()=>dialog.close());close.autofocus=true;
+ const close=button('',()=>dialog.close(),'acc-close');close.setAttribute('aria-label','Close Admin Control Center');close.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';close.autofocus=true;
  header.append(title,close);
  const layout=node('div',null,{class:'acc-layout'});
  const navigation=node('nav',null,{'aria-label':'Administration sections'});
@@ -415,7 +458,7 @@ export async function openAdminCenter(){
    }catch(error){
     status.textContent=error.message;
     if(error.reauthenticate){
-     const link=node('a','Sign out to verify again',{href:'/auth/sign-out'});
+     const link=node('a','Sign in again to verify',{href:'/auth/sign-out'});
      status.append(' ',link);
      link.focus();
     }
@@ -546,7 +589,13 @@ export async function openAdminCenter(){
   const info=data.summary;
   panel.append(cards([['Environment',data.environment],['Access',({owner:'Owner',editor:'Content Editor',moderator:'Moderator'})[data.role]],...(info?[['Registered accounts',info.registered],['Active in 7 days',info.active7],['Onboarded',info.onboarded]]:[])]));
   if(data.flags.maintenance)panel.append(node('p',data.flags.maintenance,{class:'acc-empty'}));
-  panel.append(actions(...access.sections.filter(section=>section!=='overview').map(section=>button(tabs[section],()=>load(section)))));
+  const tiles=node('div',null,{class:'acc-tiles'});
+  for(const section of access.sections.filter(section=>section!=='overview')){
+   const tile=button('',()=>load(section),'acc-tile');
+   const text=node('span');text.append(node('strong',tabs[section]),node('small',sectionHints[section]||''));
+   tile.append(sectionIcon(section),text);tiles.append(tile);
+  }
+  panel.append(tiles);
  }
  async function within(work){
   status.textContent='Loading…';
@@ -563,11 +612,12 @@ export async function openAdminCenter(){
   try{await views[section](version);if(version===viewVersion)status.textContent='';}
   catch(error){if(version===viewVersion){status.textContent=error.message;panel.append(button('Retry',()=>load(section)));}}
  }
- for(const section of access.sections){
-  const element=button(tabs[section],()=>load(section));
-  element.prepend(node('span',sectionIcons[section],{class:'acc-nav-icon','aria-hidden':'true'}));
-  nav.set(section,element);navigation.append(element);
+ for(const [label,...members] of sectionGroups){
+  const allowed=members.filter(section=>access.sections.includes(section));if(!allowed.length)continue;
+  if(label)navigation.append(node('p',label,{class:'acc-nav-group'}));
+  for(const section of allowed){const element=button(tabs[section],()=>load(section));element.prepend(sectionIcon(section));nav.set(section,element);navigation.append(element);}
  }
+ for(const section of access.sections.filter(section=>!nav.has(section))){const element=button(tabs[section],()=>load(section));element.prepend(sectionIcon(section));nav.set(section,element);navigation.append(element);}
  await load('overview');
 
  // Content controls share the same confirmation and server-side challenge flow.

@@ -48,7 +48,9 @@ await import("./course-workspace.mjs");
 export function installAccentPicker(doc=document){
  const host=doc.querySelector('.hub-accent-control');if(!host||host.querySelector('.gradient-picker'))return;
  const input=doc.getElementById('accentColor'),autoBox=doc.getElementById('accentAuto');
- if(input){input.hidden=true;input.style.display='none'}
+ // The colour input sat inside this <label>, so any click on the picker also opened the
+ // browser's colour picker. Move it out of the label (it stays hidden for older handlers).
+ if(input){input.hidden=true;input.style.display='none';host.closest('.hub-appearance')?.append(input)}
  const autoLabel=autoBox?.closest('label');if(autoLabel){autoLabel.hidden=true;autoLabel.style.display='none'}
  const title=host.querySelector(':scope>span');if(title)title.textContent='Accent gradient';
  const current=()=>settings.accentAuto!==false?'auto':chosenGradient(settings)?.id;

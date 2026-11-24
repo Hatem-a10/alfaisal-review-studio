@@ -20,15 +20,14 @@ function loadGroups(){
 }
 function labChoices(group,section){return [...new Set(groupConfig.filter(x=>x.studentGroup===group&&x.studentSection===section).flatMap(x=>x.labGroups).filter(validLab))]}
 
-function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=147';document.head.append(link)}
+function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=151';document.head.append(link)}
 function shell(title,body){style();const d=document.createElement('dialog');d.className='student-welcome';d.setAttribute('aria-labelledby','studentWelcomeTitle');d.innerHTML='<div class="student-welcome-mark" aria-hidden="true">✦</div><h2 id="studentWelcomeTitle">'+title+'</h2>'+body;document.body.append(d);return d}
-export function signedOut(dismiss){if(document.getElementById('profileSignInNotice'))return;const d=shell('Your own study space','<p>Sign in to save your profile and keep your progress together across devices.</p><a class="primary student-sign-in" href="/signin-with-chatgpt?return_to='+encodeURIComponent(location.pathname+location.search+location.hash)+'" target="_top">Sign in with ChatGPT</a><button type="button" data-profile-browse>Continue browsing</button>');d.id='profileSignInNotice';d.querySelector('[data-profile-browse]').onclick=()=>d.close();d.addEventListener('close',()=>{dismiss();d.remove()},{once:true});d.showModal()}
 
 function groupFields(required=false){const optional=required?'':' (optional)';return '<div class="student-group-fields"><label>Academic group'+optional+'<select name="group"><option value="">Not selected</option>'+['M1','M2','F1','F2'].map(g=>'<option>'+g+'</option>').join('')+'</select></label><label>Section'+optional+'<select name="section"><option value="">Not selected</option><option>A</option><option>B</option></select></label></div>'}
 function groupValues(form){return {studentGroup:form.querySelector('[name=group]').value,studentSection:form.querySelector('[name=group]').value?form.querySelector('[name=section]').value:'',groupConfigured:true}}
 export function groups(settings,save){style();let panel=document.getElementById('studentGroupSettings');if(!panel){panel=document.createElement('section');panel.id='studentGroupSettings';panel.className='panel';panel.innerHTML='<h3>Profile and schedule</h3>'+groupFields()+'<label>Lab group<select data-lab><option value="">Not selected</option></select></label><label class="student-settings-english"><input type="checkbox" data-english-enabled> Show English classes</label><label>English days<select data-frequency><option value="2">2 days · Monday & Wednesday</option><option value="3">3 days · Sunday, Tuesday & Thursday</option></select></label><label>Start time<select data-english-time><option value="17:00">5:00 PM</option><option value="17:30">5:30 PM</option></select></label><button type="button" data-save-preferences>Save preferences</button><div data-preference-status role="status"></div><div data-plan-warning role="status"></div><button type="button" data-reset-profile>Reset profile</button>';document.querySelector('#siteAdmin .admin-frame')?.append(panel)}const warning=panel.querySelector('[data-plan-warning]'),plan=typeof storeOptions==='function'?storeOptions().onboardingPlanWarnings:null;warning.replaceChildren();if(Array.isArray(plan?.items)&&plan.items.length){const p=document.createElement('p');p.textContent=plan.items.length+' reviews could not be placed before their deadline or within the available capacity. Today’s dates are placeholders; adjust them in the review editor.';const b=document.createElement('button');b.type='button';b.textContent='Dismiss planning warning';b.onclick=()=>{const o={...storeOptions()};delete o.onboardingPlanWarnings;saveOptions(o);warning.replaceChildren()};warning.append(p,b)}const g=panel.querySelector('[name=group]'),section=panel.querySelector('[name=section]'),lab=panel.querySelector('[data-lab]');const legacy=settings.legacyProfile&&!settings.groupConfigured;g.value=settings.studentGroup||(legacy?'M1':'');section.value=settings.studentSection||(legacy?'A':'');const initialGroup=g.value,initialSection=section.value,storedLab=settings.labGroup||(legacy&&!settings.labGroupConfigured?'1.6':'');const fill=(keepSaved=false)=>{const prior=lab.value;lab.replaceChildren(new Option('Not selected',''));for(const value of labChoices(g.value,section.value))lab.add(new Option(value,value));if(keepSaved&&g.value===initialGroup&&section.value===initialSection&&validLab(storedLab)&&!Array.from(lab.options).some(o=>o.value===storedLab))lab.add(new Option(storedLab,storedLab));lab.value=Array.from(lab.options).some(o=>o.value===prior)?prior:''};fill(true);lab.value=storedLab;g.onchange=()=>fill();section.onchange=()=>fill();loadGroups().then(()=>fill(true));panel.querySelector('[data-english-enabled]').checked=settings.englishEnabled!==false;panel.querySelector('[data-frequency]').value=String(settings.englishFrequency||2);panel.querySelector('[data-english-time]').value=settings.englishStartTime||'17:30';panel.querySelector('[data-save-preferences]').onclick=()=>{save({...groupValues(panel),labGroupConfigured:true,labGroup:lab.value,englishEnabled:panel.querySelector('[data-english-enabled]').checked,englishFrequency:Number(panel.querySelector('[data-frequency]').value),englishStartTime:panel.querySelector('[data-english-time]').value});panel.querySelector('[data-preference-status]').textContent='Schedule updated.'};panel.querySelector('[data-reset-profile]').onclick=async()=>{document.getElementById('siteAdmin')?.close();const p=await setup({reset:true});if(p){delete p._selectedReviews;save({...p,legacyProfile:false,profilePhoto:''})}}}
 
-function appearance(d){const bar=document.createElement('div');bar.className='student-appearance';bar.setAttribute('role','group');bar.setAttribute('aria-label','Appearance');bar.innerHTML='<button type="button" aria-label="Switch appearance mode"></button>';d.querySelector('.welcome-appearance-preview')?.append(bar);const theme=bar.querySelector('button'),original=document.getElementById('themeToggle');const paint=()=>{theme.innerHTML=original?.innerHTML||'◐';theme.setAttribute('aria-label',original?.getAttribute('aria-label')||'Switch appearance mode')};paint();theme.onclick=()=>{settings.theme=settings.theme==='amoled'?'light':'amoled';applyTheme();paint()};mountGradientPicker(bar,{selected:settings.accentAuto!==false?'auto':chosenGradient(settings)?.id,onPick(g){if(g){settings.accentAuto=false;settings.accentPalette=g.id;settings.accent=g.b}else settings.accentAuto=true;applyTheme()}})}
+function appearance(d){const bar=document.createElement('div');bar.className='student-appearance';bar.setAttribute('role','group');bar.setAttribute('aria-label','Appearance');bar.innerHTML='<button type="button" aria-label="Switch appearance mode"></button>';d.querySelector('.welcome-appearance-preview')?.append(bar);const theme=bar.querySelector('button'),original=document.getElementById('themeToggle');const paint=()=>{theme.innerHTML=(original?.innerHTML||'◐')+'<span>'+(settings.theme==='amoled'?'Switch to light':'Switch to dark')+'</span>';theme.setAttribute('aria-label',original?.getAttribute('aria-label')||'Switch appearance mode')};paint();theme.onclick=()=>{settings.theme=settings.theme==='amoled'?'light':'amoled';applyTheme();paint()};mountGradientPicker(bar,{selected:settings.accentAuto!==false?'auto':chosenGradient(settings)?.id,onPick(g){if(g){settings.accentAuto=false;settings.accentPalette=g.id;settings.accent=g.b}else settings.accentAuto=true;applyTheme()}})}
 function mountReviewProgress(progress,items){
  const groups=[];
  function checkbox(label,attrs={}){
@@ -74,26 +73,42 @@ function mountReviewProgress(progress,items){
 export function setup({reset=false,items=[]}={}){
  return new Promise(resolve=>{
   const managed=window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
+  const steps=[['you','You'],['class','Class'],['look','Look'],...(items.length?[['progress','Progress']]:[])];
   const d=shell(reset?'Reset your profile':'Welcome to Review Studio',`
    <form id="studentProfileForm">
-    <h3>Your class schedule</h3>
-    <label>Your name<input name="name" autocomplete="name" maxlength="100" required></label>
-    ${groupFields(managed&&!reset)}
-    <label>Lab group<select name="lab"><option value="">Select your lab group</option></select></label>
-    <details class="student-setup-options"><summary>Optional preferences</summary>
-     <label>Student number<input name="number" maxlength="30"></label>
+    <ol class="student-steps" aria-label="Setup steps">${steps.map(([id,label],i)=>`<li data-step-dot="${i}"><span>${i+1}</span>${label}</li>`).join('')}</ol>
+    <section class="student-step" data-step="you">
+     <h3>Let’s set up your study space</h3>
+     <p class="student-step-lead">Your name appears on your profile. Everything here can be changed later in Settings.</p>
+     <label>Your name<input name="name" autocomplete="name" maxlength="100" required></label>
+     <label>Student number (optional)<input name="number" maxlength="30"></label>
+    </section>
+    <section class="student-step" data-step="class" hidden>
+     <h3>Your class schedule</h3>
+     <p class="student-step-lead">Your group, section and lab group decide which classes and labs appear in your schedule.</p>
+     ${groupFields(managed&&!reset)}
+     <label>Lab group<select name="lab"><option value="">Select your lab group</option></select></label>
      <label class="student-setup-english"><input type="checkbox" name="englishEnabled"> Add English classes</label>
      <div data-english-fields hidden>
       <label>English days<select name="frequency"><option value="2">Monday &amp; Wednesday</option><option value="3">Sunday, Tuesday &amp; Thursday</option></select></label>
       <label>Start time<select name="englishTime"><option value="17:00">5:00 PM</option><option value="17:30" selected>5:30 PM</option></select></label>
      </div>
-     <div data-appearance><div class="welcome-appearance-preview"><strong>Appearance</strong></div></div>
-     ${items.length?'<details data-review-options><summary>Import completed reviews</summary><div data-progress></div></details>':''}
-    </details>
+    </section>
+    <section class="student-step" data-step="look" hidden>
+     <h3>Make it yours</h3>
+     <p class="student-step-lead">Pick light or dark, and a gradient for buttons, cards and highlights. “A” follows your next assessment.</p>
+     <div data-appearance><div class="welcome-appearance-preview"></div></div>
+    </section>
+    ${items.length?`<section class="student-step" data-step="progress" hidden>
+     <h3>Already reviewed some lectures?</h3>
+     <p class="student-step-lead">Tick the reviews you have finished so your plan starts from the right place. You can skip this.</p>
+     <div data-review-options><div data-progress></div></div>
+    </section>`:''}
     <p class="student-profile-error" role="status"></p>
     <div class="student-wizard-actions">
      ${reset?'<button type="button" data-cancel-profile>Cancel</button>':''}
-     <button class="primary" type="submit" data-next>${reset?'Save profile':'Go to Home'}</button>
+     <button type="button" data-back hidden>Back</button>
+     <button class="primary" type="submit" data-next>Continue</button>
     </div>
    </form>`);
   d.id='studentProfileSetup';
@@ -122,8 +137,12 @@ export function setup({reset=false,items=[]}={}){
   const updateEnglish=()=>englishFields.hidden=!englishEnabled.checked;
   englishEnabled.onchange=updateEnglish;
   updateEnglish();
-  const reviews=d.querySelector('[data-review-options]');
-  reviews?.addEventListener('toggle',()=>{if(reviews.open)mountReviewProgress(reviews.querySelector('[data-progress]'),items)},{once:true});
+  const reviews=d.querySelector('[data-review-options]');let reviewsMounted=false;
+  // Steps: one section at a time; Continue checks the current step's required fields.
+  let step=0;const sections=[...d.querySelectorAll('.student-step')],back=d.querySelector('[data-back]'),next=d.querySelector('[data-next]');
+  const show=i=>{step=i;sections.forEach((el,n)=>el.hidden=n!==i);d.querySelectorAll('[data-step-dot]').forEach((el,n)=>{el.classList.toggle('current',n===i);el.classList.toggle('done',n<i);if(n===i)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current')});back.hidden=i===0;next.textContent=i<sections.length-1?'Continue':reset?'Save profile':'Go to Home';status.textContent='';if(sections[i].dataset.step==='progress'&&!reviewsMounted){reviewsMounted=true;mountReviewProgress(reviews.querySelector('[data-progress]'),items)}sections[i].querySelector('input:not([type=checkbox]),select')?.focus({preventScroll:true})};
+  const requiredFor=i=>({you:[name],class:managed&&!reset?[group,section,lab]:[]})[sections[i].dataset.step]||[];
+  back.onclick=()=>show(Math.max(0,step-1));
   const initialAppearance={theme:settings.theme,accent:settings.accent,accentAuto:settings.accentAuto,accentPalette:settings.accentPalette};
   appearance(d);
   function finish(result){d.close();d.remove();resolve(result);}
@@ -132,9 +151,12 @@ export function setup({reset=false,items=[]}={}){
   d.querySelector('[data-cancel-profile]')?.addEventListener('click',cancel);
   form.onsubmit=e=>{
    e.preventDefault();
+   const stepMissing=requiredFor(step).find(input=>!input.value.trim());
+   if(stepMissing){status.textContent=sections[step].dataset.step==='you'?'Enter your name to continue.':'Choose your academic group, section and lab group.';stepMissing.focus();return}
+   if(step<sections.length-1){show(step+1);return}
    const required=[name,...(managed&&!reset?[group,section,lab]:[])];
    const missing=required.find(input=>!input.value.trim());
-   if(missing){status.textContent='Complete your name, academic group, section and lab group.';missing.focus();return}
+   if(missing){status.textContent='Complete your name, academic group, section and lab group.';show(sections.findIndex(el=>el.contains(missing)));missing.focus();return}
    const selected={};
    d.querySelectorAll('[data-item]:checked').forEach(el=>(selected[el.dataset.item]??=[]).push(Number(el.dataset.pass)));
    finish({profileName:name.value.trim(),studentNumber:field('number').value.trim().replace(/^#+/,'').trim(),
@@ -144,6 +166,7 @@ export function setup({reset=false,items=[]}={}){
   };
   form.noValidate=true;
   d.showModal();
+  show(0);
  });
 }
 // Retain a recoverable device copy before changing accounts; never merge another
