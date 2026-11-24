@@ -1,4 +1,4 @@
-import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,obsoleteCoreCache,fitsCache} from './phase3-cache-policy.mjs';
+import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,obsoleteCoreCache,fitsCache,offlinePrecacheWidth,prioritizeOfflineAssets} from './phase3-cache-policy.mjs';
 const CORE=RELEASE_CACHE+':core',clientsByAccount=new Map(),accountEpoch=new Map(),privateWrites=new Map(),clearing=new Map(),staticFlights=new Map();
 const epoch=account=>accountEpoch.get(account)||0;
 const accountHeader='X-Review-Cache-Account';
@@ -28,8 +28,10 @@ async function findPrivate(account,request){
 self.addEventListener('install',event=>{event.waitUntil((async()=>{
  const cache=await caches.open(CORE),r=await fetch('/offline-assets.json',{cache:'no-store'});
  if(!r.ok)throw Error('Offline manifest unavailable');const {assets}=await r.json();
- for(let i=0;i<(assets||[]).length;i+=8)await Promise.all(assets.slice(i,i+8).map(async path=>{
-  if(!['core','navigation'].includes(cacheKind(new URL(path,self.location.origin).pathname)))return;
+ // Critical shell and executable assets run before speculative offline resources.
+ const eligible=prioritizeOfflineAssets((assets||[]).filter(path=>['core','navigation'].includes(cacheKind(new URL(path,self.location.origin).pathname)));
+ const width=offlinePrecacheWidth(self.navigator?.connection);
+ for(let i=0;i<eligible.length;i+=width)await Promise.all(eligible.slice(i,i+width).map(async path=>{
   try{const response=await fetch(path,{cache:'reload',credentials:'same-origin'});await store(cache,path,response)}catch{/* optional asset may be unavailable */}
  }));
  await self.skipWaiting();
