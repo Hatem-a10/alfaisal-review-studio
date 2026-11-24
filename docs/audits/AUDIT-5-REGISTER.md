@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 5 candidates implemented, benchmarked and candidate-CI verified; 2 submitted for CI; 293 unassessed. See receipts below. A5-003 has a small observed timing difference and requires repeated measurements to establish its magnitude.
+Status at this evidence update: 7 candidates implemented and candidate-CI verified (6 with clear observed timing gains, 1 complexity improvement with inconclusive timing); 3 submitted; 290 unassessed. See receipts below. A5-003 has mixed timing across runs; its reduced sorting work is established, not a repeatable wall-time speedup.
 
 ## Activity analytics
 
@@ -47,7 +47,7 @@ Status at this evidence update: 5 candidates implemented, benchmarked and candid
 | A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
 | A5-024 | Memoize expensive pure selectors with precise invalidation | Unassessed |
 | A5-025 | Offload expensive question-bank processing to worker | Unassessed |
-| A5-026 | Hoist repeated regular expression construction | Unassessed |
+| A5-026 | Reuse lecture regex descriptors across decks in a cross-link computation | Submitted #120; CI pending |
 | A5-027 | Replace redundant deep copies with targeted immutable updates | Unassessed |
 | A5-028 | Delegate compatible repeated DOM listeners | Unassessed |
 | A5-029 | Avoid duplicate JSON serialization of study records | Unassessed |
@@ -120,7 +120,7 @@ Status at this evidence update: 5 candidates implemented, benchmarked and candid
 | A5-071 | Chunk large course packs by lecture | Unassessed |
 | A5-072 | Separate teaching text from question data loading | Unassessed |
 | A5-073 | Defer detailed explanation loading until review | Unassessed |
-| A5-074 | Fetch diagrams independently from lesson text | Unassessed |
+| A5-074 | Reuse parsed question fingerprints within a deduplication pass | Submitted #120; CI pending |
 | A5-075 | Idle-prefetch next likely lesson within data budget | Unassessed |
 | A5-076 | Precompute lecture-to-question mappings | Unassessed |
 | A5-077 | Precompute source-document and lecture associations | Unassessed |
@@ -199,7 +199,7 @@ Status at this evidence update: 5 candidates implemented, benchmarked and candid
 | A5-125 | Reuse overlap layout until visible event set changes | Unassessed |
 | A5-126 | Sort event lanes once per day rather than per card | Unassessed |
 | A5-127 | Avoid rebuilding hidden timetable views on clock tick | Unassessed |
-| A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Submitted #118; CI pending |
+| A5-128 | Cache dashboard clock formatter for fixed Riyadh timezone | Merged #118; CI passed |
 | A5-129 | Memoize event category counts per selected group | Unassessed |
 | A5-130 | Render only visible calendar range with preserved navigation | Unassessed |
 
@@ -215,7 +215,7 @@ Status at this evidence update: 5 candidates implemented, benchmarked and candid
 | A5-136 | Reuse progress denominators for static lesson sets | Unassessed |
 | A5-137 | Update countdown labels at displayed precision only | Unassessed |
 | A5-138 | Share derived dashboard summary across cards | Unassessed |
-| A5-139 | Reuse normalized student group profile across timetable filtering | Submitted #118; CI pending |
+| A5-139 | Reuse normalized student group profile across timetable filtering | Merged #118; CI passed |
 | A5-140 | Recompute only affected course progress after lesson change | Unassessed |
 
 ## Learning and reading
@@ -274,7 +274,7 @@ Status at this evidence update: 5 candidates implemented, benchmarked and candid
 | A5-175 | Reuse sanitized card template until card version changes | Unassessed |
 | A5-176 | Defer media decode until card face is displayed | Unassessed |
 | A5-177 | Reuse permitted object URLs during same account session | Unassessed |
-| A5-178 | Bound and cache card search tokenization | Unassessed |
+| A5-178 | Reuse per-card course scope within an Anki cross-link computation | Submitted #120; CI pending |
 | A5-179 | Incrementally maintain per-deck review counters | Unassessed |
 | A5-180 | Skip rebuilding unchanged study-control DOM between flips | Unassessed |
 
@@ -464,14 +464,19 @@ Median of three measured executions on the candidate CI runner after an equivale
 
 | ID | Baseline | Candidate | Operation-count evidence | Receipt |
 |---|---:|---:|---|---|
-| A5-001 | 62.733 ms | 2.489 ms | 4,800 formatter constructions → 1 across four fixture executions | [#116](https://github.com/Hatem-a10/alfaisal-review-studio/pull/116) |
-| A5-002 | 22.761 ms | 9.859 ms | Per-call alias resolution memo; cycle and invalidation assertions | #116 |
-| A5-003 | 8.996 ms | 8.524 ms | No complete date-key sort; bounded display-mode scan | #116 |
-| A5-023 | 47.404 ms | 5.200 ms | 9,000 lecture lookups → 51 per fixture execution | [#117](https://github.com/Hatem-a10/alfaisal-review-studio/pull/117) |
-| A5-111 | 92.421 ms | 17.608 ms | WeakMap cache follows entry lifetime and title changes; warm searches only | #117 |
+| **A5-001** | 62.733 ms | 2.489 ms | 4,800 formatter constructions → 1 across four fixture executions | [#116](https://github.com/Hatem-a10/alfaisal-review-studio/pull/116) |
+| **A5-002** | 22.761 ms | 9.859 ms | Per-call alias resolution memo; cycle and invalidation assertions | #116 |
+| **A5-003** | 8.996 ms | 8.524 ms | No complete date-key sort; bounded display-mode scan | #116 |
+| **A5-023** | 47.404 ms | 5.200 ms | 9,000 lecture lookups → 51 per fixture execution | [#117](https://github.com/Hatem-a10/alfaisal-review-studio/pull/117) |
+| **A5-111** | 92.421 ms | 17.608 ms | WeakMap cache follows entry lifetime and title changes; warm searches only | #117 |
+
+| **A5-128** | 45.150 ms | 1.055 ms | 2,880 formatter constructions → 1 across four fixture executions | [#118](https://github.com/Hatem-a10/alfaisal-review-studio/pull/118) |
+| **A5-139** | 16.862 ms | 14.944 ms | 8,002 profile reads → 2 per timetable fixture | #118 |
 
 - #116: candidate `f00ae2435b6c0badb774a8db4507bdb969da093b`, [CI 45382234949](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382234949), 1,313 full-suite tests passed, merge `7cd024d7ec3d9b861c48a1006f47f561fc402efd`.
 - #117: candidate `8105ce4fee4537e20984b93f354244b47da6af94`, [CI 45382463701](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382463701), 1,311 full-suite tests passed, merge `ef70a459f78d97ef892d490ff249cfe7b372c3f0`. Candidate started before #116 merged; integrated CI still required.
-- #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, pending candidate CI at this update.
+- #118: candidate `6813bfe17b19298e3e34b5884e7be8b536211dad`, [CI 45382764102](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45382764102), 1,315 full-suite tests passed, merge `2ea6a62a7b5de71d6a621411e22d2b4457a7ce0c`. Candidate started before #117 merged; integrated CI still required.
+- #120: candidate `f6e4891a47410c3e4bf5264c5f171f14d4287924`, submitted; CI pending.
+- The first evidence-only run 45382874003 failed because benchmark receipt rows duplicated register ID syntax (305 matched rows, expected 300). Receipt formatting corrected without changing the validation test. The same run measured A5-003 at 11.660 ms baseline vs 11.702 ms candidate; no repeatable wall-time improvement claimed.
 
 No production release, migrations, student-data edits or archived curriculum edits.
