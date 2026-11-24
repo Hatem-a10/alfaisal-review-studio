@@ -1,13 +1,84 @@
 'use strict';
 /* Pure date planning and field-level reconciliation; never manufacture completion. */
 const StudyAutopilot=(()=>{
- const time=v=>Number.isFinite(Date.parse(v))?Date.parse(v):0;
+ const time=v=>typeof v==='string'&&v.trim()&&Number.isFinite(Date.parse(v))?Date.parse(v):0;
  const plus=(d,n)=>{const t=new Date(d+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)};
- const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
- function stampChanges(before,after,at){for(const[id,r]of Object.entries(after)){const old=before[id]||{};r._changed={...r._changed};for(const k of new Set([...Object.keys(old),...Object.keys(r)])){if(k==='_changed')continue;if(k==='dates'||k==='done'){for(let p=0;p<3;p++)if(!equal(old[k]?.[p],r[k]?.[p]))r._changed[k+'.'+p]=at}else if(!equal(old[k],r[k]))r._changed[k]=at}}return after}
- const evidence=r=>Math.max(0,...Object.values(r.done||{}).map(time),...(r.learning?.attempts||[]).map(x=>time(x.at)),...Object.values(r.learning?.results||{}).map(x=>time(x.at)),...(r.mcqs||[]).map(x=>time(x.createdAt)),...(r.sessions||[]).map(x=>time(x.endedAt)));
- function mergeRecords(local,remote,localAt,remoteAt,mergeBase){const out=mergeBase(local,remote);for(const id of new Set([...Object.keys(local),...Object.keys(remote)])){const a=local[id],b=remote[id];if(!a||!b)continue;const c=out[id];c._changed={...a._changed};const fallbackA=Math.max(evidence(a),time(localAt)),fallbackB=Math.max(evidence(b),time(remoteAt));for(const key of new Set([...Object.keys(a),...Object.keys(b)])){if(['_changed','learning','mcqs','sessions'].includes(key))continue;if(key==='done'||key==='dates'){c[key]=key==='dates'?[...(a.dates||b.dates||[])]:{};for(let p=0;p<3;p++){const k=key+'.'+p,ta=time(a._changed?.[k]),tb=time(b._changed?.[k]);let useB=tb>ta||(!ta&&!tb&&fallbackB>fallbackA);if(key==='done'&&!ta&&!tb){const va=a.done?.[p],vb=b.done?.[p];useB=!!vb&&(!va||time(vb)>time(va))}const chosen=useB?b:a,other=useB?a:b;if(Object.prototype.hasOwnProperty.call(chosen[key]||{},p))c[key][p]=chosen[key][p];else if(Object.prototype.hasOwnProperty.call(other[key]||{},p))c[key][p]=other[key][p];if(ta||tb)c._changed[k]=ta>=tb?a._changed[k]:b._changed[k]}continue}const ta=time(a._changed?.[key]),tb=time(b._changed?.[key]);const pick=tb>ta||(!ta&&!tb&&fallbackB>fallbackA)?b:a;if(Object.prototype.hasOwnProperty.call(pick,key))c[key]=structuredClone(pick[key]);if(ta||tb)c._changed[key]=ta>=tb?a._changed[key]:b._changed[key]}}
- return out}
+ const own=(v,k)=>!!v&&Object.hasOwn(v,k),safeKey=k=>!['__proto__','prototype','constructor'].includes(k);
+ const object=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+ const array=v=>Array.isArray(v)?v:[];
+ function equal(a,b){
+  if(a===b)return true;
+  if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
+  const ka=Object.keys(a),kb=Object.keys(b);
+  return ka.length===kb.length&&ka.every(k=>own(b,k)&&equal(a[k],b[k]));
+ }
+ function stampChanges(before,after,at){
+  if(!time(at))return after;
+  for(const[id,r]of Object.entries(object(after))){
+   if(!safeKey(id)||!r||typeof r!=='object')continue;
+   const old=object(before?.[id]);r._changed={...object(r._changed)};
+   for(const k of new Set([...Object.keys(old),...Object.keys(r)])){
+    if(k==='_changed'||!safeKey(k))continue;
+    if(k==='dates'||k==='done'){for(let p=0;p<3;p++)if(!equal(old[k]?.[p],r[k]?.[p]))r._changed[k+'.'+p]=at}
+    else if(!equal(old[k],r[k]))r._changed[k]=at;
+   }
+  }
+  return after;
+ }
+ function evidence(r){
+  let latest=0;
+  const add=value=>{latest=Math.max(latest,time(value))};
+  for(const at of Object.values(object(r?.done)))add(at);
+  for(const x of array(r?.learning?.attempts))add(x?.at);
+  for(const x of Object.values(object(r?.learning?.results)))add(x?.at);
+  for(const x of array(r?.mcqs))add(x?.createdAt);
+  for(const x of array(r?.sessions))add(x?.endedAt);
+  return latest;
+ }
+ const clock=(r,k)=>time(r?._changed?.[k]);
+ function preferRemote(a,b,k,fa,fb){const ta=clock(a,k),tb=clock(b,k);return tb>ta||(!ta&&!tb&&fb>fa)}
+ function retainClock(target,a,b,k){const ta=clock(a,k),tb=clock(b,k);if(ta||tb)target[k]=ta>=tb?a._changed[k]:b._changed[k]}
+ function mergeRecords(local,remote,localAt,remoteAt,mergeBase){
+  const out=mergeBase(local,remote);
+  for(const id of new Set([...Object.keys(local),...Object.keys(remote)])){
+   if(!safeKey(id))continue;
+   const a=local[id],b=remote[id];if(!a||!b)continue;
+   const c=out[id];c._changed={...object(a._changed)};
+   const fallbackA=Math.max(evidence(a),time(localAt)),fallbackB=Math.max(evidence(b),time(remoteAt));
+   for(const key of new Set([...Object.keys(a),...Object.keys(b)])){
+    if(['_changed','learning','mcqs','sessions'].includes(key)||!safeKey(key))continue;
+    if(key==='done'||key==='dates'){
+     const aDates=Array.isArray(a.dates)?a.dates:null,bDates=Array.isArray(b.dates)?b.dates:null;
+     if(key==='dates'&&aDates&&bDates&&(!aDates.length)!==(!bDates.length)){
+      const ta=Math.max(...[0,1,2].map(p=>clock(a,'dates.'+p))),tb=Math.max(...[0,1,2].map(p=>clock(b,'dates.'+p)));
+      const chosen=tb>ta||(!ta&&!tb&&fallbackB>fallbackA)?b:a;
+      c.dates=[...chosen.dates];
+      // An empty schedule is an atomic intentional unscheduling operation.
+      for(let p=0;p<3;p++)retainClock(c._changed,a,b,'dates.'+p);
+      continue;
+     }
+     c[key]=key==='dates'?[]:{};
+     for(let p=0;p<3;p++){
+      const k=key+'.'+p,ta=clock(a,k),tb=clock(b,k);
+      let useB=preferRemote(a,b,k,fallbackA,fallbackB);
+      if(key==='done'&&!ta&&!tb){const va=a.done?.[p],vb=b.done?.[p];useB=!!vb&&(!va||time(vb)>time(va))}
+      const chosen=useB?b:a,other=useB?a:b;
+      if(own(chosen[key],p))c[key][p]=chosen[key][p];
+      else if(key==='done'&&clock(chosen,k)>0)c.done[p]=null;
+      else if(own(other[key],p))c[key][p]=other[key][p];
+      retainClock(c._changed,a,b,k);
+     }
+     continue;
+    }
+    const pick=preferRemote(a,b,key,fallbackA,fallbackB)?b:a,other=pick===a?b:a;
+    if(own(pick,key))c[key]=structuredClone(pick[key]);
+    else if(clock(pick,key))delete c[key];
+    else if(own(other,key))c[key]=structuredClone(other[key]);
+    retainClock(c._changed,a,b,key);
+   }
+  }
+  return out;
+ }
  function thirdOptional(record,course,date,day,final){
   if(record.done?.[2])return false;
   if(final&&day<final&&day>=plus(final,-14)){
@@ -17,7 +88,18 @@ const StudyAutopilot=(()=>{
  }
  function restoreThird(r,mastered,accuracy){return !!r.skipThird&&!r.done?.[2]&&(!mastered||r.difficult||(r.confidence>0&&r.confidence<4)||(accuracy!==null&&accuracy<85))}
  function firstStudyAt(r,passed,at){if(!passed||r.done?.[0]||!time(at)||time(at)<=time(r.masteryHandledAt))return null;if(r.done?.[0]===null&&time(r._changed?.['done.0'])>=time(at))return null;return at}
- function mergeSettings(a,b,localAt,remoteAt){const c={...a,_changed:{...a._changed}};for(const k of new Set([...Object.keys(a),...Object.keys(b)])){if(k==='_changed')continue;const ta=time(a._changed?.[k])||time(localAt),tb=time(b._changed?.[k])||time(remoteAt);if(tb>ta&&Object.prototype.hasOwnProperty.call(b,k))c[k]=structuredClone(b[k]);if(a._changed?.[k]||b._changed?.[k])c._changed[k]=time(a._changed?.[k])>=time(b._changed?.[k])?a._changed[k]:b._changed[k]}return c}
+ function mergeSettings(a,b,localAt,remoteAt){
+  const c={...a,_changed:{...object(a._changed)}};
+  for(const k of new Set([...Object.keys(a),...Object.keys(b)])){
+   if(k==='_changed'||!safeKey(k))continue;
+   const pick=preferRemote(a,b,k,time(localAt),time(remoteAt))?b:a,other=pick===a?b:a;
+   if(own(pick,k))c[k]=structuredClone(pick[k]);
+   else if(clock(pick,k))delete c[k];
+   else if(own(other,k))c[k]=structuredClone(other[k]);
+   retainClock(c._changed,a,b,k);
+  }
+  return c;
+ }
  function cvpFinal(events){
   if(typeof AssessmentPlan!=='undefined')return AssessmentPlan.cvpFinalDate(events);
   return events.filter(e=>!e.hubCustom&&/^CVP\b.*\bfinal\b/i.test(e.title||'')).map(e=>e.date).sort()[0]||null;
