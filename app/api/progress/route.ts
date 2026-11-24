@@ -10,11 +10,11 @@ export async function GET(request:Request){
  const accountKey=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('review-studio:'+id)))).map(v=>v.toString(16).padStart(2,'0')).join('');
  // Small authenticated revision check avoids loading unchanged multi-megabyte snapshots from D1/R2.
  const since=new URL(request.url).searchParams.get('since');
+ const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
  if(since!==null&&/^\d+$/.test(since)&&Number.isSafeInteger(Number(since))){
-  const head=await env.DB.prepare('SELECT revision, updated_at, snapshot FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;updated_at:string;snapshot:string}>();
+  const head=row;
   if(head&&head.revision===Number(since)){try{const pointer=JSON.parse(head.snapshot);if(pointer?.r2Snapshot&&(!env.BUCKET||!validPointer(pointer.r2Snapshot,id)||!await env.BUCKET.head(pointer.r2Snapshot)))throw Error('Snapshot missing');return json({revision:head.revision,updatedAt:head.updated_at,unchanged:true,acceptsPatch:true,accountKey})}catch{return json({error:'Cloud snapshot is unavailable. Your device copy is retained.'},503)}}
  }
- const row=await env.DB.prepare('SELECT revision, snapshot, updated_at FROM study_snapshots WHERE user_id = ?').bind(id).first<{revision:number;snapshot:string;updated_at:string}>();
  let snapshot;try{snapshot=row?await readSnapshot(row.snapshot,id):null}catch{return json({error:'Cloud snapshot is unavailable or damaged. Your device copy is retained; retry or contact support.'},503)}
  return json(row?{revision:row.revision,snapshot,updatedAt:row.updated_at,acceptsPatch:true,accountKey}:{revision:0,snapshot:null,acceptsPatch:true,accountKey});
 }

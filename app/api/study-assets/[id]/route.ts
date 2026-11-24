@@ -2,10 +2,12 @@ import {readBounded,RequestTooLarge} from '../../../../lib/bounded-request';
 import {env} from 'cloudflare:workers';
 import {STUDY_ASSETS} from '../../../../lib/study-asset-registry';
 export const dynamic='force-dynamic';
+const byId=new Map<string,(typeof STUDY_ASSETS)[number]>();
+for(const asset of STUDY_ASSETS)if(!byId.has(asset.id))byId.set(asset.id,asset);
 export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){
  if(!request.headers.get('oai-authenticated-user-id'))return new Response('Sign in required',{status:401});
  if(!env.BUCKET)return new Response('Storage unavailable',{status:503});
- const id=(await params).id,asset=STUDY_ASSETS.find(a=>a.id===id);if(!asset)return new Response('Not found',{status:404});
+ const id=(await params).id,asset=byId.get(id);if(!asset)return new Response('Not found',{status:404});
  const key='study-assets-v1/'+asset.sha;
  const error=(message:string,status:number)=>new Response(message,{status,headers:{'Cache-Control':'no-store'}});
  try{
