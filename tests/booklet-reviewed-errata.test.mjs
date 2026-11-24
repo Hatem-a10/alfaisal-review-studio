@@ -76,3 +76,12 @@ test('booklet UI marks uncertain keys as source alternatives rather than definit
  assert.match(html,/Below RV is not a normal physiological lung volume/);
  assert.equal(bookletAnswerDetails(disputed,{completed:false}),'');
 });
+
+test('only uniquely keyed MCQs get automatic grading; disputed keys require self-assessment',async()=>{
+ const {bookletCheckResult}=await import('../public/phase2-practice.mjs');
+ assert.deepEqual(bookletCheckResult(byId.get('cvp19-mcq-213'),4,'now'),{answer:4,correct:true,completed:true,at:'now'});
+ assert.deepEqual(bookletCheckResult(byId.get('cvp19-mcq-213'),0,'now'),{answer:0,correct:false,completed:true,at:'now'});
+ assert.deepEqual(bookletCheckResult(byId.get('cvp19-mcq-328'),0,'now'),{answer:0,revealed:true,at:'now'});
+ assert.deepEqual(bookletCheckResult(byId.get('cvp19-mcq-328'),2,'now'),{answer:2,revealed:true,at:'now'});
+ assert.throws(()=>bookletCheckResult(byId.get('cvp19-mcq-328'),4,'now'),/Invalid booklet selection/);
+});
