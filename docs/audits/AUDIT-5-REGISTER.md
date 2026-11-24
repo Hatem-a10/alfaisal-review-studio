@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate scopes (114 speed-oriented changes and 23 measurement capabilities), 102 pre-existing mechanisms source-reviewed, 22 rejected/not-applicable items, 0 submitted candidates and 39 unassessed. The 300 distinct IDs remain intact; production and student data unchanged.
+Status reconciled against GitHub on 24 November 2026: 138 newly merged candidate scopes (115 speed-oriented changes and 23 measurement capabilities), 104 pre-existing mechanisms source-reviewed, 29 rejected/not-applicable items, 29 evaluated-but-deferred candidates, 0 submitted and 0 unassessed. This is 300/300 candidate dispositions, NOT 300/300 implemented optimizations. The 300 distinct IDs remain intact; production and student data unchanged.
 
 ## Activity analytics
 
@@ -20,7 +20,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-006 | Avoid rebuilding attempt lists when only date range changes | Merged #200; staging CI passed; scoped optimization |
 | A5-007 | Index daily aggregate identities at ingestion | Existing coverage; day-keyed Maps and canonical-ID Sets during history ingestion |
 | A5-008 | Reuse normalized date keys from validated records | Merged #121; CI passed |
-| A5-009 | Incrementally update daily unique-question sets | Unassessed |
+| A5-009 | Incrementally update daily unique-question sets | Deferred; reviewed, requires measured validation |
 | A5-010 | Cache activity chart geometry between data changes | Merged #180; CI passed; cached activity heatmap dates |
 
 ## Startup
@@ -31,10 +31,10 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-012 | Defer nonessential startup scripts | Existing coverage; reviewed scope in evidence |
 | A5-013 | Parallel independent boot requests | Merged #211; staging CI passed; scoped optimization |
 | A5-014 | Preload essential module graph | Existing coverage; reviewed scope in evidence |
-| A5-015 | Render shell before academic payload | Unassessed |
+| A5-015 | Render shell before academic payload | Existing coverage; The static pre-data boot overlay and loading status render before lesson payload; this is a loading shell, not authenticated dashboard content. |
 | A5-016 | Lazy-load authorized Admin implementation | Existing coverage; reviewed scope in evidence |
 | A5-017 | Defer inactive course-pack initialization | Existing coverage; reviewed scope in evidence |
-| A5-018 | Restore confirmed account-scoped dashboard snapshot before refresh | Unassessed |
+| A5-018 | Restore confirmed account-scoped dashboard snapshot before refresh | Deferred; reviewed, requires measured validation |
 | A5-019 | Coalesce redundant initial renders | Existing coverage; reviewed scope in evidence |
 | A5-020 | Idle-schedule noncritical initialization | Existing coverage; reviewed scope in evidence |
 
@@ -43,7 +43,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-021 | Eliminate provably unreachable runtime code | Merged #198; staging CI passed; scoped optimization |
-| A5-022 | Tree-shake modular dependencies | Unassessed |
+| A5-022 | Tree-shake modular dependencies | Rejected; Legacy global startup scripts rely on side effects and fixed order; speculative tree shaking risks removing required initialization. |
 | A5-023 | Memoize practice analytics lecture-group lookup per calculation | Merged #117; CI passed |
 | A5-024 | Reuse latest learning results per lesson within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-025 | Offload expensive question-bank processing to worker | Rejected; duplicate large search-index worker scope already merged as A5-119 (#244); grading unchanged |
@@ -59,8 +59,8 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 |---|---|---|
 | A5-031 | Retain search result rows when only selection or status changes | Merged #128; CI passed; allocation counts |
 | A5-032 | Virtualize large question lists | Rejected; exam selection and restored runs are strictly capped at 200 questions |
-| A5-033 | Virtualize material-library list | Unassessed |
-| A5-034 | Reuse unchanged dashboard DOM cards | Unassessed |
+| A5-033 | Virtualize material-library list | Deferred; reviewed, requires measured validation |
+| A5-034 | Reuse unchanged dashboard DOM cards | Merged #250; staging CI passed; scoped DOM optimization |
 | A5-035 | Batch DOM reads and writes | Merged #220; staging CI passed; scoped optimization |
 | A5-036 | Frame-align visual updates | Merged #213; staging CI passed; scoped optimization |
 | A5-037 | Apply CSS containment to independent sections | Existing coverage; offscreen Library sections already imply containment via A5-038 |
@@ -75,11 +75,11 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-041 | Serve eligible public static assets without Worker invocation | Rejected; authenticated site assets cannot bypass the Worker's access gate |
 | A5-042 | Reduce Worker bundle initialization footprint | Merged #240; CI passed; route-specific Admin feature imports |
 | A5-043 | Lazy-initialize route-specific server modules | Merged #239; CI passed; lazy Admin-only module loading |
-| A5-044 | Edge-cache approved nonpersonal academic metadata | Unassessed |
+| A5-044 | Edge-cache approved nonpersonal academic metadata | Rejected; Protected academic resources share the authenticated Worker gate; unreviewed edge caching might expose student-scoped data. |
 | A5-045 | Parallel independent D1 and R2 operations | Merged #199; staging CI passed; scoped optimization |
 | A5-046 | Deduplicate authentication lookups per request | Existing coverage; authenticate once at managed Worker entry |
 | A5-047 | Reuse request-scoped configuration and authorization results | Existing coverage; pass request-scoped auth, account row, and config |
-| A5-048 | Benchmark Smart Placement for database-heavy routes | Unassessed |
+| A5-048 | Benchmark Smart Placement for database-heavy routes | Deferred; reviewed, requires measured validation |
 | A5-049 | Stream large resources without full memory buffering | Existing; source-reviewed lib/site-assets.ts, app/api/study-assets/[id]/route.ts; no new merge credit |
 | A5-050 | Eliminate unnecessary internal server API round trips | Existing; source-reviewed app/api/materials/route.ts; no new merge credit |
 
@@ -93,9 +93,9 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-054 | Project only necessary database columns | Existing; source-reviewed app/api/materials/route.ts, app/api/decks/route.ts; no new merge credit |
 | A5-055 | Eliminate duplicate progress D1 read on a changed revision | Merged #127; CI passed; narrowed scope |
 | A5-056 | Batch compatible D1 statements | Existing; source-reviewed app/api/academic-config/route.ts; no new merge credit |
-| A5-057 | Cursor-paginate large Admin datasets | Unassessed |
+| A5-057 | Cursor-paginate large Admin datasets | Deferred; reviewed, requires measured validation |
 | A5-058 | Incrementally maintain costly analytics aggregates | Existing coverage; event counters increment control_daily rows at ingestion |
-| A5-059 | Evaluate read replication with required consistency | Unassessed |
+| A5-059 | Evaluate read replication with required consistency | Deferred; reviewed, requires measured validation |
 | A5-060 | Align hot filters and orderings with index structure | Merged #206; staging CI passed; scoped optimization |
 
 ## Synchronization
@@ -110,21 +110,21 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-066 | Adapt sync cadence to connectivity and pending changes | Existing coverage; 300ms dirty debounce, offline gate, exponential sync retry |
 | A5-067 | Pause unnecessary inactive-tab polling | Existing coverage; reviewed scope in evidence |
 | A5-068 | Index frequently accessed local study records | Existing; source-reviewed public/device-storage.js; no new merge credit |
-| A5-069 | Compress large recovery snapshots with verified decoding | Unassessed |
-| A5-070 | Incrementally fingerprint unchanged snapshot subtrees | Unassessed |
+| A5-069 | Compress large recovery snapshots with verified decoding | Deferred; reviewed, requires measured validation |
+| A5-070 | Incrementally fingerprint unchanged snapshot subtrees | Deferred; reviewed, requires measured validation |
 
 ## Course content
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-071 | Chunk large course packs by lecture | Unassessed |
-| A5-072 | Separate teaching text from question data loading | Unassessed |
-| A5-073 | Defer detailed explanation loading until review | Unassessed |
+| A5-071 | Chunk large course packs by lecture | Deferred; reviewed, requires measured validation |
+| A5-072 | Separate teaching text from question data loading | Deferred; reviewed, requires measured validation |
+| A5-073 | Defer detailed explanation loading until review | Rejected; Question explanation snapshots are required for deterministic offline review; deferring those assets adds an unavailable-on-review failure path. |
 | A5-074 | Fetch diagrams independently from lesson text | Existing; source-reviewed public/learning-ui.js; no new merge credit |
 | A5-075 | Idle-prefetch next likely lesson within data budget | Rejected; course packs load per course, no independent next-lesson fetch to prefetch |
 | A5-076 | Pre-index lecture question associations in changelog generator | Merged #129; CI passed; combined benchmark |
 | A5-077 | Pre-index source document associations in changelog generator | Merged #129; CI passed; combined benchmark |
-| A5-078 | Share identical immutable metadata across course packs | Unassessed |
+| A5-078 | Share identical immutable metadata across course packs | Deferred; reviewed, requires measured validation |
 | A5-079 | Version-cache immutable lesson structures locally | Existing coverage; release-keyed offline cache for lesson data |
 | A5-080 | Exclude archived CVP content from active startup dependencies | Existing coverage; reviewed scope in evidence |
 
@@ -133,24 +133,24 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-081 | Compute booklet eligibility, pinned question and order index in one scan | Merged #151; CI passed; narrowed shared booklet scope |
-| A5-082 | Update question analytics incrementally after answers | Unassessed |
+| A5-082 | Update question analytics incrementally after answers | Deferred; reviewed, requires measured validation |
 | A5-083 | Index wrong-answer records by question within weak-topic calculation | Merged #137; CI passed; narrowed scope |
 | A5-084 | Reuse parsed question fingerprints within a deduplication pass | Merged #120; CI passed; formerly mislabelled A5-074 |
 | A5-085 | Sample questions without shuffling full bank where distribution unchanged | Merged #175; CI passed; sparse partial mock sampling |
 | A5-086 | Render only active timed-exam question where interface permits | Existing; source-reviewed public/examplify-mode.js; no new merge credit |
 | A5-087 | Isolate classic mock timer updates from question content rebuilds | Existing coverage; etTick updates timer and dock separately |
-| A5-088 | Cache Anki due-card queue with precise invalidation | Unassessed |
+| A5-088 | Cache Anki due-card queue with precise invalidation | Rejected; Anki due eligibility depends on the current clock and mutable ratings; caching a queue without a measured hot path risks stale due cards. |
 | A5-089 | Reuse progress snapshot for Anki rating and deck-library rendering | Merged #142; CI passed; narrowed scope |
-| A5-090 | Incrementally calculate mastery without rescoring entire bank | Unassessed |
+| A5-090 | Incrementally calculate mastery without rescoring entire bank | Deferred; reviewed, requires measured validation |
 
 ## Network and assets
 
 | ID | Candidate | Status |
 |---|---|---|
 | A5-091 | Generate responsive image sizes | Existing coverage; reviewed scope in evidence |
-| A5-092 | Optimize medical diagram compression subject to visual equivalence | Unassessed |
+| A5-092 | Optimize medical diagram compression subject to visual equivalence | Deferred; reviewed, requires measured validation |
 | A5-093 | Evaluate AVIF for appropriate photos | Merged #245; CI passed; measurement-only AVIF/WebP synthetic codec comparison |
-| A5-094 | Brotli-compress eligible text responses | Unassessed |
+| A5-094 | Brotli-compress eligible text responses | Deferred; reviewed, requires measured validation |
 | A5-095 | Immutable-cache fingerprinted public assets | Merged #222; staging CI passed; scoped optimization |
 | A5-096 | Use conditional requests for versioned resources | Existing coverage; reviewed scope in evidence |
 | A5-097 | Lazy-load offscreen thumbnails and images | Existing coverage; reviewed scope in evidence |
@@ -166,7 +166,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-102 | Rebuild only changed academic pack inputs | Existing coverage; verified gzip and per-input minifier transform caches |
 | A5-103 | Cache CI dependencies by lockfile | Existing coverage; reviewed scope in evidence |
 | A5-104 | Parallelize independent regression suites | Merged #195; staging CI passed; scoped optimization |
-| A5-105 | Balance test shards by observed durations | Unassessed |
+| A5-105 | Balance test shards by observed durations | Rejected; The reviewed CI uses one Node test runner with native file concurrency; fixed manual shards lack measured skew evidence. |
 | A5-106 | Reuse verified immutable build artifacts across stages | Existing coverage; versioned checksum-verified transform artifact reuse |
 | A5-107 | Reduce unnecessary production diagnostic payloads | Existing coverage; bounded allowlisted client-error payload only |
 | A5-108 | Instrument startup navigation sync and API timing | Merged #216; staging CI passed; measurement only |
@@ -216,7 +216,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-137 | Update countdown digits only when displayed markup changes | Merged #138; CI passed; DOM operation counts |
 | A5-138 | Share one saved-options and date snapshot across study activity view | Merged #135; CI passed; narrowed scope |
 | A5-139 | Reuse normalized student group profile across timetable filtering | Merged #118; CI passed |
-| A5-140 | Recompute only affected course progress after lesson change | Unassessed |
+| A5-140 | Recompute only affected course progress after lesson change | Deferred; reviewed, requires measured validation |
 
 ## Learning and reading
 
@@ -227,9 +227,9 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-143 | Reuse parsed rich-text representation across identical lesson versions | Merged #198; staging CI passed; scoped optimization |
 | A5-144 | Cache sanitized static exam question markup fragments by source object | Merged #157; CI passed; narrow scope |
 | A5-145 | Defer optional figure captions until corresponding figure is displayed | Existing coverage; caption and figure HTML created only for current guide topic |
-| A5-146 | Reuse question option nodes between selection changes | Unassessed |
-| A5-147 | Update progress-bar width without rebuilding lesson | Unassessed |
-| A5-148 | Compute remaining section count from incremental completion changes | Unassessed |
+| A5-146 | Reuse question option nodes between selection changes | Deferred; reviewed, requires measured validation |
+| A5-147 | Update progress-bar width without rebuilding lesson | Deferred; reviewed, requires measured validation |
+| A5-148 | Compute remaining section count from incremental completion changes | Deferred; reviewed, requires measured validation |
 | A5-149 | Avoid remeasuring unchanged reading pane on navigation | Rejected; current reading pane performs no repeated JS geometry measurement |
 | A5-150 | Persist reading position at bounded intervals and exit | Rejected; no scroll-position persistence writes exist to throttle |
 
@@ -255,8 +255,8 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-161 | Avoid whole-station-map allocation for one OSPE part lookup | Merged #126; CI passed; narrowed scope |
 | A5-162 | Reuse validated station figure metadata | Merged #219; staging CI passed; scoped optimization |
 | A5-163 | Precompute category-eligible OSPE circuit pools in one pass | Existing coverage; OspeCore.circuit uses category Map; reviewed |
-| A5-164 | Reuse decoded current-station image when moving back | Unassessed |
-| A5-165 | Prefetch next authorized station image under memory budget | Unassessed |
+| A5-164 | Reuse decoded current-station image when moving back | Rejected; Active Renal OSPE stations embed images as verified data URLs; a second app-level decoded bitmap cache adds memory without an additional network fetch. |
+| A5-165 | Prefetch next authorized station image under memory budget | Rejected; The next Renal station uses inline base64 figures; speculative decoding increases memory and may expose hidden circuit content ahead of the bell. |
 | A5-166 | Reuse stable mask geometry for unchanged viewport | Existing coverage; stationMarkupCache reuses precomputed masks and arrow SVG markup |
 | A5-167 | Accumulate OSPE station scoring summary in one traversal | Existing coverage; OspeCore.score aggregates one pass; reviewed |
 | A5-168 | Render only active OSPE review station image | Existing coverage; ospe review() renders one selected station; reviewed |
@@ -275,8 +275,8 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-176 | Defer Anki media decode until displayed card face | Merged #153; CI passed |
 | A5-177 | Reuse permitted object URLs during same account session | Existing coverage; account-scoped Anki background object URL reused until changed |
 | A5-178 | Reuse per-card course scope within an Anki cross-link computation | Merged #120; CI passed; combined benchmark |
-| A5-179 | Incrementally maintain per-deck review counters | Unassessed |
-| A5-180 | Skip rebuilding unchanged study-control DOM between flips | Unassessed |
+| A5-179 | Incrementally maintain per-deck review counters | Deferred; reviewed, requires measured validation |
+| A5-180 | Skip rebuilding unchanged study-control DOM between flips | Deferred; reviewed, requires measured validation |
 
 ## Private materials
 
@@ -285,13 +285,13 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-181 | Index canonical material IDs within each library render | Merged #140; CI passed |
 | A5-182 | Index reverse course reference membership within each library render | Merged #140; CI passed; narrowed scope |
 | A5-183 | Project library candidates by lecture before metadata classification | Merged #156; CI passed; narrowed scope |
-| A5-184 | Paginate large private-material listings with stable order | Unassessed |
+| A5-184 | Paginate large private-material listings with stable order | Deferred; reviewed, requires measured validation |
 | A5-185 | Defer media metadata extraction until needed | Existing coverage; deck parsing and media import deferred to user action |
 | A5-186 | Deduplicate concurrent authorized reads for same immutable asset | Existing coverage; reviewed scope in evidence |
 | A5-187 | Stream authorized upload hashing where supported | Existing; source-reviewed lib/personal-upload.ts; no new merge credit |
 | A5-188 | Avoid duplicate client upload buffers | Existing coverage; file is sent directly as original File in FormData |
 | A5-189 | Batch verified metadata lookup for resource cards | Existing coverage; libraryLectureCandidates builds indexed source associations per render |
-| A5-190 | Cache account-scoped material filter result until mutation | Unassessed |
+| A5-190 | Cache account-scoped material filter result until mutation | Deferred; reviewed, requires measured validation |
 
 ## Offline storage
 
@@ -301,8 +301,8 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-192 | Reuse Anki IndexedDB connection with versionchange cleanup | Existing coverage; ankiDBPromise single-flight, versionchange closes connection |
 | A5-193 | Avoid device-store rehydration on routine view navigation | Existing coverage; device hydrate on boot or explicit account switch |
 | A5-194 | Load companion stores on first feature access | Existing narrower: companion stores read lazily through StudyVault.read after metadata bootstrap |
-| A5-195 | Store stable index metadata alongside records when validated | Unassessed |
-| A5-196 | Use cursor iteration for large local collections | Unassessed |
+| A5-195 | Store stable index metadata alongside records when validated | Existing coverage; Material rows already persist stable lecture/date keys and a user/time index in D1. |
+| A5-196 | Use cursor iteration for large local collections | Deferred; reviewed, requires measured validation |
 | A5-197 | Avoid copying large binary blobs into JS arrays | Existing narrower: source streams assembled once into bounded Uint8Array, not copied into JS byte arrays |
 | A5-198 | Bound in-memory decoded resource cache by bytes | Rejected; no separate decoded in-memory resource cache to cap |
 | A5-199 | Evict bounded source-search term cache by true LRU | Merged #162; CI passed; bounded true LRU |
@@ -327,7 +327,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 
 | ID | Candidate | Status |
 |---|---|---|
-| A5-211 | Remove proven unused selector rules from active bundles | Unassessed |
+| A5-211 | Remove proven unused selector rules from active bundles | Deferred; reviewed, requires measured validation |
 | A5-212 | Minify shipped CSS while preserving cascade | Existing coverage; reviewed scope in evidence |
 | A5-213 | Split rarely used feature styles from entry stylesheet | Existing coverage; Admin CSS loaded only when Control Center opens |
 | A5-214 | Deduplicate identical keyframe declarations | Rejected / not applicable; no duplicate keyframe names across public CSS sources |
@@ -336,7 +336,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-217 | Guard redundant root theme CSS and dataset assignments | Merged #141; CI passed; DOM operation counts |
 | A5-218 | Reuse derived palette for unchanged accent and theme | Merged #141; CI passed |
 | A5-219 | Preload only the essential font face | Existing coverage; single index.html font preload; reviewed |
-| A5-220 | Prefer metric-compatible fallback to reduce layout shift | Unassessed |
+| A5-220 | Prefer metric-compatible fallback to reduce layout shift | Deferred; reviewed, requires measured validation |
 
 ## Browser memory
 
@@ -418,7 +418,7 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | ID | Candidate | Status |
 |---|---|---|
 | A5-271 | Measure gzip and Brotli sizes for startup and deferred course entries | Merged #134; CI passed; measurement capability only |
-| A5-272 | Deduplicate shared dependency chunks | Unassessed |
+| A5-272 | Deduplicate shared dependency chunks | Deferred; reviewed, requires measured validation |
 | A5-273 | Remove unused transitive runtime dependency imports after evidence | Merged #221; staging CI passed; scoped optimization |
 | A5-274 | Minify eligible shipped JS while keeping debugging maps private | Existing coverage; reviewed scope in evidence |
 | A5-275 | Exclude tests outside public startup source graph | Existing narrower coverage; startup bundler resolves only public sources |
@@ -451,8 +451,8 @@ Status reconciled against GitHub on 24 November 2026: 137 newly merged candidate
 | A5-292 | Benchmark burst load at timetable transitions | Merged #218; staging CI passed; measurement only |
 | A5-293 | Measure cache hit ratio by eligible resource class | Merged #203; staging CI passed; measurement only |
 | A5-294 | Measure private PDF range transfer versus full response | Existing coverage; A5-285 full versus range byte test |
-| A5-295 | Tune bounded background prefetch using measured hit rates | Unassessed |
-| A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Unassessed |
+| A5-295 | Tune bounded background prefetch using measured hit rates | Deferred; reviewed, requires measured validation |
+| A5-296 | Measure Worker CPU per high-volume endpoint and tune hotspots | Deferred; reviewed, requires measured validation |
 | A5-297 | Measure D1 index storage cost versus read savings | Merged #206; staging CI passed; measurement only |
 | A5-298 | Evaluate storage compression cost versus transfer savings | Merged #218; staging CI passed; measurement only |
 | A5-299 | Measure rollback artifact size and optimize redundant copies | Merged #247; staging CI passed; rollback inventory measurement only |
