@@ -17,5 +17,5 @@ export async function fitsCache(response,limit=MAX_CACHE_BYTES){
  const reader=response.clone().body?.getReader();if(!reader)return true;
  let size=0;
  try{for(;;){const {done,value}=await reader.read();if(done)return true;size+=value.byteLength;if(size>limit){reader.cancel().catch(()=>{});return false}}}
- catch{reader.cancel().catch(()=>{});return false}
+ catch{reader.cancel().catch(()=>{});return false}finally{reader.releaseLock()}
 }
