@@ -7,7 +7,7 @@ const candidate=readFileSync(new URL('../public/source-demand.js',import.meta.ur
 function fixture(source){
  let view='library',renders=0,clears=0;
  const queries=[],callbacks=[];
- const context=vm.createContext({documentPanel:()=>'',sourceQuestionsPanel:()=>'',searchPassages:()=>'',library:()=>'',document:{addEventListener(){}},window:{reviewCourseScope:'MOL'},LEARNING:{searchIndexURL:null},view:'library',render:()=>renders++,fetch:(url,{signal}={})=>new Promise((resolve,reject)=>{queries.push({url,signal,resolve,reject})}),AbortController,setTimeout:()=>9,clearTimeout:()=>clears++,esc:String});
+ const context=vm.createContext({documentPanel:()=>'',sourceQuestionsPanel:()=>'',searchPassages:()=>'',library:()=>'',document:{addEventListener(){}},window:{reviewCourseScope:'MOL'},LEARNING:{searchIndexURL:null},view:'library',render:()=>renders++,fetch:(url,{signal}={})=>new Promise((resolve,reject)=>{queries.push({url,signal,resolve,reject})}),AbortController,TextDecoder,TextEncoder,Blob,Uint8Array,setTimeout:()=>9,clearTimeout:()=>clears++,esc:String});
  const altered=source.replace(/\}\)\(\);\s*$/,'globalThis.audit={request,cancelInactive:typeof cancelInactive==="function"?cancelInactive:null,pending,errors};})();');
  vm.runInNewContext(altered,context);
  return {start:(url,callback,consumer)=>context.audit.request(url,callback,consumer),leave:()=>{context.view='dashboard';context.render()},reopen:()=>{context.view='library';context.render()},queries,pending:context.audit.pending,errors:context.audit.errors,renders:()=>renders,clears:()=>clears};
