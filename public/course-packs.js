@@ -70,18 +70,31 @@ function __reviewMergeKeys(path,target,entries){
   if(typeof scope==='string'&&known(scope))return packs[scope]?[scope]:[];
   return active;
  }
- let painted='';
+ let painted='',renderRequest=0;
  const before=render;
  render=function(){
-  const need=needed().filter(c=>!has(c));
-  if(!need.length)return before.apply(this,arguments);
+  const run=++renderRequest,need=needed().filter(c=>!has(c));
+  if(!need.length){painted='';return before.apply(this,arguments)}
   const content=document.getElementById('content'),key=view+':'+need.join(',');
   const error=need.map(c=>failed[c]).find(Boolean);
-  if(error){if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(error.message)+' <button id="reloadForCourse" class="primary">Reload</button></section>';return}
+  if(error){painted='';if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(error.message)+' <button id="reloadForCourse" class="primary">Reload</button></section>';return}
   if(content&&painted!==key){painted=key;content.innerHTML='<section class="panel notice" role="status">Loading '+esc(need.join(' and '))+' content…</section>'}
-  ensure(need).then(()=>{painted='';render()},e=>{if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(e.message)+' <button id="retryCourse">Try again</button></section>'});
+  ensure(need).then(()=>{if(run!==renderRequest)return;painted='';render()},e=>{if(run!==renderRequest)return;painted='';if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(e.message)+' <button id="retryCourse">Try again</button></section>'});
  };
- document.addEventListener('click',e=>{if(e.target.closest('#retryCourse'))render();else if(e.target.closest('#reloadForCourse'))location.reload()});
+ async function reloadCourse(button){
+  if(button.disabled||document.body.classList.contains('xp-exam-active'))return;
+  button.disabled=true;
+  try{
+   if(window.ReviewDevice){if(!window.ReviewDevice.available)throw Error('Device storage unavailable');await window.ReviewDevice.flush()}
+   if(document.body.classList.contains('xp-exam-active')){button.disabled=false;return}
+   location.reload();
+  }catch{
+   button.disabled=false;
+   button.textContent='Retry reload';
+   const panel=button.closest('[role=alert]');if(panel&&!panel.querySelector('[data-course-save-warning]')){const warning=document.createElement('p');warning.dataset.courseSaveWarning='';warning.textContent='Could not confirm device saving. Keep this tab open and retry or export a backup.';panel.append(warning)}
+  }
+ }
+ document.addEventListener('click',e=>{if(e.target.closest('#retryCourse'))render();else{const button=e.target.closest('#reloadForCourse');if(button)reloadCourse(button)}});
  // The corrected CVP booklet tools need CVP content.
  const loadCvp19=window.loadCvp19;
  if(typeof loadCvp19==='function')window.loadCvp19=()=>loadCvp19().then(api=>{if(api&&!api.__coursePacks){for(const name of ['ensure','accurate'])if(typeof api[name]==='function'){const fn=api[name];api[name]=(...args)=>ensure(['CVP']).then(()=>fn.apply(api,args))}api.__coursePacks=true}return api});
