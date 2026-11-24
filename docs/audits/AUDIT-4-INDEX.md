@@ -1,8 +1,8 @@
 # Audit 4 — consolidated evidence and verification register
 
-**Target: 500 additional findings. Current register: 139 source-level findings and hardening cases; 361 remain to reach the target.** This is not a claim of 139 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
+**Target: 500 additional findings. Current register: 167 source-level findings and hardening cases; 333 remain to reach the target.** This is not a claim of 139 production incidents. The 500 parameterized regression scenarios in #60 are tests, not findings.
 
-Staging snapshot: `8b9a2ec835a98613d7ad41bb066607665b708c9a`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
+Staging snapshot: `93a3223d1bf8da0db32d497a2d367526bdb199d8`. Only active course/shared-runtime behavior was in scope. No CVP lecture-content edits, production release, migrations, live-data changes, or destructive cleanup.
 
 ## Candidate verification receipts
 
@@ -14,8 +14,9 @@ Staging snapshot: `8b9a2ec835a98613d7ad41bb066607665b708c9a`. Only active course
 | [#62](https://github.com/Hatem-a10/alfaisal-review-studio/pull/62) | 36 | [Details](audit-4-study-import-reliability.md) | [Run 45359587420](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45359587420) | `84bdc7ce0140e7ee9fc6e4b773c8e5c92148f8c3` |
 | [#64](https://github.com/Hatem-a10/alfaisal-review-studio/pull/64) | 19 | [Details](audit-4-admin-data-consistency.md) | [Run 45359850458](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45359850458) | `e27e0ccde88daa7bc2469be07aa7509e0af1f495` |
 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) | 19 | [Details](audit-4-upload-anki-boundaries.md) | [Run 45360070913](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360070913) | `8b9a2ec835a98613d7ad41bb066607665b708c9a` |
+| [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) | 28 | [Details](AUDIT-4-LEDGER.md) | [Run 45360550106](https://github.com/Hatem-a10/alfaisal-review-studio/actions/runs/45360550106) | `93a3223d1bf8da0db32d497a2d367526bdb199d8` |
 
-Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
+Deduplication: #60's final ledger already excludes its six overlapping rows with #59; #62 A4-056 and A4-058 are excluded because #60 already records those grade-input issues. #67 excludes seven already-covered exam lifecycle rows from #66. Batch-local IDs are preserved in the second column but the first column is the canonical ID. Repeated themes in separate implementation paths are separate findings, not separate incidents.
 
 ## Findings
 
@@ -160,11 +161,40 @@ Deduplication: #60's final ledger already excludes its six overlapping rows with
 | A4-137 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) / A4-118 | Office extraction text limits were enforced only after all pages were collected | Check each page and aggregate incrementally | Merged; candidate CI passed |
 | A4-138 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) / A4-119 | A stale cloud deck action could dereference missing metadata | Guard missing deck before download | Merged; candidate CI passed |
 | A4-139 | [#65](https://github.com/Hatem-a10/alfaisal-review-studio/pull/65) / A4-120 | Saved Anki background dimming values could exceed the supported range | Clamp to the UI's 0–80 range | Merged; candidate CI passed |
+| A4-140 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-029 | High — classic mock start handler awaits faculty loading before locking | serialize starts; asynchronous behavioral test | Merged; candidate CI passed |
+| A4-141 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-030 | High — async mock start uses controls/global selections after awaits | capture and verify settings; behavioral test | Merged; candidate CI passed |
+| A4-142 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-031 | High — direct classic launch can overwrite active exam | enforce active-exam guard; behavioral test | Merged; candidate CI passed |
+| A4-143 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-032 | High — cancellation clears current exam but saved family stays In progress | persist cancellation with no answers/score; cancellation test | Merged; candidate CI passed |
+| A4-144 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-033 | High — finished mock replacement ignores failed full-snapshot save | require successful save before replacement; retry and export | Merged; candidate CI passed |
+| A4-145 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-034 | Medium — retry API can create count then replace with larger whole question list | require exact original snapshot length | Merged; candidate CI passed |
+| A4-146 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-035 | High — saved answer maps admit out-of-range and non-index choices | validate restored keys/values; behavioral test | Merged; candidate CI passed |
+| A4-147 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-036 | Medium — saved flags may be absent or have invalid indexes | rebuild valid flag map; behavioral test | Merged; candidate CI passed |
+| A4-148 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-037 | High — vault hydration accepts empty or over-limit question arrays | reuse startup restore validation; behavioral test | Merged; candidate CI passed |
+| A4-149 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-038 | Medium — saved history uses number of answer map keys as denominator | count valid choices only | Merged; candidate CI passed |
+| A4-150 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-044 | Medium — random booklet fallback repeatedly scans full array and may interleave new IDs | precomputed fallback ranks | Merged; candidate CI passed |
+| A4-151 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-045 | Low — advancing a pinned item when filtered list is empty yields position -1 | clamp to nonnegative position; behavioral test | Merged; candidate CI passed |
+| A4-152 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-046 | High — Examplify hotkeys stay active when navigating away to unrelated screens | scope active interactions to current exam view | Merged; candidate CI passed |
+| A4-153 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-047 | Medium — calculator key handler intercepts modal and modified shortcuts | respect dialogs, modifiers, prevented events | Merged; candidate CI passed |
+| A4-154 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-048 | Medium — written original Examplify answers can change after deadline but before next tick | check absolute deadline before writing | Merged; candidate CI passed |
+| A4-155 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-049 | Medium — deferred pointer highlight can apply to newly selected question | bind callback to exact run and question | Merged; candidate CI passed |
+| A4-156 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-050 | Medium — keyboard numeric shortcuts stop at five although up to eight choices supported | support 1–8 and update instructions; F remains flag | Merged; candidate CI passed |
+| A4-157 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-053 | High — deferred original adapter can cache incomplete questions; partial UI can submit or expire before all questions load | revalidate complete bank, preserve answers and offer reload | Merged; candidate CI passed |
+| A4-158 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-054 | High — default mock selection passes empty array to pool, excluding ordinary course questions | unrestricted course pool when mix disabled; behavioral test | Merged; candidate CI passed |
+| A4-159 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-055 | High — custom lesson mix adds unfiltered original questions from other lectures | filter original pool by selected lecture IDs; behavioral test | Merged; candidate CI passed |
+| A4-160 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-056 | High — delayed sync reconciliation attributes mock attempts to current day rather than recorded answer date | use first-answer time or saved submission time | Merged; candidate CI passed |
+| A4-161 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-057 | Medium — ASCII-only normalization conflates distinct Greek-letter medical stems | Unicode-aware normalization; behavioral test | Merged; candidate CI passed |
+| A4-162 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-058 | High — identical image question wording can suppress different source figures | preserve distinct visual contexts; behavioral test | Merged; candidate CI passed |
+| A4-163 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-059 | High — stem dedup ignores differing options | preserve different option sets except explicit canonical families; behavioral test | Merged; candidate CI passed |
+| A4-164 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-060 | Low — mock summary accepts fractional correct and total counters | require safe integers during startup and hydration | Merged; candidate CI passed |
+| A4-165 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-061 | High — originalLowScore can delete finished original runs before deferred data is loaded | require full bank before threshold checks; behavioral test | Merged; candidate CI passed |
+| A4-166 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-062 | Medium — original grade treats out-of-range printed key as usable | validate key range; behavioral test | Merged; candidate CI passed |
+| A4-167 | [#67](https://github.com/Hatem-a10/alfaisal-review-studio/pull/67) / EX-063 | Medium — original grade counts invalid stored answer as answered | validate choice range; behavioral test | Merged; candidate CI passed |
 
 ## Verification boundaries
 
 - #60: 500 additional regression scenarios, included in its successful full 1,061-test run.
 - #64: full 1,090-test candidate run passed.
 - #65: full 1,087-test candidate run passed, plus 607 isolation checks and 4 course checks. Different candidate snapshots can have different test totals; do not add them together.
+- #67: full 1,106-test candidate run passed, plus 618 isolation checks and 4 course checks; exact candidate includes all prior batches.
 - The consolidated branch requires its own CI run. A successful candidate run and a merged PR do not establish authenticated hosted staging behavior. No production verification/deployment has been performed.
 - Previous audit follow-up remains separate from the target: #54–#57 are merged with successful CI. Retention policy/cleanup, authoritative server-side SQLite card counts, precise session attribution and authenticated browser/device verification remain outstanding. Browser package parsing, upload shape checks, figure omission reporting and safer capacity estimates improve behavior without claiming those remaining limitations are solved.
