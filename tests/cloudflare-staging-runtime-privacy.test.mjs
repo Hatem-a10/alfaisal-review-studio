@@ -32,6 +32,7 @@ function harness(){
  const content={innerHTML:''},scripts=[],listeners={};
  let view='learning';
  const globals={view,REVIEW_COURSE_PACKS:{MOL:'/mol.js'},reviewCourseScope:'MOL',lessonId:'MOL-1',esc:s=>String(s),render(){content.innerHTML='PAGE:'+globals.view},document:{getElementById:()=>content,head:{append:s=>scripts.push(s)},createElement:()=>({remove(){}}),addEventListener:(name,fn)=>{listeners[name]=fn},body:{classList:{contains:()=>false}}},CustomEvent:class{},dispatchEvent(){},inlineLessonCache:{clear(){}}};
+ globals.setTimeout=setTimeout;globals.clearTimeout=clearTimeout;
  globals.window=globals;
  runInNewContext(script,globals);
  return {globals,content,scripts,listeners};
