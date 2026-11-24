@@ -2,7 +2,7 @@ import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,
 const CORE=RELEASE_CACHE+':core',clientsByAccount=new Map();
 const store=async(cache,request,response,limited=false)=>{
  if(!response.ok||response.redirected||response.type==='opaque'||!await fitsCache(response))return false;
- try{await cache.put(request,response.clone());if(limited){const keys=await cache.keys();for(const key of keys.slice(0,Math.max(0,keys.length-240)))await cache.delete(key)}return true}catch{return false}
+ try{await cache.put(request,response.clone());const keys=limited?await cache.keys():[];if(limited&&keys.length>240)for(const key of keys.slice(0,keys.length-240))await cache.delete(key);return true}catch{return false}
 };
 async function clearPrivate(account){
  for(const key of privateCacheNames(await caches.keys(),account))await caches.delete(key);
@@ -41,14 +41,14 @@ self.addEventListener('fetch',event=>{
  const kind=cacheKind(url.pathname);if(!kind)return;
  const account=clientsByAccount.get(event.clientId);if(kind==='private'&&!account)return;
  event.respondWith((async()=>{
-  const cache=await caches.open(kind==='private'?privateCacheName(account):CORE);
-  if(kind==='core'&&/^\/_studio\/[\w.-]+-[0-9a-f]{16}\.[a-z.]+$/.test(url.pathname)){const hit=await cache.match(request);if(hit)return hit}
+  const cache=await caches.open(kind==='private'?privateCacheName(account):CORE).catch(()=>null);
+  if(kind==='core'&&/^\/_studio\/[\w.-]+-[0-9a-f]{16}\.[a-z.]+$/.test(url.pathname)){const hit=await cache?.match(request).catch(()=>null);if(hit)return hit}
   let denied=false;
   try{
    if(kind==='private'){
     const identity=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin'});
     if(!identity.ok||(await identity.json()).accountKey!==account){
-     denied=true;clientsByAccount.delete(event.clientId);
+     denied=true;if(clientsByAccount.get(event.clientId)===account)clientsByAccount.delete(event.clientId);
      if(identity.status===401||identity.status===403)await clearPrivate(account).catch(()=>{});
      return await fetch(request);
     }
@@ -56,11 +56,11 @@ self.addEventListener('fetch',event=>{
    }
    const response=await fetch(request);
    if(response.status===401||response.status===403){
-    if(kind==='private'){denied=true;clientsByAccount.delete(event.clientId);await clearPrivate(account).catch(()=>{})}
+    if(kind==='private'){denied=true;if(clientsByAccount.get(event.clientId)===account)clientsByAccount.delete(event.clientId);await clearPrivate(account).catch(()=>{})}
     return response;
    }
    // A quota or cache failure must never replace a successful network response with stale bytes.
-   if(kind!=='private'||clientsByAccount.get(event.clientId)===account)await store(cache,request,response,kind==='private').catch(()=>{});
+   if(cache&&(kind!=='private'||clientsByAccount.get(event.clientId)===account))await store(cache,request,response,kind==='private').catch(()=>{});
    return response;
   }catch{
    if(kind==='private'){
@@ -69,8 +69,8 @@ self.addEventListener('fetch',event=>{
      if(saved&&clientsByAccount.get(event.clientId)===account)return saved;
     }
    }else{
-    const saved=await cache.match(request,{ignoreSearch:kind!=='private'});if(saved)return saved;
-    if(kind==='navigation'){const shell=await cache.match('/index.html')||await cache.match('/');if(shell)return shell}
+    const saved=await cache?.match(request,{ignoreSearch:kind!=='private'}).catch(()=>null);if(saved)return saved;
+    if(kind==='navigation'){const shell=await cache?.match('/index.html').catch(()=>null)||await cache?.match('/').catch(()=>null);if(shell)return shell}
    }
    return new Response('This item is not downloaded for offline use.',{status:503,headers:{'Content-Type':'text/plain','Cache-Control':'no-store'}});
   }
