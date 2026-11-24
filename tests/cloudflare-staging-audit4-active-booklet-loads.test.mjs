@@ -34,3 +34,12 @@ test('REN loader publishes only a complete mock bank and exposes an error state 
  assert.match(s,/b\.id==='renalMockRetry'/);
  assert.match(readFileSync(new URL('../public/exam-tools.js',import.meta.url),'utf8'),/id="renalMockRetry"/);
 });
+
+test('deduplicated packs enforce the declared MCQ inventory and allow review-only questions',()=>{
+ const v3={version:3,counts:{mcq:1},questions:[{...q,answer:null,legacyChoices:{old:[1,0]},sourceLocations:[{page:6},{page:8}]}]};
+ assert.equal(validateActiveBooklet(v3,{version:3,pages:294,mcqs:1}),v3);
+ assert.throws(()=>validateActiveBooklet(v3,{version:3,pages:294,mcqs:2}),/unique booklet MCQs/);
+ assert.throws(()=>validateActiveBooklet({...v3,counts:{mcq:3}},{version:3,pages:294,mcqs:1}),/counts do not match/);
+ for(const patch of [{legacyChoices:{old:[2,0]}},{legacyChoices:{[q.id]:[0,1]}},{sourceLocations:[{page:999}]}])
+  assert.throws(()=>validateActiveBooklet({...v3,questions:[{...v3.questions[0],...patch}]},{version:3,pages:294,mcqs:1}));
+});

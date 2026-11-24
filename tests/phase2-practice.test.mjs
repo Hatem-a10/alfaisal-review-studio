@@ -24,3 +24,21 @@ test('checked booklet answer reveals keyed options and explanations only after c
 test('new mock names use Riyadh time independently of device locale',async()=>{const {mockName}=await import('../public/phase2-practice-core.mjs');assert.equal(mockName('2026-11-15T08:32:00Z'),'Mock November 15, 11:32 AM')});
 
 test('unknown or verified Admin capability never prunes saved mocks; verified ordinary sync unions are capped with tombstones',async()=>{const {enforceHistoryLimit}=await import('../public/phase2-practice-core.mjs');const state={mocks:Array.from({length:7},(_,i)=>({id:String(i),createdAt:'2026-11-'+String(i+1).padStart(2,'0')}))};assert.equal(enforceHistoryLimit(state,null),state);assert.equal(enforceHistoryLimit(state,true),state);const capped=enforceHistoryLimit(state,false,'2026-11-15T12:00:00Z');assert.deepEqual(capped.mocks.map(m=>m.id),['2','3','4','5','6']);assert.equal(Object.keys(capped.deletedMocks).length,2);assert.equal(state.mocks.length,7)});
+
+test('merged booklet entries count old progress once and remap choices and navigation without mutating saves',async()=>{
+ const {bookletEntry,resolveBookletNavigation,selectBooklet,previousBooklet}=await import('../public/phase2-practice-core.mjs');
+ const merged={id:'canonical',type:'mcq',discipline:'MOL 1',disciplines:['MOL 1','MOL 5'],legacyChoices:{duplicate:[1,0,2],other:[-1,0,2]}};
+ const questions=[merged,{id:'next',type:'mcq'}];
+ const state={filter:'completed',bookletDiscipline:'MOL 5',bookletViewId:'duplicate',bookletHistory:['other','duplicate'],bookletQueue:['other','duplicate','next'],booklet:{
+  duplicate:{answer:0,completed:true,correct:true,at:'2026-11-01'},
+  other:{answer:0,completed:true,correct:false,at:'2026-11-02'},
+ }};
+ const original=structuredClone(state);
+ const visible=resolveBookletNavigation(questions,state);
+ assert.equal(bookletEntry(merged,visible.booklet).answer,1);
+ assert.deepEqual(visible.bookletQueue,['canonical','next']);
+ assert.deepEqual(selectBooklet(questions,visible).list,[merged]);
+ assert.deepEqual(previousBooklet(questions,visible).bookletHistory,[]);
+ assert.deepEqual(state,original);
+ assert.equal(bookletEntry(merged,{other:state.booklet.other}).answer,undefined);
+});

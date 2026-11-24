@@ -1,4 +1,5 @@
 /* global render, view, go, DATA, LEARNING, ORIGINAL_EXAMS, lessonId, guideTopic, guideTopicLesson, cardIndex, learnTab, etExam, originalRun, etPracticeTab, originalQuestionById, visibleOriginalRun, lessonById, inlineTopicsFor, inlineGroups, allLearningQuestions, TEACHING, storeOptions, saveOptions, today, tasks, dates, done, state, rec, persist, AssessmentPlan, assessmentClock, syncMeta, storageOK, openEdit, settings, toast */
+import {activeBookletPaths} from './active-booklet-core.mjs';
 import {courses,lectureCourses} from './course-registry.mjs';
 import {catchupPreview,revisionQueue,topicCoverage} from './study-next-core.mjs';
 
@@ -317,7 +318,7 @@ async function readinessPreview(){
   const missingFigures=stations.filter(s=>!s.figure&&!s.figures?.length).length;
   const figurePaths=figures.filter(path=>!path.startsWith('data:image/'));
   const sources=LEARNING.sources.filter(s=>ids.has(s.lectureId)||s.lectureIds?.some(id=>ids.has(id))).map(s=>s.url).filter(url=>url?.startsWith('/api/'));
-  const bookletUrl={CVP:'/cvp19-booklet.json',MOL:'/api/site-assets/materials/mol114/interactive-booklet.json',REN:'/api/site-assets/materials/ren123/interactive-booklet-v2.json'}[course];
+  const bookletUrl=course==='CVP'?'/cvp19-booklet.json':activeBookletPaths[course];
   const checked=await unavailableAssets([...sources,...figurePaths,...(bookletUrl?[bookletUrl]:[])]);
   if(run!==generation||!dialog.open)return;
   const inventory=courseInventory(course,{lessons,events:data[1]?.events?.filter(e=>e.course===course)||[],labs,stations,figures:figurePaths,sources,
