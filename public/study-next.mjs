@@ -204,10 +204,13 @@ async function assessCoverage(button){
 actionHandlers.coverage=(_value,button)=>assessCoverage(button);
 
 function readinessButton(){
- if(window.reviewAdmin!==true)return;
  const dialog=document.querySelector('#siteAdmin .admin-frame');
- if(!dialog||dialog.querySelector('[data-study-readiness]'))return;
- const button=document.createElement('button');button.dataset.studyReadiness='';button.textContent='Course readiness preview';dialog.append(button);
+ if(!dialog)return;
+ const existing=dialog.querySelector('[data-study-readiness]');
+ if(window.reviewAdmin!==true){existing?.remove();return;}
+ if(existing)return;
+ const button=document.createElement('button');
+ button.type='button';button.dataset.studyReadiness='';button.textContent='Course readiness preview';dialog.append(button);
 }
 window.addEventListener('review-admin-role',readinessButton);
 document.addEventListener('click',e=>{if(e.target.closest('#openSiteAdmin'))queueMicrotask(readinessButton);});
@@ -215,6 +218,7 @@ readinessButton();
 async function readinessPreview(){
  if(window.reviewAdmin!==true||document.getElementById('studyReadiness'))return;
  const {courseInventory,unavailableAssets}=await import('./study-course-readiness.mjs');
+ if(window.reviewAdmin!==true||document.getElementById('studyReadiness'))return;
  const dialog=document.createElement('dialog');dialog.id='studyReadiness';dialog.className='study-next-dialog';
  dialog.innerHTML=`<form method="dialog"><h2>Course readiness preview</h2><label>Course <select>${Object.entries(courses).map(([id,c])=>`<option value="${id}" ${id==='REN'?'selected':''}>${esc(c.label)}</option>`).join('')}</select></label><div role="status"></div><button>Close</button></form>`;
  const picker=dialog.querySelector('select'),status=dialog.querySelector('[role=status]');
