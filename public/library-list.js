@@ -81,24 +81,36 @@ function librarySourceInCourse(source, scope=globalThis.reviewCourseScope) {
   return new RegExp('(?:^|[^a-z])'+scope+'(?:[^a-z]|$)','i').test(source.id+' '+source.name);
 }
 
+// Validate the complete manifest before touching the live source array.
+function renalManifestSources(rows, sources) {
+ if(!Array.isArray(rows))throw Error('Invalid Renal document index.');
+ const ids=new Set(),paths=new Set(),existingIds=new Set(sources.map(s=>s.id)),existingURLs=new Set(sources.map(s=>s.url)),added=[];
+ for(const row of rows){
+  if(!row||typeof row.id!=='string'||!/^[a-z0-9][a-z0-9-]*$/i.test(row.id)||typeof row.title!=='string'||!row.title.trim()||typeof row.path!=='string'||!/^materials\/ren123\/[a-z0-9][a-z0-9._-]*\.(?:pdf|pptx?|docx)$/i.test(row.path)||!['lecture','lab','overview','booklet'].includes(row.kind)||!Array.isArray(row.sessions)||row.sessions.some(code=>typeof code!=='string'||!/^[A-Z]+\d+$/.test(code)))throw Error('Invalid Renal document entry.');
+  if(ids.has(row.id)||paths.has(row.path))throw Error('Duplicate Renal document entry.');
+  ids.add(row.id);paths.add(row.path);
+  const id='ren123-'+row.id,url='/api/site-assets/'+row.path;
+  // Existing canonical course sources take precedence. Never create a second source with the same identity.
+  if(existingURLs.has(url)||existingIds.has(id))continue;
+  const file=row.path.split('/').at(-1),lectureIds=[...new Set(row.sessions)].map(code=>'REN-'+code);
+  added.push({id,name:file,displayName:row.title,course:'REN',kind:row.kind==='lecture'&&lectureIds.length?'Original lecture':row.kind,lectureIds,unit:/\.pptx?$/i.test(file)?'slide':'page',url,pages:[]});
+ }
+ return added;
+}
 let renalLibraryRequest, renalLibraryReady=false, renalLibraryError=false;
 function loadRenalLibrary() {
  if(renalLibraryReady||renalLibraryRequest)return;
  renalLibraryError=false;
- renalLibraryRequest=fetch('/renal-materials.json').then(response=>{
+ const controller=typeof AbortController==='function'?new AbortController():null,timeout=controller?setTimeout(()=>controller.abort(),15000):null;
+ renalLibraryRequest=fetch('/renal-materials.json',controller?{signal:controller.signal}:undefined).then(response=>{
   if(!response.ok)throw Error('Could not load Renal documents.');
   return response.json();
  }).then(rows=>{
-  const urls=new Set(LEARNING.sources.map(s=>s.url));
-  for(const row of rows){
-   const url='/api/site-assets/'+row.path;
-   if(urls.has(url))continue;
-   const file=row.path.split('/').at(-1);
-   LEARNING.sources.push({id:'ren123-'+row.id,name:file,displayName:row.title,course:'REN',
-    kind:row.kind,unit:file.endsWith('.pptx')?'slide':'page',url,pages:[]});
-  }
+  const added=renalManifestSources(rows,LEARNING.sources);
+  LEARNING.sources.push(...added);
   renalLibraryReady=true;
  }).catch(()=>renalLibraryError=true).finally(()=>{
+  if(timeout!==null)clearTimeout(timeout);
   renalLibraryRequest=null;
   if(view==='library'&&globalThis.reviewCourseScope==='REN')render();
  });
