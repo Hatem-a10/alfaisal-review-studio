@@ -30,15 +30,17 @@ function closeSequence(a,b){
  }
  return (prev.get(m)??Infinity)<=limit;
 }
-export function nearDuplicate(a,b){
- if(!valid(a)||!valid(b))return false;
- const x=parsed(a),y=parsed(b);
+function nearParsed(x,y,familyA,familyB){
  if(x.answer!==y.answer)return false;
- if(canonical(a)&&canonical(a)===canonical(b))return true;
+ if(familyA&&familyA===familyB)return true;
  if(x.choices!==y.choices||x.visual!==y.visual)return false;
  if(x.stem===y.stem)return !!x.stem;
  if(x.words.length<12||y.words.length<12||Math.abs(x.words.length-y.words.length)>2||x.critical!==y.critical)return false;
  return closeSequence(x.words,y.words);
+}
+export function nearDuplicate(a,b){
+ if(!valid(a)||!valid(b))return false;
+ return nearParsed(parsed(a),parsed(b),canonical(a),canonical(b));
 }
 export function deduplicateQuestions(questions){
  const kept=[],exact=new Set(),stems=new Set(),buckets=new Map();
@@ -48,10 +50,10 @@ export function deduplicateQuestions(questions){
   const family=canonical(q),key=family?JSON.stringify([family,p.answer]):null,stem=exactStem(p);
   if(key&&exact.has(key)||stems.has(stem))continue;
   const len=p.words.length,group=n=>JSON.stringify([p.critical,p.choices,p.visual,p.answer,n]);let duplicate=false;
-  if(len>=12)for(let n=Math.max(12,len-2);n<=len+2&&!duplicate;n++)duplicate=(buckets.get(group(n))||[]).some(x=>nearDuplicate(x,q));
+  if(len>=12)for(let n=Math.max(12,len-2);n<=len+2&&!duplicate;n++)duplicate=(buckets.get(group(n))||[]).some(x=>nearParsed(x.parsed,p,x.family,family));
   if(duplicate)continue;
   kept.push(q);if(key)exact.add(key);stems.add(stem);
-  const bucket=group(len);if(!buckets.has(bucket))buckets.set(bucket,[]);buckets.get(bucket).push(q);
+  const bucket=group(len);if(!buckets.has(bucket))buckets.set(bucket,[]);buckets.get(bucket).push({parsed:p,family});
  }
  return kept;
 }

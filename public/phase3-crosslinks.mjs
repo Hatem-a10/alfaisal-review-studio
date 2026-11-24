@@ -5,18 +5,20 @@ const courses={cvp:'112',mol:'114',ren:'123'};
 function cardLabels(deck,card){return [deck.name,card.deck,...(Array.isArray(card.tags)?card.tags:[card.tags])].map(normalize).filter(Boolean)}
 function explicitlyScoped(text){return new Set([...text.matchAll(/(?:^| )(cvp|mol|ren)(?= |$)/g)].map(m=>m[1]))}
 export function matchDecks(lectures,decks){
- const result=new Map(),seenDecks=new Set(),validLectures=array(lectures).filter(l=>identifier(l?.id)&&/^(CVP|MOL|REN)-([AP]?)(\d+)$/.test(l.id));
+ const result=new Map(),seenDecks=new Set(),validLectures=array(lectures).flatMap(lecture=>{
+  if(!identifier(lecture?.id))return [];
+  const code=lecture.id.match(/^(CVP|MOL|REN)-([AP]?)(\d+)$/);if(!code)return [];
+  const name=normalize(lecture.title),course=code[1].toLowerCase(),letter=code[2].toLowerCase(),number=code[3];
+  return [{lecture,name,course,letter,explicit:new RegExp('(?:^| )'+course+' (?:'+courses[course]+' )?'+letter+' ?'+number+'(?: |$)'),local:new RegExp('(?:^| )'+letter+' ?'+number+'(?: |$)')}];
+ });
  for(const deck of array(decks)){
   if(!identifier(deck?.id)||seenDecks.has(deck.id)||!Array.isArray(deck.cards))continue;
   seenDecks.add(deck.id);
   const cardText=deck.cards.filter(card=>identifier(card?.id)&&!(Number(card.schedule?.queue)<0)).map(card=>({id:card.id,labels:cardLabels(deck,card)}));
-  for(const lecture of validLectures){
-   const code=lecture.id.match(/^(CVP|MOL|REN)-([AP]?)(\d+)$/),name=normalize(lecture.title),course=code[1].toLowerCase(),letter=code[2].toLowerCase(),number=code[3];
-   const explicit=new RegExp('(?:^| )'+course+' (?:'+courses[course]+' )?'+letter+' ?'+number+'(?: |$)');
-   const local=new RegExp('(?:^| )'+letter+' ?'+number+'(?: |$)');
-   const ids=[...new Set(cardText.filter(({labels})=>{
-    if(labels.some(text=>explicit.test(text)))return true;
-    const scoped=new Set(labels.flatMap(text=>[...explicitlyScoped(text)]));
+  for(const {lecture,name,course,letter,explicit,local} of validLectures){
+   const ids=[...new Set(cardText.filter(card=>{
+    const {labels}=card;if(labels.some(text=>explicit.test(text)))return true;
+    const scoped=card.scoped??=new Set(labels.flatMap(text=>[...explicitlyScoped(text)]));
     if(scoped.size&&(!scoped.has(course)||scoped.size>1))return false;
     if(letter&&scoped.has(course)&&labels.some(text=>local.test(text)))return true;
     return name.length>=10&&labels.some(text=>(' '+text+' ').includes(' '+name+' '));
