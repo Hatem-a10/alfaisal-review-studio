@@ -6,7 +6,7 @@ Target: 300 distinct optimization candidates. This is not 300 confirmed bottlene
 
 For each item, first inspect implementation and measure a baseline. Mark already optimized, rejected (no benefit), or implemented only with evidence. Count an item as verified only after behavior equivalence, a reproducible performance improvement (or explicitly identified measurement capability), and passing candidate CI. Record exact commit, benchmark fixture, before/after metric, device/runtime, and limitations. No changes to student data, scoring, authentication, cache privacy, academic fidelity or regression coverage. Do not count measurement-only instrumentation as measured speed gains. Avoid mutually duplicative changes and speculative refactors.
 
-Status at this evidence update: 56 newly merged candidates from previous verified receipt (54 runtime scopes and 2 measurement capabilities), 50 existing mechanisms reviewed, 1 previously submitted candidate (#162 A5-199, subsequently merged; reconciliation pending), 193 remaining in this snapshot. #164/A5-040, #166/A5-282 and #167/A5-203 were merged after the base register update and will be reconciled in the next receipt. Extra #150/#163 are uncounted. All existing classifications in this PR are narrower source-verified mechanisms, not newly measured speed gains.
+Status at this evidence update: 56 newly merged candidate scopes recorded, 55 existing mechanisms source-reviewed, 1 rejected/not-applicable candidate, 2 submitted candidates, and 186 not yet assessed. This evidence-only update does not claim new speed gains; merges after prior register reconciliation may need further receipt updates.
 
 ## Activity analytics
 
@@ -105,7 +105,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-061 | Transfer deltas instead of unnecessary complete snapshots | Existing coverage; reviewed scope in evidence |
 | A5-062 | Coalesce closely spaced progress updates | Existing coverage; reviewed scope in evidence |
 | A5-063 | Persist only changed record values | Unassessed |
-| A5-064 | Skip unchanged companion-store writes | Unassessed |
+| A5-064 | Skip unchanged companion-store writes | Existing narrower: unchanged StudyVault companion values skip storage writes; source/test verified |
 | A5-065 | Batch compatible IndexedDB writes | Existing coverage; reviewed scope in evidence |
 | A5-066 | Adapt sync cadence to connectivity and pending changes | Unassessed |
 | A5-067 | Pause unnecessary inactive-tab polling | Existing coverage; reviewed scope in evidence |
@@ -155,7 +155,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-096 | Use conditional requests for versioned resources | Existing coverage; reviewed scope in evidence |
 | A5-097 | Lazy-load offscreen thumbnails and images | Existing coverage; reviewed scope in evidence |
 | A5-098 | Subset fonts while preserving required glyphs | Unassessed |
-| A5-099 | Consolidate duplicate CSS assets respecting Examplify isolation | Unassessed |
+| A5-099 | Consolidate duplicate CSS assets respecting Examplify isolation | Existing: build CSS grouped and minified with inline-style ordering preserved; source/test verified |
 | A5-100 | Use efficient PDF byte-range delivery where supported | Existing coverage; reviewed scope in evidence |
 
 ## Build and verification
@@ -260,7 +260,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-166 | Reuse stable mask geometry for unchanged viewport | Unassessed |
 | A5-167 | Accumulate OSPE station scoring summary in one traversal | Existing coverage; OspeCore.score aggregates one pass; reviewed |
 | A5-168 | Render only active OSPE review station image | Existing coverage; ospe review() renders one selected station; reviewed |
-| A5-169 | Cache rubric tokenization without changing matching rules | Unassessed |
+| A5-169 | Cache rubric tokenization without changing matching rules | Rejected (not applicable): OSPE uses explicit human marking; no text-token rubric matcher |
 | A5-170 | Update OSPE countdown without rebuilding unchanged station | Existing coverage; timer updates clock until position changes; reviewed |
 
 ## Anki internals
@@ -303,7 +303,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-194 | Load companion stores on first feature access | Unassessed |
 | A5-195 | Store stable index metadata alongside records when validated | Unassessed |
 | A5-196 | Use cursor iteration for large local collections | Unassessed |
-| A5-197 | Avoid copying large binary blobs into JS arrays | Unassessed |
+| A5-197 | Avoid copying large binary blobs into JS arrays | Existing narrower: source streams assembled once into bounded Uint8Array, not copied into JS byte arrays |
 | A5-198 | Bound in-memory decoded resource cache by bytes | Unassessed |
 | A5-199 | Evict bounded source-search term cache by true LRU | Submitted #162; CI pending |
 | A5-200 | Reuse service-worker cache manifest parsing per version | Existing coverage; reviewed scope in evidence |
@@ -313,7 +313,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | ID | Candidate | Status |
 |---|---|---|
 | A5-201 | Benchmark cache-first for immutable approved public assets | Unassessed |
-| A5-202 | Avoid redundant service-worker update checks | Unassessed |
+| A5-202 | Avoid redundant service-worker update checks | Existing narrower: offline registration has no app-level repeated service-worker update poll |
 | A5-203 | Coalesce identical in-flight cache population requests | Unassessed |
 | A5-204 | Use navigation preload for eligible routes | Unassessed |
 | A5-205 | Skip cache enumeration on unrelated fetch requests | Existing coverage; reviewed scope in evidence |
@@ -347,7 +347,7 @@ Status at this evidence update: 56 newly merged candidates from previous verifie
 | A5-223 | Bound source search query cache by entries and estimated bytes | Merged #132; CI passed; estimated retention only |
 | A5-224 | Reuse scratch buffers in pure computation hot paths | Unassessed |
 | A5-225 | Release inactive search result/index caches on dialog close | Existing coverage; search close clears index/results and pending callbacks |
-| A5-226 | Release image decode references on route exit | Unassessed |
+| A5-226 | Release image decode references on route exit | Existing narrower: Anki closes/replaces card faces with object-URL revocation |
 | A5-227 | Avoid retaining detached DOM through closures | Unassessed |
 | A5-228 | Reuse immutable source objects across views | Unassessed |
 | A5-229 | Bound question-history memo maps to one calculation | Existing coverage; local Map lifetimes in questionHistory |
@@ -596,3 +596,9 @@ Scope below reflects existing mechanisms verified in repository source and relat
 | **A5-270** | scripts/learning-payload.mjs; scripts/lecture-changelog.mjs | Identical generated lesson payload and full changelog skip rewriting; other generator outputs remain reviewable. |
 | **A5-274** | scripts/client-scripts.mjs; tests/client-scripts.test.mjs | Eligible shared and course JS minified without generated source maps, identifiers preserved. |
 | **A5-278** | scripts/transfer-production-assets.mjs | Content-addressed transfer skips existing object uploads and verifies readback; only static code review, no production operation. |
+| **A5-064** | public/study-vault.js; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | `StudyVault.set` compares JSON values before writing; unchanged underlying device storage paths outside the companion setter remain unassessed. |
+| **A5-099** | scripts/client-styles.mjs; tests/runtime-optimization.test.mjs | Existing combined/minified CSS keeps inline-style ordering boundaries; no additional bundle reduction claimed. |
+| **A5-169** | public/ospe.js; public/ospe-core.mjs; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Marking points are awarded explicitly by the student; there is no tokenization-based rubric matcher to memoize. Avoid inventing an automatic grading mechanism. |
+| **A5-197** | public/source-demand.js; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Reading parser retains typed stream chunks and performs a single size-checked typed-array assembly. Does not assert zero copies in browser-native Blob internals. |
+| **A5-202** | public/phase3-offline.mjs; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Worker registration relies on browser lifecycle; no custom recurring `registration.update()` timer exists. Native browser update checks are outside app scope. |
+| **A5-226** | public/anki.js; tests/cloudflare-staging-audit5-existing-coverage-006.test.mjs | Anki card replacement/exit revokes object URLs. Other image surfaces are not covered by this narrower classification. |
