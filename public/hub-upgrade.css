@@ -103,6 +103,15 @@ html[data-ui=modern] .catalog-head :is(input,select){width:100%;min-width:0;box-
   border-radius: 0; box-shadow: none; align-items: center;
  }
 }
+/* A5-038: large lecture-material groups remain accessible and searchable while
+   the browser skips offscreen layout/paint; intrinsic height avoids scroll jumps.
+   Do not apply to active exams, interactive lesson readers, or PDF prints. */
+@supports (content-visibility:auto) {
+ .material-list { content-visibility:auto; contain-intrinsic-size:auto 660px; }
+}
+@media print {
+ .material-list { content-visibility:visible; contain-intrinsic-size:none; }
+}
 .material-list { margin: 24px 0; }
 .material-list h2 { margin: 0 0 8px; }
 .material-list ol,.material-extras ul { margin: 0; padding: 0; list-style: none; }
