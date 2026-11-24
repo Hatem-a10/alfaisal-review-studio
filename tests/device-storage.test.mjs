@@ -6,14 +6,14 @@ const source=fs.readFileSync('public/device-storage.js','utf8');
 // Minimal asynchronous IndexedDB contract. Run the actual device adapter; inject
 // transaction failures rather than replacing its backup/migration implementation.
 function database(){
- const stores=new Map();let failPut=null;
- const db={createObjectStore(name){stores.set(name,new Map())},transaction(name){
+ const stores=new Map();let failPut=null;const counters={valueTransactions:0,valueWrites:0};
+ const db={createObjectStore(name){stores.set(name,new Map())},transaction(name,mode){if(name==='values'&&mode==='readwrite')counters.valueTransactions++;
   const map=stores.get(name),tx={error:null};let pending=0,failed=false;
   const request=action=>{const r={};pending++;queueMicrotask(()=>{try{r.result=action();r.onsuccess?.()}catch(e){failed=true;tx.error=r.error=e;r.onerror?.();tx.onerror?.()}finally{if(--pending===0&&!failed)queueMicrotask(()=>tx.oncomplete?.())}});return r};
   tx.objectStore=()=>({get:key=>request(()=>map.get(key)),getAllKeys:()=>request(()=>[...map.keys()]),getAll:()=>request(()=>[...map.values()]),
-   put:(value,key)=>request(()=>{if(failPut?.(name,key,value))throw Error('Injected device write failure');map.set(key,value);return key}),delete:key=>request(()=>map.delete(key))});return tx;
+   put:(value,key)=>request(()=>{if(failPut?.(name,key,value))throw Error('Injected device write failure');if(name==='values')counters.valueWrites++;map.set(key,value);return key}),delete:key=>request(()=>map.delete(key))});return tx;
  }};
- return {stores,setFailure(fn){failPut=fn},indexedDB:{open(){const r={result:db};queueMicrotask(()=>{if(!stores.size)r.onupgradeneeded?.();r.onsuccess?.()});return r}}};
+ return {stores,counters,setFailure(fn){failPut=fn},indexedDB:{open(){const r={result:db};queueMicrotask(()=>{if(!stores.size)r.onupgradeneeded?.();r.onsuccess?.()});return r}}};
 }
 async function device(database,initial={},overrides={}){
  const raw=new Map(Object.entries(initial));class Storage{get length(){return raw.size}key(i){return [...raw.keys()][i]??null}getItem(k){return raw.get(k)??null}setItem(k,v){raw.set(String(k),String(v))}removeItem(k){raw.delete(k)}}
@@ -89,4 +89,30 @@ test('managed account probe aborts stalled verification without opening storage'
  class Controller{constructor(){this.signal={}}abort(){this.signal.abort()}}
  const d=await device(db,{[key+'-account']:account,[key]:snapshot},{REVIEW_STUDIO_FRESH_ACCOUNTS:true,AbortController:Controller,setTimeout(fn){timer=fn;return 1},clearTimeout(){cleared=true},fetch:async(url,options)=>new Promise((resolve,reject)=>{signal=options.signal;signal.abort=()=>reject(Error('aborted'));queueMicrotask(timer)})});
  assert.ok(signal);assert.equal(cleared,true);assert.equal(d.api,undefined);assert.equal(db.stores.size,0);assert.equal(d.raw.get(key),snapshot);
+});
+
+test('A5-063 identical managed values never enqueue redundant IndexedDB writes',async()=>{
+ const db=database(),d=await device(db,{[key+'-account']:account}),name=key+'-audit5-identical';
+ const value='{"mode":"study"}';
+ d.storage.setItem(name,value);await d.api.flush();
+ const before={...db.counters};
+ for(let i=0;i<80;i++)d.storage.setItem(name,value);
+ await d.api.flush();
+ assert.equal(db.counters.valueWrites,before.valueWrites);
+ assert.equal(db.counters.valueTransactions,before.valueTransactions);
+ assert.equal(d.storage.getItem(name),value);
+ assert.equal(db.stores.get('values').get(account+'|'+name),value);
+ d.storage.setItem(name,'{"mode":"revised"}');await d.api.flush();
+ assert.equal(db.counters.valueWrites,before.valueWrites+1);
+ console.log(JSON.stringify({label:'A5-063 identical device values',repeatedWrites:80,extraDeviceWrites:0,changedWrites:1}));
+});
+test('A5-066 synchronous edit burst shares one committed IndexedDB transaction',async()=>{
+ const db=database(),d=await device(db,{[key+'-account']:account}),prior={...db.counters};
+ const prefix=key+'-audit5-burst-';
+ for(let i=0;i<180;i++)d.storage.setItem(prefix+i,'value-'+i);
+ await d.api.flush();
+ assert.equal(db.counters.valueTransactions-prior.valueTransactions,1);
+ assert.equal(db.counters.valueWrites-prior.valueWrites,180);
+ for(let i=0;i<180;i++)assert.equal(db.stores.get('values').get(account+'|'+prefix+i),'value-'+i);
+ console.log(JSON.stringify({label:'A5-066 pending device write burst',edits:180,transactions:1,persistedObjects:180}));
 });
