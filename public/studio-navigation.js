@@ -4,20 +4,23 @@
  const railIcon=path=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
  const homeIcon=railIcon('<path d="m3 10 9-7 9 7M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 21v-6a2 2 0 0 1 4 0v6"/>');
  const otherIcon=railIcon('<rect x="3.5" y="3.5" width="6" height="6" rx="1.4"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.4"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.4"/><path d="M17.5 14.5v6m-3-3h6"/>');
- const primary=['dashboard','learning','calendar','practice'];
+ const mobileRoutes=['dashboard','learning','calendar','practice'];
+ const desktopRoutes=[['learning','Learn','book'],['calendar','Schedule','calendar'],['practice','Practice','practice'],['countdowns','Countdowns','calendar'],['booklet','Booklet','book']];
+ const desktopOnly=['countdowns','booklet'];
+ const mobileLayout=matchMedia('(max-width:760px)');
+ const profile=sidebar.querySelector('.brand');
  const routeButton=(root,id)=>root.querySelector('button[data-view="'+id+'"]');
  const toolFrom=b=>({id:b.dataset.view,label:b.textContent.trim(),icon:b.querySelector('svg')?.outerHTML||navGlyph('extras')});
  const tools=[...(extras?.querySelectorAll('button[data-view]')||[])].map(toolFrom);
  tools.sort((a,b)=>Number(b.id==='activity')-Number(a.id==='activity'));
- const ids=new Set([...tools.map(t=>t.id),'lectures','weakness','methods','sources']);
+ const ids=new Set([...tools.map(t=>t.id).filter(id=>!desktopOnly.includes(id)),'lectures','weakness','methods','sources']);
  const other=document.createElement('button');other.type='button';other.id='otherToolsNav';
  other.innerHTML=otherIcon+'<span>More</span>';other.setAttribute('aria-haspopup','dialog');
- const secondary=[...nav.querySelectorAll(':scope > button[data-view]')].filter(b=>!primary.includes(b.dataset.view)).map(toolFrom);
- const desktop=primary.map((id,index)=>{
-  const label=['Home','Learn','Schedule','Practice'][index];
+ const secondary=[...nav.querySelectorAll(':scope > button[data-view]')].filter(b=>!mobileRoutes.includes(b.dataset.view)&&!desktopOnly.includes(b.dataset.view)).map(toolFrom);
+ const desktop=desktopRoutes.map(([id,label,icon])=>{
   const button=routeButton(nav,id)||document.createElement('button');
   button.type='button';button.dataset.view=id;
-  button.innerHTML=(id==='dashboard'?homeIcon:button.querySelector('svg')?.outerHTML||navGlyph(['book','book','calendar','practice'][index]))+'<span>'+label+'</span>';
+  button.innerHTML=(button.querySelector('svg')?.outerHTML||navGlyph(icon))+'<span>'+label+'</span>';
   button.setAttribute('aria-label',label);button.title=label;
   return button;
  });
@@ -36,8 +39,9 @@
    tabs=document.createElement('nav');tabs.id='otherToolsTabs';tabs.setAttribute('aria-label','Other study tools');
    tabs.innerHTML='<button type="button" data-open-more>← More tools</button>';content.prepend(tabs);
   }
+  if(profile){if(view==='dashboard'&&current!=='archive')profile.setAttribute('aria-current','page');else profile.removeAttribute('aria-current');}
   for(const button of [other,document.getElementById('mobileMoreTools')].filter(Boolean)){
-   const active=visible||!primary.includes(view);
+   const active=visible||!mobileRoutes.includes(view)&&(button!==other||!desktopOnly.includes(view));
    button.classList.toggle('active',active);
    if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
   }
@@ -47,7 +51,7 @@
  for(const e of ['popstate','hashchange'])window.addEventListener(e,restore);restore();
  const mobile=document.querySelector('.ui-mobile-nav');
  if(!mobile)return;
- const shortcuts=primary.map(id=>mobile.querySelector('[data-view="'+id+'"]')).filter(Boolean);
+ const shortcuts=mobileRoutes.map(id=>mobile.querySelector('[data-view="'+id+'"]')).filter(Boolean);
  const home=shortcuts[0];
  if(home?.dataset.view==='dashboard'){home.querySelector('svg')?.remove();home.insertAdjacentHTML('afterbegin',homeIcon);}
  const sync=mobile.querySelector('#mobileSyncSettings');
@@ -75,17 +79,18 @@
    ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('dashboard')},{id:'grades',label:'Grade Calculator',icon:navGlyph('practice')},{id:'weakness',label:'Study priorities',icon:navGlyph('weakness')}]],
    ['Help',[{id:'methods',label:'How to study',icon:navGlyph('methods')},{id:'sources',label:'Content sources',icon:navGlyph('sources')}]],
   ];
-  const included=new Set(groups.flatMap(([,entries])=>entries.map(tool=>tool.id)));
+  const included=new Set([...desktopOnly,...groups.flatMap(([,entries])=>entries.map(tool=>tool.id))]);
   groups[0][1].push(...[...secondary,...tools].filter(tool=>!included.has(tool.id)&&included.add(tool.id)));
   grid.className='more-tool-groups';
-  grid.innerHTML=groups.map(([group,links])=>'<section><h3>'+group+'</h3><div class="mobile-tools-grid">'+links.map(tool=>'<button type="button" data-view="'+tool.id+'">'+tool.icon+'<span>'+esc(tool.label)+'</span></button>').join('')+'</div></section>').join('');
-  if(sync){sync.hidden=!matchMedia('(max-width:760px)').matches;sync.removeAttribute('data-mobile-extra');grid.append(sync);}
+  grid.innerHTML=groups.map(([group,links])=>'<section><h3>'+group+'</h3><div class="mobile-tools-grid">'+links.filter(tool=>mobileLayout.matches||!desktopOnly.includes(tool.id)).map(tool=>'<button type="button" data-view="'+tool.id+'">'+tool.icon+'<span>'+esc(tool.label)+'</span></button>').join('')+'</div></section>').join('');
+  if(sync){sync.hidden=!mobileLayout.matches;sync.removeAttribute('data-mobile-extra');grid.append(sync);}
  }
  function openMore(){
   if(document.getElementById('xpExam'))return;
   populate();if(!menu.open)menu.showModal();
  }
  other.onclick=more.onclick=openMore;
+ mobileLayout.addEventListener('change',()=>{if(menu.open)populate();});
  document.addEventListener('click',e=>{if(e.target.closest('[data-open-more]'))openMore();});
  grid.addEventListener('click',e=>{if(e.target.closest('button'))menu.close();},true);
  window.mountOtherTools();
