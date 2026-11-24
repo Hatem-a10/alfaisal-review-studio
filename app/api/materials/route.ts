@@ -15,7 +15,7 @@ export async function POST(request:Request){
  const file=form.get('file');if(!(file instanceof File)||file.size>25000000||file.size<1)return json({error:'Choose a file up to 25 MB.'},400);
  const lectureId=String(form.get('lectureId')||'');if(!/^(MOL-(?:[1-9]|1\d|2[0-8])|CVP-P(?:[1-9]|1\d|2[0-8])|CVP-A(?:[1-9]|1\d|2[0-3]))$/.test(lectureId))return json({error:'Choose a known lecture.'},400);
  let parsed;const raw=String(form.get('extraction')||'');if(raw.length>8000000)return json({error:'Extracted text is too large; split the document.'},413);try{parsed=JSON.parse(raw)}catch{return json({error:'Document text could not be parsed.'},400)}
- if(!Array.isArray(parsed.pages)||parsed.pages.length<1||parsed.pages.length>1200||parsed.pages.some((p:{page:number;text:string})=>!Number.isInteger(p.page)||p.page<1||typeof p.text!=='string'||p.text.length>100000))return json({error:'Invalid extracted pages.'},400);
+ if(!parsed||typeof parsed!=='object'||!Array.isArray(parsed.pages)||parsed.pages.length<1||parsed.pages.length>1200||parsed.pages.some((p:{page:number;text:string})=>!Number.isInteger(p.page)||p.page<1||typeof p.text!=='string'||p.text.length>100000))return json({error:'Invalid extracted pages.'},400);
  const ext=file.name.toLowerCase().split('.').pop();
  if(!['pdf','txt','md','json','pptx','docx'].includes(ext||''))return json({error:'Use PDF, PPTX, DOCX, TXT, Markdown or a question-pack JSON file.'},400);
  if(ext==='pdf'&&!await hasPdfHeader(file)||['pptx','docx'].includes(ext||'')&&!await hasZipHeader(file))return json({error:'The file contents do not match its document type.'},400);
