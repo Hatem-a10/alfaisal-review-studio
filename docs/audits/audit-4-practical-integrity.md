@@ -6,7 +6,7 @@
 | PI-02 | Map merge guards only incoming keys; old prototype-like keys pass through | Filter both sides |
 | PI-03 | Newest comparison loses a sole legacy row when its timestamp is absent | Preserve an existing sole row |
 | PI-04 | Lab scoring can count invalid keys or mark an empty topic complete | Validate key and choice domains and nonempty topic |
-| PI-05 | Visual mastery trusts truthy flags and malformed mastery timestamps | Require explicit visual evidence and valid earned timestamp |
+| PI-05 | Visual mastery trusts truthy flags and malformed mastery timestamps | Require explicit visual evidence and validate timestamps when present; preserve legacy markers without timestamps |
 | PI-06 | Attempt mastery accepts impossible or noninteger counts and inconsistent supplied answers | Reconcile counts against supplied choices; preserve count-only legacy records |
 | PI-07 | Draft restore trusts stale topic identity, invalid option indices and obsolete IDs | Validate identity and canonical choices; retain valid answers |
 | PI-08 | Repeated/stale submission can write the same run again | Guard active topic and submitted state |
