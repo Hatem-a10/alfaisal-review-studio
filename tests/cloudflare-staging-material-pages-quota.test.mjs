@@ -11,7 +11,9 @@ function fixture(){
  for(let i=0;i<7;i++)add.run('asset-'+i,'student','File '+i,'REN-A1','application/pdf',100,1,i<4?'2026-11-23T12:00:00Z':'2026-11-24T12:00:00Z');
  add.run('deck','student','Anki','ANKI','application/zip',200,10,'2026-11-25T12:00:00Z');
  add.run('other','other','Other','REN-A1','application/pdf',999,1,'2026-11-25T12:00:00Z');
- const env={DB:{prepare(sql){return {bind(...args){return {all:async()=>({results:db.prepare(sql).all(...args)}),first:async()=>db.prepare(sql).get(...args)}}}}};
+ const env={DB:{prepare(sql){
+  return {bind(...args){return {all:async()=>({results:db.prepare(sql).all(...args)}),first:async()=>db.prepare(sql).get(...args)}}};
+ }}};
  const m={exports:{}};
  new Function('require','module','exports',ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(name=>name==='cloudflare:workers'?{env}:name.includes('material-lecture-links')?{withMaterialLectureLinks:x=>x}:name.includes('personal-upload')?{PERSONAL_UPLOAD_LIMIT:500000000}:{},m,m.exports);
  const get=(query='',user='student')=>m.exports.GET(new Request('https://example.test/api/materials'+query,{headers:user?{'oai-authenticated-user-id':user}:{}}));
