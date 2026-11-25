@@ -1,5 +1,5 @@
-import {formulas,problems,number} from './formulas-data.mjs';
 import {escapeHTML as escape} from './html-escape.mjs';
+import {formulas,problems,number} from './formulas-data.mjs';
 let group='all',query='',openCard='';
 const read=()=>storeOptions().formulaPractice||{round:0,answers:{}};
 const write=value=>saveOptions({...storeOptions(),formulaPractice:value});

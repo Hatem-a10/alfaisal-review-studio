@@ -1,3 +1,4 @@
+import {escapeHTML as escapeHTML} from './html-escape.mjs';
 import {bookletAnnotation,mergeBookletAnnotations} from './phase2-practice-core.mjs';
 import {loadRenalBooklet} from './renal-booklet-data.mjs';
 import {activeBookletPaths,bookletLoader,validateActiveBooklet} from './active-booklet-core.mjs';
@@ -8,7 +9,6 @@ import {formulaPage,installFormulas} from './formulas-practice.mjs';
 import {bookletEntry,resolveBookletNavigation,deduplicateQuestions,analytics,rankWeakQuestions,updateSnapshot,coverageAudit,selectBooklet,advanceBooklet,previousBooklet,enforceHistoryLimit,randomizeBooklet} from './phase2-practice-core.mjs';
 export {deduplicateQuestions,analytics,rankWeakQuestions,updateSnapshot,coverageAudit,selectBooklet,advanceBooklet,previousBooklet,enforceHistoryLimit,randomizeBooklet} from './phase2-practice-core.mjs';
 const clone=x=>JSON.parse(JSON.stringify(x));
-import {escapeHTML as escapeHTML} from './html-escape.mjs';
 export function bookletAnswerDetails(q,state){if(!state.completed||q.type!=='mcq'||!Array.isArray(q.options))return '';const accepted=(q.acceptedAnswers||[q.answer]).filter(i=>Number.isInteger(i)&&i>=0&&i<q.options.length);if(!accepted.length)return '';const answers=accepted.map(i=>`${String.fromCharCode(65+i)}. ${escapeHTML(q.options[i])}`).join(' / '),label=q.answer===null?'Accepted source alternatives (self-check):':'Correct answer:';const reasons=Array.isArray(q.reasons)&&q.reasons.some(Boolean)?`<details class="booklet-option-reasons"><summary>Why each option fits or fails</summary>${q.options.map((o,i)=>`<p><b>${String.fromCharCode(65+i)}. ${escapeHTML(o)}</b><br>${escapeHTML(q.reasons[i]||'')}</p>`).join('')}</details>`:'';return `<p><strong>${label} ${answers}</strong></p>${reasons}`}
 export function bookletCheckResult(q,answer,at=new Date().toISOString()){if(!Array.isArray(q?.options)||!Number.isInteger(answer)||answer<0||answer>=q.options.length)throw Error('Invalid booklet selection');const choice=q.choiceRevision?{answer,choiceRevision:q.choiceRevision}:{answer};return q.answer===null?{...choice,revealed:true,at}:{...choice,correct:(q.acceptedAnswers||[q.answer]).includes(answer),completed:true,at}}
 const bookletCourse=()=>globalThis.reviewBookletCourse?.()||'CVP';
