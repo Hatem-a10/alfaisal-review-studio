@@ -15,12 +15,20 @@ export function mergePractice(a={},b={}){const stamp=v=>typeof v==='number'&&Num
 export function bookletEntry(q,entries={}){
  const current=entries[q.id];
  const aliases=Object.entries(q.legacyChoices||{}).filter(([id])=>entries[id]);
- if(!aliases.length)return current;
+ const project=(entry,answer)=>{
+  if(!q.choiceRevision||entry.choiceRevision===q.choiceRevision)return {...entry,answer};
+  const priorChoice=q.previousOptions?.[answer];
+  const options=q.options.map(option=>option.trim().toLowerCase());
+  const previous=priorChoice?.trim().toLowerCase();
+  const index=previous&&options.indexOf(previous)===options.lastIndexOf(previous)?options.indexOf(previous):-1;
+  return {...entry,answer:index>=0?index:undefined,priorChoice,previousResult:entry.completed===true};
+ };
+ if(!aliases.length)return current&&q.choiceRevision?project(current,current.answer):current;
  const candidates=aliases.map(([id,order])=>{
   const entry=entries[id],answer=order[entry.answer];
-  return {...entry,answer:Number.isInteger(answer)&&answer>=0?answer:undefined};
+  return project(entry,Number.isInteger(answer)&&answer>=0?answer:undefined);
  });
- if(current)candidates.unshift(current);
+ if(current)candidates.unshift(q.choiceRevision?project(current,current.answer):current);
  const rank=entry=>entry.completed&&entry.correct!==false?2:entry.completed?1:0;
  return candidates.reduce((best,entry)=>rank(entry)>rank(best)||rank(entry)===rank(best)&&historyStamp(entry.at)>historyStamp(best.at)?entry:best);
 }

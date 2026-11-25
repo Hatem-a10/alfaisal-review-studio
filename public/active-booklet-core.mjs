@@ -19,7 +19,7 @@ export function validateActiveBooklet(pack,{version,pages,mcqs}){
    if(q.legacyChoices!==undefined&&(!q.legacyChoices||typeof q.legacyChoices!=='object'||Array.isArray(q.legacyChoices)))throw Error('Invalid booklet progress alias.');
    if(!Array.isArray(q.options)||q.options.length<2||q.options.some(o=>typeof o!=='string'||!o.trim()))throw Error('Invalid booklet answer choices.');
    for(const [id,order] of Object.entries(q.legacyChoices||{})){
-    if(!id||aliases.has(id)||!Array.isArray(order)||order.length<2||order.some(i=>!Number.isInteger(i)||i< -1||i>=q.options.length))throw Error('Invalid booklet progress alias.');
+    if(!id||aliases.has(id)||!Array.isArray(order)||order.length<2||order.some(i=>!Number.isInteger(i)||i< -1||i>=(q.previousOptions?.length??q.options.length)))throw Error('Invalid booklet progress alias.');
     aliases.add(id);
    }
    if(q.sourceLocations!==undefined&&(!Array.isArray(q.sourceLocations)||!q.sourceLocations.length||q.sourceLocations.some(loc=>!Number.isSafeInteger(loc?.page)||loc.page<1||loc.page>pages)))throw Error('Invalid repeated booklet location.');
