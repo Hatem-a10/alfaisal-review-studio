@@ -1,7 +1,7 @@
 /* global render, view, go, DATA, LEARNING, ORIGINAL_EXAMS, lessonId, guideTopic, guideTopicLesson, cardIndex, learnTab, etExam, originalRun, etPracticeTab, originalQuestionById, visibleOriginalRun, lessonById, inlineTopicsFor, inlineGroups, allLearningQuestions, TEACHING, storeOptions, saveOptions, today, tasks, dates, done, state, rec, persist, AssessmentPlan, assessmentClock, syncMeta, storageOK, openEdit, settings, toast */
 import {activeBookletPaths} from './active-booklet-core.mjs';
 import {courses,lectureCourses} from './course-registry.mjs';
-import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview} from './study-next-core.mjs';
+import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,nextClass} from './study-next-core.mjs';
 
 const content=()=>document.getElementById('content');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -181,6 +181,16 @@ function applyPlan(){
  }
  preview=null;persist();render();
 }
+function nextClassBanner(){
+ const host=content();if(!host)return;
+ host.querySelector('#studyNextClass')?.remove();
+ if(!settings.groupConfigured||typeof campusScheduleWeeks!=='function'||typeof campusWeekEvents!=='function')return;
+ const clock=assessmentClock(),starts=[...new Set(campusScheduleWeeks().map(w=>w.start).filter(start=>start>=campusWeekStart(clock.date)))];
+ const selected=nextClass(starts.flatMap(start=>campusWeekEvents(start,false)),clock);
+ const describe=e=>esc([campusEventTitle(e).title,campusEventTitle(e).detail,e.date,campusTime(e.start)+'–'+campusTime(e.end),e.room].filter(Boolean).join(' · '));
+ if(!selected.current.length&&!selected.next)return;
+ html('studyNextClass','<h2>Next class</h2>'+(selected.current.length?'<p><strong>In progress:</strong> '+selected.current.map(describe).join('<br>')+'</p>':'')+(selected.next?'<p><strong>Upcoming:</strong> '+describe(selected.next)+'</p>':'')+(selected.overlaps.length?'<p role="status">Overlapping timetable entries: '+selected.overlaps.map(describe).join('<br>')+'. Verify your assigned session.</p>':'')+'<button type="button" data-study-open-schedule>Open schedule</button>');
+}
 function scheduleAlerts(){
  const payload=window.reviewPublishedAcademic?.(),rows=payload?.changes;
  if(!rows?.length||seenSchedule===payload.revisionId)return;
@@ -251,7 +261,7 @@ document.addEventListener('click',e=>{
 function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
- if(view==='dashboard'){resumeCard();scheduleAlerts();}
+ if(view==='dashboard'){resumeCard();scheduleAlerts();nextClassBanner();}
  tourEntry();firstLessonControls();
  if(view==='calendar'){
   scheduleAlerts();
@@ -269,8 +279,10 @@ function paint(){
 }
 const before=render;render=function(...args){const result=before.apply(this,args);paint();return result;};
 window.addEventListener('review:academic-config',paint);
+setInterval(()=>{if(view==='dashboard'&&document.documentElement.dataset.boot==='ready'&&!document.hidden)nextClassBanner();},60000);
 const actionHandlers={
  'tour':openWelcomeTour,
+ 'open-schedule':()=>go('calendar'),
  'lab-settings':()=>document.getElementById('openSiteAdmin')?.click(),
  'sync-edit':()=>itemById(issue?.recordId)&&openEdit(issue.recordId),
  'sync-export':()=>document.getElementById('export')?.click(),
