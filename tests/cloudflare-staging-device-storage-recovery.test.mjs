@@ -52,20 +52,23 @@ test('queued newer value and deletion are preserved through a flush',{timeout:50
  assert.equal(h.persisted.has('student|other'),false);
  assert.equal(h.pending.size,0);
 });
-test('hydration reads keys and values in the same read-only transaction',{timeout:5000},async()=>{
+test('hydration streams pairs through one read-only cursor transaction',{timeout:5000},async()=>{
  const line=source.split('\n').find(s=>s.startsWith(' const readValues='));
  assert.ok(line);
- let transactions=0,calls=[];
+ let transactions=0,calls=[],continued=0;
+ const rows=[['a',1],['b',2]];
  const db={transaction(name,mode){
   transactions++;assert.equal(name,'values');assert.equal(mode,'readonly');
-  const t={objectStore:()=>({getAllKeys:r=>{calls.push(['keys',r]);return {result:['a','b']}},getAll:r=>{calls.push(['values',r]);return {result:[1,2]}}})};
-  queueMicrotask(()=>t.oncomplete());return t;
+  const t={objectStore:()=>({openCursor:range=>{
+   calls.push(range);const cursor={};let i=0;
+   const step=()=>queueMicrotask(()=>{if(i<rows.length){const [key,value]=rows[i++];cursor.result={key,value,continue:()=>{continued++;step()}};cursor.onsuccess()}else{cursor.result=null;cursor.onsuccess();t.oncomplete()}});
+   step();return cursor;
+  }})};return t;
  }};
  const fn=runInNewContext(line+'\nreadValues',{db});
- const result=await fn('range');
- assert.equal(transactions,1);
- assert.deepEqual(calls,[['keys','range'],['values','range']]);
- assert.deepEqual(JSON.parse(JSON.stringify(result)),[['a','b'],[1,2]]);
+ const seen=[];
+ await fn('range',(key,value)=>seen.push([key,value]));
+ assert.equal(transactions,1);assert.deepEqual(calls,['range']);assert.equal(continued,2);assert.deepEqual(seen,rows);
 });
 test('unbundled and production bootstrap remain identical and have nonpersonal timing marks',()=>{
  const inline=read('index.html').match(/<script id="deviceBootstrap">([\s\S]*?)<\/script>/)?.[1];
