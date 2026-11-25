@@ -7,7 +7,7 @@ import {Miniflare} from 'miniflare';
 
 const schema=[
  'drizzle/0000_huge_gladiator.sql','drizzle/0001_purple_norman_osborn.sql','staging/schema.sql',
- 'staging/managed-accounts.sql','staging/admin-control.sql','staging/profile-history.sql','staging/admin-academics.sql','staging/admin-content.sql',
+ 'staging/managed-accounts.sql','staging/admin-control.sql','staging/admin-academics.sql','staging/admin-content.sql',
  'staging/admin-resources.sql','production/identity.sql',
 ];
 const tables={

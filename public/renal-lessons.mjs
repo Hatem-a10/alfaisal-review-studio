@@ -169,7 +169,7 @@ export function renalTeachingPack(entries=renalLessons) {
     figure:part.figure?{...cite(Number(part.figure.split('-').at(-1))),image:'/api/site-assets/materials/ren123/'+part.figure+'.jpg',caption:part.title}:null
    }));
    const scopeNote=entry.code==='A1'&&topic.key==='aorta'?{label:'Outside this Renal block',text:'The lecturer explicitly excluded the two small external iliac branches (inferior epigastric and deep circumflex iliac) from questioning in this block.',url:'https://www.youtube.com/watch?v=gQtrpQmK2Qc&t=1769s',time:'29:29'}:null;
-   const recordedExamCue=entry.code==='A6'?{label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
+   const recordedExamCue=entry.code==='A6'?{conceptTitle:concepts[1].title,label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
    return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,transcript,scopeNote,recordedExamCue};
   });
   guides[id]={overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
