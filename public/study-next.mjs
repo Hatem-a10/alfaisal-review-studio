@@ -22,9 +22,12 @@ window.reviewPaintSyncDetails=message=>{
  let panel=host.querySelector('#studySyncDetails');
  if(!panel){panel=document.createElement('div');panel.id='studySyncDetails';host.append(panel);}
  if(/^Cloud saved/.test(message||''))issue=null;
- panel.innerHTML=`<dl><dt>This device</dt><dd>${storageOK?'Saved':'Device saving unavailable'}</dd><dt>Cloud</dt><dd>${syncMeta.dirty?'Changes waiting to sync':syncMeta.lastCloudAt?'Up to date':'Awaiting confirmation'}</dd><dt>Last successful sync</dt><dd>${esc(localTime(syncMeta.lastCloudAt))}</dd></dl>`+
+ const offline=navigator.onLine===false,counts=host.closest('details')?.open?window.reviewPendingSyncCounts?.():null;
+ const queue=syncMeta.dirty?(counts?`${counts.records} lesson records · ${counts.settings} settings · ${counts.stores} study stores pending comparison`:'Saved snapshot pending cloud confirmation'):'No pending local changes';
+ panel.innerHTML=`<dl><dt>This device</dt><dd>${storageOK?'Saved':'Device saving unavailable'}</dd><dt>Cloud</dt><dd>${offline?'Offline':syncMeta.dirty?'Changes waiting to sync':syncMeta.lastCloudAt?'Up to date':'Awaiting confirmation'}</dd><dt>Pending sync</dt><dd>${esc(queue)}</dd><dt>Last successful sync</dt><dd>${esc(localTime(syncMeta.lastCloudAt))}</dd></dl>`+
  (issue?`<p role="status">Check ${esc(issue.recordId||issue.area||'the backup')}. This copy is still on your device.</p><div class="study-next-actions">${itemById(issue.recordId)?'<button data-study-sync-edit>Review lesson record</button>':''}<button data-study-sync-export>Export backup</button><button data-study-sync-retry>Retry sync</button></div>`:'');
 };
+document.getElementById('syncWidget')?.addEventListener('toggle',()=>window.reviewPaintSyncDetails());
 window.addEventListener('review-profile-changed',()=>{issue=null;revision=null;preview=null;});
 window.reviewNoteBookletPosition=(course,q,index)=>{
  const current=options().studyNextBooklet;
