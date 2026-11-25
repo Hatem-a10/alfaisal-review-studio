@@ -262,3 +262,22 @@ test('the owner can set, keep and clear course end dates, and students receive t
  assert.equal((await h.call('site/save',owner,{...fields,courseEnds:{CVP:''}})).status,200);
  assert.deepEqual(await ends(),{});
 });
+
+test('student and role listing keyset pages preserve ties and exclude duplicate accounts',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const insert=h.sqlite.prepare('INSERT INTO review_accounts(id,email,created_at,last_seen_at,profile_json) VALUES (?,?,?,?,?)');
+ for(let i=0;i<60;i++)insert.run(prefix+'user_page_'+String(i).padStart(3,'0'),'page-'+i+'@example.test',i<30?'2026-11-24T12:00:00Z':'2026-11-25T12:00:00Z','2026-11-25T12:00:00Z','{}');
+ const expected=h.sqlite.prepare("SELECT id FROM review_accounts WHERE email LIKE 'page-%' ORDER BY created_at DESC,id ASC").all().map(r=>r.id);
+ for(const section of ['students','roles']){
+  const ids=[];let cursor=null,page=0;
+  do{
+   const res=await h.call(section+'/list?q=page-&page='+page+(cursor?'&cursor='+encodeURIComponent(cursor):''),owner);
+   assert.equal(res.status,200);const result=await res.json();assert.equal(result.page,page);assert.ok(result.students.length<=25);ids.push(...result.students.map(x=>x.id));cursor=result.nextCursor;page++;assert.ok(page<5);
+  }while(cursor);
+  assert.deepEqual(ids,expected);
+ }
+ assert.equal((await h.call('students/list?cursor=malformed',owner)).status,400);
+ assert.equal((await h.call('students/list?page=5',owner)).status,400);
+ assert.equal((await h.call('students/list?cursor=malformed',student)).status,403);
+ assert.ok(h.sqlite.prepare("SELECT name FROM sqlite_master WHERE name='review_accounts_created_id_idx'").get());
+});
