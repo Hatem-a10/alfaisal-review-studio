@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {runInNewContext} from 'node:vm';
+const s=readFileSync(new URL('../public/study-vault.js',import.meta.url),'utf8'),i=s.indexOf('function mergeNotebook('),j=s.indexOf('function merge(a,b)',i);
+const merge=runInNewContext("const stamp=v=>typeof v==='string'&&Number.isFinite(Date.parse(v));"+s.slice(i,j)+';mergeNotebook');
+const row=(id,text,at,deleted=false)=>({lectureId:'REN-A1',topicId:id,title:'Topic',text,at,deleted});
+test('notebook merges distinct topics and preserves later deletion tombstones',()=>{const a={x:row('x','old','2026-11-23T10:00:00Z'),y:row('y','other','2026-11-25T10:00:00Z')},b={x:row('x','','2026-11-25T10:00:00Z',true),z:row('z','new','2026-11-24T10:00:00Z')};const m=merge(a,b);assert.equal(m.x.deleted,true);assert.equal(m.y.text,'other');assert.equal(m.z.text,'new');assert.equal(merge(m,a).x.deleted,true);});
