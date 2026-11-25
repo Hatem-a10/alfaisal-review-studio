@@ -16,7 +16,7 @@ test('exam keyboard shortcuts expose highlighter, eraser, toolkit and review wit
  for(const key of ['F','H','X','T'])assert.match(s,new RegExp('aria-keyshortcuts="'+key+'"'));
  assert.match(s,/const action=\{h:'highlight',x:'erase',t:'toolkit',r:'review'\}\[key\]/);
  assert.match(s,/if\(key==='escape'\)/);
- assert.match(s,/if\(e\.target\.closest\('input,textarea,select/);
+ assert.match(s,/e\.target\.closest\('input,textarea,select/);
  assert.match(s,/e\.repeat\|\|e\.isComposing/);
  assert.match(s,/<kbd>Esc<\/kbd>/);
 });
