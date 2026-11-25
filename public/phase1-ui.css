@@ -178,3 +178,5 @@ html[data-theme=amoled] :is(input,select,textarea){border-color:#7c8980}
  .student-progress-column-controls>strong{grid-column:1/-1}
  .student-progress-column-controls>label{white-space:normal}
 }
+
+.schedule-mobile-agenda{display:none}@media(max-width:700px){.schedule-mobile-agenda{display:grid;gap:8px;margin-top:14px}.schedule-mobile-agenda h3{font-size:1rem;margin:0}.schedule-mobile-agenda .campus-agenda-card{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:4px 10px;text-align:start;align-items:start;min-height:48px;padding:10px 12px;border:1px solid var(--line,#8886);border-radius:10px;overflow-wrap:anywhere}.schedule-mobile-agenda .campus-agenda-card>span{font-variant-numeric:tabular-nums;font-size:.8rem}.schedule-mobile-agenda .campus-agenda-card>small{grid-column:2}}@media(max-width:380px){.schedule-mobile-agenda .campus-agenda-card{grid-template-columns:minmax(0,1fr)}.schedule-mobile-agenda .campus-agenda-card>small{grid-column:1}}
