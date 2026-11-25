@@ -110,3 +110,17 @@ test('an editor replacement between approval read and write cannot be approved b
  }});
  assert.equal(r.status,409);assert.equal(raw.prepare('SELECT count(*) AS n FROM review_question_revisions').get().n,0);
 });
+
+test('admin triage list filters by exact category without exposing reporter identity to editors',async()=>{
+ const {db,raw}=await fixture(),env={DB:db},user={id:'student-1'};
+ for(const [kind,questionId] of [['other','REN-Q1'],['incorrect-answer','REN-Q2'],['technical','site-technical']]){
+  const path=kind==='technical'?'technical-report':'reports';
+  assert.equal((await contentStudent({request:request('/api/control-center/student/'+path,'POST',{questionId,kind,details:'Synthetic review'}),env,user,path:'/api/control-center/student/'+path})).status,201);
+ }
+ const path='/api/control-center/reports/list?category=technical&limit=50';
+ const response=await contentAdmin({request:request(path),env,user:{id:'editor'},row:{},role:'editor',section:'reports',action:'list',...writer(env)});
+ const body=await response.json();assert.equal(body.total,1);assert.equal(body.reports[0].questionId,'site-technical');
+ assert.equal(Object.hasOwn(body.reports[0],'reporter'),false);
+ assert.equal((await (await contentAdmin({request:request('/api/control-center/reports/list?category=incorrect-answer'),env,user:{id:'owner'},row:{},role:'owner',section:'reports',action:'list',...writer(env)})).json()).total,1);
+ assert.equal((await (await contentAdmin({request:request('/api/control-center/reports/list?category=other%27%20OR%201%3D1'),env,user:{id:'editor'},row:{},role:'editor',section:'reports',action:'list',...writer(env)})).json()).total,0);
+});
