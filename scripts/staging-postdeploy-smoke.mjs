@@ -6,7 +6,7 @@ export function verifyStagingSecurityHeaders(response){
  const policy=headers.get('content-security-policy')||'';
  if(!policy.includes("frame-ancestors 'none'")||!policy.includes("object-src 'none'")||!policy.includes("base-uri 'none'"))throw Error('Staging sign-in CSP is missing required restrictions.');
  if(headers.get('x-content-type-options')?.toLowerCase()!=='nosniff')throw Error('Staging sign-in MIME sniffing protection missing.');
- if(!/\\bno-store\\b/i.test(headers.get('cache-control')||''))throw Error('Staging sign-in must not be cached.');
+ if(!/\bno-store\b/i.test(headers.get('cache-control')||''))throw Error('Staging sign-in must not be cached.');
  if(!['strict-origin-when-cross-origin','no-referrer'].includes(headers.get('referrer-policy')))throw Error('Staging sign-in referrer policy is missing.');
  if(headers.get('access-control-allow-origin')==='*')throw Error('Staging auth is accessible to arbitrary origins.');
  return true;
