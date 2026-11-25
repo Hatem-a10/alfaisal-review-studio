@@ -26,8 +26,7 @@ function simulatedDeviceDatabase(meter){
   const request=action=>{const r={};pending++;queueMicrotask(()=>{try{r.result=action();r.onsuccess?.()}catch(error){failed=true;tx.error=r.error=error;r.onerror?.();tx.onerror?.()}finally{if(--pending===0&&!failed)queueMicrotask(()=>tx.oncomplete?.())}});return r};
   tx.objectStore=()=>({
    get:key=>request(()=>data.get(key)),
-   getAllKeys:()=>request(()=>[...data.keys()]),
-   getAll:()=>request(()=>[...data.values()]),
+   openCursor:()=>{const rows=[...data.entries()];const r={};let i=0;pending++;const step=()=>queueMicrotask(()=>{if(i<rows.length){const [key,value]=rows[i++];r.result={key,value,continue:step};r.onsuccess?.()}else{r.result=null;r.onsuccess?.();if(--pending===0&&!failed)queueMicrotask(()=>tx.oncomplete?.())}});step();return r;},
    put:(value,key)=>request(()=>{if(mode==='readwrite'&&name==='values')meter.put(value);data.set(key,value);return key}),
    delete:key=>request(()=>{if(mode==='readwrite'&&name==='values')meter.remove();return data.delete(key)})
   });
