@@ -65,10 +65,33 @@
  refreshAdminAuthorization();window.addEventListener('focus',refreshAdminAuthorization);
 
 
+
+ // Personal logical quota, not an estimate of physical R2 usage or shared assets.
+ const quota=document.createElement('section');quota.className='panel';quota.innerHTML='<h3>Personal cloud storage</h3><p class="muted">Your saved documents and Anki decks share a 500 MB quota. Shared academic files and progress snapshots are excluded.</p><progress max="500000000" value="0" aria-label="Personal cloud storage used" hidden></progress><p role="status">Open settings to check your usage.</p><button type="button" data-personal-quota-refresh>Refresh storage</button>';
+ dialog.querySelector('.admin-frame').append(quota);
+ const quotaStatus=quota.querySelector('[role=status]'),meter=quota.querySelector('progress'),quotaButton=quota.querySelector('button');
+ let quotaGeneration=0;
+ async function readQuota(){
+  const generation=++quotaGeneration;quotaButton.disabled=true;meter.hidden=true;quotaStatus.textContent='Checking personal storage…';
+  try{
+   const response=await fetch('/api/materials?quota=1',{cache:'no-store',credentials:'same-origin'});
+   if(!response.ok)throw Error(response.status===401?'Sign in to see your storage quota.':'Storage quota is unavailable; retry.');
+   const {usedBytes,limitBytes}=await response.json();
+   if(!Number.isSafeInteger(usedBytes)||usedBytes<0||!Number.isSafeInteger(limitBytes)||limitBytes<=0)throw Error('Storage quota is unavailable; retry.');
+   if(generation!==quotaGeneration||!dialog.open)return;
+   meter.max=limitBytes;meter.value=Math.min(usedBytes,limitBytes);meter.hidden=false;
+   const mb=n=>(n/1000000).toFixed(n<10000000?2:1)+' MB';
+   quotaStatus.textContent=mb(usedBytes)+' of '+mb(limitBytes)+' used · '+mb(Math.max(0,limitBytes-usedBytes))+' remaining';
+  }catch(error){if(generation===quotaGeneration)quotaStatus.textContent=error.message||'Storage quota unavailable.'}
+  finally{if(generation===quotaGeneration)quotaButton.disabled=false}
+ }
+ quotaButton.addEventListener('click',readQuota);
+ dialog.addEventListener('close',()=>{quotaGeneration++;meter.hidden=true;quotaButton.disabled=false;quotaStatus.textContent='Open settings to check your usage.'});
+ window.addEventListener('review-profile-changed',()=>{quotaGeneration++;meter.hidden=true;quotaButton.disabled=false;if(dialog.open)readQuota()});
  let busy=false,data=null,build=null,storage,reportRenderer;const fmt=n=>Number.isFinite(Number(n))?(Number(n)/1048576).toFixed(n<10485760?2:1)+' MiB':'Unavailable';
  async function read(){try{const [a,b]=await Promise.all([fetch('/api/admin-assets',{cache:'no-store'}),fetch('/site-build-info.json',{cache:'no-store'})]);const result=await a.json();if(!a.ok)throw Error(result.error||'Storage information unavailable');if(!b.ok)throw Error('Build information unavailable');data=result;build=await b.json();if(!storage){storage=await import('/site-storage.mjs?v=2');storage.bindMigration(dialog)}if(!reportRenderer)reportRenderer=(await import('/admin-report.mjs')).reportContent;paint()}catch(e){document.querySelector('#adminBody').innerHTML='<p class="notice">'+esc(e.message)+'</p><button id="refreshAdmin">Retry</button>'}}
  function localBytes(){let n=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k?.startsWith(KEY))n+=new TextEncoder().encode(k+(localStorage.getItem(k)||'')).length}}catch{}return n}
  function paint(message=''){if(!data||!build||!reportRenderer)return;document.querySelector('#adminBody').innerHTML=reportRenderer({data,build,storage,fmt,localBytes,busy,message})}
  async function batches(files){if(busy||!files.length)return;busy=true;let done=0,failed=0,next=0;const arr=[...files];const msg=()=>{const el=document.querySelector('#adminMessage');if(el)el.textContent=`Transferring and verifying ${done} / ${arr.length} batches${failed?' · '+failed+' failed':''}…`};paint();msg();async function worker(){while(next<arr.length){const f=arr[next++];try{const r=await fetch('/api/admin-assets/import',{method:'POST',headers:{'Content-Type':'application/zip'},body:f});const body=await r.json();if(!r.ok)throw Error(body.error||'Transfer failed');done++}catch(e){failed++;console.error('Asset batch failed',f.name,e.message)}msg()}}await Promise.all([worker(),worker(),worker()]);busy=false;await read();paint(failed?`${done} batches verified; ${failed} failed. Select the same batches again to retry.`:`All ${done} batches transferred and verified.`)}
- open.onclick=()=>{if(!dialog.open){dialog.showModal();document.documentElement.classList.add('site-settings-open');focusClose()}refreshAdminAuthorization();if(unlocked&&!adminContent.hidden)read()};dialog.addEventListener('close',()=>document.documentElement.classList.remove('site-settings-open'));dialog.addEventListener('click',e=>{if(e.target.closest('#closeSiteAdmin'))dialog.close();if(e.target.closest('#refreshAdmin'))read()});dialog.addEventListener('change',async e=>{const t=e.target;if(t.id==='assetBatchFiles')await batches(t.files);if(t.id==='adminReportFile'&&t.files[0]){try{const r=await fetch('/api/admin-assets/report',{method:'POST',headers:{'Content-Type':'application/json'},body:await t.files[0].text()}),body=await r.json();if(!r.ok)throw Error(body.error);await read();paint('Measured build size recorded.')}catch(err){paint(err.message)}}});
+ open.onclick=()=>{if(!dialog.open){dialog.showModal();document.documentElement.classList.add('site-settings-open');focusClose()}readQuota();refreshAdminAuthorization();if(unlocked&&!adminContent.hidden)read()};dialog.addEventListener('close',()=>document.documentElement.classList.remove('site-settings-open'));dialog.addEventListener('click',e=>{if(e.target.closest('#closeSiteAdmin'))dialog.close();if(e.target.closest('#refreshAdmin'))read()});dialog.addEventListener('change',async e=>{const t=e.target;if(t.id==='assetBatchFiles')await batches(t.files);if(t.id==='adminReportFile'&&t.files[0]){try{const r=await fetch('/api/admin-assets/report',{method:'POST',headers:{'Content-Type':'application/json'},body:await t.files[0].text()}),body=await r.json();if(!r.ok)throw Error(body.error);await read();paint('Measured build size recorded.')}catch(err){paint(err.message)}}});
 })();

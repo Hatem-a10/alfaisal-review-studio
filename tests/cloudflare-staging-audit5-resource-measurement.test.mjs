@@ -56,7 +56,7 @@ test('A5-283 counts actual IndexedDB transactions from the production device boo
 test('A5-284 reads D1 meta.rows_read rather than assuming returned rows equal rows scanned',()=>{
  const meter=new D1ReadMeter(),fixture=syntheticAcademicFixture(20261124,{accounts:8,materials:250,edits:0});
  const user=fixture.users[3],rows=fixture.records.filter(r=>r.user_id===user&&r.lecture_id!=='ANKI');
- const query=read('app/api/materials/route.ts'),sql="SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC";
+ const query=read('app/api/materials/route.ts'),sql="SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI'";
  assert.ok(query.includes(sql));
  assert.equal(meter.record({results:rows,meta:{rows_read:250,rows_written:0}}).results,rows);
  meter.record({results:[{revision:2}],meta:{rows_read:1,rows_written:0}});

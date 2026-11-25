@@ -4,11 +4,44 @@ import {lectureCourses} from '../../../public/course-registry.mjs';
 import {withMaterialLectureLinks} from '../../../lib/material-lecture-links';
 import type {MaterialRow} from '../../../lib/material-dedup';
 import {digest,knownOriginal,materialRows,duplicateMaterial} from '../../../lib/material-dedup';
-import {hasZipHeader,hasPdfHeader,withinPersonalQuota,reservePersonalUpload} from '../../../lib/personal-upload';
+import {hasZipHeader,hasPdfHeader,withinPersonalQuota,reservePersonalUpload,PERSONAL_UPLOAD_LIMIT} from '../../../lib/personal-upload';
 export const dynamic='force-dynamic';
 const RESPONSE_HEADERS=Object.freeze({'Cache-Control':'no-store'});
 const json=(v:unknown,status=200)=>Response.json(v,{status,headers:RESPONSE_HEADERS});
-export async function GET(request:Request){const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);if(!env.DB)return json({error:'Storage unavailable.'},503);const rows=await env.DB.prepare("SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI' ORDER BY created_at DESC").bind(user).all<MaterialRow>();return json({materials:rows.results.map(withMaterialLectureLinks)})}
+const MATERIAL_SELECT="SELECT id, name, lecture_id AS lectureId, mime, bytes, page_count AS pageCount, created_at AS createdAt FROM study_materials WHERE user_id = ? AND lecture_id != 'ANKI'";
+const MATERIAL_ORDER=' ORDER BY created_at DESC,id DESC LIMIT ?';
+const validMaterialId=(id:unknown):id is string=>typeof id==='string'&&/^[\w-]{1,80}$/.test(id);
+const validMaterialDate=(date:unknown):date is string=>typeof date==='string'&&date.length<=40&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(date)&&Number.isFinite(Date.parse(date));
+function encodeMaterialCursor(row:MaterialRow){return btoa(JSON.stringify([row.createdAt,row.id]));}
+function decodeMaterialCursor(cursor:string):[string,string]{
+ if(cursor.length>256)throw Error('Invalid cursor');
+ const decoded:unknown=JSON.parse(atob(cursor));
+ if(!Array.isArray(decoded)||decoded.length!==2||!validMaterialDate(decoded[0])||!validMaterialId(decoded[1]))throw Error('Invalid cursor');
+ return [decoded[0],decoded[1]];
+}
+export async function GET(request:Request){
+ const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to read materials.'},401);
+ if(!env.DB)return json({error:'Storage unavailable.'},503);
+ const params=new URL(request.url).searchParams;
+ if(params.get('quota')==='1'){
+  const row=await env.DB.prepare('SELECT COALESCE(SUM(bytes),0) AS bytes FROM study_materials WHERE user_id=?').bind(user).first<{bytes:number}>();
+  return json({usedBytes:Number(row?.bytes||0),limitBytes:PERSONAL_UPLOAD_LIMIT,scope:'registered personal documents and Anki decks'});
+ }
+ const id=params.get('id');
+ if(id!==null){
+  if(!validMaterialId(id))return json({error:'Invalid document.'},400);
+  const row=await env.DB.prepare(MATERIAL_SELECT+' AND id=?').bind(user,id).first<MaterialRow>();
+  return row?json({materials:[withMaterialLectureLinks(row)]}):json({error:'Not found.'},404);
+ }
+ const raw=params.get('cursor'),limitText=params.get('limit')??'40';
+ if(!/^\d{1,3}$/.test(limitText)||Number(limitText)<1||Number(limitText)>100)return json({error:'Invalid page size.'},400);
+ const limit=Number(limitText);let cursor:[string,string]|null=null;
+ if(raw!==null)try{cursor=decodeMaterialCursor(raw)}catch{return json({error:'Invalid material cursor.'},400);}
+ const sql=MATERIAL_SELECT+(cursor?' AND (created_at,id) < (?,?)':'')+MATERIAL_ORDER;
+ const {results}=await env.DB.prepare(sql).bind(user,...(cursor||[]),limit+1).all<MaterialRow>();
+ const rows=results.slice(0,limit),nextCursor=results.length>limit&&rows.length?encodeMaterialCursor(rows[rows.length-1]):null;
+ return json({materials:rows.map(withMaterialLectureLinks),nextCursor});
+}
 export async function POST(request:Request){
  const user=request.headers.get('oai-authenticated-user-id');if(!user)return json({error:'Sign in to upload materials.'},401);
  const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return json({error:'Invalid origin.'},403);
