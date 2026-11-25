@@ -1,0 +1,3 @@
+# Scheduled staging R2 academic integrity
+
+The staging-only daily cron checks a deterministic rotating batch of 20 distinct manifest hashes. Every selected object gets an R2 HEAD size check. Objects up to 12 MB are hashed when the daily 50 MB read budget allows; larger or budget-excluded entries are reported as head-only, never described as hash-verified. Logs contain aggregate results and failing content hashes, not student identities or private records. This check neither repairs nor deletes objects. Production scheduling is unchanged. Hosted activation and log verification require a reviewed staging deploy.
