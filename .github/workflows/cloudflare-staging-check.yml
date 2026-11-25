@@ -26,7 +26,7 @@ jobs:
         run: node scripts/run-reviewed-tests.mjs > existing-tests.log 2>&1
       - name: Report test results
         if: always()
-        run: tail -40 existing-tests.log
+        run: test ! -f existing-tests.log || tail -40 existing-tests.log
       - name: Independent staging build
         run: npm run build:staging
       - name: Build isolated production candidate
