@@ -580,7 +580,7 @@ html:root body:not(.xp-exam-active) :is(.question-kind,.et-question-kind).questi
 
 
 html:root body:not(.xp-exam-active) .booklet-question-meta{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-block:12px}
-html:root body:not(.xp-exam-active) .booklet-question-meta p{flex:1 1 230px;margin:0}
+html:root body:not(.xp-exam-active) .booklet-question-meta p{flex:1 1 9rem;min-width:0;margin:0}
 html:root body:not(.xp-exam-active) .booklet-question-meta .rs-report-trigger{margin:0 0 0 auto;white-space:nowrap;min-height:44px}
 html:root body:not(.xp-exam-active) .booklet-actions{display:flex;gap:8px;flex-wrap:wrap;margin-block:14px 8px}
 html:root body:not(.xp-exam-active) .booklet-actions button{min-height:44px}
