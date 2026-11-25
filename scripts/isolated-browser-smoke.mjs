@@ -38,12 +38,12 @@ try{
    await page.goto(origin+'/');await page.waitForURL('**/staging/signin**');
    await page.getByLabel('Email').fill(accounts[0].email);await page.getByLabel('Password').fill(password);
    await page.getByRole('button',{name:/sign in/i}).click();
-   await page.waitForURL(origin+'/',{timeout:30000});
+   await page.waitForURL(url=>url.origin===origin&&url.pathname==='/',{timeout:30000,waitUntil:'domcontentloaded'});
    const session=await context.request.get(origin+'/staging/session');assert.equal((await session.json()).authenticated,true);
    await page.locator('html[data-boot="ready"]').waitFor({timeout:60000});await page.locator('#content').waitFor({state:'visible'});
    assert.ok((await page.locator('#content').innerText()).trim().length>0,'Dashboard is empty.');
    const nav=page.locator('button[data-view="calendar"]:visible').first();
-   if(await nav.count()){await nav.click();await page.waitForFunction(()=>location.hash.includes('calendar')||document.querySelector('#content')?.querySelector('.campus-board'),{timeout:20000});}
+   if(await nav.count()){await nav.click();await page.waitForFunction(()=>location.hash.includes('calendar')||document.querySelector('#content')?.querySelector('.campus-board'),null,{timeout:20000});}
    const width=await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+8);assert.ok(width,'Unexpected page-level horizontal overflow.');
    const snapshot=await context.request.get(origin+'/api/progress');assert.equal(snapshot.status(),200);
    const other=await browser.newContext({viewport,ignoreHTTPSErrors:true});const second=await other.request.get(origin+'/api/progress');assert.equal(second.status(),401);await other.close();
