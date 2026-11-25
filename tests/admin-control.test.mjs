@@ -311,3 +311,16 @@ test('owner system health is read-only, probes real bindings, and never exposes 
  assert.equal((await h.call('analytics/health',editor)).status,403);
  delete h.env.BUCKET;const missing=await(await h.call('analytics/health',owner)).json();assert.equal(missing.storage,'unavailable');
 });
+
+test('group CSV preview is non-mutating; apply requires a matching review and rejects protected or changed accounts',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());await h.challenge();
+ const rows=[{email:'student@example.test',studentGroup:'M1',studentSection:'A',labGroup:''}];
+ const before=h.sqlite.prepare('SELECT assignment FROM control_students WHERE account_id=?').get(student.id);
+ const preview=await h.call('students/group-import-preview',owner,{rows});assert.equal(preview.status,200);const p=await preview.json();assert.equal(p.valid,true);assert.equal(p.changes,1);assert.deepEqual(h.sqlite.prepare('SELECT assignment FROM control_students WHERE account_id=?').get(student.id),before);
+ assert.equal((await h.call('students/group-import-apply',owner,{rows,token:'wrong'})).status,409);
+ assert.equal((await h.call('students/group-import-preview',editor,{rows})).status,403);
+ const bad=await (await h.call('students/group-import-preview',owner,{rows:[{...rows[0],email:'owner@example.test'}]})).json();assert.equal(bad.valid,false);
+ const success=await h.call('students/group-import-apply',owner,{rows,token:p.token});assert.equal(success.status,200);
+ assert.equal(JSON.parse(h.sqlite.prepare('SELECT assignment FROM control_students WHERE account_id=?').get(student.id).assignment).studentGroup,'M1');
+ assert.equal((await h.call('students/group-import-apply',owner,{rows,token:p.token})).status,409);
+});

@@ -1,4 +1,4 @@
-import {csvRows} from './admin-csv.mjs';
+import {csvRows,parseGroupCSV} from './admin-csv.mjs';
 const apiRoot = '/api/control-center/';
 const tabs = {
  overview:'Overview', students:'Students', roles:'Roles & Permissions', academics:'Academic Management',
@@ -311,6 +311,14 @@ export async function openAdminCenter(){
    cards([['Registered files',record.files],['Registered file bytes',bytes(record.registeredBytes)],['Database progress row',bytes(record.progressRowBytes)],['R2 objects',record.objects],['R2 bytes'+(record.partial?' (partial)':''),bytes(record.r2Bytes)]]),
   ],'Done',()=>true);
  }
+ async function groupImport(){
+  const rows=await openForm('Dry-run group assignment CSV',[node('p','Use email,studentGroup,studentSection,labGroup. Maximum 30 registered accounts. Preview first; no assignment changes until you confirm.'),field('csv','CSV text',{type:'textarea',required:true,maxLength:32000,rows:10})],'Check assignments',values=>parseGroupCSV(values.csv));
+  if(!rows)return null;
+  const result=await mutation('students/group-import-preview',{rows});if(!result)return null;
+  const confirmed=await openForm('Review proposed assignments',[node('p',result.valid?result.changes+' account changes. Existing study progress and other profile fields are preserved.':'Resolve the flagged rows and start again. No changes have been made.'),table(['CSV row','Email','Current','Proposed','Result'],result.rows.map(x=>[x.row,x.email,x.previous||'Unset',x.proposed,x.issue||(x.changed?'Change':'No change')]))],result.valid&&result.changes?'Apply reviewed assignments':'Close',()=>result.valid&&result.changes>0);
+  if(!confirmed)return null;
+  return mutation('students/group-import-apply',{rows,token:result.token});
+ }
  async function students(roleOnly=false, params=new URLSearchParams(), page=0,version=viewVersion,cursors=[null]){
   const values=Object.fromEntries(params);
   const data=await request((roleOnly?'roles':'students')+'/list'+query({...values,page,...(cursors[page]?{cursor:cursors[page]}:{})}));
@@ -322,6 +330,7 @@ export async function openAdminCenter(){
    field('lab','Lab group',{value:values.lab}),
    field('status','Account',{choices:[['','All accounts'],['active','Active'],['suspended','Suspended']],value:values.status}),
   ],p=>within(()=>students(roleOnly,p,0,version))));
+  if(!roleOnly&&access.role==='owner')panel.append(rowAction('Import group CSV (dry-run)',groupImport));
   const rows=data.students.map(person=>{
    const name=studentIdentity(person);
    if(roleOnly){
