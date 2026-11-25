@@ -261,11 +261,74 @@ document.addEventListener('click',e=>{
   question?.scrollIntoView({block:'start',behavior:'instant'});
  }
 },true);
+let notebookDialog=null;
+const noteAccount=()=>localStorage.getItem('alfaisal-review-studio-v1-account');
+function noteRows(){
+ return Object.entries(options().notebook||{}).filter(([,x])=>x&&x.deleted!==true&&typeof x.text==='string'&&x.text.trim()&&!hiddenCourse(x.lectureId?.split('-')[0])).sort((a,b)=>Date.parse(b[1].at)-Date.parse(a[1].at));
+}
+function noteContext(){
+ const lesson=lessonById(lessonId),item=itemById(lessonId);if(!lesson||!item||hiddenCourse(item.course))return null;
+ const index=guideTopicLesson===lessonId?Number(guideTopic)||0:Number(cardIndex)||0;
+ const topic=inlineTopicsFor(lesson)[index];if(!topic?.id)return null;
+ return {id:lessonId+':'+topic.id,lectureId:lessonId,topicId:topic.id,title:String(topic.title||topic.concept||item.title).slice(0,240)};
+}
+function notebookEditor(context){
+ if(notebookDialog?.open)notebookDialog.close();
+ const account=noteAccount(),original=options().notebook?.[context.id],d=document.createElement('dialog');
+ notebookDialog=d;d.className='panel';d.setAttribute('aria-label','Private topic note');
+ const title=document.createElement('h2');title.textContent=context.title;
+ const label=document.createElement('label');label.textContent='Personal note (private to this account)';
+ const area=document.createElement('textarea');area.maxLength=4000;area.rows=8;area.value=original?.deleted?'':original?.text||'';label.append(area);
+ const status=document.createElement('p');status.setAttribute('role','status');
+ const makeButton=(label,action)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.onclick=action;return button};
+ function commit(deleted=false){
+  if(noteAccount()!==account){d.close();return}
+  const text=deleted?'':area.value.trim(),current=options(),notes=current.notebook||{},latest=notes[context.id];
+  if(!text&&!deleted){status.textContent='Enter a note or choose Delete.';return}
+  if(JSON.stringify(latest)!==JSON.stringify(original)){status.textContent='This note changed on another device. Close and reopen before editing.';return}
+  if(!latest&&Object.keys(notes).length>=500){status.textContent='Notebook capacity reached; edit existing notes or export your backup.';return}
+  const {id,...fields}=context,record={...fields,text,deleted,at:new Date().toISOString()};
+  try{saveOptions({...current,notebook:{...notes,[id]:record}});if(JSON.stringify(options().notebook?.[id])!==JSON.stringify(record))throw Error();d.close();render();toast(deleted?'Note deleted.':'Personal note saved on this device.')}
+  catch{status.textContent='Could not confirm saving. Copy your note and retry.'}
+ }
+ d.append(title,label,status,makeButton('Save note',()=>commit()),makeButton('Cancel',()=>d.close()));
+ if(original&&!original.deleted)d.append(makeButton('Delete note',()=>{const warning=document.createElement('p');warning.textContent='Delete this note across synced devices?';const yes=makeButton('Confirm delete',()=>commit(true));d.append(warning,yes);yes.focus();}));
+ d.addEventListener('close',()=>{d.remove();if(notebookDialog===d)notebookDialog=null},{once:true});document.body.append(d);d.showModal();area.focus();
+}
+function openNotebook(){
+ if(notebookDialog?.open)return;
+ const account=noteAccount(),d=document.createElement('dialog');notebookDialog=d;d.className='panel';d.setAttribute('aria-label','Personal notebook');
+ const title=document.createElement('h2');title.textContent='Personal notebook';
+ const label=document.createElement('label');label.textContent='Search notes';const search=document.createElement('input');search.type='search';label.append(search);
+ const list=document.createElement('div'),close=document.createElement('button');close.textContent='Close';close.type='button';close.onclick=()=>d.close();
+ function fill(){
+  list.replaceChildren();if(noteAccount()!==account){d.close();return}
+  const term=search.value.trim().toLowerCase(),rows=noteRows().filter(([,x])=>(x.title+' '+x.lectureId+' '+x.text).toLowerCase().includes(term));
+  if(!rows.length){const p=document.createElement('p');p.textContent='No matching notes. Add a note from a lesson topic.';list.append(p)}
+  for(const [id,note] of rows){
+   const article=document.createElement('article');article.className='panel';const heading=document.createElement('h3');heading.textContent=note.title+' · '+note.lectureId;const text=document.createElement('p');text.textContent=note.text;text.style.whiteSpace='pre-wrap';
+   const edit=document.createElement('button');edit.type='button';edit.textContent='Edit note';edit.onclick=()=>notebookEditor({id,lectureId:note.lectureId,topicId:note.topicId,title:note.title});
+   const jump=document.createElement('button');jump.type='button';jump.textContent='Open topic';jump.onclick=async()=>{if(noteAccount()!==account)return d.close();const item=itemById(note.lectureId);if(!item)return;await window.reviewEnsureCourses?.([item.course]);if(noteAccount()!==account)return d.close();const lesson=lessonById(note.lectureId),index=lesson?inlineTopicsFor(lesson).findIndex(t=>t.id===note.topicId):-1;d.close();await openTopic(note.lectureId,index>=0?index:undefined)};
+   article.append(heading,text,edit,jump);list.append(article);
+  }
+ }
+ search.addEventListener('input',fill);d.append(title,label,list,close);d.addEventListener('close',()=>{d.remove();if(notebookDialog===d)notebookDialog=null},{once:true});document.body.append(d);d.showModal();fill();
+}
+function notebookEntry(){
+ if(view==='dashboard')html('studyNotebook','<h2>Personal notebook</h2><p>'+noteRows().length+' saved topic notes</p><button type="button" data-study-notebook>Open notebook</button>');
+ if(view==='learning'&&learnTab==='lesson'){
+  const section=document.querySelector('.guide-section,.teaching-card'),context=noteContext();
+  if(section&&context&&!section.querySelector('[data-study-note]')){
+   const button=document.createElement('button');button.type='button';button.dataset.studyNote='';button.textContent=options().notebook?.[context.id]?.deleted===false?'Edit personal note':'Add personal note';button.onclick=()=>notebookEditor(context);section.prepend(button);
+  }
+ }
+}
+window.addEventListener('review-profile-changed',()=>notebookDialog?.close());
 function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
  if(view==='dashboard'){resumeCard();scheduleAlerts();nextClassBanner();}
- tourEntry();firstLessonControls();
+ tourEntry();firstLessonControls();notebookEntry();
  if(view==='calendar'){
   scheduleAlerts();
   if(settings.groupConfigured&&settings.labGroupConfigured&&!settings.labGroup&&window.REVIEW_STUDIO_FRESH_ACCOUNTS)
@@ -284,7 +347,7 @@ const before=render;render=function(...args){const result=before.apply(this,args
 window.addEventListener('review:academic-config',paint);
 setInterval(()=>{if(view==='dashboard'&&document.documentElement.dataset.boot==='ready'&&!document.hidden)nextClassBanner();},60000);
 const actionHandlers={
- 'tour':openWelcomeTour,
+ 'tour':openWelcomeTour,'notebook':openNotebook,
  'open-schedule':()=>go('calendar'),
  'lab-settings':()=>document.getElementById('openSiteAdmin')?.click(),
  'sync-edit':()=>itemById(issue?.recordId)&&openEdit(issue.recordId),
