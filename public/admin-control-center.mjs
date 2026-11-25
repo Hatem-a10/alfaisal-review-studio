@@ -533,6 +533,22 @@ export async function openAdminCenter(){
    node('h4','Academic reports'),table(['Category','Reports'],data.problems.map(x=>[x.category,x.count])),
    node('h4','Shared resource downloads'),table(['Resource','Downloads in 30 days'],(data.popularity||[]).map(x=>[x.title,x.count])),
    node('h4','Operational activity'),table(['Day','Event','Count'],data.activity.map(x=>[x.day,x.kind,x.count])));
+  const healthTitle=node('h4','System health · read-only');
+  const healthStatus=node('p','On-demand probes; not a hosted restore or latency test.',{role:'status'});
+  const healthDetails=node('div');
+  const check=button('Run system health checks',async()=>{
+   check.disabled=true;healthStatus.textContent='Checking D1, R2 and recent error counters…';healthDetails.replaceChildren();
+   try{
+    const result=await request('analytics/health');
+    if(version!==viewVersion)return;
+    healthDetails.append(cards([['Checked',formatDate(result.checkedAt)],['Environment',result.environment],['D1',result.database],['R2',result.storage],['Clerk',result.clerkSession]]));
+    healthDetails.append(node('h4','Reported errors · last 7 days'),result.errorCounters===null?node('p','Error counter query unavailable.'):table(['Day','Category','Count'],result.errorCounters.map(x=>[x.day,x.kind,x.count]),'No reported error events in the last 7 days.'));
+    healthDetails.append(node('p','CPU: '+result.cpu+' · '+result.limits,{class:'acc-empty'}));
+    healthStatus.textContent=result.database==='reachable'&&result.storage==='reachable'?'Connectivity probes succeeded. This does not prove full service health.':'At least one read-only probe failed or was unavailable.';
+   }catch(error){if(version===viewVersion)healthStatus.textContent=error.message||'Could not check health.'}
+   finally{check.disabled=false}
+  });
+  panel.append(healthTitle,check,healthStatus,healthDetails);
  }
  async function audit(page=0,version=viewVersion){
   const data=await request('audit'+query({page}));
