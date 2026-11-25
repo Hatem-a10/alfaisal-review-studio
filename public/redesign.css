@@ -595,7 +595,7 @@ html:root body:not(.xp-exam-active) .booklet-option-reasons>summary{font-size:1.
 .home-feature-grid.home-feature-grid-wide{grid-template-columns:minmax(0,1fr)}
 html:root body:not(.xp-exam-active) .booklet-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:14px}
 html:root body:not(.xp-exam-active) .booklet-toolbar :is(.practice-back,.workspace-course-select){margin:0}
-html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{margin-inline-start:auto}
+html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{order:1;margin-inline-start:auto}
 .renal-concept{line-height:1.65}
 .coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
 html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessment-type="exams"]:not(.countdown-featured){background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 20%,var(--rs-surface)),var(--rs-surface) 86%)}
