@@ -24,7 +24,7 @@ test('managed auth mounting failure provides safe retry and sign-in recovery',as
   mountSignIn(){throw Error('private provider error detail')},
  };
  await runInNewContext(script,{
-  document,
+  document,setTimeout,clearTimeout,
   window:{Clerk,location:{reload(){reloads++}}},
   fetch:async()=>({ok:true,json:async()=>({frontendAPI:'https://clerk.example.test'})}),
  });
