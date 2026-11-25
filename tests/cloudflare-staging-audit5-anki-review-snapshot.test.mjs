@@ -15,14 +15,14 @@ function fixture(source,mode){
  const decks=Array.from({length:120},(_,i)=>({id:'d'+i,get cloudId(){cloudReads++;return i%2?'r'+i:null},name:'Deck '+i,cards,media:{},warnings:[]}));
  const remote=Array.from({length:150},(_,i)=>({id:'r'+i,name:'Remote '+i,cardCount:15}));
  const progress={cards:Object.fromEntries(decks.flatMap(d=>cards.map(c=>[d.id+':'+c.id,{due:now+(Number(c.id)%2?1:-1),interval:2,reps:1,lapses:0}]))),session:null};
- const context=vm.createContext({Date:FixedDate,ankiDeck:mode==='library'?null:decks[0],ankiDecks:decks,ankiRemote:remote,ankiQueue:cards,ankiIndex:0,ankiBack:mode==='back',ankiSubdeck:'all',ankiFilter:'',ankiAll:false,ankiContextIds:null,ankiBgPrefs:{fit:'cover',dim:35},ankiBgUrl:'',ankiBusy:false,ankiStatus:'',ankiShared:[],ankiAdvancing:false,ankiTyped:'',settings:{theme:'light'},window:{reviewAdmin:false},intro:()=>'',esc:String,ankiProgress:()=>{reads++;return copy(progress)},ankiAccount:()=>account,ankiNextOrder:async()=>{},StudyVault:{set:(name,value)=>{saved=copy(value)}},render:()=>renders++});
+ const context=vm.createContext({Date:FixedDate,ankiDeck:mode==='library'?null:decks[0],ankiDecks:decks,ankiRemote:remote,ankiQueue:cards,ankiIndex:0,ankiBack:mode==='back',ankiBrowsing:false,ankiBrowserQuery:'',ankiBrowserPage:0,ankiBrowserMarkup:()=>'',ankiSubdeck:'all',ankiFilter:'',ankiAll:false,ankiContextIds:null,ankiBgPrefs:{fit:'cover',dim:35},ankiBgUrl:'',ankiBusy:false,ankiStatus:'',ankiShared:[],ankiAdvancing:false,ankiTyped:'',settings:{theme:'light'},window:{reviewAdmin:false},intro:()=>'',esc:String,ankiProgress:()=>{reads++;return copy(progress)},ankiAccount:()=>account,ankiNextOrder:async()=>{},StudyVault:{set:(name,value)=>{saved=copy(value)}},render:()=>renders++});
  vm.runInContext(rate+'\nconst AnkiEngine={rate};\n'+source+'\nthis.api={ankiPage,ankiRate};',context);
  return {api:context.api,counts:()=>({reads,cloudReads,renders}),saved:()=>saved,changeAccount:()=>account='two'};
 }
 function median(fn){fn();const times=[];for(let i=0;i<7;i++){const t=performance.now();fn();times.push(performance.now()-t)}return times.sort((a,b)=>a-b)[3]}
 test('A5-089/A5-171 Anki render snapshots keep library and rating previews identical',()=>{
  for(const mode of ['library','front','back']){
-  const a=fixture(baseline,mode),b=fixture(candidate,mode);assert.equal(b.api.ankiPage(),a.api.ankiPage());
+  const a=fixture(baseline,mode),b=fixture(candidate,mode);const markup=b.api.ankiPage();assert.equal(markup.replace('<button id="ankiBrowse" aria-expanded="false">Browse / suspend / reset cards</button>',''),a.api.ankiPage());
   if(mode==='library'){const baseline=a.counts(),after=b.counts();assert.equal(baseline.reads,120);assert.equal(after.reads,1);assert.ok(after.cloudReads<baseline.cloudReads);console.log(JSON.stringify({label:'A5-089/A5-171 Anki library combined',baselineMedianMs:median(a.api.ankiPage),candidateMedianMs:median(b.api.ankiPage),baseline,after}))}
   if(mode==='back'){assert.equal(a.counts().reads,4);assert.equal(b.counts().reads,1)}
  }
