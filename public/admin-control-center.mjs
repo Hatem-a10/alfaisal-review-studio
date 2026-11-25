@@ -629,8 +629,23 @@ export async function openAdminCenter(){
  async function storage(version){
   const data=await request('storage/summary');
   if(version!==viewVersion)return;
-  const details=node('div');renderMetrics(details,data);
-  panel.append(details);
+  const details=node('div');renderMetrics(details,{...data,backups:undefined});
+  const backup=data.backups||{configured:false,status:'not_configured',receipts:[]},receipts=Array.isArray(backup.receipts)?backup.receipts:[];
+  const section=node('section',null,{class:'acc-card'});
+  section.append(node('h4','Backup verification receipts'),node('p','Receipt status: '+String(backup.status)+' · showing the most recent 10 receipts only. A historical receipt does not prove hosted restore readiness.',{class:'acc-empty'}));
+  const rows=receipts.map(receipt=>({
+   id:String(receipt.id||'').slice(0,120),completedAt:String(receipt.completedAt||''),provider:String(receipt.provider||'').slice(0,80),status:String(receipt.status||'').slice(0,30),
+   components:JSON.stringify(receipt.components||{}).slice(0,500),verificationRef:String(receipt.verificationRef||'').slice(0,140),
+  }));
+  section.append(table(['Completed','Provider','Status','Components','Verification reference'],rows.map(x=>[formatDate(x.completedAt),x.provider,x.status,x.components,x.verificationRef]),'No backup receipts have been recorded for this environment.'));
+  const exportButton=button('Export receipt metadata CSV',()=>{
+   if(!rows.length)return;
+   const csv=csvRows(rows,['id','completedAt','provider','status','components','verificationRef']);
+   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
+   a.href=url;a.download='review-studio-backup-receipts-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+  exportButton.disabled=!rows.length;section.append(exportButton);
+  panel.append(section,details);
  }
  async function overview(version){
   const data=await request('overview');
