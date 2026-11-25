@@ -534,14 +534,46 @@ export async function openAdminCenter(){
    node('h4','Shared resource downloads'),table(['Resource','Downloads in 30 days'],(data.popularity||[]).map(x=>[x.title,x.count])),
    node('h4','Operational activity'),table(['Day','Event','Count'],data.activity.map(x=>[x.day,x.kind,x.count])));
  }
- async function audit(page=0,version=viewVersion){
-  const data=await request('audit'+query({page}));
+ async function audit(page=0,version=viewVersion,params=new URLSearchParams()){
+  const base=Object.fromEntries(params);
+  const data=await request('audit'+query({...base,page}));
   if(version!==viewVersion)return;
-  panel.replaceChildren();
-  panel.append(rowAction('Verify owner access',confirmOwner,{reload:false}));
-  if (window.Clerk?.openUserProfile)panel.append(button('Manage Clerk account security',()=>{dialog.close();document.getElementById('siteAdmin')?.close();window.Clerk.openUserProfile();}));
-  panel.append(table(['When','Role','Action','Actor','Target'],data.entries.map(x=>[formatDate(x.created_at),x.role,x.action,x.actor.split(':').at(-1),x.target.replace(/^clerk:[a-f0-9]{64}:/,'')])));
-  appendPager(page,data.more,n=>within(()=>audit(n,version)));
+  const tableOf=rows=>table(['When','Role','Action','Actor','Target'],rows.map(x=>[formatDate(x.created_at),x.role,x.action,x.actor.split(':').at(-1),x.target.replace(/^clerk:[a-f0-9]{64}:/,'')]));
+  panel.replaceChildren(searchBar([
+   field('q','Search actor, action or target',{value:params.get('q'),maxLength:100}),
+   field('role','Role',{choices:[['','All roles'],'owner','editor','moderator'],value:params.get('role')}),
+   field('action','Action prefix',{value:params.get('action'),maxLength:80}),
+   field('from','From (UTC)',{type:'date',value:params.get('from')}),
+   field('to','To (UTC)',{type:'date',value:params.get('to')}),
+  ],p=>within(()=>audit(0,version,p))));
+  const exportButton=button('Export filtered audit CSV',async()=>{
+   exportButton.disabled=true;
+   status.textContent='Collecting filtered audit records…';
+   try{
+    const rows=[];let next=0,more=true;
+    while(more&&rows.length<=2000){
+     const result=await request('audit'+query({...base,page:next}));
+     rows.push(...result.entries);more=result.more;next++;
+     if(next>80||more&&rows.length>=2000)throw Error('Too many audit events to export at once. Narrow the date or action filters.');
+    }
+    if(version!==viewVersion)return;
+    const escapeCell=value=>{
+     let text=String(value??'');
+     if(/^[\\s]*[=+@-]/.test(text))text="'"+text;
+     return '"'+text.replaceAll('"','""')+'"';
+    };
+    const headers=['id','created_at','role','action','actor','target'];
+    const csv=[headers.join(','),...rows.map(item=>headers.map(key=>escapeCell(item[key])).join(','))].join('\\r\\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');
+    link.href=url;link.download='review-studio-audit-'+new Date().toISOString().slice(0,10)+'.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    status.textContent=rows.length+' filtered records exported · last 90 days maximum.';
+   }catch(error){status.textContent=error.message}
+   finally{exportButton.disabled=false}
+  });
+  panel.append(rowAction('Verify owner access',confirmOwner,{reload:false}),exportButton);
+  if(window.Clerk?.openUserProfile)panel.append(button('Manage Clerk account security',()=>{dialog.close();document.getElementById('siteAdmin')?.close();window.Clerk.openUserProfile();}));
+  panel.append(tableOf(data.entries));
+  appendPager(page,data.more,n=>within(()=>audit(n,version,params)));
  }
  async function site(version){
   const [data, info]=await Promise.all([request('site'),fetch('/site-build-info.json',{cache:'no-store'}).then(r=>r.ok?r.json():{}).catch(()=>({}))]);
