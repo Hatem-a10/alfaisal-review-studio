@@ -32,9 +32,30 @@ export async function PUT(request:Request){
 }
 function validPointer(key:unknown,id:string):key is string{return typeof key==='string'&&key.startsWith('progress/'+id+'/')&&/^[0-9a-f-]{36}$/i.test(key.slice(('progress/'+id+'/').length))}
 async function readSnapshot(raw:string,id:string){
- let snapshot=JSON.parse(raw);if(snapshot?.r2Snapshot){if(!env.BUCKET||!validPointer(snapshot.r2Snapshot,id))throw Error('Invalid snapshot reference');const obj=await env.BUCKET.get(snapshot.r2Snapshot);if(!obj)throw Error('Snapshot missing');snapshot=await new Response(obj.body).json()}
+ let snapshot=JSON.parse(raw);if(snapshot?.r2Snapshot){
+  if(!env.BUCKET||!validPointer(snapshot.r2Snapshot,id))throw Error('Invalid snapshot reference');
+  const obj=await env.BUCKET.get(snapshot.r2Snapshot);if(!obj)throw Error('Snapshot missing');
+  if(snapshot.encoding===undefined){snapshot=await new Response(obj.body).json();}
+  else{
+   if(snapshot.encoding!=='gzip-v1'||!Number.isSafeInteger(snapshot.bytes)||snapshot.bytes<1||snapshot.bytes>12000000||!Number.isSafeInteger(snapshot.storedBytes)||snapshot.storedBytes<18||snapshot.storedBytes>=snapshot.bytes||obj.size!==snapshot.storedBytes||!/^[a-f0-9]{64}$/.test(snapshot.sha256||''))throw Error('Invalid compressed snapshot metadata');
+   const body=new Response(obj.body).body;if(!body)throw Error('Snapshot missing');
+   const bytes=await readBounded({headers:new Headers(),body:body.pipeThrough(new DecompressionStream('gzip'))},snapshot.bytes);
+   if(bytes.length!==snapshot.bytes||await snapshotDigest(bytes)!==snapshot.sha256)throw Error('Snapshot integrity mismatch');
+   snapshot=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+  }
+ }
  if(!snapshot||snapshot.app!=='alfaisal-review-studio'||snapshot.version!==2||!snapshot.records||typeof snapshot.records!=='object'||Array.isArray(snapshot.records))throw Error('Invalid stored snapshot');
  return snapshot;
+}
+async function snapshotDigest(bytes:Uint8Array<ArrayBuffer>){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function encodeLargeSnapshot(content:string,size:number,compress:boolean){
+ if(compress){
+  const bytes=new TextEncoder().encode(content);
+  const body=new Response(bytes).body!.pipeThrough(new CompressionStream('gzip'));
+  const zipped=await readBounded({headers:new Headers(),body},12010000);
+  if(zipped.length<size)return {body:zipped,metadata:{encoding:'gzip-v1',bytes:size,storedBytes:zipped.length,sha256:await snapshotDigest(bytes)},type:'application/gzip'};
+ }
+ return {body:content,metadata:{},type:'application/json'};
 }
 async function writeSnapshot(id:string,revision:number,data:any,prior?:any,validated=false){
  // A5-241: PUT and PATCH already validated the body. Recheck only if the
@@ -50,7 +71,7 @@ async function writeSnapshot(id:string,revision:number,data:any,prior?:any,valid
  const content=JSON.stringify(data),at=new Date().toISOString(),size=new TextEncoder().encode(content).length;
  if(size>12000000)return json({error:'Combined progress backup is too large.'},413);
  let snapshot=content,r2Key:string|null=null;
- try{if(size>1500000){if(!env.BUCKET)return json({error:'Large snapshot storage is unavailable.'},503);r2Key='progress/'+id+'/'+crypto.randomUUID();await env.BUCKET.put(r2Key,content,{httpMetadata:{contentType:'application/json'}});snapshot=JSON.stringify({r2Snapshot:r2Key})}}catch{return json({error:'Cloud file saving failed. Your device copy is retained.'},503)}
+ try{if(size>1500000){if(!env.BUCKET)return json({error:'Large snapshot storage is unavailable.'},503);r2Key='progress/'+id+'/'+crypto.randomUUID();const encoded=await encodeLargeSnapshot(content,size,(env as unknown as Record<string,unknown>).REVIEW_STUDIO_GZIP_SNAPSHOTS==='1');await env.BUCKET.put(r2Key,encoded.body,{httpMetadata:{contentType:encoded.type}});snapshot=JSON.stringify({r2Snapshot:r2Key,...encoded.metadata})}}catch{return json({error:'Cloud file saving failed. Your device copy is retained.'},503)}
  let result;
  try{
   if(revision===0)result=await env.DB.prepare('INSERT INTO study_snapshots (user_id, revision, snapshot, updated_at) VALUES (?, 1, ?, ?) ON CONFLICT(user_id) DO NOTHING').bind(id,snapshot,at).run();

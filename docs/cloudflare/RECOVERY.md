@@ -25,3 +25,9 @@ The rehearsal verifies recovery using local Workers bindings. The hosted D1 Time
 7. Roll back application code through the Worker deployment history if the release is defective. Roll back data only through the separately approved D1/R2 recovery procedure. If a deployment was interrupted, compare the active Worker version and build commit with the approved release before retrying. Select the last compatible version if needed and verify bindings, health and a read-only sync check. Reopen writes after verification.
 
 The current staging Admin Control Center reports backup receipts and R2 orphan candidates but does not expose deletion, restore, raw D1 queries or provider credentials. Production setup remains **NO-GO** until the owner creates the separate paid resources as needed, configures Clerk Production and first-factor reauthentication, sets retention and monitoring, completes the isolated restore drill, and approves launch.
+
+## Large progress snapshot compression rollout
+
+Readers accept existing raw JSON R2 pointers and versioned `gzip-v1` pointers. Compressed pointers carry uncompressed length, stored length and SHA-256; restore must preserve the complete D1 pointer and original R2 bytes. Never transparently decompress or rewrite an object during backup transfer.
+
+The writer is deliberately opt-in via `REVIEW_STUDIO_GZIP_SNAPSHOTS=1`. First deploy and verify the dual-reader release with the flag unset; retain that reader-compatible Worker version for rollback. Only then enable the writer in the reviewed target environment. Do not roll back to a pre-dual-reader Worker once compressed snapshots exist. Disabling the flag stops new compressed writes but does not convert existing objects. The 12 MB uncompressed limit still applies. No live flag or bindings are changed by this PR.
