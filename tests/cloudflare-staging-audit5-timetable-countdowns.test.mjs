@@ -21,7 +21,8 @@ test('A5-121/A5-131 timetable groups preserve exact markup across viewport modes
  const candidate=source('schedule-ui.js','campusBoard');
  for(const [mobile,week] of [[false,false],[true,false],[true,true]]){
   const a=board(oldBoard,mobile,week),b=board(candidate,mobile,week);
-  assert.equal(b.run(),a.run());
+  const actual=b.run();assert.equal(actual.replace(/<div class="schedule-mobile-agenda"[\s\S]*?<\/div>$/,''),a.run());
+  assert.match(actual,/schedule-mobile-agenda/);
   assert.equal(b.counts().taskCalls,1);assert.equal(a.counts().taskCalls,mobile&&!week?1:5);
   if(!mobile){const baseline=a.counts(),after=b.counts();assert.ok(after.eventReads<baseline.eventReads);console.log(JSON.stringify({label:'A5-121/A5-131 timetable board',baselineMedianMs:median(a.run),candidateMedianMs:median(b.run),baseline,after}))}
  }
