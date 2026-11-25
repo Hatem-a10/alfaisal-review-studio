@@ -1,7 +1,7 @@
 /* global render, view, go, DATA, LEARNING, ORIGINAL_EXAMS, lessonId, guideTopic, guideTopicLesson, cardIndex, learnTab, etExam, originalRun, etPracticeTab, originalQuestionById, visibleOriginalRun, lessonById, inlineTopicsFor, inlineGroups, allLearningQuestions, TEACHING, storeOptions, saveOptions, today, tasks, dates, done, state, rec, persist, AssessmentPlan, assessmentClock, syncMeta, storageOK, openEdit, settings, toast */
 import {activeBookletPaths} from './active-booklet-core.mjs';
 import {courses,lectureCourses} from './course-registry.mjs';
-import {catchupPreview,revisionQueue,topicCoverage} from './study-next-core.mjs';
+import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview} from './study-next-core.mjs';
 
 const content=()=>document.getElementById('content');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -119,6 +119,46 @@ function planInputs(){
  return {date:today(),minutes:budget,events:DATA.events,targets,rows:tasks(items)};
 }
 function calculatePlan(){const input=planInputs();return catchupPreview(input.rows,input);}
+let renalPreview=null,renalTimetable=null,renalMinutes=90;
+function currentRenalPlan(){
+ const profile=window.reviewManagedAssignment||{},clock=assessmentClock(),items=window.reviewActiveStudyItems?.()||DATA.items;
+ const blockedDates=(options().customCountdowns||[]).filter(x=>!x.deleted&&x.blocksStudy===true&&x.date).map(x=>x.date);
+ return renalPlanPreview(items,state,{events:renalTimetable?.events||[],group:profile.studentGroup??settings.studentGroup,section:profile.studentSection??settings.studentSection,date:clock.date,minute:clock.minute,minutes:renalMinutes,tasks:tasks(items),blockedDates});
+}
+function renalPlanPanel(){
+ if(!DATA.items.some(i=>i.course==='REN'))return;
+ html('studyNextRenalPlan',`<h2>REN 123 personal study plan</h2><p>Choose a daily review budget. Only released, currently unscheduled lessons are included; existing dates and completion evidence are retained. Review durations are 40, 30 and 20 minutes.</p><label>Daily review minutes <input id="renalPlanMinutes" type="number" min="20" max="720" step="5" value="${renalMinutes}"></label> <button type="button" data-study-renal-preview>Preview Renal plan</button><div data-renal-plan-output role="status"></div>`);
+ paintRenalPlan();
+}
+function paintRenalPlan(){
+ const node=content()?.querySelector('[data-renal-plan-output]');if(!node||!renalPreview)return;
+ if(renalPreview.error){node.textContent=renalPreview.error;return}
+ const {plans,unplaced,notReleased,final,ospe}=renalPreview;
+ node.innerHTML=`<p>Final: ${esc(final)}${ospe?' · OSPE: '+esc(ospe):''}. ${plans.length} lessons can be scheduled; ${unplaced.length} do not fit before the deadline; ${notReleased.length} are not yet released for your group.</p>`+
+ (plans.length?'<ul>'+plans.map(row=>`<li>${esc(row.title)} · ${row.dates.map(esc).join(' / ')}</li>`).join('')+'</ul><button type="button" data-study-renal-apply>Apply these personal dates</button>':'<p>No new dates to apply.</p>');
+}
+async function previewRenalPlan(){
+ const input=document.getElementById('renalPlanMinutes');if(!input?.reportValidity())return;
+ renalMinutes=Number(input.value);
+ const node=content()?.querySelector('[data-renal-plan-output]');if(node)node.textContent='Reading the official group timetable…';
+ const response=await fetch('/group-timetables.json',{cache:'no-cache',credentials:'same-origin'});
+ if(!response.ok)throw Error('Timetable unavailable');
+ renalTimetable=await response.json();
+ if(view!=='planner')return;
+ renalPreview=currentRenalPlan();paintRenalPlan();
+}
+function applyRenalPlan(){
+ if(!renalPreview?.plans.length||view!=='planner')return;
+ const current=currentRenalPlan();
+ if(JSON.stringify(current.plans)!==JSON.stringify(renalPreview.plans)){renalPreview=current;paintRenalPlan();return}
+ for(const row of current.plans){
+  const item=itemById(row.id);
+  if(!item||dates(item).length)continue;
+  state[item.id]={...rec(item),dates:row.dates};
+ }
+ renalPreview=null;persist();render();toast('Personal Renal review dates saved.');
+}
+window.addEventListener('review-profile-changed',()=>{renalPreview=null;renalTimetable=null});
 function planPanel(){
  const todayTasks=(options().requiredPlannerTasks||[]).filter(t=>t.date===today()&&!t.deleted&&t.revisionKey);
  html('studyNextPlan',`<h2>Catch-up plan</h2><label>Minutes available today <input id="studyNextBudget" type="number" min="5" max="720" step="5" value="${budget}"></label> <button data-study-preview>Preview changes</button><div data-study-plan-preview></div>`+
@@ -218,7 +258,7 @@ function paint(){
   if(settings.groupConfigured&&settings.labGroupConfigured&&!settings.labGroup&&window.REVIEW_STUDIO_FRESH_ACCOUNTS)
    html('scheduleChooseLab','<p>Add your lab group to see your assigned labs. <button type="button" data-study-lab-settings>Open Site Settings</button></p>');
  }
- if(view==='planner'){planPanel();paintPlan();}
+ if(view==='planner'){planPanel();paintPlan();renalPlanPanel();}
  if(view==='practice')reviewPanel();
  if(view==='learning'&&itemById(lessonId)&&document.querySelector('.guide-section,.complete-guide,.teaching-card')){
   const position=guideTopicLesson===lessonId?Number(guideTopic)||0:Number(cardIndex)||0;
@@ -239,7 +279,7 @@ const actionHandlers={
  'revision-topic':v=>{const t=revision?.rows[Number(v)]?.topic;if(t)return openTopic(t.lectureId,t.index);},
  'revision-practice':v=>{const q=revision?.rows[Number(v)]?.next;if(q)practiceAlternate(q);},
  'preview':()=>{const input=document.getElementById('studyNextBudget');if(!input.reportValidity())return;budget=Number(input.value)||60;preview=calculatePlan();paintPlan();},
- 'apply':applyPlan,
+ 'apply':applyPlan,'renal-preview':previewRenalPlan,'renal-apply':applyRenalPlan,
  'complete':id=>{saveOption('requiredPlannerTasks',(options().requiredPlannerTasks||[]).map(t=>t.id===id?{...t,completedAt:new Date().toISOString()}:t));render();},
  'plan-question':async(id,button)=>{await window.reviewEnsureCourses?.([itemById(button.dataset.lecture)?.course].filter(Boolean));const q=allLearningQuestions().find(question=>question.id===id);if(q)practiceAlternate(q);},
  'plan-topic':(id,button)=>{const e=(options().requiredPlannerTasks||[]).find(t=>t.id===id)?.entries?.[Number(button.dataset.entry)];if(e)return openTopic(e.lectureId,e.index);},
