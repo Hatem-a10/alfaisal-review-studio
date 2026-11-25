@@ -1,3 +1,4 @@
+import {csvRows} from './admin-csv.mjs';
 const apiRoot = '/api/control-center/';
 const tabs = {
  overview:'Overview', students:'Students', roles:'Roles & Permissions', academics:'Academic Management',
@@ -557,13 +558,8 @@ export async function openAdminCenter(){
      if(next>80||more&&rows.length>=2000)throw Error('Too many audit events to export at once. Narrow the date or action filters.');
     }
     if(version!==viewVersion)return;
-    const escapeCell=value=>{
-     let text=String(value??'');
-     if(/^[\\s]*[=+@-]/.test(text))text="'"+text;
-     return '"'+text.replaceAll('"','""')+'"';
-    };
     const headers=['id','created_at','role','action','actor','target'];
-    const csv=[headers.join(','),...rows.map(item=>headers.map(key=>escapeCell(item[key])).join(','))].join('\\r\\n');
+    const csv=csvRows(rows,headers);
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');
     link.href=url;link.download='review-studio-audit-'+new Date().toISOString().slice(0,10)+'.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     status.textContent=rows.length+' filtered records exported · last 90 days maximum.';
@@ -664,6 +660,7 @@ export async function openAdminCenter(){
   panel.replaceChildren(searchBar([
    field('q','Question ID or report details',{value:params.get('q')}),
    field('status','Status',{choices:[['','All'],'open','investigating','resolved','rejected'],value:params.get('status')}),
+   field('category','Category (exact)',{value:params.get('category'),maxLength:60}),
   ],p=>within(()=>reports(version,p,0))),
   table(['Question','Category','Status','Reported','Actions'],(data.reports||[]).map(report=>{
    const id=report.id;
@@ -689,6 +686,25 @@ export async function openAdminCenter(){
    const menu=node('details');menu.append(node('summary','Review'),actions(...controls));
    return [report.questionId||report.question_id,report.category||report.kind,report.status,formatDate(report.createdAt||report.created_at),menu];
   }),'No question reports match these filters.'));
+  const exportCsv=button('Export filtered reports CSV',async()=>{
+   exportCsv.disabled=true;status.textContent='Collecting report triage rows…';
+   try{
+    let pageNumber=0,more=true;const rows=[];
+    while(more&&rows.length<=2000){
+     const result=await request('reports/list'+query({...Object.fromEntries(params),page:pageNumber,limit:100}));
+     rows.push(...result.reports);more=result.hasMore;pageNumber++;
+     if(rows.length>2000||more&&rows.length>=2000||pageNumber>20)throw Error('Too many reports to export. Narrow the filters before exporting.');
+    }
+    if(version!==viewVersion)return;
+    const headers=['id','questionId','category','kind','status','details','createdAt','updatedAt','reviewNote','revisionStatus'];
+    const csv=csvRows(rows,headers);
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
+    a.href=url;a.download='review-studio-reports-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    status.textContent=rows.length+' reports exported. Reporter identities excluded.';
+   }catch(error){status.textContent=error.message}
+   finally{exportCsv.disabled=false}
+  });
+  panel.append(exportCsv);
   appendPager(page,data.more||data.hasMore||((page+1)*25<(data.total||0)),n=>within(()=>reports(version,params,n)));
  }
  function announcementData(item) {
