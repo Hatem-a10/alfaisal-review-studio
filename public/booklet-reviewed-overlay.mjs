@@ -6,7 +6,6 @@ export const reviewedOverlayPaths=Object.freeze({
  MOL:'/api/site-assets/materials/mol114/booklet-reviewed-v2.json',
  REN:'/api/site-assets/materials/ren123/booklet-reviewed-v2.json',
 });
-export const REVIEWED_LABEL='Answer and explanation reviewed by Review Studio.';
 const norm=value=>String(value??'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().toLowerCase();
 const sameList=(a,b)=>a.length===b.length&&a.every((x,i)=>x===b[i]);
 

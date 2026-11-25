@@ -36,7 +36,7 @@ const HubDomain=(()=>{
  function jumpDirection(rect,viewport){return rect.top+rect.height/2<viewport/2?'up':'down'}
  function nextSunday(date){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+(7-d.getUTCDay()||7));return d.toISOString().slice(0,10)}
  function countdownCategory(event){const text=[event.kind,event.type,event.title].filter(Boolean).join(' ');if(/ospe|practical/i.test(text))return 'ospe';if(/course start|begins/i.test(text))return 'starts';if(/tbl/i.test(text))return 'tbls';if(/exam|final|midterm/i.test(text))return 'exams';return 'other'}
- function filterCountdowns(events,filter='all'){return events.filter(e=>{const c=countdownCategory(e);return c!=='ospe'&&(filter==='all'||c===filter)})}
+ function filterCountdowns(events,filter='all'){return events.filter(e=>{const c=countdownCategory(e);return filter==='all'||c===filter})}
  function activity(records){
   const days={},formatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}),seen=new Set();
   const array=v=>Array.isArray(v)?v:[],stamp=at=>typeof at==='string'?Date.parse(at):NaN;

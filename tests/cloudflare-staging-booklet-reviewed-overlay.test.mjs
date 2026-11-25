@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {applyReviewedOverlay,fetchReviewedOverlay,reviewedOverlayPaths,REVIEWED_LABEL} from '../public/booklet-reviewed-overlay.mjs';
+import {applyReviewedOverlay,fetchReviewedOverlay,reviewedOverlayPaths} from '../public/booklet-reviewed-overlay.mjs';
 import {validateActiveBooklet} from '../public/active-booklet-core.mjs';
 
 // Synthetic data only: the real overlays are private R2 assets.
@@ -51,15 +51,18 @@ test('a missing overlay leaves the pack as published, other failures are retried
  assert.match(reviewedOverlayPaths.REN,/^\/api\/site-assets\/materials\/ren123\//);assert.match(reviewedOverlayPaths.MOL,/^\/api\/site-assets\/materials\/mol114\//);
 });
 
-test('overlay assets are pinned privately and the booklet view shows the reviewed label',()=>{
+test('overlay assets are pinned privately and Booklet keeps feedback below the navigation',()=>{
  const pinned=JSON.parse(readFileSync(new URL('../lib/active-booklet-assets.json',import.meta.url),'utf8'));
  for(const path of Object.values(reviewedOverlayPaths)){
   const row=pinned.find(a=>'/api/site-assets/'+a.path===path);
   assert.ok(row&&/^[a-f0-9]{64}$/.test(row.sha)&&row.size>0,path);
  }
  const s=readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
- assert.match(s,/reviewedBookletLoader\('MOL'\)/);assert.match(s,/reviewedBookletLoader\('REN'\)/);assert.match(s,/q\.reviewed\?/);
- assert.ok(REVIEWED_LABEL.length>10);
+ assert.match(s,/reviewedBookletLoader\('MOL'\)/);assert.match(s,/reviewedBookletLoader\('REN'\)/);assert.doesNotMatch(s,/Answer and explanation reviewed by Review Studio|REVIEWED_LABEL/);
+ const markup=s.slice(s.indexOf('function bookMarkup'),s.indexOf('function repeatedSourceMarkup'));
+ assert.match(markup,/data-report-placement/);
+ assert.ok(markup.indexOf('class="answer-option')<markup.indexOf('id="p2prev"'));
+ assert.ok(markup.indexOf('id="p2resume"')<markup.indexOf('class="answer-feedback"'));
 });
 
 test('a reconciled review pins the exact served ID, page, stem and options, and may replace the choice count',()=>{

@@ -8,6 +8,20 @@ const object=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
 const validId=v=>typeof v==='string'&&v.length>0&&!['__proto__','constructor','prototype'].includes(v);
 const minutes=[40,30,20];
 function completedDay(value){if(typeof value!=='string'||!value.trim()||!Number.isFinite(Date.parse(value)))return null;try{return riyadhDate(value)}catch{return null}}
+export function addCompletedReviews(items,records={},selected={},instant=new Date()){
+ const next={...object(records)},stamp=new Date(instant).toISOString();
+ for(const item of array(items)){
+  if(!validId(item?.id))continue;
+  const old=object(next[item.id]),done={...object(old.done)};
+  let changed=false;
+  for(const pass of array(selected?.[item.id])){
+   if(![0,1,2].includes(pass)||done[pass])continue;
+   done[pass]=stamp;changed=true;
+  }
+  if(changed)next[item.id]={...old,done};
+ }
+ return next;
+}
 export function planStudent(items,records={},instant=new Date(),selected={},constraints={}){
  records=object(records);selected=object(selected);constraints=object(constraints);
  const start=riyadhDate(instant),stamp=new Date(instant).toISOString(),out=structuredClone(records),warnings=[],used=new Map(),seen=new Set(),entries=[];

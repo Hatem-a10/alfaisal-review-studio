@@ -4,18 +4,39 @@ function paintSyncSummary(message){const s=String(message||''),bad=!storageOK||/
 function campusTime(n){const h=Math.floor(n/60),m=n%60;return (h%12||12)+':'+String(m).padStart(2,'0')+(h>=12?' pm':' am')}
 function campusWeekStart(value){return add(value,-new Date(value+'T12:00:00Z').getUTCDay())}
 let officialGroupSchedule=null,groupScheduleError='';
-function loadGroupTimetable(){return fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{if(!value||!Array.isArray(value.events)||!Array.isArray(value.weeks))throw Error('Invalid timetable');applyRenalScheduleAssessments(value);officialGroupSchedule=value;groupScheduleError='';window.reviewAutoRetry?.ok('group-timetable');if(view==='calendar'||view==='dashboard')render();return value}).catch(()=>{// Retry quietly; the schedule says it is loading rather than asking for a refresh.
+function loadGroupTimetable(){return fetch('/group-timetables.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Timetable unavailable');return r.json()}).then(value=>{if(!value||!Array.isArray(value.events)||!Array.isArray(value.weeks))throw Error('Invalid timetable');applyRenalScheduleAssessments(value);officialGroupSchedule=value;groupScheduleError='';window.reviewAutoRetry?.ok('group-timetable');if(['calendar','dashboard','countdowns'].includes(view))render();return value}).catch(()=>{// Retry quietly; the schedule says it is loading rather than asking for a refresh.
 groupScheduleError='';window.reviewAutoRetry?.schedule('group-timetable',()=>loadGroupTimetable());return null})}
 const groupTimetableReady=loadGroupTimetable();
 function applyRenalScheduleAssessments(timetable){
- for(const row of timetable.events.filter(e=>e?.source==='Renal Schedule.pdf'&&e.kind==='assessment'&&Array.isArray(e.studentGroups)&&new Set(e.studentGroups).size===4&&typeof e.title==='string'&&Number.isInteger(e.start)&&Number.isInteger(e.end)&&e.start>=0&&e.end<=1440&&e.start<e.end&&Number.isInteger(e.references?.[0]?.page)&&e.references[0].page>0)){
-  const course=row.title.match(/^(REN|MOL|COM)\b/i)?.[1]?.toUpperCase(),practical=/OSPE/i.test(row.title);
-  if(!course||!practical&&!/final/i.test(row.title))continue;
-  const event=DATA.events.find(e=>e.course===course&&e.date===row.date&&(practical?/ospe/i.test(e.title):/final/i.test(e.title)));
-  if(!event)continue;
-  const clock=minutes=>String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');
-  event.detail=clock(row.start)+'–'+clock(row.end);
-  event.source=row.source+' · page '+row.references[0].page;
+ const groups=['M1','M2','F1','F2'];
+ const clock=minutes=>String(Math.floor(minutes/60)).padStart(2,'0')+':'+String(minutes%60).padStart(2,'0');
+ function assessment(title){
+  const tbl=title.match(/\bTBL\s*(\d+)\b/i);
+  if(tbl)return 'tbl:'+tbl[1];
+  if(/\bOSPE\b/i.test(title))return 'ospe';
+  if(/\bfinal\b/i.test(title))return 'final';
+  return '';
+ }
+ for(const row of timetable.events){
+  if(row?.source!=='Renal Schedule.pdf'||row.kind!=='assessment'||typeof row.title!=='string'||
+    row.studentSection||row.labGroups?.length||!Array.isArray(row.studentGroups)||!groups.every(group=>row.studentGroups?.includes(group))||
+    !/^\d{4}-\d{2}-\d{2}$/.test(row.date)||!Number.isInteger(row.start)||!Number.isInteger(row.end)||
+    row.start<0||row.end>1440||row.start>=row.end||!Number.isInteger(row.references?.[0]?.page)||row.references[0].page<1)continue;
+  const course=row.title.match(/^(REN(?:AL)?|MOL|COM)\b/i)?.[1]?.toUpperCase().replace(/^RENAL$/,'REN')||row.course;
+  const key=assessment(row.title);
+  if(!['REN','MOL','COM'].includes(course)||!key)continue;
+  const type=key.startsWith('tbl:')?'TBL':key==='ospe'?'Official practical exam':'Official final exam';
+  const event=DATA.events.find(e=>e.date===row.date&&!e.hubCustom&&!e.adminPublishedAcademic&&
+   (e.course===course||new RegExp('^'+course+'(?:AL)?\\b','i').test(e.title||''))&&assessment(e.title||'')===key);
+  const detail=clock(row.start)+'–'+clock(row.end);
+  const source=row.source+' · page '+row.references[0].page;
+  if(event){
+   const notes=(event.detail||'').split(' · ').filter(part=>part&&!/^\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}$/.test(part.trim()));
+   Object.assign(event,{course,detail:[detail,...notes].join(' · '),source});
+   continue;
+  }
+  const title=key.startsWith('tbl:')?course+' TBL '+key.split(':')[1]:row.title;
+  DATA.events.push({id:row.id,date:row.date,title,course,type,detail,source});
  }
 }
 function englishScheduleEvents(start){return GroupSchedules.english(start,settings)}
