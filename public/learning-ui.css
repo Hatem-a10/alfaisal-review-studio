@@ -11,3 +11,20 @@
 .retention-check { margin-top: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
 .retention-check h3 { margin: 0 0 6px; }
 .retention-check label { display: block; margin: 8px 0; }
+
+/* A text-first printable guide, independent of the current quiz and app chrome. */
+#lessonPrintSheet{display:none}
+@media print{
+ @page{margin:16mm}
+ body.printing-lesson-sheet{display:block!important;background:#fff!important;color:#111!important;overflow:visible!important;height:auto!important;min-height:0!important}
+ body.printing-lesson-sheet>*:not(#lessonPrintSheet){display:none!important}
+ body.printing-lesson-sheet #lessonPrintSheet{display:block!important;position:static!important;width:auto!important;max-width:none!important;height:auto!important;overflow:visible!important;background:#fff!important;color:#111!important;font:11pt/1.5 system-ui,sans-serif;margin:0!important;padding:0!important}
+ #lessonPrintSheet *{color:#111!important;background:transparent!important;box-shadow:none!important;text-shadow:none!important}
+ #lessonPrintSheet header{position:static!important;border-bottom:1pt solid #aaa;margin-bottom:14pt;padding-bottom:8pt}
+ #lessonPrintSheet h1{font-size:21pt;line-height:1.2;margin:5pt 0}
+ #lessonPrintSheet h2{font-size:13pt;line-height:1.3;margin:13pt 0 5pt;break-after:avoid;page-break-after:avoid}
+ #lessonPrintSheet .print-topic>h2{font-size:16pt;border-top:1pt solid #bbb;padding-top:10pt}
+ #lessonPrintSheet p,#lessonPrintSheet li{margin:3pt 0;orphans:3;widows:3;overflow-wrap:anywhere}
+ #lessonPrintSheet ul{padding-inline-start:18pt}
+ #lessonPrintSheet li{break-inside:avoid}
+}
