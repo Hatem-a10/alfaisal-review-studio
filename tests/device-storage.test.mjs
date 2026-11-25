@@ -10,7 +10,7 @@ function database(){
  const db={createObjectStore(name){stores.set(name,new Map())},transaction(name,mode){if(name==='values'&&mode==='readwrite')counters.valueTransactions++;
   const map=stores.get(name),tx={error:null};let pending=0,failed=false;
   const request=action=>{const r={};pending++;queueMicrotask(()=>{try{r.result=action();r.onsuccess?.()}catch(e){failed=true;tx.error=r.error=e;r.onerror?.();tx.onerror?.()}finally{if(--pending===0&&!failed)queueMicrotask(()=>tx.oncomplete?.())}});return r};
-  tx.objectStore=()=>({get:key=>request(()=>map.get(key)),getAllKeys:()=>request(()=>[...map.keys()]),getAll:()=>request(()=>[...map.values()]),
+  tx.objectStore=()=>({get:key=>request(()=>map.get(key)),openCursor:()=>{const rows=[...map.entries()];const r={};let i=0;pending++;const step=()=>queueMicrotask(()=>{if(i<rows.length){const [key,value]=rows[i++];r.result={key,value,continue:step};r.onsuccess?.()}else{r.result=null;r.onsuccess?.();if(--pending===0&&!failed)queueMicrotask(()=>tx.oncomplete?.())}});step();return r;},
    put:(value,key)=>request(()=>{if(failPut?.(name,key,value))throw Error('Injected device write failure');if(name==='values')counters.valueWrites++;map.set(key,value);return key}),delete:key=>request(()=>map.delete(key))});return tx;
  }};
  return {stores,counters,setFailure(fn){failPut=fn},indexedDB:{open(){const r={result:db};queueMicrotask(()=>{if(!stores.size)r.onupgradeneeded?.();r.onsuccess?.()});return r}}};
