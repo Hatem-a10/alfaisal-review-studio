@@ -6,10 +6,10 @@ test('loading panels render course-neutral skeletons and never invent lecture de
  assert.match(markup,/role="status" aria-live="polite" aria-busy="true"/);
  assert.match(markup,/Opening REN and MOL/);assert.doesNotMatch(markup,/<img>/);
  assert.equal((markup.match(/course-load-row/g)||[]).length,4);
- assert.match(s,/content.innerHTML=courseLoadingMarkup(need)/);
+ assert.match(s,/content\.innerHTML=courseLoadingMarkup\(need\)/);
 });
 test('loading skeleton animations respect reduced motion',()=>{
  const css=readFileSync(new URL('../public/phase1-ui.css',import.meta.url),'utf8');
- assert.match(css,/@media(prefers-reduced-motion:reduce)/);
- assert.match(css,/.course-load-skeleton>div{animation:none/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(css,/\.course-load-skeleton>div\{animation:none/);
 });
