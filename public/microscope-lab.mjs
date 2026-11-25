@@ -1,6 +1,6 @@
 import {escapeHTML as escape} from './html-escape.mjs';
 
-const catalogPath='/api/site-assets/materials/ren123/microscope/catalog-v2.json';
+const catalogPath='/api/site-assets/materials/ren123/microscope/catalog-v3.json';
 let libraryRequest,viewerRequest;
 async function catalog(){
  const result=await fetch(catalogPath);
@@ -130,9 +130,14 @@ export function mount(host){
    if(revision!==generation||!host.isConnected){if(tileSource.type==='image')URL.revokeObjectURL(tileSource.url);return}
    if(tileSource.type==='image')releaseImage=()=>URL.revokeObjectURL(tileSource.url);
    viewer=create({element:stage,tileSources:tileSource,drawer:'canvas',showNavigationControl:false,showNavigator:true,
-    maxZoomPixelRatio:2,animationTime:matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35,
+    minZoomImageRatio:1,visibilityRatio:1,maxZoomPixelRatio:2,animationTime:matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35,
     maxImageCacheCount:120,imageLoaderLimit:5,gestureSettingsTouch:{pinchToZoom:true}});
-   viewer.addOnceHandler('open',()=>{status.textContent='Drag to move. Pinch or use + and − to zoom.';for(const button of controls)button.disabled=false});
+   const updateZoomOut=()=>{
+    const viewport=viewer?.viewport;
+    controls[0].disabled=!viewport||viewport.getZoom()<=viewport.getMinZoom()+1e-6;
+   };
+   for(const event of ['zoom','animation-finish','resize'])viewer.addHandler(event,updateZoomOut);
+   viewer.addOnceHandler('open',()=>{status.textContent='Drag to move. Pinch or use + and − to zoom.';for(const button of controls)button.disabled=false;updateZoomOut()});
    viewer.addOnceHandler('open-failed',()=>{status.textContent='This slide could not open. Select it again to retry.'});
    viewer.addHandler('tile-load-failed',()=>{status.textContent='Some slide tiles could not load. Select the slide again to retry.'});
   }catch(error){if(revision===generation)status.textContent=error.message}

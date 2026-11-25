@@ -10,9 +10,59 @@
     "sha": "3e91d5b2bc1ac479de5e6bc568f30073758e09622a621f13662b80caa81559f9"
   },
   {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-01.rslide",
+    "size": 67108864,
+    "sha": "d0a2c18aa17cbb4304bc725ceb2d82f2203ad61746101c6b73caacd372202d20"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-02.rslide",
+    "size": 67108864,
+    "sha": "635803006326d02d15cc9ac22af2ecaabf59aa3ae6d8a332f51cb1503ec889d3"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-03.rslide",
+    "size": 67108864,
+    "sha": "23c70c12f1d8ad8f4b120b4a58bb33a65b2cf94b55baa91cc33bc256f83d4c48"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-04.rslide",
+    "size": 67108864,
+    "sha": "1a1f276634923f740ff900a8a4c62daab50ce6654504930d66fdadbab33a2204"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-05.rslide",
+    "size": 67108864,
+    "sha": "460aa59487fda0b2f2dab1d4d825b65f98d900e24aa6ada43c9b3887776ba17e"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-06.rslide",
+    "size": 67108864,
+    "sha": "1a33ca87b088adcfcaa1f6746fa115173f731e3c60fc8f2d20eae469fa9f2e80"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-07.rslide",
+    "size": 67108864,
+    "sha": "b2753df2345e2543549a549503777263466d8d9d0ad0e7e67aded585a45cf6c4"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-08.rslide",
+    "size": 67108864,
+    "sha": "9f2408d66d8da8d4c6b9777e05a8337fdabc80fadc6a2d23422bd29eaf35754d"
+  },
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-2-part-09.rslide",
+    "size": 59236256,
+    "sha": "cbed5e3546c3f8852e5d0147dc756e42b7a1c9a49dfc46946d779fea071d0bb0"
+  },
+  {
     "path": "materials/ren123/microscope/catalog-v2.json",
     "size": 8100,
     "sha": "e813b5d15b18e64a70f027bee4d4224c35bcecdeb6e50536297e3faed7589e5c"
+  },
+  {
+    "path": "materials/ren123/microscope/catalog-v3.json",
+    "size": 9465,
+    "sha": "d580a7223f32134d1c8553c9f5e8f13f5c532805c289caeb3b90c56db884bdd3"
   },
   {
     "path": "materials/ren123/microscope/catalog.json",

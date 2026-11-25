@@ -46,3 +46,9 @@ test('label-only specimens render a cover with no viewer action',()=>{
  assert.doesNotMatch(html,/data-slide=/);
  assert.match(html,/No tissue scan available/);
 });
+
+test('capillaries can open Scan 2 when that is the only tissue scan in a specimen',()=>{
+ const html=microscopeCards({title:'Kidney',slides:[{id:'capillaries-scan-2',name:'Capillaries · Scan 2'}]});
+ assert.match(html,/data-slide="capillaries-scan-2"/);
+ assert.doesNotMatch(html,/No tissue scan available/);
+});
