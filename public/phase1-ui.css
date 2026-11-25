@@ -178,3 +178,6 @@ html[data-theme=amoled] :is(input,select,textarea){border-color:#7c8980}
  .student-progress-column-controls>strong{grid-column:1/-1}
  .student-progress-column-controls>label{white-space:normal}
 }
+
+/* Visual placeholders represent course structure, never fake academic content. */
+.course-load-shell{max-width:min(100%,850px)}.course-load-skeleton{display:grid;gap:14px;padding:15px 0 8px}.course-load-skeleton>div{height:18px;border-radius:7px;background:linear-gradient(100deg,var(--surface,#8882) 20%,var(--line,#8885) 48%,var(--surface,#8882) 72%);background-size:220% 100%;animation:course-load-pulse 1.6s ease-in-out infinite}.course-load-skeleton>.course-load-title{height:28px;width:52%}.course-load-skeleton>.course-load-row.short{width:68%}@keyframes course-load-pulse{to{background-position-x:-220%}}@media(prefers-reduced-motion:reduce){.course-load-skeleton>div{animation:none;background:var(--line,#8885)}}
