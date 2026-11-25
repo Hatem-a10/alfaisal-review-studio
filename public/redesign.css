@@ -656,6 +656,8 @@ html:root body:not(.xp-exam-active) .booklet-modes{grid-column:1/-1;order:1;gap:
 html:root body:not(.xp-exam-active) .booklet-modes label{padding-inline:10px;border:1px solid var(--rs-line);border-radius:9px;background:var(--rs-surface);font-size:.78rem}
 html:root body:not(.xp-exam-active) .booklet-modes label:has(:checked){background:var(--rs-accent-tint);border-color:var(--accent-border)}
 html:root body:not(.xp-exam-active) .booklet-question-meta{margin-block:0 10px}
+html:root body:not(.xp-exam-active) .booklet-question .booklet-annotations{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+html:root body:not(.xp-exam-active) .booklet-question .booklet-annotations details[open]{flex-basis:100%}
 html:root body:not(.xp-exam-active) .booklet-question #bookletStem{font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.42;max-inline-size:72ch;white-space:pre-wrap;margin:18px 0}
 html:root body:not(.xp-exam-active) .booklet-question>img{display:block;margin:12px 0 18px;max-block-size:72dvh;object-fit:contain;object-position:left}
 html:root body:not(.xp-exam-active) .booklet-answers{display:grid;gap:8px}

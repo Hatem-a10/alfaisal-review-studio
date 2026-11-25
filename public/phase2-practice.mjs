@@ -80,8 +80,8 @@ function bookMarkup(){
  displayedBookletQuestion=null;const renal=isRenalBooklet(),mol=bookletCourse()==='MOL',pack=bookletPack();
 const heading=renal?'REN 123 · Booklet':mol?'MOL 114 · 18th Batch Booklet':'Corrected 19th booklet';
 const original=mol?'/api/site-assets/materials/mol114/18th-booklet.pdf':'/api/site-assets/materials/ren123/past-paper-booklet.pdf';
-const source=renal?'<details class="renal-source-index"><summary>Full source booklet · MCQs, SAQs and OSPE</summary><p><a href="'+original+'" target="_blank" rel="noopener">Open full PDF ↗</a></p>'+
- bookletSections.map(([section,entries])=>'<details><summary>'+section+'</summary><ul>'+entries.map(([label,page])=>'<li><a href="'+original+'#page='+page+'" target="_blank" rel="noopener">'+escapeHTML(label)+'</a></li>').join('')+'</ul></details>').join('')+'</details>':mol?'<details class="renal-source-index"><summary>MOL 114 source booklet</summary><p><a href="'+original+'" target="_blank" rel="noopener">Full PDF ↗</a></p><ul>'+
+const source=renal?'<details class="renal-source-index"><summary>Source booklet</summary><p><a href="'+original+'" target="_blank" rel="noopener">Open full PDF ↗</a></p>'+
+ bookletSections.map(([section,entries])=>'<details><summary>'+section+'</summary><ul>'+entries.map(([label,page])=>'<li><a href="'+original+'#page='+page+'" target="_blank" rel="noopener">'+escapeHTML(label)+'</a></li>').join('')+'</ul></details>').join('')+'</details>':mol?'<details class="renal-source-index"><summary>Source booklet</summary><p><a href="'+original+'" target="_blank" rel="noopener">Full PDF ↗</a></p><ul>'+
  (pack?.chapters||[]).map(chapter=>'<li><a href="'+original+'#page='+Number(chapter.page)+'" target="_blank" rel="noopener">MOL '+Number(chapter.number)+' · '+escapeHTML(chapter.title)+'</a></li>').join('')+
  '<li><a href="'+original+'#page=234" target="_blank" rel="noopener">Written cases ↗</a></li><li><a href="'+original+'#page=260" target="_blank" rel="noopener">Lab ↗</a></li></ul></details>':'';
 if(!pack){
@@ -155,7 +155,7 @@ function revealBookletTarget(element){
  const viewport=window.visualViewport;
  let top=viewport?.offsetTop??0,bottom=top+(viewport?.height??window.innerHeight);
  const header=document.querySelector('body > main > header');
- const mobileNav=document.querySelector('.ui-mobile-nav');
+ const mobileNav=document.querySelector('.mobile-dock-shell')||document.querySelector('.ui-mobile-nav');
  if(header&&['sticky','fixed'].includes(getComputedStyle(header).position))top=Math.max(top,header.getBoundingClientRect().bottom);
  if(mobileNav&&['sticky','fixed'].includes(getComputedStyle(mobileNav).position)&&mobileNav.getClientRects().length)bottom=Math.min(bottom,mobileNav.getBoundingClientRect().top);
  const delta=bookletScrollOffset(element.getBoundingClientRect(),top+14,bottom-14);
