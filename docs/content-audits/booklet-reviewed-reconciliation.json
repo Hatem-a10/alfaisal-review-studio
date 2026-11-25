@@ -1,0 +1,32 @@
+{
+  "REN": {
+    "supplied": 608,
+    "previously_applied": 461,
+    "reconciled": 147,
+    "confirmed_missing": 0,
+    "supplemental_verified": 2,
+    "choice_count_changed": 75,
+    "total_mcqs": 645,
+    "reviewed_overlay_items": 610,
+    "still_self_check": 0,
+    "reviewed_items_with_source_figure_notice": 20,
+    "original_review_sha256": "30ecb75eebc9fcdf3d7853fe53656267d1686b45e40d9bbbf7124fa1e56b5d29",
+    "source_inventory_sha256": "b64092793feae92a2a01637b224855c15cece807c3be96c190c03f6d39b069bc",
+    "base_pack_sha256": "4dd788b79d472fd58b2cadbe67dcb90a8d250317b24a6135eabd6c6139e19290"
+  },
+  "MOL": {
+    "supplied": 785,
+    "previously_applied": 542,
+    "reconciled": 243,
+    "confirmed_missing": 0,
+    "supplemental_verified": 0,
+    "choice_count_changed": 131,
+    "total_mcqs": 874,
+    "reviewed_overlay_items": 785,
+    "still_self_check": 0,
+    "reviewed_items_with_source_figure_notice": 29,
+    "original_review_sha256": "88e5bc954f706818edfaf374e63e797ed967d76a24d6e70bfda99405ab29efba",
+    "source_inventory_sha256": "1b073b708e6f97c99302e5dd91ee7c0c54003f1e6cc2b78fe71bda340c819f8d",
+    "base_pack_sha256": "5eb302499ad9de7bf463afd0fce43059370f12d0a0418a71c76aae6aad54bfaf"
+  }
+}

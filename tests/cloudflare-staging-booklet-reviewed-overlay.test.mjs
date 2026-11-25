@@ -38,7 +38,7 @@ test('items match by page and stem when the served ID differs, and reworded stem
 
 test('malformed overlays and items are rejected or skipped',()=>{
  assert.throws(()=>applyReviewedOverlay(pack,{...overlay,course:'MOL'},'REN'));
- assert.throws(()=>applyReviewedOverlay(pack,{version:2,course:'REN',items:{}},'REN'));
+ assert.throws(()=>applyReviewedOverlay(pack,{version:3,course:'REN',items:{}},'REN'));
  for(const bad of [{answer:5},{reasons:['x']},{explanation:''},{accepted:[0]},{options:['a','b']}]){
   assert.equal(applyReviewedOverlay(pack,{...overlay,items:{'REN-X-Q001':{...item,...bad}}},'REN').applied,0);
  }
@@ -60,4 +60,38 @@ test('overlay assets are pinned privately and the booklet view shows the reviewe
  const s=readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
  assert.match(s,/reviewedBookletLoader\('MOL'\)/);assert.match(s,/reviewedBookletLoader\('REN'\)/);assert.match(s,/q\.reviewed\?/);
  assert.ok(REVIEWED_LABEL.length>10);
+});
+
+test('a reconciled review pins the exact served ID, page, stem and options, and may replace the choice count',()=>{
+ const itemV2={...item,options:['Alpha','Reviewed delta'],answer:1,reasons:['No a','Yes d']};
+ const reconciled={...overlay,version:2,items:{[selfCheck.id]:itemV2}};
+ const {pack:out,applied,skipped}=applyReviewedOverlay(pack,reconciled,'REN');
+ assert.deepEqual([applied,skipped],[1,0]);
+ const q=out.questions[0];
+ assert.deepEqual(q.options,itemV2.options);
+ assert.deepEqual(q.previousOptions,selfCheck.options);
+ assert.equal(q.choiceRevision,'reviewed-v2');
+ assert.deepEqual(q.legacyChoices,selfCheck.legacyChoices);
+ assert.equal(validateActiveBooklet(out,meta),out);
+ for(const changed of [{page:6},{question:'Changed stem?'},{options:['Beta','Alpha','Gamma']}]){
+  const source={...pack,questions:[{...selfCheck,...changed},...pack.questions.slice(1)]};
+  assert.equal(applyReviewedOverlay(source,reconciled,'REN').skipped,1);
+ }
+ const renamed={...pack,questions:[{...selfCheck,id:'different-id'},...pack.questions.slice(1)]};
+ assert.equal(applyReviewedOverlay(renamed,reconciled,'REN').applied,0);
+});
+
+test('saved results remain historical when an old choice is replaced and fresh responses use reviewed choices',async()=>{
+ const {bookletEntry}=await import('../public/phase2-practice-core.mjs');
+ const {bookletCheckResult}=await import('../public/phase2-practice.mjs');
+ const o={...overlay,version:2,items:{[selfCheck.id]:{...item,options:['Beta','Alpha','Reviewed gamma'],answer:2}}};
+ const q=applyReviewedOverlay(pack,o,'REN').pack.questions[0];
+ const old={answer:0,correct:true,completed:true};
+ assert.deepEqual(bookletEntry(q,{[q.id]:old}),{...old,answer:1,previousResult:true,priorChoice:'Alpha'});
+ assert.deepEqual(bookletEntry(q,{'old-q1':old}),{...old,answer:undefined,previousResult:true,priorChoice:'Gamma'});
+ const fresh=bookletCheckResult(q,2,'2026-11-25');
+ assert.equal(fresh.choiceRevision,'reviewed-v2');
+ assert.equal(bookletEntry(q,{[q.id]:fresh}).answer,2);
+ assert.equal(bookletEntry(q,{[q.id]:fresh}).previousResult,undefined);
+ assert.deepEqual(old,{answer:0,correct:true,completed:true});
 });
