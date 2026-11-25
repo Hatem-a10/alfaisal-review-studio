@@ -1,6 +1,16 @@
 import {readFileSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {setTimeout as delay} from 'node:timers/promises';
+export function verifyStagingSecurityHeaders(response){
+ const headers=response?.headers;if(!headers)throw Error('Missing response headers');
+ const policy=headers.get('content-security-policy')||'';
+ if(!policy.includes("frame-ancestors 'none'")||!policy.includes("object-src 'none'")||!policy.includes("base-uri 'none'"))throw Error('Staging sign-in CSP is missing required restrictions.');
+ if(headers.get('x-content-type-options')?.toLowerCase()!=='nosniff')throw Error('Staging sign-in MIME sniffing protection missing.');
+ if(!/\bno-store\b/i.test(headers.get('cache-control')||''))throw Error('Staging sign-in must not be cached.');
+ if(!['strict-origin-when-cross-origin','no-referrer'].includes(headers.get('referrer-policy')))throw Error('Staging sign-in referrer policy is missing.');
+ if(headers.get('access-control-allow-origin')==='*')throw Error('Staging auth is accessible to arbitrary origins.');
+ return true;
+}
 export const stagingOrigin='https://review-studio-staging-20261117.hatema2169.workers.dev';
 export const privatePaths=['/api/progress','/api/materials','/api/decks','/api/control-center/access','/api/account-key','/api/site-assets/materials/ren123/kidney-functions.pdf'];
 export function validateExpectedBuild(expected){
@@ -21,11 +31,13 @@ export async function checkStaging(expected,{fetcher=fetch}={}){
  if(home.status!==303||!location||new URL(location,stagingOrigin).origin!==stagingOrigin||new URL(location,stagingOrigin).pathname!=='/auth/sign-in')throw Error('Signed-out home must redirect to staging sign-in.');
  const signIn=await get('/auth/sign-in');
  if(signIn.status!==200||!signIn.headers.get('content-type')?.includes('text/html'))throw Error('Staging sign-in page unavailable.');
+ verifyStagingSecurityHeaders(signIn);
  const caps=await json('/api/capabilities');
  if(caps.admin!==false||caps.adminSettingsUnlocked!==false)throw Error('Signed-out admin capability was granted.');
  for(const path of privatePaths){
   const r=await get(path,{'oai-authenticated-user-id':'synthetic-forged-smoke','x-review-studio-owner':'1'});
   if(r.status!==401&&r.status!==403)throw Error('Private endpoint '+path+' returned '+r.status+' rather than denying signed-out access.');
+  if(r.headers.get('access-control-allow-origin')==='*')throw Error('Private endpoint '+path+' exposed wildcard CORS.');
   await r.body?.cancel();
  }
  return {environment:'staging',sourceCommit:info.sourceCommit,displayVersion:info.displayVersion,checks:privatePaths.length+6};
