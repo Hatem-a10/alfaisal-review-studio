@@ -27,13 +27,22 @@ test('invalid layout and truncated local slides fail before tile reads',async()=
  assert.deepEqual(reads,[[0,4]]);
 });
 
-test('one specimen card keeps its photographed label and every scan selectable',()=>{
+test('photos remain on the specimen cards and only tissue scans are selectable',()=>{
  const cover='/api/site-assets/materials/ren123/microscope/kidney-22-cover.jpg';
  const slides=[1,2,3].map(n=>({sourceSlide:'kidney-22',id:'kidney-22-scan-'+n,name:'Kidney 22 · Scan '+n,
   specimen:'Mammal kidney · sagittal section',accession:'315776',cover}));
  const html=microscopeCards({title:'Kidney',slides});
  assert.equal((html.match(/class="microscope-card"/g)||[]).length,1);
- assert.equal((html.match(/data-slide=/g)||[]).length,3);
+ assert.equal((html.match(/data-slide=/g)||[]).length,2);
+ assert.doesNotMatch(html,/data-slide="kidney-22-scan-1"/);
+ assert.match(html,/data-slide="kidney-22-scan-2"/);
+ assert.match(html,/data-slide="kidney-22-scan-3"/);
  assert.match(html,/315776/);
  assert.ok(html.includes(cover));
+});
+
+test('label-only specimens render a cover with no viewer action',()=>{
+ const html=microscopeCards({title:'Kidney',slides:[{id:'kidney-scan-1',name:'Kidney · Scan 1'}]});
+ assert.doesNotMatch(html,/data-slide=/);
+ assert.match(html,/No tissue scan available/);
 });

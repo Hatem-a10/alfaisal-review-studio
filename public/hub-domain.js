@@ -35,6 +35,7 @@ const HubDomain=(()=>{
  function timeLabel(now=new Date()){return (timeFormatter??=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',hourCycle:'h23'})).format(now)}
  function jumpDirection(rect,viewport){return rect.top+rect.height/2<viewport/2?'up':'down'}
  function nextSunday(date){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+(7-d.getUTCDay()||7));return d.toISOString().slice(0,10)}
+ const countdownLabel=value=>String(value||'').replace(/\bofficial\s+final\s+exam\b/gi,'Final exam');
  function countdownCategory(event){const text=[event.kind,event.type,event.title].filter(Boolean).join(' ');if(/ospe|practical/i.test(text))return 'ospe';if(/course start|begins/i.test(text))return 'starts';if(/tbl/i.test(text))return 'tbls';if(/exam|final|midterm/i.test(text))return 'exams';return 'other'}
  function filterCountdowns(events,filter='all'){return events.filter(e=>{const c=countdownCategory(e);return filter==='all'||c===filter})}
  function activity(records){
@@ -49,5 +50,5 @@ const HubDomain=(()=>{
   }return days;
  }
  const active=(e,date,minute)=>!!e&&e.date===date&&Number.isFinite(e.start)&&Number.isFinite(e.end)&&Number.isFinite(minute)&&e.start<=minute&&minute<e.end;
- return {grades,countdown,resume,attention,reviewAttention,lessonIdsForDay,timeLabel,jumpDirection,nextSunday,countdownCategory,filterCountdowns,activity,active};
+ return {grades,countdown,resume,attention,reviewAttention,lessonIdsForDay,timeLabel,jumpDirection,nextSunday,countdownCategory,countdownLabel,filterCountdowns,activity,active};
 })();
