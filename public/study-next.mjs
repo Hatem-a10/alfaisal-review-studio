@@ -361,7 +361,7 @@ const actionHandlers={
   }
   if(kind==='lesson'&&saved.studyNextLesson)return openTopic(saved.studyNextLesson.id,saved.studyNextLesson.position);
   if(kind==='booklet'&&saved.studyNextBooklet)return window.reviewOpenCourse?.(saved.studyNextBooklet.course,'booklet');
-  const attempt=activeAttempt();if(attempt){etPracticeTab=attempt.kind==='original'?'original':'mock';if(attempt.course&&window.reviewOpenCourse)return window.reviewOpenCourse(attempt.course,'practice');go('practice');}
+  const attempt=activeAttempt();if(attempt){originalBrowseOnly=false;etMockLanding=false;etPracticeTab=attempt.kind==='original'?'original':'mock';if(attempt.course&&window.reviewOpenCourse)return window.reviewOpenCourse(attempt.course,'practice');go('practice');}
  },
 };
 document.addEventListener('click',e=>{

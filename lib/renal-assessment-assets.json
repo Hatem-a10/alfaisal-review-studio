@@ -51,7 +51,97 @@
   },
   {
     "path": "materials/ren123/interactive-assessments.json",
-    "size": 958194,
-    "sha": "a65315c5c4b2d3fc8e9094e82c2041ba3319105b71b1f266983d0e43e7f79004"
+    "size": 1061104,
+    "sha": "26ae80b7dea47dbcb0426e7552a33e796b03c0540f73b23bb92197203a083aa5"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/06ad3834add5afa9244cff09f6cb1ea7b82b614b18023dfcb19ebf5293855e8f.png",
+    "size": 108588,
+    "sha": "06ad3834add5afa9244cff09f6cb1ea7b82b614b18023dfcb19ebf5293855e8f"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/8b223c0ff0fed3801fbd986a6d24189cd6a40937dd75da4b5049e6054aabc5b0.png",
+    "size": 98037,
+    "sha": "8b223c0ff0fed3801fbd986a6d24189cd6a40937dd75da4b5049e6054aabc5b0"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/19cc603888c32e808535cc0c02f0e9b876f857912107bb41f5ff20688ebd6bd4.png",
+    "size": 94795,
+    "sha": "19cc603888c32e808535cc0c02f0e9b876f857912107bb41f5ff20688ebd6bd4"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/93ae43e86430878233ff125a7b8cbc99e549f27694c894ae7132fc346e6a3a3e.png",
+    "size": 33937,
+    "sha": "93ae43e86430878233ff125a7b8cbc99e549f27694c894ae7132fc346e6a3a3e"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/88b1976f36ca884ae4a64b0c0d5cd0aab7a7e92b794786ec49b61fa9ec02589e.png",
+    "size": 25210,
+    "sha": "88b1976f36ca884ae4a64b0c0d5cd0aab7a7e92b794786ec49b61fa9ec02589e"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/32f8fa8c918bb0581ae7b7f71b850a66953f9900646352be4f2d3331eccd88cf.png",
+    "size": 5481,
+    "sha": "32f8fa8c918bb0581ae7b7f71b850a66953f9900646352be4f2d3331eccd88cf"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/56de0674f339b726dc7c394722e9605975e5766296c821902343fea2fb831511.png",
+    "size": 33632,
+    "sha": "56de0674f339b726dc7c394722e9605975e5766296c821902343fea2fb831511"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/a380a5c2591e7b917fc49f6d6be97a15a796d383e6d9060053c4d67db1802751.png",
+    "size": 173507,
+    "sha": "a380a5c2591e7b917fc49f6d6be97a15a796d383e6d9060053c4d67db1802751"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/2ad21a0b040817b3c1d27e536441fde58092cd3ec60bd61f559455e1513ddf9c.png",
+    "size": 293052,
+    "sha": "2ad21a0b040817b3c1d27e536441fde58092cd3ec60bd61f559455e1513ddf9c"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/0c303368cf1c954eb34bc7fd8120dffb9256961af65e52cda7fdad945313b993.png",
+    "size": 81190,
+    "sha": "0c303368cf1c954eb34bc7fd8120dffb9256961af65e52cda7fdad945313b993"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/c3c92c0468fad7cd85a880662b5eec6ae00438ae5120c2fff28520115b6c330c.png",
+    "size": 55080,
+    "sha": "c3c92c0468fad7cd85a880662b5eec6ae00438ae5120c2fff28520115b6c330c"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/af99da4e5b46f53d8bcd5390fec5be208f47985379992e8c51829278ddf9f662.png",
+    "size": 105396,
+    "sha": "af99da4e5b46f53d8bcd5390fec5be208f47985379992e8c51829278ddf9f662"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/dbb155ba220c36792666a21e8a9326c533d7a1c4405dc88083f406b82ef49e1a.png",
+    "size": 116177,
+    "sha": "dbb155ba220c36792666a21e8a9326c533d7a1c4405dc88083f406b82ef49e1a"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/efc1689566467f10ed64e6c4dea693960c64446d2ba9381f367c13675f593779.png",
+    "size": 210232,
+    "sha": "efc1689566467f10ed64e6c4dea693960c64446d2ba9381f367c13675f593779"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/81a0c069f60a1db84a7123888a153f42bfb03497a8ae6502f089b6c320aa877d.png",
+    "size": 50808,
+    "sha": "81a0c069f60a1db84a7123888a153f42bfb03497a8ae6502f089b6c320aa877d"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/e09a4e32df559e7da77df3774ca7e2b73a9ffb59a14c8b26a85fbc41e53e007b.png",
+    "size": 6002,
+    "sha": "e09a4e32df559e7da77df3774ca7e2b73a9ffb59a14c8b26a85fbc41e53e007b"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/0839e96777c9a0f5a2fa5413425f73ce5ce856d99e8c13f1f94af227724f11b1.jpg",
+    "size": 24109,
+    "sha": "0839e96777c9a0f5a2fa5413425f73ce5ce856d99e8c13f1f94af227724f11b1"
+  },
+  {
+    "path": "materials/ren123/assessments/anzhelika/0cc4acea6aba255743b7517062f482ef06c2318724cddb66f4121ddf0dbaea5c.png",
+    "size": 99364,
+    "sha": "0cc4acea6aba255743b7517062f482ef06c2318724cddb66f4121ddf0dbaea5c"
   }
 ]

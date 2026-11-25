@@ -695,3 +695,20 @@ html:root body:not(.xp-exam-active) .schedule-page .schedule-legend{gap:8px 16px
  html:root body:not(.xp-exam-active) .schedule-page:has(.schedule-agenda-primary) .schedule-day-details .campus-agenda:has(.untimed-events)>:not(.untimed-events){display:none}
  html:root body:not(.xp-exam-active) .schedule-page #expandSchedule{display:none}
 }
+
+/* Keep the richer accent treatment on the three navigation and assessment surfaces. */
+html:root body:not(.xp-exam-active) :is(#content .practice-start .practice-tool-card,#mobileToolsMenu .mobile-tools-grid button){
+ border:1.5px solid transparent;
+ box-shadow:var(--rs-shadow);
+ background:linear-gradient(color-mix(in srgb,var(--ax-b) 10%,var(--rs-surface)),var(--rs-surface)) padding-box,var(--rs-grad-ring) border-box;
+}
+html:root body:not(.xp-exam-active) .countdown-card[class*=stain-]{
+ position:relative;
+}
+html:root body:not(.xp-exam-active) .countdown-card[class*=stain-]::after{
+ content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+ background:var(--rs-grad-ring);opacity:.88;
+ -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+ mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;
+}
