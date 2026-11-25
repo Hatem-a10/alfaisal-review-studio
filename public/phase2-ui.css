@@ -120,3 +120,18 @@ html:has(#xpExam),body:has(#xpExam){overflow:hidden!important;scrollbar-width:no
 .study-next-dialog { width: min(42rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow: auto; }
 #studySyncDetails dt { color: var(--muted); font-size: .85em; }
 #studySyncDetails dd { margin: 0 0 .45rem; }
+
+/* Independent side-by-side pan/zoom surfaces; keep all source pixels unchanged. */
+#phase2ImageZoom[open]{display:flex;flex-direction:column;gap:8px}
+.phase2-zoom-panes{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;flex:1;min-height:0}
+.phase2-compare-active .phase2-zoom-panes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.phase2-zoom-pane{display:flex;flex-direction:column;min-height:0;min-width:0;gap:4px}
+.phase2-zoom-pane[hidden]{display:none}
+.phase2-zoom-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phase2-zoom-controls label{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phase2-zoom-controls strong{margin-right:auto}
+.phase2-zoom-pane [role=status]{min-height:1em;margin:0;font-size:.8rem}
+.phase2-zoom-pane .phase2-zoom-viewport{width:100%;height:auto;flex:1;min-height:0;border:1px solid var(--p2-line,#bbb);margin:0}
+.phase2-light-figures .phase2-zoom-viewport{background:#f4f3f0}
+html[data-theme=amoled] :is(.lesson-figure img,.question-image,.et-question-image,.original-question-figure img,.source-slide-preview img,.ospe-image img,.ospe-image svg,.phase2-booklet [data-question-id] img){background-color:#f4f3f0;outline:1px solid #666;outline-offset:0}
+@media(max-width:600px){.phase2-compare-active .phase2-zoom-panes{grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(2,minmax(0,1fr))}.phase2-zoom-controls button{padding:4px 8px}.phase2-zoom-controls select{max-width:12rem}}

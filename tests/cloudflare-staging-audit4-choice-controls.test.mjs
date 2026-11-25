@@ -43,5 +43,5 @@ test('elapsed mock deadline retains stored response and completes the run',()=>{
  assert.equal(h.api.clearChoiceDraft({dataset:{etMode:'mock',etAnswer:'0'}}),false);assert.equal(etExam.answers[0],1);assert.deepEqual(finished,['expired']);
 });
 test('image zoom has keyboard access and cleans up previous callbacks',()=>{
- const s=read('phase2-image-zoom.mjs');assert.match(s,/image.tabIndex=0/);assert.match(s,/\['Enter',' '\]/);assert.match(s,/if\(figure!==clone\)return/);assert.match(s,/if\(figure===clone\)status.textContent/);assert.match(s,/pointers.clear\(\);figure=null;viewport.replaceChildren\(\)/);assert.match(s,/if\(clone.complete&&clone.naturalWidth\)ready\(\)/);
+ const s=read('phase2-image-zoom.mjs');assert.match(s,/image.tabIndex=0/);assert.match(s,/\['Enter',' '\]/);assert.match(s,/if\(figure!==clone\)return/);assert.match(s,/if\(figure===clone\)report\(/);assert.match(s,/pointers.clear\(\);figure=null;width=height=0;viewport.replaceChildren\(\)/);assert.match(s,/primary.clear\(\);secondary.clear\(\)/);assert.match(s,/if\(clone.complete&&clone.naturalWidth\)ready\(\)/);
 });
