@@ -47,7 +47,8 @@ test('A5-251 overview and detailed analytics have identical privacy-filtered sum
  }
 });
 test('A5-251 non-owner overview preserves original no-summary behavior without database aggregation',()=>{
- const overviewRoute=source.slice(source.indexOf("if(section==='overview'"),source.indexOf("if(section==='students'"));
+ const start=source.indexOf("if(section==='overview'");
+ const overviewRoute=source.slice(start,source.indexOf("if(section==='students'",start));
  assert.match(overviewRoute,/role==='owner'\?await overviewSummary\(db\):undefined/);
  assert.doesNotMatch(overviewRoute,/usageAnalytics\(db\)/);
 });
