@@ -1,3 +1,4 @@
+import {renalPlanPreview} from './study-next-core.mjs';
 // Pure planning helpers: callers apply the returned records only for a new account.
 export const DEFAULT_LAB_GROUPS=Object.freeze(['1.6']);
 export function riyadhDate(instant=new Date()){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(instant))}
@@ -55,3 +56,25 @@ export function planStudent(items,records={},instant=new Date(),selected={},cons
  return {records:out,warnings,start};
 }
 export function newStudentPlan(items,records={},instant=new Date(),selected={},constraints={}){return planStudent(items,records,instant,selected,constraints).records}
+
+/* Explicit onboarding choice: leave REN unscheduled, or plan released lessons
+ * against the verified group timetable. Other courses retain existing behavior. */
+export function planOnboardingWithRenalChoice(items,records,instant,selected,constraints={}){
+ const renal=items.filter(item=>item.course==='REN'),other=items.filter(item=>item.course!=='REN');
+ const planned=planStudent(other,records,instant,selected,constraints);
+ planned.records=addCompletedReviews(renal,planned.records,selected,instant);
+ if(constraints.renalChoice!=='schedule'||!renal.length)return planned;
+ const clock=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(instant));
+ const part=type=>Number(clock.find(p=>p.type===type)?.value);
+ const start=riyadhDate(instant),minute=part('hour')*60+part('minute');
+ const tasks=items.flatMap(item=>[0,1,2].map(p=>({p,date:(planned.records[item.id]?.dates??item.dates??[])[p],done:planned.records[item.id]?.done?.[p]})));
+ const blocked=new Set(array(constraints.blockedDates));
+ const breaks=array(constraints.breaks).filter(b=>Array.isArray(b)&&validDay(b[0])&&validDay(b[1])&&b[0]<=b[1]);
+ for(let d=start,i=0;i<365;i++,d=add(d,1))if(breaks.some(([a,b])=>d>=a&&d<=b))blocked.add(d);
+ const raw=constraints.budget,parsed=typeof raw==='number'||typeof raw==='string'&&raw.trim()?Number(raw):NaN;
+ const preview=renalPlanPreview(renal,planned.records,{events:array(constraints.renalEvents),group:constraints.studentGroup,section:constraints.studentSection,date:start,minute,minutes:Number.isFinite(parsed)?Math.min(720,parsed):180,tasks,blockedDates:[...blocked]});
+ for(const row of preview.plans)planned.records[row.id]={...planned.records[row.id],dates:row.dates};
+ const warn=preview.error?renal.filter(item=>!(planned.records[item.id]?.dates??item.dates??[]).length).map(item=>item.id):preview.unplaced;
+ for(const id of warn)for(let p=0;p<3;p++)if(!planned.records[id]?.done?.[p])planned.warnings.push({id,pass:p,reason:preview.error?'Verified Renal schedule or study capacity unavailable.':'No available capacity before the Renal final.'});
+ return planned;
+}
