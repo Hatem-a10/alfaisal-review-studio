@@ -37,7 +37,11 @@ test('A5-250 immutable manifest lookup preserves first-match asset authorization
  for(const i of [1,2]){
   const before=load(i,env,assets,true),after=load(i,env,assets);
   const get=(api,headers,id='asset-1499')=>i===1?api.GET(req('/'+id,headers),{params:Promise.resolve({id})}):api.servePack(req('/'+id,headers));
-  for(const id of ['asset-0','asset-1499','missing'])for(const headers of [auth,{}])assert.deepEqual(await response(await get(after,headers,id)),await response(await get(before,headers,id)));
+  for(const id of ['asset-0','asset-1499','missing'])for(const headers of [auth,{}]){
+   const actual=await response(await get(after,headers,id)),expected=await response(await get(before,headers,id));
+   if(i===1&&expected.status===200)expected.headers['accept-ranges']='bytes';
+   assert.deepEqual(actual,expected);
+  }
   reads=0;for(let k=0;k<20;k++)await get(before,auth);const oldReads=reads;reads=0;for(let k=0;k<20;k++)await get(after,auth);const newReads=reads;
   assert.ok(oldReads>=30000);assert.ok(newReads<=20);
   console.log(JSON.stringify({label:'A5-250 '+paths[i],baselineManifestKeyReads:oldReads,candidateManifestKeyReads:newReads}));
@@ -49,4 +53,36 @@ test('A5-247 asset report aggregates exactly the same matched and verified count
  const before=make(true),after=make(false);assert.deepEqual(await response(await after.api.GET(req('/api/study-assets'))),await response(await before.api.GET(req('/api/study-assets'))));assert.equal(before.reads(),95);assert.equal(after.reads(),95);
  assert.equal((await after.api.GET(req('/api/study-assets',{}))).status,401);assert.equal(after.reads(),95);
  console.log(JSON.stringify({label:'A5-247 asset report',baselineIntermediateArraysPerBatch:2,candidateIntermediateArraysPerBatch:0}));
+});
+
+test('study assets support bounded, suffix and open-ended ranges without weakening access checks',async()=>{
+ const asset={id:'fixture',sha:'a'.repeat(64),size:10,type:'audio/mp4'},bytes='0123456789',reads=[];
+ const env={BUCKET:{get:async(key,opts)=>{
+  reads.push({key,opts});
+  const range=opts?.range;
+  return {size:asset.size,body:range?bytes.slice(range.offset,range.offset+range.length):bytes};
+ }}};
+ const api=load(1,env,[asset]),tag='"'+asset.sha+'"';
+ const get=(headers={},id=asset.id)=>api.GET(req('/api/study-assets/'+id,{...auth,...headers}),{params:Promise.resolve({id})});
+ for(const [range,body,contentRange] of [['bytes=2-4','234','bytes 2-4/10'],['bytes=-3','789','bytes 7-9/10'],['bytes=8-','89','bytes 8-9/10'],['bytes=9-999','9','bytes 9-9/10']]){
+  const result=await get({Range:range,'If-Range':tag});
+  assert.equal(result.status,206);
+  assert.equal(result.headers.get('content-range'),contentRange);
+  assert.equal(result.headers.get('content-length'),String(body.length));
+  assert.equal(result.headers.get('etag'),tag);
+  assert.equal(result.headers.get('accept-ranges'),'bytes');
+  assert.equal(await result.text(),body);
+  assert.equal(reads.at(-1).opts.range.length,body.length);
+ }
+ const full=await get({Range:'bytes=2-4','If-Range':'"old"'});
+ assert.equal(full.status,200);assert.equal(await full.text(),bytes);assert.equal(reads.at(-1).opts,undefined);
+ const count=reads.length;
+ for(const range of ['bytes=10-','bytes=4-2','bytes=-0','bytes=1-2,4-5','bytes=9007199254740992-','bytes=-']){
+  const invalid=await get({Range:range});assert.equal(invalid.status,416);assert.equal(invalid.headers.get('content-range'),'bytes */10');
+ }
+ assert.equal((await api.GET(req('/api/study-assets/fixture',{Range:'bytes=1-2'}),{params:Promise.resolve({id:asset.id})})).status,401);
+ assert.equal((await get({Range:'bytes=1-2'},'unknown')).status,404);
+ assert.equal(reads.length,count);
+ const damaged=load(1,{BUCKET:{get:async()=>({size:9,body:'12'})}},[asset]);
+ assert.equal((await damaged.GET(req('/api/study-assets/fixture',{...auth,Range:'bytes=1-2'}),{params:Promise.resolve({id:asset.id})})).status,503);
 });
