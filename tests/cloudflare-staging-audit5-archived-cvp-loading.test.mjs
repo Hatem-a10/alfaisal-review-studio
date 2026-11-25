@@ -55,9 +55,9 @@ test('course pack loading respects archive flag before workspace initializes',()
   assert.match(a.host.innerHTML,/MOL/);
  }
  const a=coursePacks({fresh:true,view:'practice',archive:true,permitted:true,scope:'CVP'});
- a.run();assert.match(a.host.innerHTML,/Loading CVP content/);
+ a.run();assert.match(a.host.innerHTML,/Opening CVP study content/);
  const denied=coursePacks({fresh:true,view:'practice',archive:true,permitted:false,scope:'CVP'});
- denied.run();assert.doesNotMatch(denied.host.innerHTML,/Loading CVP content/);
+ denied.run();assert.doesNotMatch(denied.host.innerHTML,/Opening CVP study content/);
  const legacy=coursePacks({fresh:false,view:'practice'});
  legacy.run();assert.match(legacy.host.innerHTML,/CVP/);
 });
