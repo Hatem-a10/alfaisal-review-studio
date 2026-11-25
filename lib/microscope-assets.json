@@ -1,0 +1,117 @@
+[
+  {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-1.rslide",
+    "size": 19438852,
+    "sha": "3e91d5b2bc1ac479de5e6bc568f30073758e09622a621f13662b80caa81559f9"
+  },
+  {
+    "path": "materials/ren123/microscope/catalog.json",
+    "size": 3966,
+    "sha": "499e7ce72b07ab9720c5e9b58385e3dd5e76ae55cc552dbe9fa9617ce2a6ec61"
+  },
+  {
+    "path": "materials/ren123/microscope/first-transitional-epi-in-minor-calyx-kidney-scan-1.rslide",
+    "size": 13979966,
+    "sha": "016d69e9f692ebce23e3bcb782966f6716c1a0a3f07498142d127f08d7e0e304"
+  },
+  {
+    "path": "materials/ren123/microscope/first-transitional-epi-in-minor-calyx-kidney-scan-2.rslide",
+    "size": 13710784,
+    "sha": "bbe4484f2418382debb7af5b2d2712f12514fe837025d215435b3ac829981c44"
+  },
+  {
+    "path": "materials/ren123/microscope/kidney-2-scan-1.rslide",
+    "size": 9447390,
+    "sha": "98a32acd35276ed999752160f27282a351730b848fb8fdc5c828b1ddc616442c"
+  },
+  {
+    "path": "materials/ren123/microscope/kidney-2-scan-2.rslide",
+    "size": 12927413,
+    "sha": "70f3878964ae0aa373fddc43d6b6f1920957195206ea5b7d62e20a79aa2c4ec6"
+  },
+  {
+    "path": "materials/ren123/microscope/kidney-22-scan-1.rslide",
+    "size": 13979966,
+    "sha": "016d69e9f692ebce23e3bcb782966f6716c1a0a3f07498142d127f08d7e0e304"
+  },
+  {
+    "path": "materials/ren123/microscope/kidney-22-scan-2.rslide",
+    "size": 13710784,
+    "sha": "bbe4484f2418382debb7af5b2d2712f12514fe837025d215435b3ac829981c44"
+  },
+  {
+    "path": "materials/ren123/microscope/penis-rabbit-40x-scan-1.rslide",
+    "size": 14835228,
+    "sha": "6bef294d4603020aade9f313e016cb6a24c14e754e5a1c647405f2f270dc7f73"
+  },
+  {
+    "path": "materials/ren123/microscope/penis-rabbit-40x-scan-2.rslide",
+    "size": 10025821,
+    "sha": "53f15c98cd0c72947033f2fba71bf3fdc720f302fee4d85a5898caae95c18894"
+  },
+  {
+    "path": "materials/ren123/microscope/prostate-old-40x-scan-1.rslide",
+    "size": 11912744,
+    "sha": "a3590da376ff6a96b351e8b58d4a3d57a135e20e5382a2a0d0f5b196d25720bb"
+  },
+  {
+    "path": "materials/ren123/microscope/prostate-old-40x-scan-2.rslide",
+    "size": 9094931,
+    "sha": "452292c0e354b554795b73b36be6cf2ff6ff02aca63aaf3eed56a77fd4e1adec"
+  },
+  {
+    "path": "materials/ren123/microscope/prostate-young-40x-he-scan-1.rslide",
+    "size": 10919603,
+    "sha": "ba7b0f6fa0c1bbdf9759dfce168b02bf6f32da1ad3af546361a5659438bb0c0c"
+  },
+  {
+    "path": "materials/ren123/microscope/prostate-young-40x-he-scan-2.rslide",
+    "size": 9197422,
+    "sha": "2e0b3ea6f768f495c8b02ab1f69807c8268dabb04c97a052b61884d620a4ea67"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-no-label-scan-1.rslide",
+    "size": 12965886,
+    "sha": "2c212cfc15cbda247d02bb6530756cb8669c87c573c057a6a8999cb96ebd4c7c"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-no-label-scan-2.rslide",
+    "size": 19623811,
+    "sha": "8e0df8559882a79de193acdedce0c1fcfa95a0e6e91a83318f55b159b3d00ad3"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-scan-1.rslide",
+    "size": 12965886,
+    "sha": "2c212cfc15cbda247d02bb6530756cb8669c87c573c057a6a8999cb96ebd4c7c"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-scan-2.rslide",
+    "size": 19623811,
+    "sha": "8e0df8559882a79de193acdedce0c1fcfa95a0e6e91a83318f55b159b3d00ad3"
+  },
+  {
+    "path": "materials/ren123/microscope/ureter-40x-scan-1.rslide",
+    "size": 12824810,
+    "sha": "161d9b6907720e16b11c69bccf9efc3c0af39d99ee7973620c98b02406b156c9"
+  },
+  {
+    "path": "materials/ren123/microscope/ureter-40x-scan-2.rslide",
+    "size": 18427424,
+    "sha": "d706370612364d28dd63182dff9c34423d8bfbe1f74d812fa1895a46570fd7db"
+  },
+  {
+    "path": "materials/ren123/microscope/ureter-40x-scan-3.rslide",
+    "size": 36002010,
+    "sha": "785a3f9f4de60c61f27e477317ce1c7a8c44b06592f9bf01181a4ecdb88680b9"
+  },
+  {
+    "path": "materials/ren123/microscope/urinary-vesicle-2-40x-scan-1.rslide",
+    "size": 12064426,
+    "sha": "749e389d8178ad7e6d8796ffc2a20305cf439cd795dd18c355cb40d90f567a89"
+  },
+  {
+    "path": "materials/ren123/microscope/urinary-vesicle-2-40x-scan-2.rslide",
+    "size": 13812304,
+    "sha": "96788a95804b1c409bf9955cbe99760a97bd06899f2b1c2909f8836f3fd2e35d"
+  }
+]

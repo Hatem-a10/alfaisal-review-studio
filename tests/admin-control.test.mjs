@@ -154,19 +154,19 @@ test('maintenance gates only bounded operations and analytics suppresses small c
  assert.equal(adminWriteGate('api/control-center/site/save','POST',flags),null);
 });
 
-test('study totals refresh only for the authenticated account and cannot re-enable sharing',async t=>{
+test('study totals are always accepted only for authenticated accounts and stored as bounded counts',async t=>{
  const h=harness();t.after(()=>h.sqlite.close());
  const read=id=>h.sqlite.prepare('SELECT analytics_opt_in,analytics_json FROM review_accounts WHERE id=?').get(id);
  const counts={completedReviews:8,answeredQuestions:24};
- assert.equal((await (await h.call('student/study-counts',student,counts)).json()).accepted,false);
- h.sqlite.prepare('UPDATE review_accounts SET analytics_opt_in=1 WHERE id=?').run(student.id);
+ assert.equal((await h.call('student/study-counts',null,counts)).status,401);
  assert.equal((await (await h.call('student/study-counts',student,counts)).json()).accepted,true);
  assert.deepEqual(JSON.parse(read(student.id).analytics_json),counts);
  assert.deepEqual(JSON.parse(read(editor.id).analytics_json),{});
  h.sqlite.prepare("UPDATE review_accounts SET analytics_opt_in=0,analytics_json='{}' WHERE id=?").run(student.id);
- assert.equal((await (await h.call('student/study-counts',student,counts)).json()).accepted,false);
- assert.equal(read(student.id).analytics_opt_in,0);
- assert.deepEqual(JSON.parse(read(student.id).analytics_json),{});
+ assert.equal((await (await h.call('student/study-counts',student,{...counts,id:editor.id})).json()).accepted,undefined);
+ assert.deepEqual(JSON.parse(read(editor.id).analytics_json),{});
+ assert.equal((await (await h.call('student/study-counts',student,{completedReviews:1e8,answeredQuestions:2})).json()).accepted,true);
+ assert.deepEqual(JSON.parse(read(student.id).analytics_json),{completedReviews:100000,answeredQuestions:2});
 });
 
 test('student details are owner-only and return a scoped avatar and minimal session history',async t=>{

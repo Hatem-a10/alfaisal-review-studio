@@ -52,7 +52,7 @@ test('managed legacy-shaped cloud profile cannot bypass onboarding',async()=>{
  const settings={legacyProfile:true},saved={},KEY=prefix,storage=new Map([[prefix+'-account','account']]);let setups=0;
  const profileUI={async setup(){setups++;return {profileName:'New Student',studentNumber:'123',profileCreatedAt:'2026-11-24T12:00:00Z',legacyProfile:false}}};
  const ctx={window:{REVIEW_STUDIO_FRESH_ACCOUNTS:true,dispatchEvent(){}},settings,saved,syncMeta:{revision:0},KEY,paintProfile(){},cleanSettings:x=>x,esc:x=>x,persist(){},document:{querySelector:()=>null,querySelectorAll:()=>[],getElementById:()=>null},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},profileUI,Event};
- const api=runInNewContext(entry.replace("import('/student-profile.mjs?v=3')","Promise.resolve(profileUI)")+'\nStudentProfile',ctx);
+ const api=runInNewContext(entry.replace("import('/student-profile.mjs?v=4')","Promise.resolve(profileUI)")+'\nStudentProfile',ctx);
  await api.remote({accountKey:'account',snapshot:{settings:{profileName:'Legacy',legacyProfile:true,profileCreatedAt:'2026-11-20T12:00:00Z'}}});
  assert.equal(setups,1);assert.equal(api.identity().name,'New Student');
 });

@@ -24,7 +24,7 @@ const HubDomain=(()=>{
   const detail=typeof event.detail==='string'?event.detail:'',match=detail.match(/\b(\d{1,2}):(\d{2})(?!\d)\s*(am|pm)?\b/i);
   let time='08:00';const assumed=!match;
   if(match){let h=Number(match[1]);const m=Number(match[2]),period=match[3]?.toLowerCase();if(m>59||h>23||period&&(h<1||h>12))return {known:false,invalid:true};if(period)h=h%12+(period==='pm'?12:0);time=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
-  const startAt=Date.parse(event.date+'T'+time+':00+03:00'),delta=startAt-now,n=Math.max(0,Math.floor(delta/1000));
+  const startAt=Date.parse(event.date+'T'+time+':00+03:00'),delta=startAt-now,n=Math.floor(Math.abs(delta)/1000);
   return {known:true,assumed,time,startAt,past:delta<0,seconds:n,text:[Math.floor(n/86400),Math.floor(n/3600)%24,Math.floor(n/60)%60,n%60].map(v=>String(v).padStart(2,'0')).join(' : ')};
  }
  function resume(topics,scores,last){const i=scores.findIndex(s=>!s.complete);if(i>=0)return i;const found=topics.findIndex(t=>t.id===last);return found<0?0:found}

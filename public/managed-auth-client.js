@@ -43,8 +43,6 @@
    }
   }finally{profileSaving=false}
  }
- function privacyPayload(enabled){return enabled?{analyticsOptIn:true,analytics:studyCounts()}:{analyticsOptIn:false}}
- async function getAccount(){const r=await fetch('/auth/account',{cache:'no-store'});if(!r.ok)throw Error('Account preferences unavailable.');return await r.json()}
  function installManagedApp(){
   let currentStatus, appliedStatus, lastFetch=0, pending, forcedRefresh=false, lastError=0;
   let refreshProfile=false, libraryInstalled=false, lastTotals=null;
@@ -58,8 +56,8 @@
    return pending;
   }
   async function shareStudyCounts(){
-   if(!currentStatus?.analyticsOptIn){lastTotals=null;return;}
-   if(typeof state==='undefined')return;
+   if(!currentStatus)return;
+   if(typeof state==='undefined'||document.documentElement.dataset.boot!=='ready')return;
    const body=JSON.stringify(studyCounts());
    if(body===lastTotals)return;
    try{
@@ -67,7 +65,6 @@
     if(result.ok)lastTotals=body;
    }catch{}
   }
-  document.addEventListener('review-analytics-changed',()=>status(true));
   window.addEventListener('review-managed-controls-refresh',()=>status(true));
   setInterval(()=>{if(document.visibilityState==='visible')status();},300000);
   let lastInteraction=-Infinity;
@@ -176,7 +173,7 @@
   window.addEventListener('online',()=>status(true));
   window.addEventListener('focus',()=>status());
   window.addEventListener('review-profile-changed',()=>window.reviewStudioReloadAcademicSchedule?.());
-  window.addEventListener('studio-ready',()=>{installLibrary();applyStatus();status();});
+  window.addEventListener('studio-ready',()=>{installLibrary();applyStatus();status();shareStudyCounts();});
   document.addEventListener('click',event=>{if(event.target.closest('#openManagedResources'))showResources();});
   installLibrary();status();
  }
@@ -185,7 +182,11 @@
   const frame=document.querySelector('#siteAdmin .admin-frame');if(!frame)return;
   window.ReviewStudioReportTools?.mountSettings(frame);
   if(!document.getElementById('managedAccountPrivacy')){
-   const data=await getAccount(),panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';const title=document.createElement('h3');title.textContent='Account & privacy';const label=document.createElement('label');label.className='managed-privacy-option';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=data.analyticsOptIn;label.append(checkbox,document.createTextNode('Share study totals with the site owner'));const status=document.createElement('p');status.setAttribute('role','status');const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';panel.append(title,label,signout,status);frame.append(panel);
+   const panel=document.createElement('section');panel.className='panel';panel.id='managedAccountPrivacy';
+   const title=document.createElement('h3');title.textContent='Account';
+   const status=document.createElement('p');status.setAttribute('role','status');
+   const signout=document.createElement('a');signout.href='/auth/sign-out';signout.textContent='Sign out';
+   panel.append(title,signout,status);frame.append(panel);
    if(window.Clerk.user&&typeof window.Clerk.openUserProfile==='function'){
     const methods=document.createElement('button');
     methods.type='button';
@@ -202,7 +203,6 @@
     };
     panel.insertBefore(methods,status);
    }
-   checkbox.onchange=async()=>{checkbox.disabled=true;try{const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(privacyPayload(checkbox.checked))});if(!r.ok)throw Error('Preference could not be saved.');status.textContent='Saved';document.dispatchEvent(new Event('review-analytics-changed'));}catch(error){checkbox.checked=!checkbox.checked;status.textContent=error.message}finally{checkbox.disabled=false}};
   }
   }catch{console.error('Account controls unavailable.')}finally{installing=false}
  }

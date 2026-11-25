@@ -19,7 +19,7 @@ test('deployment report errors do not leak provider details',async()=>{
  assert.equal(r.status,503);assert.doesNotMatch(await r.text(),/private provider detail/);
 });
 const asset={path:'materials/fixture.pdf',size:10,sha:'a'.repeat(64)},tag='"'+asset.sha+'"',data=new Uint8Array(10);
-const sites=compile('lib/site-assets.ts',{'./site-assets-manifest':{SITE_ASSETS:[asset]},'../public/renal-materials.json':[],'./active-booklet-assets.json':[],'./renal-booklet-asset.json':asset,'../public/mol-study-assets.json':{booklet:asset,assessments:asset,sources:[]},'./renal-assessment-assets.json':[]});
+const sites=compile('lib/site-assets.ts',{'./site-assets-manifest':{SITE_ASSETS:[asset]},'../public/renal-materials.json':[],'./active-booklet-assets.json':[],'./renal-booklet-asset.json':asset,'../public/mol-study-assets.json':{booklet:asset,assessments:asset,sources:[]},'./microscope-assets.json':[],'./renal-assessment-assets.json':[]});
 const req=(headers={},method='GET')=>new Request(origin+'/'+asset.path,{method,headers:{...auth,...headers}});
 test('source files check actual object length and give controlled storage errors',async()=>{
  const wrong={head:async()=>({size:9}),get:async()=>({size:9,body:data})};

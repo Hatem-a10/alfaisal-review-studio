@@ -1,6 +1,6 @@
 import {escapeHTML as escapeHTML} from './html-escape.mjs';
 import {bookletAnnotation,mergeBookletAnnotations} from './phase2-practice-core.mjs';
-import {loadRenalBooklet} from './renal-booklet-data.mjs';
+import {bookletMockQuestions} from './reviewed-mock-pool.mjs';
 import {activeBookletPaths,bookletLoader,validateActiveBooklet} from './active-booklet-core.mjs';
 import {reviewedOverlayPaths,applyReviewedOverlay,fetchReviewedOverlay} from './booklet-reviewed-overlay.mjs';
 import {bookletSections} from './renal-study.mjs';
@@ -19,35 +19,40 @@ export function reviewedBookletLoader(course,{loadPack=bookletLoader(activeBookl
  return async()=>{
   const [pack,overlay]=await Promise.all([loadPack(),loadOverlay()]);
   if(!overlay)return pack;
-  return validateActiveBooklet(applyReviewedOverlay(pack,overlay,course).pack,activeBookletMeta[course]);
+  const reviewed=applyReviewedOverlay(pack,overlay,course).pack;
+  return validateActiveBooklet(reviewed,activeBookletMeta[course]);
  };
 }
 const activeBookletLoaders={MOL:reviewedBookletLoader('MOL'),REN:reviewedBookletLoader('REN')};
-const activeBooklets={},bookletRequests={};
+const activeBooklets={},bookletRequests={},bookletErrors={},mockBanks={};
 function loadActiveBooklet(course){
- if(activeBooklets[course]||bookletRequests[course])return;
- bookletRequests[course]=activeBookletLoaders[course]().then(value=>{
+ if(activeBooklets[course])return Promise.resolve(activeBooklets[course]);
+ if(bookletRequests[course])return bookletRequests[course];
+ bookletErrors[course]=false;
+ return bookletRequests[course]=activeBookletLoaders[course]().then(value=>{
   activeBooklets[course]=value;window.reviewAutoRetry?.ok('booklet-'+course);
- }).catch(error=>{console.error(error);window.reviewAutoRetry?.schedule('booklet-'+course,()=>{if(view==='booklet'&&bookletCourse()===course)loadActiveBooklet(course)})}).finally(()=>{
+  return value;
+ }).catch(error=>{
+  bookletErrors[course]=true;
+  console.error(error);
+  window.reviewAutoRetry?.schedule('booklet-'+course,()=>{
+   if(view==='booklet'&&bookletCourse()===course||view==='practice'&&etPracticeTab==='mock'&&etMockScope===course)loadActiveBooklet(course);
+  });
+  return null;
+ }).finally(()=>{
   delete bookletRequests[course];
-  if(view==='booklet'&&bookletCourse()===course)render();
+  if(view==='booklet'&&bookletCourse()===course||view==='practice'&&etPracticeTab==='mock'&&etMockScope===course)render();
  });
 }
-// Existing exam and topic-practice keys keep their separate printed-key source.
-let renalPack,renalLoading,renalMockBank=[],renalError=false;
-function loadRenal(){
- if(renalPack)return Promise.resolve(renalPack);
- return renalLoading??=loadRenalBooklet().then(value=>{
-  const bank=value.questions.filter(q=>q.type==='mcq'&&!q.figures?.length).map(q=>({...q,lectureIds:['REN-Booklet'],kind:'Past paper · printed key',concept:q.discipline,reasons:Array.isArray(q.reasons)&&q.reasons.length===q.options.length?q.reasons:q.options.map(()=>''),preserveOptionOrder:true}));
-  renalPack=value;renalMockBank=bank;renalError=false;window.reviewAutoRetry?.ok('renal-practice');
-  if(view==='practice'&&window.reviewCourseScope==='REN')render();
-  return value;
- }).catch(error=>{renalLoading=null;console.error(error);window.reviewAutoRetry?.schedule('renal-practice',()=>loadRenal());return null;});
+function reviewedMockQuestions(course){
+ const pack=activeBooklets[course];
+ return pack?(mockBanks[course]??=bookletMockQuestions(pack,course,DATA.items,withQuestionContext)):[];
 }
-const renalPracticeQuestions=()=> {
- if(!renalPack&&!renalError)loadRenal();
- return renalMockBank;
+const renalPracticeQuestions=()=>{
+ if(!activeBooklets.REN&&!bookletErrors.REN)loadActiveBooklet('REN');
+ return reviewedMockQuestions('REN');
 };
+const bookletStatus=course=>bookletErrors[course]?'error':activeBooklets[course]?'ready':'loading';
 const bookletPack=()=>activeBooklets[bookletCourse()]||(bookletCourse()==='CVP'?pack:null);
 const startNav={filter:'unanswered',position:0};
 const navigationKey=()=>({REN:'renalNavigation',MOL:'molNavigation'})[bookletCourse()];
@@ -79,7 +84,7 @@ const source=renal?'<details class="renal-source-index"><summary>Full source boo
  '<li><a href="'+original+'#page=234" target="_blank" rel="noopener">Written cases ↗</a></li><li><a href="'+original+'#page=260" target="_blank" rel="noopener">Lab ↗</a></li></ul></details>':'';
 if(!pack){
  // Failed loads retry on their own (reviewAutoRetry); the panel only ever says it is loading.
- if(renal||mol){if(!window.reviewAutoRetry?.pending('booklet-'+bookletCourse()))loadActiveBooklet(bookletCourse())}else load();
+ if(renal||mol){if(!bookletErrors[bookletCourse()]&&!window.reviewAutoRetry?.pending('booklet-'+bookletCourse()))loadActiveBooklet(bookletCourse())}else load();
  return '<section class="panel" role="status">Loading booklet…'+source+'</section>';
 }
 const d=readBooklet(),{a,q,position}=current(d),completed=pack.questions.filter(q=>{const x=bookletEntry(q,d.booklet);return x?.completed&&x.correct!==false}).length;
@@ -97,11 +102,11 @@ function previousMarkup(){const d=read();return `<section class="panel"><h2>Prev
 function weakMarkup(){const archive=globalThis.reviewCourseScope==='CVP'||!globalThis.reviewCvpArchived?.();
  if(archive&&!pack){load();return '<section class="panel">Loading analytics…</section>'}
  const d=read(),rows=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),
-  archive?pack.questions:[...(activeBooklets.REN?.questions||renalPack?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP'));return `<section class="panel"><h2>Weak areas</h2><p>Graded MCQs, self-assessed short answers and eligible mocks.</p>${rows.slice(0,25).map(r=>`<p>${escapeHTML(r.id)} · ${r.correct}/${r.total} · ${Math.round(r.accuracy*100)}%</p>`).join('')||'<p>Complete questions to see weak areas.</p>'}<button id="p2weak" ${rows.length?'':'disabled'}>Practice weakest areas</button><details><summary>Question coverage in the current mock generator</summary><p>Lectures with no eligible question in the current generator pool:</p>${coverageAudit(DATA.items.filter(x=>archive?x.course==='CVP'||x.course==='MOL':x.course!=='CVP'),deduplicateQuestions(ExamEngine.pool(etBank(),'all','all'))).map(x=>`<p>${escapeHTML(x.id)} · ${escapeHTML(x.title)}</p>`).join('')||'<p>Every listed lecture has at least one eligible question.</p>'}<p>Mapping coverage does not guarantee that a generated mock will select every lecture.</p></details></section>`}
+  archive?pack.questions:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP'));return `<section class="panel"><h2>Weak areas</h2><p>Graded MCQs, self-assessed short answers and eligible mocks.</p>${rows.slice(0,25).map(r=>`<p>${escapeHTML(r.id)} · ${r.correct}/${r.total} · ${Math.round(r.accuracy*100)}%</p>`).join('')||'<p>Complete questions to see weak areas.</p>'}<button id="p2weak" ${rows.length?'':'disabled'}>Practice weakest areas</button><details><summary>Question coverage in the current mock generator</summary><p>Lectures with no eligible question in the current generator pool:</p>${coverageAudit(DATA.items.filter(x=>archive?x.course==='CVP'||x.course==='MOL':x.course!=='CVP'),deduplicateQuestions(ExamEngine.pool(etBank(),'all','all'))).map(x=>`<p>${escapeHTML(x.id)} · ${escapeHTML(x.title)}</p>`).join('')||'<p>Every listed lecture has at least one eligible question.</p>'}<p>Mapping coverage does not guarantee that a generated mock will select every lecture.</p></details></section>`}
 function weakPreview(){const d=read();const archive=globalThis.reviewCourseScope==='CVP'||!globalThis.reviewCvpArchived?.();
  if(archive&&!pack&&Object.keys(d.booklet||{}).length)load();
  const rows=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),
-  archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||renalPack?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP')).filter(x=>!x.id.startsWith('Discipline: ')).slice(0,3);if(!rows.length)return '';return `<section class="panel"><h2>Weakest lectures</h2>${rows.map(r=>`<p>${escapeHTML(r.id)} · ${Math.round(r.accuracy*100)}% (${r.correct}/${r.total})</p>`).join('')}<button id="p2weak" class="primary">Practice weakest lectures</button></section>`}
+  archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP')).filter(x=>!x.id.startsWith('Discipline: ')).slice(0,3);if(!rows.length)return '';return `<section class="panel"><h2>Weakest lectures</h2>${rows.map(r=>`<p>${escapeHTML(r.id)} · ${Math.round(r.accuracy*100)}% (${r.correct}/${r.total})</p>`).join('')}<button id="p2weak" class="primary">Practice weakest lectures</button></section>`}
 const practiceCards=[
  ['mock','Timed mock','Generate an exam and practice against the clock.','timer'],
  ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
@@ -134,7 +139,7 @@ function practiceStart(){
   <div class="practice-start-actions">${practiceCards.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div>
  </div>`;
 }
-export function install(){if(installed)return;installed=true;window.reviewRenalPracticeQuestions=renalPracticeQuestions;window.reviewRenalPracticeLoadStatus=()=>renalError?'error':renalPack?'ready':'loading';installFormulas();
+export function install(){if(installed)return;installed=true;window.reviewRenalPracticeQuestions=renalPracticeQuestions;window.reviewRenalPracticeLoadStatus=()=>bookletStatus('REN');window.reviewLoadMockBooklet=loadActiveBooklet;window.reviewMockBookletStatus=bookletStatus;window.reviewMockBookletQuestions=reviewedMockQuestions;installFormulas();
  window.reviewResetPracticePage=()=>{selected='main';};
  practice=function(){
   if(selected!=='main'&&!toolAvailable(selected))selected='main';
@@ -144,12 +149,12 @@ export function install(){if(installed)return;installed=true;window.reviewRenalP
   return practiceNavigation(practiceTools.get(tool)?.[1]||'Practice',markup);
  };
  document.addEventListener('click',e=>{if(e.target.closest('[data-et-tab],button[data-view=practice]'))selected='main'},true);
- loadCapabilities();window.addEventListener('review-admin-role',e=>{if(typeof e.detail?.admin==='boolean'){admin=e.detail.admin;if(!admin&&selected==='weak')selected='main';if(view==='practice')render()}});window.addEventListener('focus',()=>{if(admin===null)loadCapabilities()});window.Phase2Practice={booklet:()=>'<div class="phase2-booklet">'+practiceBack()+bookMarkup()+'</div>',startRetry(snapshot){selected='main';window.Phase2Exam.start(snapshot.questions,snapshot.questions.length,snapshot.minutes||60,{scope:'Retry · '+(snapshot.scope||'Mock'),accurate:snapshot.accurate,selectedLessons:snapshot.selectedLessons,parentMockId:snapshot.parentMockId||snapshot.id},true)},startWeighted(pool){if(window.reviewAdmin!==true)return;const course=etMockScope==='CVP'?'CVP':'MOL';pool=pool.filter(q=>q.lectureIds?.length&&q.lectureIds.every(id=>id.startsWith(course+'-')));selected='main';const count=Math.min(100,pool.length);if(!count){toast('No eligible questions found.');return}window.Phase2Exam.start(pool.slice(0,count),count,Math.max(1,count),{scope:'Weak areas'})},cancelMock(exam){try{const d=read(),parent=exam.parentMockId||exam.id;if(!(d.mocks||[]).some(m=>m.id===parent&&(m.attempts||[m.snapshot]).some(a=>a?.id===exam.id)))return true;const cancelled={...exam,answers:{},flags:{},xp:{},finishedAt:new Date().toISOString(),reason:'cancelled',excludedLowScore:true,cancelled:true,trackerRecorded:true};delete cancelled.receipt;d.mocks=updateSnapshot(d.mocks,cancelled,true).list;return write(d,false)}catch{return false}},recordMock(exam){if(admin===null)loadCapabilities();try{const d=read(),result=updateSnapshot(d.mocks,exam,true);d.mocks=result.list;const ok=write(d);if(!ok)toast('Full mock snapshot was not saved. Export this exam before starting another.');return ok}catch(e){toast('Could not save mock snapshot: '+e.message);return false}},deduplicateQuestions};
+ loadCapabilities();window.addEventListener('review-admin-role',e=>{if(typeof e.detail?.admin==='boolean'){admin=e.detail.admin;if(!admin&&selected==='weak')selected='main';if(view==='practice')render()}});window.addEventListener('focus',()=>{if(admin===null)loadCapabilities()});window.Phase2Practice={booklet:()=>'<div class="phase2-booklet">'+practiceBack()+bookMarkup()+'</div>',startRetry(snapshot){selected='main';window.Phase2Exam.start(snapshot.questions,snapshot.questions.length,snapshot.minutes||60,{scope:'Retry · '+(snapshot.scope||'Mock'),accurate:snapshot.accurate,selectedLessons:snapshot.selectedLessons,parentMockId:snapshot.parentMockId||snapshot.id},true)},startWeighted(pool){if(window.reviewAdmin!==true)return;const course=etMockScope;pool=pool.filter(q=>q.lectureIds?.length&&q.lectureIds.every(id=>id.startsWith(course+'-')));selected='main';const count=Math.min(100,pool.length);if(!count){toast('No eligible questions found.');return}window.Phase2Exam.start(pool.slice(0,count),count,Math.max(1,count),{scope:'Weak areas'})},cancelMock(exam){try{const d=read(),parent=exam.parentMockId||exam.id;if(!(d.mocks||[]).some(m=>m.id===parent&&(m.attempts||[m.snapshot]).some(a=>a?.id===exam.id)))return true;const cancelled={...exam,answers:{},flags:{},xp:{},finishedAt:new Date().toISOString(),reason:'cancelled',excludedLowScore:true,cancelled:true,trackerRecorded:true};delete cancelled.receipt;d.mocks=updateSnapshot(d.mocks,cancelled,true).list;return write(d,false)}catch{return false}},recordMock(exam){if(admin===null)loadCapabilities();try{const d=read(),result=updateSnapshot(d.mocks,exam,true);d.mocks=result.list;const ok=write(d);if(!ok)toast('Full mock snapshot was not saved. Export this exam before starting another.');return ok}catch(e){toast('Could not save mock snapshot: '+e.message);return false}},deduplicateQuestions};
  document.addEventListener('keydown',e=>{if(view!=='booklet'||e.metaKey||e.ctrlKey||e.altKey||(e.repeat&&!['ArrowUp','ArrowDown'].includes(e.key))||e.target.closest('textarea,select,[contenteditable=true],input:not([type=radio]):not([type=checkbox])')||document.querySelector('dialog[open]'))return;let button;if(/^[a-e1-5]$/i.test(e.key)){const n=/^[1-5]$/.test(e.key)?Number(e.key)-1:e.key.toUpperCase().charCodeAt(0)-65;document.querySelectorAll('input[name=p2answer]')[n]?.click();e.preventDefault();return}if(['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const choices=[...document.querySelectorAll('input[name=p2answer]:not(:disabled)')];if(choices.length){const at=choices.findIndex(x=>x.checked),n=at<0?(e.key==='ArrowDown'?0:choices.length-1):(at+(e.key==='ArrowDown'?1:-1)+choices.length)%choices.length;choices[n].click();choices[n].focus({preventScroll:true})}return}if(e.key==='ArrowRight'){e.preventDefault();button=document.querySelector('input[name=p2answer]:checked')?document.getElementById('p2check')||document.getElementById('p2next'):document.getElementById('p2next')}if(e.key==='ArrowLeft')button=document.getElementById('p2prev');if(e.key==='Enter')button=document.getElementById('p2check')||document.getElementById('p2next');if(button&&!button.disabled){e.preventDefault();button.click()}});
  document.addEventListener('input',e=>{if(e.target.id!=='p2written'||!bookletPack())return;const d=readBooklet(),{q}=current(d);if(!q)return;d.booklet??={};d.booklet[q.id]={...d.booklet[q.id],answer:e.target.value,at:new Date().toISOString()};writeBooklet(d)});
  document.addEventListener('change',e=>{if(e.target.name==='p2answer'&&bookletPack()){const d=readBooklet(),{q}=current(d);if(q){d.booklet??={};d.booklet[q.id]={...d.booklet[q.id],answer:Number(e.target.value),...(q.choiceRevision?{choiceRevision:q.choiceRevision}:{}),at:new Date().toISOString()};writeBooklet(d)}}if(e.target.dataset.bookletMode&&bookletPack()){const d=readBooklet(),key=e.target.dataset.bookletMode;if(!['bookletRandom','bookletIncludeSAQ','bookletIncludeOSPE','bookletIncludeMCQ'].includes(key))return;d[key]=e.target.checked;if(key==='bookletRandom'&&d[key])randomizeBooklet(bookletPack().questions,d);delete d.bookletFeedbackId;delete d.bookletViewId;d.bookletHistory=[];d.bookletForward=[];d.bookletQueue=[];d.position=0;writeBooklet(d);render();return}if(e.target.id==='p2filter'||e.target.id==='bookletDiscipline'){const d=readBooklet();delete d.bookletFeedbackId;delete d.bookletViewId;d.bookletForward=[];d.bookletHistory=[];if(e.target.id==='bookletDiscipline')d.bookletDiscipline=e.target.value;else d.filter=e.target.value;d.position=0;writeBooklet(d);render()}});
  document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.p2Tab){if(b.dataset.p2Tab==='weak'&&window.reviewAdmin!==true)return;selected=b.dataset.p2Tab;render();return}if(b.dataset.p2Export){const m=(read().mocks||[]).find(x=>x.id===b.dataset.p2Export);if(m)downloadJSON({app:'alfaisal-review-studio-saved-mock',mock:m},'saved-mock-'+m.id+'.json');return}if(b.dataset.p2Delete){if(!confirm('Delete this saved mock and its snapshot?'))return;const d=read();d.mocks=(d.mocks||[]).filter(x=>x.id!==b.dataset.p2Delete);d.deletedMocks??={};d.deletedMocks[b.dataset.p2Delete]=new Date().toISOString();write(d);render();return}if(b.dataset.p2Retry){const m=(read().mocks||[]).find(x=>x.id===b.dataset.p2Retry);if(m&&(!globalThis.reviewArchivedStudyItem?.(m.snapshot)||globalThis.reviewCourseScope==='CVP')&&window.Phase2Practice.startRetry){try{window.Phase2Practice.startRetry(clone(m.snapshot))}catch(err){toast(err.message)}}else toast('Retry is unavailable.');return}if(b.id==='p2weak'){if(window.reviewAdmin!==true)return;const archive=globalThis.reviewCourseScope==='CVP'||!globalThis.reviewCvpArchived?.();
- if(archive&&!pack)await load();const d=read(),weak=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||renalPack?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items),wrong=StudyVault.read('wrongBank',{entries:[]}).entries.filter(x=>globalThis.reviewStudyItemVisible?.(x.question)!==false);const pool=rankWeakQuestions([...wrong.map(x=>x.question),...etMockPool()],weak,wrong);if(window.Phase2Practice.startWeighted){try{window.Phase2Practice.startWeighted(pool)}catch(err){toast(err.message)}}else toast('Weak-area mock is unavailable.');return}if(b.id==='renalMockRetry'){renalError=false;loadRenal();render();return}if(b.id==='renalBookletRetry'){loadActiveBooklet(bookletCourse());return}const booklet=bookletPack();if(!booklet||view!=='booklet')return;const d=readBooklet(),{a,q}=current(d);if(!q)return;d.booklet??={};
+ if(archive&&!pack)await load();const d=read(),weak=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items),wrong=StudyVault.read('wrongBank',{entries:[]}).entries.filter(x=>globalThis.reviewStudyItemVisible?.(x.question)!==false);const pool=rankWeakQuestions(etMockPool(),weak,wrong);if(window.Phase2Practice.startWeighted){try{window.Phase2Practice.startWeighted(pool)}catch(err){toast(err.message)}}else toast('Weak-area mock is unavailable.');return}if(b.id==='renalMockRetry'){loadActiveBooklet(etMockScope);render();return}if(b.id==='renalBookletRetry'){loadActiveBooklet(bookletCourse());return}const booklet=bookletPack();if(!booklet||view!=='booklet')return;const d=readBooklet(),{a,q}=current(d);if(!q)return;d.booklet??={};
  if(b.id==='p2flag'||b.id==='p2saveNote'){
   const old=bookletAnnotation(q,d.bookletAnnotations),at=new Date().toISOString();
   const note=document.querySelector('#p2note')?.value;

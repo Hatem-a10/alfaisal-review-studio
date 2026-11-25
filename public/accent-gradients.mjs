@@ -71,3 +71,7 @@ export function chosenGradient(settings){
  if(settings?.accentAuto!==false)return null;
  return gradientById(settings.accentPalette)||nearestGradient(settings.accent);
 }
+
+
+// Assessment colors use the same collection as the appearance picker.
+export const ASSESSMENT_GRADIENTS=['violet-dusk','ocean','sunset','lagoon','copper','emerald-sky','orchid','ember'];

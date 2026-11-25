@@ -3,8 +3,9 @@ import RENAL_MATERIALS from '../public/renal-materials.json';
 import ACTIVE_BOOKLETS from './active-booklet-assets.json';
 import RENAL_BOOKLET_ASSET from './renal-booklet-asset.json';
 import MOL_STUDY_ASSETS from '../public/mol-study-assets.json';
+import MICROSCOPE_ASSETS from './microscope-assets.json';
 import RENAL_ASSESSMENT_ASSETS from './renal-assessment-assets.json';
-const byPath=new Map<string,{path:string,size:number,sha:string}>([...SITE_ASSETS,...ACTIVE_BOOKLETS,...RENAL_MATERIALS,...RENAL_ASSESSMENT_ASSETS,RENAL_BOOKLET_ASSET,MOL_STUDY_ASSETS.booklet,MOL_STUDY_ASSETS.assessments,...MOL_STUDY_ASSETS.sources].map(x=>[x.path,x]));
+const byPath=new Map<string,{path:string,size:number,sha:string}>([...SITE_ASSETS,...ACTIVE_BOOKLETS,...RENAL_MATERIALS,...RENAL_ASSESSMENT_ASSETS,...MICROSCOPE_ASSETS,RENAL_BOOKLET_ASSET,MOL_STUDY_ASSETS.booklet,MOL_STUDY_ASSETS.assessments,...MOL_STUDY_ASSETS.sources].map(x=>[x.path,x]));
 export {SITE_ASSETS};
 export function integrityAssets(){return [...new Map([...byPath.values()].map(asset=>[asset.sha,asset])).values()]}
 export function assetFor(path:string){return byPath.get(path)}

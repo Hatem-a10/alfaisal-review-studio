@@ -1,7 +1,7 @@
 'use strict';
 const wrongBankKey=KEY+'-wrong-bank-v1';let wrongBank={entries:[],exams:[]};
 try{const v=JSON.parse(localStorage.getItem(wrongBankKey)||'null');if(v&&Array.isArray(v.entries)&&Array.isArray(v.exams)){wrongBank={...v};wrongBank.entries=v.entries.filter(x=>x&&ExamEngine.usable(x.question)&&typeof x.question.id==='string'&&(x.choice===null||Number.isInteger(x.choice)));wrongBank.exams=v.exams.filter(x=>typeof x==='string')}}catch{}
-function missedExamQuestions(exam){return exam?.finishedAt?exam.questions.map((q,i)=>({question:JSON.parse(JSON.stringify(q)),choice:Number.isInteger(exam.answers[i])?exam.answers[i]:null,examId:exam.id,missedAt:exam.finishedAt})).filter(x=>Number.isInteger(x.choice)&&x.choice!==x.question.answer):[]}
+function missedExamQuestions(exam){return exam?.finishedAt?exam.questions.map((q,i)=>({question:JSON.parse(JSON.stringify(q)),choice:Number.isInteger(exam.answers[i])?exam.answers[i]:null,examId:exam.id,missedAt:exam.finishedAt})).filter(x=>Number.isInteger(x.choice)&&!ExamEngine.isCorrect(x.question,x.choice)):[]}
 function saveMissedExam(exam){if(!exam?.finishedAt||exam.excludedLowScore||wrongBank.exams.includes(exam.id))return;const entries=new Map(wrongBank.entries.map(x=>[x.question.id,x]));for(const item of missedExamQuestions(exam)){const prev=entries.get(item.question.id);entries.set(item.question.id,{...item,misses:(prev?.misses||0)+1})}const next={...wrongBank,entries:[...entries.values()],exams:[...wrongBank.exams,exam.id]};wrongBank=next;try{localStorage.setItem(wrongBankKey,JSON.stringify(next))}catch{toast('Wrong-answer bank could not be saved on this device. Export it before closing.')}}
 function wrongExport(entries,label){return {app:'alfaisal-review-studio-wrong-answers',version:1,exportedAt:new Date().toISOString(),title:label,questions:entries.map(x=>({...x.question,lectureId:x.question.lectureIds[0],previousChoice:x.choice,previousChoiceText:x.choice===null?'Unanswered':x.question.options[x.choice],missedAt:x.missedAt,misses:x.misses||1}))}}
 function wrongEntriesInView(){return wrongBank.entries.filter(entry=>globalThis.reviewStudyItemVisible?.(entry.question)!==false)}
@@ -18,7 +18,7 @@ function wrongReviewResult(entry,correct,at=new Date().toISOString()){
 }
 function updateWrongReview(set){
  if(!set?.wrongReview||!set.finished||set.wrongReviewSaved)return;
- const reviewed=new Map(set.questions.map((q,i)=>[q.id,{correct:set.answers[i]===q.answer,missedAt:set.wrongReviewMisses?.[q.id]}]));
+ const reviewed=new Map(set.questions.map((q,i)=>[q.id,{correct:ExamEngine.isCorrect(q,set.answers[i]),missedAt:set.wrongReviewMisses?.[q.id]}]));
  const at=new Date().toISOString();
  const entries=wrongBank.entries.map(entry=>{const result=reviewed.get(entry.question.id);return result&&result.missedAt===entry.missedAt?{...entry,review:wrongReviewResult(entry,result.correct,at)}:entry;});
  const next={...wrongBank,entries};try{localStorage.setItem(wrongBankKey,JSON.stringify(next));wrongBank=next;set.wrongReviewSaved=true}catch{toast('Could not save resurfacing dates; your bank remains available.')}

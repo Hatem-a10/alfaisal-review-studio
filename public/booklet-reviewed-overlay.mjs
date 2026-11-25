@@ -38,6 +38,7 @@ export function applyReviewedOverlay(pack,overlay,course){
   if(overlay.version===2){
    next.choiceRevision='reviewed-v2';
    next.previousOptions=q.options;
+   if(next.question!==q.question)next.previousQuestion=q.question;
   }
   delete next.sourceIssue;
   return next;

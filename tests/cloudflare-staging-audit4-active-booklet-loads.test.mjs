@@ -24,14 +24,20 @@ test('a stalled request is aborted and can be retried',async()=>{
  const load=bookletLoader('/pack',metadata,{timeout:10,fetcher:async(url,{signal})=>{if(++calls===1)return new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Error('timeout')),{once:true}));return {ok:true,json:async()=>pack}}});
  await assert.rejects(load(),/timeout/);assert.equal(await load(),pack);
 });
-test('REN loader publishes only a complete mock bank and retries a failed load on its own',async()=>{
+test('booklet and mock share one reviewed load, retry failure, and publish only a complete bank',async()=>{
  const s=readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
- const start=s.indexOf('let renalPack,'),end=s.indexOf('const bookletPack=',start);
- let calls=0,renders=0;const ctx={loadRenalBooklet:async()=>{if(++calls===1)throw Error('offline');return pack},view:'booklet',bookletCourse:()=> 'MOL',window:{reviewCourseScope:'MOL',reviewAutoRetry:{schedule:(key,run)=>scheduled.push([key,run]),ok(){}}},render:()=>renders++,toast:()=>{},console:{error(){}}};const scheduled=[];
- const api=runInNewContext(s.slice(start,end)+'\n({loadRenal,renalPracticeQuestions,error:()=>renalError,pack:()=>renalPack})',ctx);
- await api.loadRenal();assert.equal(api.error(),false);assert.equal(api.pack(),undefined);assert.equal(renders,0);assert.equal(scheduled[0]?.[0],'renal-practice');
- ctx.view='practice';ctx.window.reviewCourseScope='REN';await scheduled[0][1]();assert.equal(api.error(),false);assert.equal(api.renalPracticeQuestions().length,1);assert.equal(renders,1);
- assert.doesNotMatch(readFileSync(new URL('../public/exam-tools.js',import.meta.url),'utf8'),/Renal questions could not load/);
+ const start=s.indexOf('const activeBooklets={}'),end=s.indexOf('const bookletPack=',start);
+ let calls=0,renders=0;
+ const scheduled=[],ctx={activeBookletLoaders:{REN:async()=>{if(++calls===1)throw Error('offline');return pack}},DATA:{items:[]},withQuestionContext(){},bookletMockQuestions:p=>p.questions,
+  view:'booklet',etPracticeTab:'mock',etMockScope:'REN',bookletCourse:()=> 'MOL',
+  window:{reviewAutoRetry:{schedule:(key,run)=>scheduled.push([key,run]),ok(){}}},render:()=>renders++,console:{error(){}}};
+ const api=runInNewContext(s.slice(start,end)+'\n({loadActiveBooklet,reviewedMockQuestions,bookletStatus})',ctx);
+ const one=api.loadActiveBooklet('REN');
+ assert.equal(api.loadActiveBooklet('REN'),one);assert.equal(await one,null);
+ assert.equal(api.bookletStatus('REN'),'error');assert.equal(api.reviewedMockQuestions('REN').length,0);assert.equal(renders,0);
+ ctx.view='practice';assert.equal(scheduled[0][0],'booklet-REN');scheduled[0][1]();
+ assert.equal(await api.loadActiveBooklet('REN'),pack);
+ assert.equal(calls,2);assert.equal(api.bookletStatus('REN'),'ready');assert.equal(api.reviewedMockQuestions('REN').length,1);assert.equal(renders,1);
 });
 
 test('deduplicated packs enforce the declared MCQ inventory and allow review-only questions',()=>{
