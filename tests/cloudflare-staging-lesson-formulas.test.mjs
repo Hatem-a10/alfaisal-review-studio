@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {renalFormulas} from '../public/renal-formulas.mjs';import {problems} from '../public/formulas-data.mjs';import {renalTeachingPack} from '../public/renal-lessons.mjs';import {lessonFormulas} from '../public/lesson-formula-drills.mjs';
+test('every renal drill matches a reviewed topic and source page and generates finite unit-bearing answers',()=>{
+ const pack=renalTeachingPack();for(const f of renalFormulas){const section=pack.guides[f.lecture]?.sections.find(s=>s.id===f.topic);assert.ok(section,f.id);assert.ok(section.references.some(r=>r.page===f.page),f.id);for(let round=0;round<30;round++)for(const p of problems(f,round)){assert.ok(Number.isFinite(p.answer),f.id);assert.ok(f.vars[p.target].includes(' · '));assert.ok(p.givens.every(([key,value])=>f.vars[key]&&Number.isFinite(value)));}}
+ assert.ok(lessonFormulas('REN-P2','REN-P2-clearance').every(f=>f.topic==='REN-P2-clearance'));assert.equal(lessonFormulas('REN-A1').length,0);assert.ok(lessonFormulas('CVP-P6').length>0);
+});

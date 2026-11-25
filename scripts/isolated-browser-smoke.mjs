@@ -38,7 +38,7 @@ try{
    await page.goto(origin+'/');await page.waitForURL('**/staging/signin**');
    await page.getByLabel('Email').fill(accounts[0].email);await page.getByLabel('Password').fill(password);
    await page.getByRole('button',{name:/sign in/i}).click();
-   await page.waitForURL(url=>url.origin===origin&&url.pathname==='/',{timeout:30000,waitUntil:'domcontentloaded'});
+   await page.waitForURL(url=>url.origin===origin&&['/','/index.html'].includes(url.pathname),{timeout:30000,waitUntil:'domcontentloaded'});
    const session=await context.request.get(origin+'/staging/session');assert.equal((await session.json()).authenticated,true);
    await page.locator('html[data-boot="ready"]').waitFor({timeout:60000});await page.locator('#content').waitFor({state:'visible'});
    assert.ok((await page.locator('#content').innerText()).trim().length>0,'Dashboard is empty.');
