@@ -67,6 +67,10 @@ function __reviewMergeKeys(path,target,entries){
  window.reviewLoadedCourses=()=>Object.keys(packs).filter(has);
  if(!Object.keys(packs).length)return;
 
+ function courseLoadingMarkup(courses){
+  const safe=courses.filter(c=>typeof c==='string'&&/^[A-Z]{2,6}$/.test(c)).slice(0,4).join(' and ');
+  return '<section class="panel course-load-shell" role="status" aria-live="polite" aria-busy="true"><h2>Opening '+esc(safe)+' study content</h2><p>Loading verified course materials. Your saved progress remains on this device.</p><div class="course-load-skeleton" aria-hidden="true"><div class="course-load-title"></div><div class="course-load-row"></div><div class="course-load-row short"></div><div class="course-load-row"></div><div class="course-load-row short"></div></div></section>';
+ }
  // Views that show no course content render without any pack.
  const noContent=new Set(['dashboard','planner','calendar','countdowns','grades','activity','methods','anatomy','index']);
  const everything=new Set(['weakness','wrong-bank','sources','search']);
@@ -97,7 +101,7 @@ function __reviewMergeKeys(path,target,entries){
   const content=document.getElementById('content'),key=view+':'+need.join(',');
   const error=need.map(c=>failed[c]).find(Boolean);
   if(error){painted='';if(content)content.innerHTML='<section class="panel notice" role="alert">'+esc(error.message)+' <button id="reloadForCourse" class="primary">Reload</button></section>';return}
-  if(content&&painted!==key){painted=key;content.innerHTML='<section class="panel notice" role="status">Loading '+esc(need.join(' and '))+' content…</section>'}
+  if(content&&painted!==key){painted=key;content.innerHTML=courseLoadingMarkup(need)}
   ensure(need).then(()=>{if(run!==renderRequest)return;painted='';render()},e=>{if(run!==renderRequest)return;painted='';if(content){const fatal=need.some(c=>failed[c]);content.innerHTML='<section class="panel notice" role="alert">'+esc(e.message)+(fatal?' <button id="reloadForCourse" class="primary">Reload</button>':' <button id="retryCourse">Try again</button>')+'</section>'}});
  };
  async function reloadCourse(button){
