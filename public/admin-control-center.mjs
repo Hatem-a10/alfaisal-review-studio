@@ -310,9 +310,9 @@ export async function openAdminCenter(){
    cards([['Registered files',record.files],['Registered file bytes',bytes(record.registeredBytes)],['Database progress row',bytes(record.progressRowBytes)],['R2 objects',record.objects],['R2 bytes'+(record.partial?' (partial)':''),bytes(record.r2Bytes)]]),
   ],'Done',()=>true);
  }
- async function students(roleOnly=false, params=new URLSearchParams(), page=0,version=viewVersion){
+ async function students(roleOnly=false, params=new URLSearchParams(), page=0,version=viewVersion,cursors=[null]){
   const values=Object.fromEntries(params);
-  const data=await request((roleOnly?'roles':'students')+'/list'+query({...values,page}));
+  const data=await request((roleOnly?'roles':'students')+'/list'+query({...values,page,...(cursors[page]?{cursor:cursors[page]}:{})}));
   if(version!==viewVersion)return;
   panel.replaceChildren(searchBar([
    field('q','Name or verified email',{value:values.q}),
@@ -360,7 +360,12 @@ export async function openAdminCenter(){
    list.append(...rows);
    panel.append(list);
   }else panel.append(node('p','No accounts match these filters.',{class:'acc-empty'}));
-  appendPager(page,data.more,n=>within(()=>students(roleOnly,params,n,version)));
+  appendPager(page,!!data.nextCursor,n=>{
+   if(n<0)return;
+   if(n>page&&!data.nextCursor)return;
+   const history=n>page?[...cursors.slice(0,page+1),data.nextCursor]:cursors;
+   within(()=>students(roleOnly,params,n,version,history));
+  });
  }
  async function academics(version){
   const current=await request('academics/config');

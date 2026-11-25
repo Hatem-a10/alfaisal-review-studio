@@ -16,3 +16,6 @@ CREATE TABLE IF NOT EXISTS review_managed_admin_rate (
  window INTEGER NOT NULL,
  attempts INTEGER NOT NULL
 );
+
+-- Additive index for keyset student navigation; apply with the existing managed-account schema.
+CREATE INDEX IF NOT EXISTS review_accounts_created_id_idx ON review_accounts(created_at DESC,id ASC);
