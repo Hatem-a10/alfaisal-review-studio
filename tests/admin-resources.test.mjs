@@ -208,3 +208,19 @@ test('archive and integrity operations retain R2 objects and return broken-link 
   assert.equal(check.links[0].integrity, 'missing');
   assert.equal(log.puts.length, 0, 'integrity checks are read-only');
 });
+
+test('backup receipt status returns environment-scoped metadata only and never the encrypted object bytes',async()=>{
+ const {env}=mockEnv(),original=env.DB.prepare;
+ env.DB.prepare=function(sql){
+  const stmt=original(sql);
+  if(sql.includes('FROM admin_backup_receipts'))stmt.all=async()=>({results:[{id:'receipt-synthetic',provider:'cloudflare',completedAt:'2026-11-25T10:00:00Z',status:'verified',componentsJson:'{"D1":"ok","R2":"ok"}',verificationRef:'sha256:synthetic'}]});
+  return stmt;
+ };
+ const req=new Request('https://staging.example/api/control-center/storage/summary');
+ const response=await resourceAdmin({request:req,env,user:'owner-account',role:'owner',section:'storage',action:'summary'});
+ assert.equal(response.status,200);
+ const data=await response.json();assert.equal(data.environment,'staging');assert.equal(data.backups.status,'verified');assert.equal(data.backups.receipts.length,1);
+ assert.deepEqual(data.backups.receipts[0].components,{D1:'ok',R2:'ok'});
+ assert.equal(Object.hasOwn(data.backups.receipts[0],'backupBytes'),false);
+ assert.equal((await resourceAdmin({request:req,env,user:'student-account',role:'student',section:'storage',action:'summary'})).status,403);
+});
