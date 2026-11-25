@@ -36,7 +36,7 @@ try{
    const anonymous=await context.request.get(origin+'/api/progress',{headers:{'oai-authenticated-user-id':'forged'}});assert.equal(anonymous.status(),401);
    const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
    await page.goto(origin+'/');await page.waitForURL('**/staging/signin**');
-   await page.getByLabel('Email').fill(accounts[0].email);await page.getByLabel('Password').fill(password);
+   await page.getByLabel('Email').fill(accounts[engine===chromium?0:1].email);await page.getByLabel('Password').fill(password);
    await page.getByRole('button',{name:/sign in/i}).click();
    await page.waitForURL(url=>url.origin===origin&&['/','/index.html'].includes(url.pathname),{timeout:30000,waitUntil:'domcontentloaded'});
    const session=await context.request.get(origin+'/staging/session');assert.equal((await session.json()).authenticated,true);
