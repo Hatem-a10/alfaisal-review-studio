@@ -6,14 +6,15 @@ const baseline="async function ankiSrcdoc(card,back){for(const url of ankiUrls)U
 const ankiSource=readFileSync(new URL('../public/anki.js',import.meta.url),'utf8');
 const candidate=ankiSource.split('\n').find(line=>line.startsWith('async function ankiSrcdoc('));
 const sanitizerHelper=ankiSource.slice(ankiSource.indexOf('const ankiPlainFaceCache='),ankiSource.indexOf('function ankiSafeHtml('));
+const cacheHelper=ankiSource.slice(ankiSource.indexOf('const ankiMediaTextCache='),ankiSource.indexOf('function ankiRevealCurrent('));
 function fixture(source,back=false,occlusion=false){
  const reads=[],revoked=[],urls=[];
  class FakeURL extends URL{static revokeObjectURL(url){revoked.push(url)}}
  class Reader{readAsDataURL(blob){reads.push(blob);this.result='data:image/png;base64,'+blob;this.onload?.()}}
  const card={stock:occlusion?6:0,fields:{front:'[front.png]',back:'[back.png]',hidden:'[unused.jpg]'},fieldValues:occlusion?['{{c1::image-occlusion:rect:front.png}}']:[],css:'body{background:url(shared.png)}',template:{qfmt:'<img src="front.png">',afmt:'<img src="back.png">'}};
  const media={'front.png':'FRONT','back.png':'BACK','unused.jpg':'UNUSED','shared.png':'SHARED','auxiliary image.png':'AUX'};
- const ctx=vm.createContext({card,ankiUrls:urls,ankiDeck:{media},ankiTyped:'',ankiBg:null,settings:{theme:'light'},location:{href:'https://example.test/practice'},URL:FakeURL,FileReader:Reader,esc:String,crypto:{getRandomValues:x=>{x.fill(3);return x}},ankiSafeHtml:(html,dict)=>html.replace(/src="([^"]+)"/g,(_,name)=>'src="'+(dict[name]||name)+'"'),ankiIo:()=>'<img src="front.png">',AnkiEngine:{template:(card,back)=>back?card.template.afmt:card.template.qfmt}});
- vm.runInContext((source===candidate?sanitizerHelper:'')+source+'\nthis.renderCard=ankiSrcdoc',ctx);
+ const ctx=vm.createContext({card,ankiUrls:urls,ankiAccount:()=> 'fixture',ankiDeck:{media},ankiTyped:'',ankiBg:null,settings:{theme:'light'},location:{href:'https://example.test/practice'},URL:FakeURL,FileReader:Reader,esc:String,crypto:{getRandomValues:x=>{x.fill(3);return x}},ankiSafeHtml:(html,dict)=>html.replace(/src="([^"]+)"/g,(_,name)=>'src="'+(dict[name]||name)+'"'),ankiIo:()=>'<img src="front.png">',AnkiEngine:{template:(card,back)=>back?card.template.afmt:card.template.qfmt}});
+ vm.runInContext((source===candidate?sanitizerHelper+cacheHelper:'')+source+'\nthis.renderCard=ankiSrcdoc',ctx);
  return {run:()=>ctx.renderCard(card,back),reads,revoked};
 }
 test('A5-176 Anki visible card face contains exactly the same sanitized markup',async()=>{
