@@ -1,0 +1,5 @@
+# Staging progress-object retention
+
+The staging daily cron reports candidates among a rotating batch of accounts with D1 progress rows. It retains every current reference, the three newest recognized objects per account, all objects under 90 days old and any account with uncertain/malformed state or truncated inventory. Only UUID-named progress snapshots are considered; uploaded materials, academic files and backups are excluded. Candidate reports contain aggregate counts, not account identifiers.
+
+Deletion is **off by default**. Enabling `REVIEW_STUDIO_RETENTION_DELETE=1` is a separate owner-approved staging operation after verified hosted backup/restore, review of dry-run reports, and coordination with restore/rollback operations. An enabled run rechecks D1 revision and pointer, then R2 object metadata, before deleting at most ten candidates. Disable the job before restoring historical pointers. Production is not scheduled or modified. Never enable deletion without confirming backup retention meets the recovery window.
