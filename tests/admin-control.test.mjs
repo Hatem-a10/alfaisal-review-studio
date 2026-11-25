@@ -298,3 +298,16 @@ test('owner audit filters are parameterized and preserve last-90-day boundary',a
  assert.equal((await h.call('audit?action=student.%27%20OR%201%3D1',owner)).status,400);
  assert.equal((await h.call('audit?q=student-one',student)).status,403);
 });
+
+test('owner system health is read-only, probes real bindings, and never exposes account identifiers',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const seen=[];h.env.BUCKET={async list(options){seen.push(options);return {objects:[],truncated:false}}};
+ const result=await h.call('analytics/health',owner),body=await result.json();
+ assert.equal(result.status,200);assert.equal(body.database,'reachable');assert.equal(body.storage,'reachable');
+ assert.equal(body.clerkSession,'verified for this request');
+ assert.equal(body.cpu,'not instrumented');assert.deepEqual(seen,[{prefix:'__health_probe_read_only__/',limit:1}]);
+ assert.doesNotMatch(JSON.stringify(body),/owner@example\.test|user_student|phrase/);
+ assert.equal((await h.call('analytics/health',student)).status,403);
+ assert.equal((await h.call('analytics/health',editor)).status,403);
+ delete h.env.BUCKET;const missing=await(await h.call('analytics/health',owner)).json();assert.equal(missing.storage,'unavailable');
+});
