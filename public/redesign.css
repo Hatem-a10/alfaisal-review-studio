@@ -693,5 +693,5 @@ html:root body:not(.xp-exam-active) .schedule-page .schedule-legend{gap:8px 16px
  html:root body:not(.xp-exam-active) .schedule-page .campus-agenda-card{display:grid;justify-items:start;gap:4px;padding:12px 14px;text-align:start;overflow-wrap:anywhere}
  html:root body:not(.xp-exam-active) .schedule-page:has(.schedule-agenda-primary) .schedule-day-details .campus-agenda:not(:has(.untimed-events)),
  html:root body:not(.xp-exam-active) .schedule-page:has(.schedule-agenda-primary) .schedule-day-details .campus-agenda:has(.untimed-events)>:not(.untimed-events){display:none}
- html:root body:not(.xp-exam-active) .schedule-page .schedule-hero{align-items:start}
+ html:root body:not(.xp-exam-active) .schedule-page #expandSchedule{display:none}
 }
