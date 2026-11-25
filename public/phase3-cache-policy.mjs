@@ -16,10 +16,13 @@ export function prioritizeOfflineAssets(paths){
 }
 export const MAX_CACHE_BYTES=12000000;
 export function privateCacheName(account){if(!validAccount(account))throw Error('Invalid cache account');return 'review-studio-sw-private:student:'+account}
+export const offlineCourseIds=Object.freeze(['REN','MOL']);
+export function courseCacheName(account,course){if(!validAccount(account)||!offlineCourseIds.includes(course))throw Error('Invalid offline course');return 'review-studio-sw-private:course:'+account+':'+course}
+export function offlineCoursePath(course,path){const prefix=course==='REN'?'ren123':course==='MOL'?'mol114':null;return !!prefix&&typeof path==='string'&&path.startsWith('/api/site-assets/materials/'+prefix+'/')&&!/[?#\\]/.test(path)&&!path.split('/').some(p=>p==='.'||p==='..')}
 export function privateCacheNames(names,account){
  if(!validAccount(account))return [];
  const current=privateCacheName(account),legacy=names.filter(name=>/^review-studio-sw-v\d+\.\d+:student:[a-f0-9]{64}$/.test(name)&&name.endsWith(':student:'+account));
- return [current,...legacy.sort().reverse()];
+ const pinned=offlineCourseIds.map(course=>courseCacheName(account,course)).filter(name=>names.includes(name));return [current,...pinned,...legacy.sort().reverse()];
 }
 export function obsoleteCoreCache(name,release=RELEASE_CACHE){return /^review-studio-sw-v\d+\.\d+:core$/.test(name)&&name!==release+':core'}
 // Check the decoded bytes as well as the optional declared size; never consume the caller's stream.
