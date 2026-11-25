@@ -4,7 +4,7 @@ import {courses,lectureCourses} from './course-registry.mjs';
 import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,practicalResumeEntries,nextClass} from './study-next-core.mjs';
 
 const content=()=>document.getElementById('content');
-const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+import {escapeHTML as esc} from './html-escape.mjs';
 const label=code=>courses[code]?.label||code;
 const localTime=value=>Number.isFinite(Date.parse(value))?new Date(value).toLocaleString():'No successful sync yet';
 const itemById=id=>DATA.items.find(item=>item.id===id);

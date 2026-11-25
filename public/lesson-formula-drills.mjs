@@ -1,7 +1,7 @@
 import {formulas,problems,number} from './formulas-data.mjs';
 import {renalFormulas} from './renal-formulas.mjs';
 const all=[...formulas,...renalFormulas];
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+import {escapeHTML as esc} from './html-escape.mjs';
 const read=()=>storeOptions().lessonFormulaDrills||{rounds:{},answers:{}};
 const write=data=>saveOptions({...storeOptions(),lessonFormulaDrills:data});
 export const lessonFormulas=(lecture,topic)=>all.filter(f=>f.lecture===lecture&&(!f.topic||!topic||f.topic===topic));

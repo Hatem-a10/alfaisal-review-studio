@@ -9,7 +9,7 @@ import {createLongTaskMetrics} from './phase3-longtask-metrics.mjs';
 import {createApiTimingMetrics} from './phase3-api-metrics.mjs';
 let deckIdentity,links=new Map();
 const lectureCatalogChanged=createLectureChangeDetector();
-const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+import {escapeHTML as escape} from './html-escape.mjs';
 function matches(){const decks=typeof ankiDecks==='undefined'?null:ankiDecks,items=Array.isArray(DATA?.items)?DATA.items:[],changed=lectureCatalogChanged(items);if(deckIdentity!==decks||changed){deckIdentity=decks;links=matchDecks(items,decks)}return links}
 function visibleLecture(id){return typeof id==='string'&&!!lessonById(id)&&window.reviewStudyItemVisible?.({id,lectureIds:[id]})!==false}
 function actions(ids){const valid=[...new Set(Array.isArray(ids)?ids:[])].filter(visibleLecture);if(!valid.length)return '';return '<div class="phase3-context-links">'+valid.slice(0,2).map(id=>{const deck=matches().get(id)?.[0];return '<button type="button" data-p3-lecture="'+escape(id)+'">Open '+escape(id)+' lecture</button>'+(deck?'<button type="button" data-p3-cards="'+escape(id)+'">Practice '+deck.count+' Anki cards</button>':'')}).join('')+'</div>'}

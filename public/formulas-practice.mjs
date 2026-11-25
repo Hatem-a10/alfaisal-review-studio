@@ -1,5 +1,5 @@
 import {formulas,problems,number} from './formulas-data.mjs';
-const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+import {escapeHTML as escape} from './html-escape.mjs';
 let group='all',query='',openCard='';
 const read=()=>storeOptions().formulaPractice||{round:0,answers:{}};
 const write=value=>saveOptions({...storeOptions(),formulaPractice:value});
