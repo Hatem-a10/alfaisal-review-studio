@@ -43,6 +43,7 @@ test('Renal teaching concepts cover every objective and identify lecturer-confir
  for(const [id,guide] of Object.entries(guides)){
   const concepts=guide.sections.flatMap(section=>section.concepts);
   assert.equal(concepts.length,6,id);
+  assert.equal(guide.underDevelopment,!guide.sections.some(section=>section.transcript),id);
   assert.deepEqual(new Set(concepts.map(concept=>concept.objective)),new Set(guide.objectives),id);
   for(const concept of concepts){
    assert.ok(concept.references.length>0,id);

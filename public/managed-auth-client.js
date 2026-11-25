@@ -85,8 +85,8 @@
     const profile=await (await import('/student-profile.mjs?v=3')).setup({reset:true,...StudentProfile.reviewSetupContext()});
     if(!profile)return;
     await StudentProfile.addSetupReviews(profile);
-    const {profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime}=profile;
-    Object.assign(settings,{profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime});
+    const {profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime,reviewQueueHidden}=profile;
+    Object.assign(settings,{profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime,reviewQueueHidden});
     persist();
     const finish=await fetch(api+'reset-complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({resetId})});
     if(!finish.ok)throw Error('Profile saved on this device. Reconnect to finish the request.');

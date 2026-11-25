@@ -1,6 +1,6 @@
 export const activeBookletPaths=Object.freeze({
- MOL:'/api/site-assets/materials/mol114/interactive-booklet-v3.json',
- REN:'/api/site-assets/materials/ren123/interactive-booklet-v3.json',
+ MOL:'/api/site-assets/materials/mol114/interactive-booklet-v3-context.json',
+ REN:'/api/site-assets/materials/ren123/interactive-booklet-v3-context.json',
 });
 
 // The private source packs are versioned. Do not infer missing keys or mutate source data.

@@ -576,23 +576,30 @@ html:root body:not(.xp-exam-active) .booklet-actions{display:flex;gap:8px;flex-w
 html:root body:not(.xp-exam-active) .booklet-actions button{min-height:44px}
 html:root body:not(.xp-exam-active) .booklet-option-reasons>summary{font-size:1.08rem;font-weight:650;min-height:44px;align-content:center}
 
-#microscopeWorkspace .microscope-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(12rem,1fr);gap:14px;align-items:start}
+#microscopeWorkspace .microscope-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(16.5rem,1.25fr);gap:14px;align-items:start}
 #microscopeWorkspace .microscope-stage{height:clamp(290px,58dvh,720px);background:#101320;border-radius:12px;overflow:hidden}
 #microscopeWorkspace .microscope-library h3{margin:.9rem 0 .45rem}
-#microscopeWorkspace .microscope-library button{display:block;width:100%;text-align:left;margin-block:4px}
+#microscopeWorkspace .microscope-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13.5rem),1fr));gap:10px}
+#microscopeWorkspace .microscope-card{min-width:0;overflow:hidden;border:1px solid var(--rs-line);border-radius:12px;background:var(--rs-surface)}
+#microscopeWorkspace .microscope-card-cover{width:100%;padding:0;border:0;border-radius:0;text-align:start;background:transparent}
+#microscopeWorkspace .microscope-card-cover img{display:block;width:100%;height:auto;aspect-ratio:3 / 1;object-fit:contain;background:#e3e0df}
+#microscopeWorkspace .microscope-card-copy{display:grid;gap:.25rem;padding:.65rem .8rem}
+#microscopeWorkspace .microscope-card-copy small{color:var(--muted);white-space:normal}
+#microscopeWorkspace .microscope-scan-options{display:flex;gap:.35rem;flex-wrap:wrap;padding:0 .8rem .65rem}
+#microscopeWorkspace .microscope-scan-options button{min-height:36px}
+#microscopeWorkspace .microscope-card:has(button[aria-pressed=true]){border-color:var(--accent-border)}
 #microscopeWorkspace .microscope-library button[aria-pressed=true]{background:var(--rs-grad-tint);border-color:var(--accent-border)}
 #microscopeWorkspace .microscope-import{display:grid;margin-top:18px}
 @media(max-width:760px){#microscopeWorkspace .microscope-layout{grid-template-columns:minmax(0,1fr)}}
 
-.renal-concept{margin-block:1rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--rs-surface);border-inline-start:3px solid var(--accent-border)}
-.renal-concept h3{margin:0 0 .2rem}
-.renal-concept .concept-sources{margin-block-end:0}
-.renal-transcript-link{display:inline-block;margin-block:.5rem}
-.countdown-card[data-assessment-type] .countdown-type{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;font-weight:750;line-height:1.2}
-.countdown-card[data-assessment-type="exams"]{border-block-start:5px solid var(--st-b)}
-.countdown-card[data-assessment-type="exams"] .countdown-type{border-radius:5px;background:color-mix(in srgb,var(--st-b) 28%,var(--rs-surface))}
-.countdown-card[data-assessment-type="tbls"]{border-inline-start:5px solid var(--st-c);border-start-start-radius:7px}
-.countdown-card[data-assessment-type="tbls"] .countdown-type{border-radius:999px;background:color-mix(in srgb,var(--st-c) 24%,var(--rs-surface))}
-.countdown-card[data-assessment-type="ospe"]{border-block-end:5px double var(--st-c)}
-.countdown-card[data-assessment-type="ospe"] .countdown-type{border-radius:8px;border:1px dashed var(--st-c);background:color-mix(in srgb,var(--st-c) 12%,var(--rs-surface))}
-.countdown-card.countdown-featured[data-assessment-type] .countdown-type{background:rgb(0 0 0 /.28)}
+.home-feature-grid.home-feature-grid-wide{grid-template-columns:minmax(0,1fr)}
+html:root body:not(.xp-exam-active) .booklet-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;flex-wrap:wrap;margin-bottom:14px}
+html:root body:not(.xp-exam-active) .booklet-toolbar :is(.practice-back,.workspace-course-select){margin:0}
+html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{order:1;margin-inline-start:auto}
+.renal-concept{line-height:1.65}
+.coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
+html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessment-type="exams"]:not(.countdown-featured){background:linear-gradient(125deg,color-mix(in srgb,var(--accent) 20%,var(--rs-surface)),var(--rs-surface) 86%)}
+html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessment-type="tbls"]:not(.countdown-featured){background:linear-gradient(145deg,var(--rs-surface) 8%,color-mix(in srgb,var(--st-c) 15%,var(--rs-surface)) 88%)}
+html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessment-type="ospe"]:not(.countdown-featured){background:radial-gradient(ellipse at 50% 112%,color-mix(in srgb,var(--st-b) 28%,var(--rs-surface)),var(--rs-surface) 76%)}
+html:root body:not(.xp-exam-active) .countdown-card.countdown-featured[data-assessment-type="tbls"]{background:linear-gradient(145deg,var(--st-a),var(--st-b) 70%,color-mix(in srgb,var(--st-b),var(--st-c) 35%))}
+html:root body:not(.xp-exam-active) .countdown-card.countdown-featured[data-assessment-type="ospe"]{background:radial-gradient(ellipse at 55% 135%,var(--st-b),var(--st-a) 80%)}

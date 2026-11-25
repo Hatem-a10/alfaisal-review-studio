@@ -1,13 +1,28 @@
 [
   {
+    "path": "materials/ren123/microscope/capillaries-of-kidney-40x-cover.jpg",
+    "size": 20571,
+    "sha": "2a911f8d9cb82d9f206ae82ed93e330bdb01c78ea2d091cd02a1280f5a8554c1"
+  },
+  {
     "path": "materials/ren123/microscope/capillaries-of-kidney-40x-scan-1.rslide",
     "size": 19438852,
     "sha": "3e91d5b2bc1ac479de5e6bc568f30073758e09622a621f13662b80caa81559f9"
   },
   {
+    "path": "materials/ren123/microscope/catalog-v2.json",
+    "size": 8100,
+    "sha": "e813b5d15b18e64a70f027bee4d4224c35bcecdeb6e50536297e3faed7589e5c"
+  },
+  {
     "path": "materials/ren123/microscope/catalog.json",
     "size": 3966,
     "sha": "499e7ce72b07ab9720c5e9b58385e3dd5e76ae55cc552dbe9fa9617ce2a6ec61"
+  },
+  {
+    "path": "materials/ren123/microscope/first-transitional-epi-in-minor-calyx-kidney-cover.jpg",
+    "size": 20116,
+    "sha": "d249d05c44fefd12e65cded47e24fdd9b7c7d40bd47da6c55895ea6be8eaf812"
   },
   {
     "path": "materials/ren123/microscope/first-transitional-epi-in-minor-calyx-kidney-scan-1.rslide",
@@ -20,6 +35,11 @@
     "sha": "bbe4484f2418382debb7af5b2d2712f12514fe837025d215435b3ac829981c44"
   },
   {
+    "path": "materials/ren123/microscope/kidney-2-cover.jpg",
+    "size": 18086,
+    "sha": "0ce6b4d6eee8b95545130d24d045e9d0a1c97b510b8337cbdab11559f1fbef85"
+  },
+  {
     "path": "materials/ren123/microscope/kidney-2-scan-1.rslide",
     "size": 9447390,
     "sha": "98a32acd35276ed999752160f27282a351730b848fb8fdc5c828b1ddc616442c"
@@ -28,6 +48,11 @@
     "path": "materials/ren123/microscope/kidney-2-scan-2.rslide",
     "size": 12927413,
     "sha": "70f3878964ae0aa373fddc43d6b6f1920957195206ea5b7d62e20a79aa2c4ec6"
+  },
+  {
+    "path": "materials/ren123/microscope/kidney-22-cover.jpg",
+    "size": 20117,
+    "sha": "dc1c520d13d457c744031a58182546c57cdc34bc25314e5ecf84f779a532f911"
   },
   {
     "path": "materials/ren123/microscope/kidney-22-scan-1.rslide",
@@ -40,6 +65,11 @@
     "sha": "bbe4484f2418382debb7af5b2d2712f12514fe837025d215435b3ac829981c44"
   },
   {
+    "path": "materials/ren123/microscope/penis-rabbit-40x-cover.jpg",
+    "size": 26583,
+    "sha": "33af29153997e5708f57e22a0ce74a9a809a16f9f6911e54396ba1d3ac70632e"
+  },
+  {
     "path": "materials/ren123/microscope/penis-rabbit-40x-scan-1.rslide",
     "size": 14835228,
     "sha": "6bef294d4603020aade9f313e016cb6a24c14e754e5a1c647405f2f270dc7f73"
@@ -48,6 +78,11 @@
     "path": "materials/ren123/microscope/penis-rabbit-40x-scan-2.rslide",
     "size": 10025821,
     "sha": "53f15c98cd0c72947033f2fba71bf3fdc720f302fee4d85a5898caae95c18894"
+  },
+  {
+    "path": "materials/ren123/microscope/prostate-old-40x-cover.jpg",
+    "size": 27822,
+    "sha": "eaab5677b080f4e745f85c37a5cff0aba7614f45224235fbfc84a39290a7ee79"
   },
   {
     "path": "materials/ren123/microscope/prostate-old-40x-scan-1.rslide",
@@ -60,6 +95,11 @@
     "sha": "452292c0e354b554795b73b36be6cf2ff6ff02aca63aaf3eed56a77fd4e1adec"
   },
   {
+    "path": "materials/ren123/microscope/prostate-young-40x-he-cover.jpg",
+    "size": 24826,
+    "sha": "73c09b8f0a1df4e5cd6d93265a1e71c341bf9f1a075b0c2786169a14ca494ccc"
+  },
+  {
     "path": "materials/ren123/microscope/prostate-young-40x-he-scan-1.rslide",
     "size": 10919603,
     "sha": "ba7b0f6fa0c1bbdf9759dfce168b02bf6f32da1ad3af546361a5659438bb0c0c"
@@ -68,6 +108,16 @@
     "path": "materials/ren123/microscope/prostate-young-40x-he-scan-2.rslide",
     "size": 9197422,
     "sha": "2e0b3ea6f768f495c8b02ab1f69807c8268dabb04c97a052b61884d620a4ea67"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-cover.jpg",
+    "size": 24758,
+    "sha": "01ca4619aedb77d5d8764998a8c3a5a698124e2385d13f56288c62022d94f8ea"
+  },
+  {
+    "path": "materials/ren123/microscope/purple-kidney-40x-no-label-cover.jpg",
+    "size": 24758,
+    "sha": "01ca4619aedb77d5d8764998a8c3a5a698124e2385d13f56288c62022d94f8ea"
   },
   {
     "path": "materials/ren123/microscope/purple-kidney-40x-no-label-scan-1.rslide",
@@ -90,6 +140,11 @@
     "sha": "8e0df8559882a79de193acdedce0c1fcfa95a0e6e91a83318f55b159b3d00ad3"
   },
   {
+    "path": "materials/ren123/microscope/ureter-40x-cover.jpg",
+    "size": 20606,
+    "sha": "da299ba353ece5ed29c660dcd7d959e45ef0ba49e6d99abc8105e2360a0803c9"
+  },
+  {
     "path": "materials/ren123/microscope/ureter-40x-scan-1.rslide",
     "size": 12824810,
     "sha": "161d9b6907720e16b11c69bccf9efc3c0af39d99ee7973620c98b02406b156c9"
@@ -103,6 +158,11 @@
     "path": "materials/ren123/microscope/ureter-40x-scan-3.rslide",
     "size": 36002010,
     "sha": "785a3f9f4de60c61f27e477317ce1c7a8c44b06592f9bf01181a4ecdb88680b9"
+  },
+  {
+    "path": "materials/ren123/microscope/urinary-vesicle-2-40x-cover.jpg",
+    "size": 20424,
+    "sha": "0d1e7e244bb1d210b261f80d0143d34975a2ce1974730f448fa6605049820b39"
   },
   {
     "path": "materials/ren123/microscope/urinary-vesicle-2-40x-scan-1.rslide",
