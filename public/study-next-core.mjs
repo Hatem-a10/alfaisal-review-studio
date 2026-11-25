@@ -109,3 +109,17 @@ export function practicalResumeEntries(practical,now=Date.now()){
  }
  return [...latest.values()].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
 }
+
+export function nextClass(events,{date,minute}){
+ const eligible=new Set(['anatomy','physiology','mol','lab','assessment','english']);
+ const seen=new Set();
+ const rows=(events||[]).filter(e=>{
+  if(!e||!eligible.has(e.kind)||typeof e.date!=='string'||!Number.isInteger(e.start)||!Number.isInteger(e.end)||e.start<0||e.end>1440||e.start>=e.end||e.date<date||e.date===date&&e.end<=minute)return false;
+  const key=e.id||[e.date,e.start,e.end,e.title].join('|');if(seen.has(key))return false;seen.add(key);return true;
+ }).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start||a.end-b.end);
+ const current=rows.filter(e=>e.date===date&&e.start<=minute);
+ const next=rows.find(e=>e.date>date||e.start>minute)||null;
+ const focus=current.length?current:next?[next]:[];
+ const overlaps=rows.filter(e=>focus.some(f=>e!==f&&e.date===f.date&&e.start<f.end&&e.end>f.start));
+ return {current,next,overlaps};
+}
