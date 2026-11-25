@@ -8,7 +8,7 @@ Read this file before any repository change. Apply the user's task and permissio
 | --- | --- |
 | [Production](https://alfaisal.review/) | Cloudflare Worker `review-studio-production`, separate production D1 and private R2, Clerk Production. Exact reviewed source and runtime configuration require explicit owner approval. |
 | [Staging](https://review-studio-staging-20261117.hatema2169.workers.dev/) | `cloudflare-staging` feeds this Worker only. It has its own D1 and private R2 plus Clerk Development. Use synthetic accounts and records. |
-| Release references | `production-preparation` holds reviewed preparation history. `main` is the stable repository default. Branch tips do not prove what is deployed. |
+| Release references | `production-preparation` holds reviewed preparation history. `main` is the repository default but contains legacy source and production operations workflows, not the active application development branch. `legacy/chatgpt-sites` is the frozen original reference. Branch tips do not prove what is deployed. |
 | Original ChatGPT Site | Separate legacy hosting, auth and data. Preserve it. Its tools and version numbers apply only to explicitly authorized legacy releases. |
 
 Branch from the latest `cloudflare-staging`, use a focused feature PR, and check GitHub Actions and the staging Worker separately. Verify the staged source from deployed build metadata and exercise the changed behavior. Use [the Cloudflare release runbook](docs/cloudflare/PRODUCTION-READINESS.md) for production approvals, build, binding checks, receipts and rollback. Never run a migration during a routine deploy. Never apply staging bindings, test credentials or old Sites storage receipts to production.

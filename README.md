@@ -1,6 +1,19 @@
 # Review Studio
 
-Alfaisal Review Studio is a medical study planner and practice app for CVP 112 and MOL 114.
+Alfaisal Review Studio is a medical study planner and practice app for REN 123, MOL 114 and archived CVP 112.
+
+## Which branch should I use?
+
+| Branch / target | Purpose |
+| --- | --- |
+| `cloudflare-staging` (this branch) | Current application source. Branch from its latest commit for normal feature, content and repair work. Submit PRs back here. |
+| `main` (repository default) | Legacy ChatGPT Sites reference and production release/monitoring/backup workflows. Not the active application development branch. |
+| `legacy/chatgpt-sites` | Frozen original Sites reference. Not a deployment target for Cloudflare changes. |
+| `production-preparation` | Reviewed preparation history, not the latest application source. |
+
+A merged PR or passing GitHub Actions run is not evidence of deployment. Staging checks build isolated candidates but never deploy them. Read live build metadata and verify behavior separately after an authorized deployment. Production releases require the exact reviewed source and explicit owner approval; do not merge staging wholesale into `main` to deploy.
+
+## Environments and first steps
 
 - [Production](https://alfaisal.review/) runs independently on Cloudflare Workers with Clerk.
 - [Staging](https://review-studio-staging-20261117.hatema2169.workers.dev/) uses separate Clerk Development, D1 and R2 resources.
