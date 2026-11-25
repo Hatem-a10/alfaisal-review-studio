@@ -763,14 +763,14 @@ export async function openAdminCenter(){
  async function announcements(version,page=0){
   const data=await request('announcements/list'+query({page,limit:25,offset:page*25}));
   if(version!==viewVersion)return;
-  panel.replaceChildren(rowAction('New announcement',()=>announcementForm()),table(['Announcement','Audience','Priority','Status','Actions'],(data.announcements||[]).map(item=>{
+  panel.replaceChildren(rowAction('New announcement',()=>announcementForm()),node('p','Eligible accounts estimates current audience membership, excluding suspended accounts. This is not a delivery or read receipt; eligibility can change before publication.',{class:'acc-empty'}),table(['Announcement','Audience','Priority','Status','Eligible accounts','Actions'],(data.announcements||[]).map(item=>{
    const controls=actions(
     rowAction('Preview',()=>openForm('Announcement preview',[node('article',item.body,{class:'acc-data'}),node('p',item.audience+' · '+item.priority),node('p','Starts '+formatDate(item.starts_at)+(item.expires_at?' · Expires '+formatDate(item.expires_at):''))],'Done',()=>true),{reload:false}),
     rowAction('Edit',()=>announcementForm(item)),
     item.status!=='published'&&rowAction('Publish',()=>put('announcements','publish',announcementData(item),'Publish this announcement?','Students in the selected audience will see the announcement at its scheduled time.')),
     rowAction('Archive',()=>put('announcements','archive',{id:item.id},'Archive this announcement?','It will be hidden from the student dashboard.')),
    );
-   return [item.title,[item.target_class,item.target_section,item.target_lab].filter(Boolean).join(' / ')||'Global',item.priority,item.status,controls];
+   return [item.title,[item.target_class,item.target_section,item.target_lab].filter(Boolean).join(' / ')||'Global',item.priority,item.status,item.eligibleAccounts==null?'Unavailable':String(item.eligibleAccounts),controls];
   }),'No announcements yet.'));
   appendPager(page,data.more||data.hasMore||((page+1)*25<(data.total||0)),n=>within(()=>announcements(version,n)));
  }

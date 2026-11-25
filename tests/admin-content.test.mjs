@@ -124,3 +124,18 @@ test('admin triage list filters by exact category without exposing reporter iden
  assert.equal((await (await contentAdmin({request:request('/api/control-center/reports/list?category=incorrect-answer'),env,user:{id:'owner'},row:{},role:'owner',section:'reports',action:'list',...writer(env)})).json()).total,1);
  assert.equal((await (await contentAdmin({request:request('/api/control-center/reports/list?category=other%27%20OR%201%3D1'),env,user:{id:'editor'},row:{},role:'editor',section:'reports',action:'list',...writer(env)})).json()).total,0);
 });
+
+test('announcement reach counts current effective assignments without returning student identities',async()=>{
+ const {db,raw}=await fixture(),env={DB:db};
+ raw.exec('CREATE TABLE control_students(account_id TEXT PRIMARY KEY,assignment TEXT)');
+ raw.prepare('INSERT INTO review_accounts(id,email,profile_json,disabled) VALUES(?,?,?,?)').run('other','other@example.test',JSON.stringify({studentGroup:'M2',studentSection:'A',labGroup:'2.1'}),0);
+ raw.prepare('INSERT INTO review_accounts(id,email,profile_json,disabled) VALUES(?,?,?,?)').run('disabled','disabled@example.test',JSON.stringify({studentGroup:'M1',studentSection:'A',labGroup:'1.6'}),1);
+ raw.prepare('INSERT INTO control_students VALUES (?,?)').run('other',JSON.stringify({studentGroup:'M1',studentSection:'B',labGroup:'1.7'}));
+ const insert=raw.prepare("INSERT INTO review_announcements(id,title,body,audience,target_class,target_section,target_lab,priority,starts_at,status,created_by,updated_by,created_at,updated_at) VALUES (?,?,?,?,?,?,?,'normal',?,'draft','owner','owner',?,?)");
+ const at=new Date().toISOString();
+ for(const [id,aud,cls,sec,lab] of [['global','global',null,null,null],['class','class','M1',null,null],['group','group','M1','A',null],['lab','lab','M1','B','1.7'],['none','class','F2',null,null]])insert.run(id,id,'body',aud,cls,sec,lab,at,at,at);
+ const res=await contentAdmin({request:request('/api/control-center/announcements/list'),env,user:{id:'owner'},role:'owner',section:'announcements',action:'list'});
+ assert.equal(res.status,200);const body=await res.json(),counts=Object.fromEntries(body.announcements.map(x=>[x.id,x.eligibleAccounts]));
+ assert.deepEqual(counts,{global:2,class:2,group:1,lab:1,none:0});
+ assert.doesNotMatch(JSON.stringify(body),/other@example|student-1|disabled@example/);
+});
