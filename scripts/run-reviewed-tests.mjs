@@ -3,7 +3,7 @@ import {spawnSync} from 'node:child_process';
 
 const {siteVersion}=JSON.parse(readFileSync('public/site-release.json','utf8'));
 const targeted=[
- 'admin-academics','admin-content','booklet-context','cloudflare-staging-audit3-cloud-integrity',
+ 'asset-manifest-integrity','admin-academics','admin-content','booklet-context','cloudflare-staging-audit3-cloud-integrity',
  'cloudflare-staging-audit5-progress-validation','cloudflare-staging-auth','course-workspace',
  'managed-startup-session','ospe','phase2-practice','registered-course-progress','study-next',
 ];
