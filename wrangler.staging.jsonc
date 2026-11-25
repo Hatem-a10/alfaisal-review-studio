@@ -36,5 +36,10 @@
   },
   "placement": {
     "mode": "smart"
+  },
+  "triggers": {
+    "crons": [
+      "15 2 * * *"
+    ]
   }
 }

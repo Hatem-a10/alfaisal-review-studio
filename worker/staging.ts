@@ -7,7 +7,7 @@ import {managedPage,managedPublicConfig,privacyPage} from '../lib/managed-auth-p
 import {managedAccount,managedAccountRoute} from '../lib/managed-accounts.mjs';
 import {accountControl,adminResponse,adminWriteGate,auditWriter,controlRoute,controls,countControlEvent,verifiedAdminChallenge} from '../lib/admin-control.mjs';
 import {PUBLISHER_PACKS,servePack} from '../lib/publisher-packs';
-import {assetFor,serveAsset} from '../lib/site-assets';
+import {assetFor,serveAsset,integrityAssets} from '../lib/site-assets';
 import {readPrivateMedia,PRIVATE_MEDIA} from '../lib/private-media';
 import {readClientError} from '../lib/client-error.mjs';
 import {stampOfflineAccount} from '../lib/offline-account.mjs';
@@ -35,6 +35,11 @@ async function controlHandlers(student:boolean,section:string){
 }
 
 const stagingWorker = {
+ async scheduled(controller:ScheduledController,env:Cloudflare.Env,ctx:ExecutionContext){
+  // No production schedule or writes; this is a staging-only audit of academic objects.
+  if(env.REVIEW_STUDIO_DEPLOYMENT!=='staging'||!env.BUCKET)return;
+  ctx.waitUntil((async()=>{const {checkIntegrityBatch}=await import('../lib/r2-integrity.mjs');const report=await checkIntegrityBatch(env.BUCKET,integrityAssets(),controller.scheduledTime);console.log(JSON.stringify({kind:'r2-academic-integrity',environment:'staging',...report}))})());
+ },
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
   const environment = env.REVIEW_STUDIO_DEPLOYMENT as string;
   const production = environment === 'production';
