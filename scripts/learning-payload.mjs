@@ -3,6 +3,14 @@ import {gzipSync,gunzipSync} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const header='// Generated losslessly from public/learning-data.js by scripts/learning-payload.mjs.\nexport const payload = ';
+// RFC 1952: generated single-member streams carry no optional fields.
+// Normalize the platform and timestamp bytes without touching the DEFLATE data or CRC.
+export function canonicalLearningGzip(bytes){
+ const gzip=Buffer.from(bytes);
+ if(gzip.length<18||gzip[0]!==0x1f||gzip[1]!==0x8b||gzip[2]!==8||gzip[3]!==0)throw Error('Unexpected generated gzip header');
+ gzip.fill(0,4,8);gzip[9]=255;
+ return gzip;
+}
 export function generatedLearningPayload(gzip){return header+JSON.stringify(gzip.toString('base64'))+';\n'}
 export function reusableLearningPayload(source,input,decompress=gunzipSync){
  if(!source.startsWith(header)||!source.endsWith(';\n'))return false;
@@ -10,7 +18,7 @@ export function reusableLearningPayload(source,input,decompress=gunzipSync){
  if(!/^"[A-Za-z0-9+/]+={0,2}"$/.test(body))return false;
  try{
   const bytes=Buffer.from(JSON.parse(body),'base64');
-  return bytes.length>0&&generatedLearningPayload(bytes)===source&&decompress(bytes).equals(input);
+  return bytes.equals(canonicalLearningGzip(bytes))&&generatedLearningPayload(bytes)===source&&decompress(bytes).equals(input);
  }catch{return false}
 }
 export function buildLearningPayload({inputPath=root+'public/learning-data.js',outputPath=root+'lib/learning-payload.ts',compress=gzipSync,decompress=gunzipSync}={}){
@@ -19,7 +27,7 @@ export function buildLearningPayload({inputPath=root+'public/learning-data.js',o
  // Verify that its decompressed bytes exactly match source before skipping CPU work.
  const prior=existsSync(outputPath)?readFileSync(outputPath,'utf8'):null;
  if(prior!==null&&reusableLearningPayload(prior,input,decompress))return false;
- const gzip=compress(input,{level:9});
+ const gzip=canonicalLearningGzip(compress(input,{level:9}));
  if(!decompress(gzip).equals(input))throw Error('Learning data compression did not round-trip');
  const source=generatedLearningPayload(gzip);
  if(source!==prior)writeFileSync(outputPath,source);

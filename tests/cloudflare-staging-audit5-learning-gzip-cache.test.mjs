@@ -4,10 +4,10 @@ import {mkdtempSync,readFileSync,writeFileSync,statSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {gzipSync,gunzipSync} from 'node:zlib';
-import {buildLearningPayload,generatedLearningPayload,reusableLearningPayload} from '../scripts/learning-payload.mjs';
+import {buildLearningPayload,generatedLearningPayload,reusableLearningPayload,canonicalLearningGzip} from '../scripts/learning-payload.mjs';
 
-const originalSource=bytes=>'// Generated losslessly from public/learning-data.js by scripts/learning-payload.mjs.\nexport const payload = '+JSON.stringify(gzipSync(bytes,{level:9}).toString('base64'))+';\n';
-test('A5-101 generated TS payload matches old algorithm byte for byte on fresh build',()=>{
+const originalSource=bytes=>'// Generated losslessly from public/learning-data.js by scripts/learning-payload.mjs.\nexport const payload = '+JSON.stringify(canonicalLearningGzip(gzipSync(bytes,{level:9})).toString('base64'))+';\n';
+test('A5-101 generated TS payload preserves canonical compressed bytes on fresh build',()=>{
  const root=mkdtempSync(join(tmpdir(),'review-a5-101-'));try{
   const inputPath=join(root,'input.js'),outputPath=join(root,'payload.ts'),bytes=Buffer.from('const LEARNING={questions:[{id:"q",stem:"Cardiac output"}]};\n'.repeat(150));
   writeFileSync(inputPath,bytes);
@@ -44,4 +44,13 @@ test('A5-101 altered teaching content and damaged cached gzip are detected and r
   assert.equal(reusableLearningPayload('export const payload="abc";\n',Buffer.from('x')),false);
   assert.equal(reusableLearningPayload(generatedLearningPayload(gzipSync(Buffer.from('something'))),Buffer.from('different')),false);
  }finally{rmSync(root,{recursive:true,force:true})}
+});
+
+test('canonical gzip is independent of timestamp and platform header metadata',()=>{
+ const input=Buffer.from('same academic source\n'.repeat(200)),a=gzipSync(input,{level:9}),b=Buffer.from(a);
+ b.writeUInt32LE(123456,4);b[9]=0;
+ const x=canonicalLearningGzip(a),y=canonicalLearningGzip(b);
+ assert.deepEqual(x,y);assert.equal(x.readUInt32LE(4),0);assert.equal(x[9],255);assert.deepEqual(x.subarray(10),a.subarray(10));assert.deepEqual(gunzipSync(x),input);
+ assert.equal(reusableLearningPayload(generatedLearningPayload(b),input),false);assert.equal(reusableLearningPayload(generatedLearningPayload(x),input),true);
+ const invalid=Buffer.from(a);invalid[3]=4;assert.throws(()=>canonicalLearningGzip(invalid),/header/);
 });
