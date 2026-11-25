@@ -1,3 +1,4 @@
+import {mountOfflineCourseManager} from './offline-course-manager.mjs';
 import {validAccount} from './phase3-cache-policy.mjs';
 
 export function offlineReleaseEligible(release){
@@ -43,5 +44,7 @@ export async function installOffline(){
  window.addEventListener('focus',bind);window.addEventListener('online',bind);window.addEventListener('offline',bind);window.addEventListener('studio-ready',bind);
  window.addEventListener('storage',event=>{if(event.key===accountKey||event.key===logoutKey||event.key===null)bind()});
  await bind();
+ const mount=()=>mountOfflineCourseManager(document.querySelector('#siteAdmin .admin-frame'),()=>navigator.serviceWorker.controller||registration.active,readKey);
+ document.addEventListener('click',event=>{if(event.target.closest('#openSiteAdmin'))queueMicrotask(mount)});mount();
  // The existing app online handler invokes its guarded syncCloud(true).
 }

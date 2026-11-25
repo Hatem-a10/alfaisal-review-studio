@@ -1,4 +1,5 @@
-import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,obsoleteCoreCache,fitsCache,offlinePrecacheWidth,prioritizeOfflineAssets} from './phase3-cache-policy.mjs';
+import {RELEASE_CACHE,cacheKind,validAccount,privateCacheName,privateCacheNames,obsoleteCoreCache,fitsCache,offlinePrecacheWidth,prioritizeOfflineAssets,courseCacheName,offlineCoursePath,offlineCourseIds,MAX_CACHE_BYTES} from './phase3-cache-policy.mjs';
+const courseJobs=new Map();
 const CORE=RELEASE_CACHE+':core',clientsByAccount=new Map(),accountEpoch=new Map(),privateWrites=new Map(),clearing=new Map(),staticFlights=new Map();
 const epoch=account=>accountEpoch.get(account)||0;
 const accountHeader='X-Review-Cache-Account';
@@ -42,9 +43,51 @@ self.addEventListener('activate',event=>{event.waitUntil((async()=>{
  if(self.registration?.navigationPreload)await self.registration.navigationPreload.enable().catch(()=>{});
  await self.clients.claim();
 })())});
+async function courseOfflineAction(event,account,course,action){
+ const id=event.source.id,started=epoch(account),guard=()=>clientsByAccount.get(id)===account&&!clearing.has(account)&&epoch(account)===started;
+ const name=courseCacheName(account,course),key=account+':'+course;
+ if(!guard())throw Error('Account changed.');
+ if(action==='remove'){
+  if(courseJobs.has(key))throw Error('A course download is running.');
+  await caches.delete(name);return {saved:0,bytes:0};
+ }
+ if(action==='status'){
+  if(!(await caches.keys()).includes(name))return {saved:0,bytes:0};
+  const cache=await caches.open(name),keys=await cache.keys();let bytes=0,saved=0;
+  for(const request of keys){const response=await cache.match(request);if(response?.headers.get(accountHeader)===account){saved++;bytes+=Number(response.headers.get('content-length'))||0}}
+  if(!guard())throw Error('Account changed.');
+  return {saved,bytes};
+ }
+ if(courseJobs.has(key))throw Error('A course download is running.');
+ const task=(async()=>{
+  const identity=await fetch('/api/account-key',{cache:'no-store',credentials:'same-origin'});
+  if(!identity.ok||(await identity.json()).accountKey!==account||!guard())throw Error('Sign in again before downloading.');
+  const manifestResponse=await fetch('/offline-courses.json',{cache:'no-store',credentials:'same-origin'});
+  if(!manifestResponse.ok)throw Error('Course list unavailable.');
+  const manifest=await manifestResponse.json(),rows=manifest.courses?.[course];
+  if(!Array.isArray(rows)||rows.length>300||rows.some(r=>!offlineCoursePath(course,r.path)||!Number.isSafeInteger(r.size)||r.size<=0||r.size>MAX_CACHE_BYTES||!/^[0-9a-f]{64}$/.test(r.sha))||rows.reduce((n,r)=>n+r.size,0)>100000000)throw Error('Invalid course download manifest.');
+  const cache=await caches.open(name);let saved=0,bytes=0,failed=0;
+  for(const row of rows){
+   if(!guard())throw Error('Account changed.');
+   try{
+    const prior=await cache.match(row.path);
+    if(prior?.headers.get(accountHeader)===account&&prior.headers.get('etag')==='"'+row.sha+'"'){saved++;bytes+=row.size;continue}
+    const response=await fetch(row.path,{cache:'no-store',credentials:'same-origin'});
+    if(response.status===401||response.status===403)throw Object.assign(Error('Sign in again.'),{auth:true});
+    if(!guard()||response.headers.get(accountHeader)!==account||response.headers.get('etag')!=='"'+row.sha+'"'||Number(response.headers.get('content-length'))!==row.size||!await store(cache,row.path,response,false,guard))throw Error('Download unavailable.');
+    saved++;bytes+=row.size;
+   }catch(error){if(error.auth||!guard())throw error;failed++}
+  }
+  if(!guard())throw Error('Account changed.');
+  return {saved,bytes,failed,total:rows.length,excluded:manifest.excluded?.[course]||0};
+ })();
+ courseJobs.set(key,task);const writes=privateWrites.get(account)||new Set();privateWrites.set(account,writes);writes.add(task);
+ try{return await task}finally{courseJobs.delete(key);writes.delete(task);if(!writes.size)privateWrites.delete(account)}
+}
 self.addEventListener('message',event=>{
  const id=event.source?.id,data=event.data;
  if(data?.type==='ACCOUNT'&&id){if(validAccount(data.key))clientsByAccount.set(id,data.key);else clientsByAccount.delete(id);event.ports[0]?.postMessage({bound:validAccount(data.key)})}
+ if(data?.type==='OFFLINE_COURSE'&&id&&offlineCourseIds.includes(data.course)&&['status','download','remove'].includes(data.action))event.waitUntil((async()=>{try{const account=clientsByAccount.get(id);if(!account)throw Error('No verified account is bound.');const result=await courseOfflineAction(event,account,data.course,data.action);event.ports[0]?.postMessage({ok:true,...result})}catch(error){event.ports[0]?.postMessage({ok:false,error:error.message||'Offline course operation failed.'})}})());
  if(data?.type==='CLEAR_OFFLINE'&&id)event.waitUntil((async()=>{
   const account=clientsByAccount.get(id);if(!account){event.ports[0]?.postMessage({cleared:false,error:'No verified account is bound.'});return}
   try{await clearPrivate(account);event.ports[0]?.postMessage({cleared:true})}catch{event.ports[0]?.postMessage({cleared:false,error:'Offline files could not be cleared. Retry.'})}
