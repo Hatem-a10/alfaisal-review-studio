@@ -14,7 +14,7 @@ test('Accurate refuses to silently discard a colliding mandatory family',async()
 test('exam keyboard shortcuts expose highlighter, eraser, toolkit and review with Escape cancellation',()=>{
  const s=readFileSync(new URL('../public/examplify-mode.js',import.meta.url),'utf8');
  for(const key of ['F','H','X','T'])assert.match(s,new RegExp('aria-keyshortcuts="'+key+'"'));
- assert.match(s,/const action=\{h:'highlight',x:'erase',t:'toolkit',r:'review'\}\[key\]/);
+ assert.match(s,/const action=\{h:'highlight',x:'erase',t:'toolkit',r:'review',n:'scratch'\}\[key\]/);
  assert.match(s,/if\(key==='escape'\)/);
  assert.match(s,/e\.target\.closest\('input,textarea,select/);
  assert.match(s,/e\.repeat\|\|e\.isComposing/);
