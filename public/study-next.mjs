@@ -1,7 +1,7 @@
 /* global render, view, go, DATA, LEARNING, ORIGINAL_EXAMS, lessonId, guideTopic, guideTopicLesson, cardIndex, learnTab, etExam, originalRun, etPracticeTab, originalQuestionById, visibleOriginalRun, lessonById, inlineTopicsFor, inlineGroups, allLearningQuestions, TEACHING, storeOptions, saveOptions, today, tasks, dates, done, state, rec, persist, AssessmentPlan, assessmentClock, syncMeta, storageOK, openEdit, settings, toast */
 import {activeBookletPaths} from './active-booklet-core.mjs';
 import {courses,lectureCourses} from './course-registry.mjs';
-import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,nextClass} from './study-next-core.mjs';
+import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,practicalResumeEntries,nextClass} from './study-next-core.mjs';
 
 const content=()=>document.getElementById('content');
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -22,9 +22,12 @@ window.reviewPaintSyncDetails=message=>{
  let panel=host.querySelector('#studySyncDetails');
  if(!panel){panel=document.createElement('div');panel.id='studySyncDetails';host.append(panel);}
  if(/^Cloud saved/.test(message||''))issue=null;
- panel.innerHTML=`<dl><dt>This device</dt><dd>${storageOK?'Saved':'Device saving unavailable'}</dd><dt>Cloud</dt><dd>${syncMeta.dirty?'Changes waiting to sync':syncMeta.lastCloudAt?'Up to date':'Awaiting confirmation'}</dd><dt>Last successful sync</dt><dd>${esc(localTime(syncMeta.lastCloudAt))}</dd></dl>`+
+ const offline=navigator.onLine===false,counts=host.closest('details')?.open?window.reviewPendingSyncCounts?.():null;
+ const queue=syncMeta.dirty?(counts?`${counts.records} lesson records · ${counts.settings} settings · ${counts.stores} study stores pending comparison`:'Saved snapshot pending cloud confirmation'):'No pending local changes';
+ panel.innerHTML=`<dl><dt>This device</dt><dd>${storageOK?'Saved':'Device saving unavailable'}</dd><dt>Cloud</dt><dd>${offline?'Offline':syncMeta.dirty?'Changes waiting to sync':syncMeta.lastCloudAt?'Up to date':'Awaiting confirmation'}</dd><dt>Pending sync</dt><dd>${esc(queue)}</dd><dt>Last successful sync</dt><dd>${esc(localTime(syncMeta.lastCloudAt))}</dd></dl>`+
  (issue?`<p role="status">Check ${esc(issue.recordId||issue.area||'the backup')}. This copy is still on your device.</p><div class="study-next-actions">${itemById(issue.recordId)?'<button data-study-sync-edit>Review lesson record</button>':''}<button data-study-sync-export>Export backup</button><button data-study-sync-retry>Retry sync</button></div>`:'');
 };
+document.getElementById('syncWidget')?.addEventListener('toggle',()=>window.reviewPaintSyncDetails());
 window.addEventListener('review-profile-changed',()=>{issue=null;revision=null;preview=null;});
 window.reviewNoteBookletPosition=(course,q,index)=>{
  const current=options().studyNextBooklet;
@@ -36,15 +39,15 @@ function activeAttempt(){
  return null;
 }
 function resumeCard(){
- const saved=options(),entries=[activeAttempt()];
+ const saved=options(),entries=[activeAttempt(),...practicalResumeEntries(saved.practical)];
  const booklet=saved.studyNextBooklet;if(booklet)entries.push({...booklet,kind:'booklet',title:'Booklet',position:booklet.index});
  const lesson=saved.studyNextLesson;
  if(lesson&&itemById(lesson.id))entries.push({...lesson,kind:'lesson',course:itemById(lesson.id).course,title:itemById(lesson.id).title});
  const slots=entries.filter(e=>e&&!(e.course==='CVP'&&window.reviewCvpArchived?.()));
  if(!slots.length)return;
  html('studyNextResume','<h2>Continue studying</h2><div class="study-next-resume">'+slots.map(e=>{
-  const position=e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered';
-  return `<button data-study-resume="${e.kind}"><strong>${esc(e.title)}</strong><span>${esc([label(e.course),position].filter(Boolean).join(' · '))}</span></button>`;
+  const position=e.detail|| (e.kind==='lesson'?'Topic '+(e.position+1)+(e.topicTitle?' · '+e.topicTitle:''):Number.isInteger(e.position)?'Question '+(e.position+1)+(e.total?' of '+e.total:''):e.answered+' of '+e.total+' answered');
+  return `<button data-study-resume="${e.kind}" data-resume-course="${esc(e.course||'')}" data-resume-id="${esc(e.id||'')}"><strong>${esc(e.title)}</strong><span>${esc([label(e.course),position].filter(Boolean).join(' · '))}</span></button>`;
  }).join('')+'</div>');
 }
 async function openTopic(id,index){
@@ -296,8 +299,15 @@ const actionHandlers={
  'plan-question':async(id,button)=>{await window.reviewEnsureCourses?.([itemById(button.dataset.lecture)?.course].filter(Boolean));const q=allLearningQuestions().find(question=>question.id===id);if(q)practiceAlternate(q);},
  'plan-topic':(id,button)=>{const e=(options().requiredPlannerTasks||[]).find(t=>t.id===id)?.entries?.[Number(button.dataset.entry)];if(e)return openTopic(e.lectureId,e.index);},
  'dismiss-schedule':()=>{seenSchedule=window.reviewPublishedAcademic?.()?.revisionId;document.getElementById('studyNextSchedule')?.remove();},
- 'resume':kind=>{
+ 'resume':(kind,button)=>{
   const saved=options();
+  if(kind==='lab'||kind==='ospe'){
+   const entry=practicalResumeEntries(saved.practical).find(e=>e.kind===kind&&e.course===button.dataset.resumeCourse&&e.id===button.dataset.resumeId);
+   if(!entry||hiddenCourse(entry.course))return;
+   if(kind==='lab')window.reviewRequestedLabResume={course:entry.course,module:entry.module,topic:entry.id};
+   if(window.REVIEW_STUDIO_FRESH_ACCOUNTS)return window.reviewOpenCourse?.(entry.course,kind==='lab'?'labs':'ospe');
+   return go(kind==='lab'?'labs':'ospe');
+  }
   if(kind==='lesson'&&saved.studyNextLesson)return openTopic(saved.studyNextLesson.id,saved.studyNextLesson.position);
   if(kind==='booklet'&&saved.studyNextBooklet)return window.reviewOpenCourse?.(saved.studyNextBooklet.course,'booklet');
   const attempt=activeAttempt();if(attempt){etPracticeTab=attempt.kind==='original'?'original':'mock';if(attempt.course&&window.reviewOpenCourse)return window.reviewOpenCourse(attempt.course,'practice');go('practice');}
