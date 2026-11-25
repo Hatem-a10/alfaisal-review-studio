@@ -13,7 +13,7 @@ function client({fresh=true,settings={},saved={},bound=null,snapshotSetup={profi
   document:{querySelector:()=>null,querySelectorAll:()=>[],getElementById:()=>null},
   localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},profileUI,
   queueMicrotask(){},alert(){}};
- vm.createContext(ctx);vm.runInContext(source.replace("import('/student-profile.mjs?v=2')",'Promise.resolve(profileUI)')+';this.profile=StudentProfile',ctx);
+ vm.createContext(ctx);vm.runInContext(source.replace("import('/student-profile.mjs?v=3')",'Promise.resolve(profileUI)')+';this.profile=StudentProfile',ctx);
  return {ctx,storage,switches,get setupCount(){return setupCount},get persistCount(){return persistCount}};
 }
 

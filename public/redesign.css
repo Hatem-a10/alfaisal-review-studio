@@ -23,7 +23,7 @@ html:root body:not(.xp-exam-active){
   --ink:var(--rs-ink);--muted:var(--rs-muted);--line:var(--rs-line);--light:var(--rs-accent-tint);
   --ui-shadow:var(--rs-shadow);
   background:var(--rs-canvas);color:var(--rs-ink);
-  font-family:var(--rs-text);
+  font-family:var(--rs-text);font-size:1rem;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
 html:root[data-theme=amoled] body:not(.xp-exam-active){
@@ -328,13 +328,13 @@ html:root body:not(.xp-exam-active) .intro .eyebrow{display:none}
 html:root body:not(.xp-exam-active) .intro h1{font-size:clamp(2rem,1.45rem + 1.8vw,2.75rem);line-height:1.05;letter-spacing:-.03em;margin:0 0 .35em}
 html:root body:not(.xp-exam-active) .intro > p{font-size:1.0625rem;color:var(--rs-ink-2);max-width:62ch}
 
-/* Sidebar: tighter rows, smaller identity block. */
+/* Sidebar identity and navigation */
 html:root body:not(.xp-exam-active) #mainSidebar nav{gap:2px}
 html:root body:not(.xp-exam-active) #mainSidebar nav button{min-height:40px;padding:8px 12px;gap:12px;border-radius:var(--rs-r-ctl);font-size:.9375rem;font-weight:550}
 html:root body:not(.xp-exam-active) #mainSidebar nav button .nav-icon{width:19px;height:19px}
-html:root body:not(.xp-exam-active) #mainSidebar .profile-brand .brandmark{width:42px;height:42px;border-radius:12px;font-size:1.05rem}
-html:root body:not(.xp-exam-active) #mainSidebar .profile-name{font-size:1.0625rem;letter-spacing:-.01em}
-html:root body:not(.xp-exam-active) #mainSidebar .student{font-size:.8125rem;line-height:1.45;margin-bottom:18px}
+html:root body:not(.xp-exam-active) #mainSidebar .profile-brand .brandmark{width:52px;height:52px;border-radius:12px;font-size:1.05rem}
+html:root body:not(.xp-exam-active) #mainSidebar .profile-name{font-size:1.16rem;letter-spacing:-.01em}
+html:root body:not(.xp-exam-active) #mainSidebar .student{font-size:.875rem;line-height:1.45;margin-bottom:20px}
 
 /* Surfaces: sections carry a hairline, items don't stack shadows. */
 html:root body:not(.xp-exam-active) .panel{box-shadow:none;border:1px solid var(--rs-line);border-radius:var(--rs-r-sec)}
@@ -410,7 +410,7 @@ body:not(.xp-exam-active) .mobile-tools-grid button{display:flex;align-items:cen
 body:not(.xp-exam-active) .mobile-tools-grid svg{width:20px;height:20px;flex:none}
 body:not(.xp-exam-active) .mobile-dock-shell:has(.simple-mobile-nav) .dock-scroll{display:none}
 body:not(.xp-exam-active) .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;height:auto!important;min-height:0;overflow:hidden!important;touch-action:pan-y}
-body:not(.xp-exam-active) .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav button:not([data-mobile-extra]){min-width:0!important;min-height:48px!important;padding:4px 1px!important;gap:4px;font-size:clamp(9px,2.7vw,12px)!important}
+body:not(.xp-exam-active) .mobile-dock-shell .ui-mobile-nav.simple-mobile-nav button:not([data-mobile-extra]){min-width:0!important;min-height:54px!important;padding:5px 1px!important;gap:4px;font-size:clamp(10px,2.8vw,12px)!important}
 
 body:not(.xp-exam-active) .more-tool-groups{display:grid;gap:14px}
 body:not(.xp-exam-active) .more-tool-groups h3{margin:0 0 6px;font-size:1rem}
@@ -539,11 +539,11 @@ html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close:hover{backgr
 
 /* Sidebar: larger targets and type so the links fill the rail's width. */
 @media (min-width:761px){
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{gap:6px}
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{min-height:54px;padding:12px 16px;gap:14px;font-size:1.04rem;font-weight:600;border-radius:var(--rs-r-item,12px)}
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button .nav-icon{width:23px;height:23px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{gap:8px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{min-height:clamp(56px,7.8vh,68px);padding:13px 16px;gap:15px;font-size:1.1rem;font-weight:600;border-radius:var(--rs-r-item,12px)}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button .nav-icon{width:26px;height:26px;flex:none}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar .brand{gap:14px}
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar #syncWidget>summary{min-height:58px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar #syncWidget>summary{min-height:64px}
  /* Semi-closed rail: icons only, centred, and the sync card shrinks to a square with its dot. */
  html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar nav.simple-desktop-nav>button{justify-content:center;padding:12px 0}
  html[data-ui=modern] body:not(.xp-exam-active)[data-sidebar-stage=compact] #mainSidebar .sidebar-foot{display:flex!important;justify-content:center;margin-top:auto}
@@ -577,3 +577,11 @@ html:root body:not(.xp-exam-active) #mainSidebar .sidebar-toggle,html:root body:
 
 /* Question source labels sit under the options, centred and quiet. */
 html:root body:not(.xp-exam-active) :is(.question-kind,.et-question-kind).question-kind-foot{display:block;margin:12px 0 0;text-align:center;font-size:.8rem;font-weight:500;letter-spacing:.01em;color:var(--rs-muted)}
+
+
+html:root body:not(.xp-exam-active) .booklet-question-meta{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-block:12px}
+html:root body:not(.xp-exam-active) .booklet-question-meta p{flex:1 1 230px;margin:0}
+html:root body:not(.xp-exam-active) .booklet-question-meta .rs-report-trigger{margin:0 0 0 auto;white-space:nowrap;min-height:44px}
+html:root body:not(.xp-exam-active) .booklet-actions{display:flex;gap:8px;flex-wrap:wrap;margin-block:14px 8px}
+html:root body:not(.xp-exam-active) .booklet-actions button{min-height:44px}
+html:root body:not(.xp-exam-active) .booklet-option-reasons>summary{font-size:1.08rem;font-weight:650;min-height:44px;align-content:center}

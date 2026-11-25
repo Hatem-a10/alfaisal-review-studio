@@ -34,3 +34,11 @@ test('a completed bootstrap pass retains its existing date instead of rewriting 
  const r=planStudent([a],records,now,{}, {bootstrapChanges:[{id:'a',field:'dates.1',after:'2026-11-25'}]});
  assert.equal(r.records.a.dates[0],'2026-11-01');assert.equal(r.records.a.done[0],records.a.done[0]);
 });
+
+test('adding past reviews from profile setup keeps existing timestamps and every planned date',async()=>{
+ const {addCompletedReviews}=await import('../public/onboarding-plan.mjs');
+ const records={a:{done:{0:'2026-11-01T08:00:00Z'},dates:['2026-11-01','2026-11-27','2026-11-30'],confidence:4}};
+ const result=addCompletedReviews([{id:'a'}],records,{a:[0,1,3],notARealLesson:[0]},new Date('2026-11-25T08:00:00Z'));
+ assert.deepEqual(result,{a:{...records.a,done:{0:'2026-11-01T08:00:00Z',1:'2026-11-25T08:00:00.000Z'}}});
+ assert.equal(records.a.done[1],undefined);
+});

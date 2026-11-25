@@ -7,3 +7,22 @@ test('lane layout is independent between days and leaves inputs unchanged',()=>{
 test('timetable extends for early and late classes even with English disabled',()=>{const b=ctx.campusTimeBounds([row('early',450,480),row('late',1020,1230)],false,false);assert.equal(b.min,420);assert.equal(b.max,1260);assert.match(src,/h=Math.max\(1,/);assert.doesNotMatch(src,/h=Math.max\(30,/)}); 
 test('malformed assessment metadata cannot prevent valid official assessment updates',()=>{const target={course:'REN',date:'2026-11-24',title:'Renal final'};ctx.DATA.events=[target];const valid={source:'Renal Schedule.pdf',kind:'assessment',studentGroups:['M1','M2','F1','F2'],title:'REN final',date:target.date,start:540,end:600,references:[{page:2}]};ctx.applyRenalScheduleAssessments({events:[null,{...valid,references:[]},{...valid,studentGroups:['M1','M1','M1','M1']},valid]});assert.equal(target.detail,'09:00–10:00');assert.equal(target.source,'Renal Schedule.pdf · page 2')});
 test('loading validates catalog before assigning and optional metadata does not crash agenda',()=>{assert.ok(src.indexOf("throw Error('Invalid timetable')")<src.indexOf('officialGroupSchedule=value'));assert.match(src,/String\(e.source\|\|''\)/);assert.match(src,/if\(!dialog\|\|!body\)return/);assert.match(src,/if\(!dialog.open\)dialog.showModal/)});
+test('real timetable adds both REN TBLs and updates all four exam and practical blocks once',()=>{
+ const timetable=JSON.parse(fs.readFileSync('public/group-timetables.json','utf8'));
+ ctx.DATA.events=[
+  {date:'2026-12-16',course:'REN',title:'REN 123 · Renal Block-I Final'},
+  {date:'2026-12-17',course:'REN',title:'REN 123 · OSPE'},
+  {date:'2026-12-20',title:'MOL Final'},
+  {date:'2026-12-22',title:'COM 116 Final Exam'}
+ ];
+ for(let i=0;i<2;i++)ctx.applyRenalScheduleAssessments(timetable);
+ const upcoming=ctx.DATA.events.filter(e=>e.date>='2026-11-25');
+ assert.equal(upcoming.length,6);
+ assert.deepEqual(upcoming.filter(e=>e.type==='TBL').map(e=>[e.title,e.date,e.detail]),[
+  ['REN TBL 1','2026-11-29','08:00–09:50'],
+  ['REN TBL 2','2026-12-06','08:00–09:50'],
+ ]);
+ assert.equal(upcoming.find(e=>e.course==='MOL').detail,'08:00–11:50');
+ assert.equal(upcoming.find(e=>e.course==='COM').source,'Renal Schedule.pdf · page 5');
+ assert.equal(upcoming.find(e=>e.title.includes('OSPE')).detail,'08:00–11:50');
+});

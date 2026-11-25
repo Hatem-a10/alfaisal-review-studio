@@ -84,8 +84,9 @@
    refreshProfile=true;btn.disabled=true;
    const resetId=currentStatus.resetId;
    try{
-    const profile=await (await import('/student-profile.mjs?v=2')).setup({reset:true,items:[]});
+    const profile=await (await import('/student-profile.mjs?v=3')).setup({reset:true,...StudentProfile.reviewSetupContext()});
     if(!profile)return;
+    await StudentProfile.addSetupReviews(profile);
     const {profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime}=profile;
     Object.assign(settings,{profileName,studentNumber,profileCreatedAt,studentGroup,studentSection,groupConfigured,labGroup,labGroupConfigured,englishFrequency,englishStartTime});
     persist();
