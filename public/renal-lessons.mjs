@@ -1,3 +1,5 @@
+import {renalConcepts} from './renal-concepts.mjs';
+import {renalReleasedLessons} from './renal-released-lessons.mjs';
 import {anatomyChecks} from './renal-anatomy-checks.mjs';
 import {renalPhysiology} from './renal-physiology.mjs';
 import {courses} from './course-registry.mjs';
@@ -101,7 +103,7 @@ const renalAnatomy = [
   ]},
 ];
 
-export const renalLessons=[...renalAnatomy,...renalPhysiology];
+export const renalLessons=[...renalAnatomy,renalReleasedLessons[0],...renalPhysiology,...renalReleasedLessons.slice(1)];
 const lessonChecks=(entry,topic)=>[...topic.checks,...(anatomyChecks[entry.code+'-'+topic.key]||[])];
 const bookletSource={
  id:'ren123-booklet-source',name:'REN 123 Past Paper Booklet.pdf',kind:'Past questions',
@@ -113,9 +115,11 @@ export function validateRenalLessons(entries=renalLessons){
   if(!entry?.code||!expected.includes(entry.code)||seen.has(entry.code))throw Error('Invalid or duplicate REN lesson code: '+String(entry?.code));
   seen.add(entry.code);
   if(!Array.isArray(entry.objectives)||!entry.objectives.length||!Array.isArray(entry.topics)||!entry.topics.length)throw Error('REN-'+entry.code+' has no objectives or teaching topics.');
+  const concepts=entry.topics.flatMap(topic=>topic.concepts||renalConcepts[entry.code]?.filter(part=>part.key===topic.key)||[]);
+  if(concepts.length&&(!entry.objectives.every((_,index)=>concepts.some(part=>part.objective===index))||concepts.some(part=>!entry.objectives[part.objective]||!part.text||!part.pages?.length)))throw Error('Incomplete objective coverage: REN-'+entry.code);
   const keys=new Set();
   for(const section of entry.topics){
-   if(!section.key||keys.has(section.key)||!section.body?.length||!section.pages?.length||!section.pages.every(p=>Number.isInteger(p)&&p>0))throw Error('REN-'+entry.code+' has incomplete or duplicate topic '+String(section.key));
+   if(!section.key||keys.has(section.key)||(!section.body?.length&&!section.concepts?.length)||!section.pages?.length||!section.pages.every(p=>Number.isInteger(p)&&p>0))throw Error('REN-'+entry.code+' has incomplete or duplicate topic '+String(section.key));
    keys.add(section.key);
    const checks=lessonChecks(entry,section),stems=new Set(checks.map(q=>String(q[0]||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim()).filter(Boolean));
    for(const row of checks){
@@ -131,14 +135,20 @@ export function validateRenalLessons(entries=renalLessons){
  for(const code of expected)if(!seen.has(code))throw Error('Missing registered REN lesson: REN-'+code);
  return entries;
 }
+const questionConcepts={"A6": [1, 0, 3, 1, 4, 5], "P5": [0, 2, 4, 5, 1], "P6": [0, 2, 4, 3, 5], "P7": [0, 2, 4, 5, 3], "P8": [1, 3, 4, 2, 0]};
+const transcripts={
+ A1:'posterior-wall-1-transcript',A2:'posterior-wall-2-transcript',A5:'kidney-histology-1-transcript',
+ A6:'kidney-histology-2-transcript',P1:'kidney-functions-transcript',P2:'mass-balance-transcript'
+};
 export function renalTeachingPack(entries=renalLessons) {
  validateRenalLessons(entries);
  const items=[], sources=[bookletSource], lessons=[], guides={}, questions=[];
  for(const entry of entries){
-  const id='REN-'+entry.code,source='ren123-'+(entry.code==='P4'?'p4-':'')+entry.source;
+  const id='REN-'+entry.code,source='ren123-'+(['P4','P6','P8'].includes(entry.code)?entry.code.toLowerCase()+'-':'')+entry.source;
   const cite=page=>({source,page});
   items.push({id,code:entry.code,course:'REN',title:entry.title,group:entry.group,dates:[]});
   sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],pages:[]});
+  const transcript=transcripts[entry.code];
   const sections=entry.topics.map(topic=>{
    const concept=id+'-'+topic.key, references=topic.pages.map(cite);
    lessonChecks(entry,topic).forEach(([question,...choices],i)=>{
@@ -146,16 +156,24 @@ export function renalTeachingPack(entries=renalLessons) {
     const pairs=original?choices[0].map((choice,n)=>[choice,choices[1][n]]):choices.slice(0,4).map(choice=>choice.split('|'));
     const fromBooklet=original?null:choices[4], sourcePage=fromBooklet?.match(/-p(\d+)-/)?.[1];
     const order=pairs.map((_,n)=>(n+i+topic.key.length)%pairs.length), answer=order.indexOf(0);
-    const citations=sourcePage?[{source:bookletSource.id,page:Number(sourcePage)},...references]:references;
+    const questionConcept=topic.concepts?.[questionConcepts[entry.code]?.[i]];
+    const specificRefs=questionConcept?questionConcept.pages.map(cite):references;
+    const citations=sourcePage?[{source:bookletSource.id,page:Number(sourcePage)},...specificRefs]:specificRefs;
     questions.push({id:concept+'-check-'+(i+1),lectureIds:[id],
      kind:sourcePage?'Past paper · adapted from Renal Booklet':'Application check · authored from slides',
      ...(sourcePage?{adaptedFromBookletId:fromBooklet,adaptationNote:'Adapted for guided practice from the Renal booklet, page '+sourcePage+'. The booklet retains the original item.'}:{}),
-     difficulty:'medium',concept,question,options:order.map(n=>pairs[n][0]),answer,explanation:pairs[0][1],reasons:order.map(n=>pairs[n][1]),references:citations});
+     difficulty:'medium',concept,...(questionConcept?{objectiveTitle:entry.objectives[questionConcept.objective]}:{}),question,options:order.map(n=>pairs[n][0]),answer,explanation:pairs[0][1],reasons:order.map(n=>pairs[n][1]),references:citations});
    });
-   return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references};
+   const concepts=(topic.concepts||renalConcepts[entry.code]?.filter(part=>part.key===topic.key)||[]).map(part=>({
+    title:part.title,objective:entry.objectives[part.objective],text:part.text,references:part.pages.map(cite),
+    figure:part.figure?{...cite(Number(part.figure.split('-').at(-1))),image:'/api/site-assets/materials/ren123/'+part.figure+'.jpg',caption:part.title}:null
+   }));
+   const scopeNote=entry.code==='A1'&&topic.key==='aorta'?{label:'Outside this Renal block',text:'The lecturer explicitly excluded the two small external iliac branches (inferior epigastric and deep circumflex iliac) from questioning in this block.',url:'https://www.youtube.com/watch?v=gQtrpQmK2Qc&t=1769s',time:'29:29'}:null;
+   const recordedExamCue=entry.code==='A6'?{label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
+   return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,transcript,scopeNote,recordedExamCue};
   });
   guides[id]={overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
-  lessons.push({id,scope:entry.overview,references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.join(' '),references:t.references}))});
+  lessons.push({id,scope:entry.overview,references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
  return {items,sources,lessons,guides,questions};
 }

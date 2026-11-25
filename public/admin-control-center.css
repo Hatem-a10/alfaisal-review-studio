@@ -226,3 +226,9 @@ html:root body dialog.acc-center .acc-close{width:40px!important;height:40px!imp
 html:root body dialog.acc-center .acc-close:hover{background:rgb(255 255 255 / .34)!important}
 
 @media(max-width:600px){.acc-center .acc-table-scroll{overflow-x:visible;border:0}.acc-center .acc-table-scroll table{display:block;min-width:0;width:100%;border-spacing:0}.acc-center .acc-table-scroll thead{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%)}.acc-center .acc-table-scroll tbody{display:grid;gap:10px}.acc-center .acc-table-scroll tr{display:block;border:1px solid var(--rs-line,var(--line));border-radius:12px;padding:8px;min-width:0;overflow-wrap:anywhere;background:var(--rs-surface,var(--white))}.acc-center .acc-table-scroll td{display:grid;grid-template-columns:minmax(5rem,35%) minmax(0,1fr);gap:8px;align-items:start;padding:6px 4px;border-bottom:1px solid var(--rs-line,var(--line))}.acc-center .acc-table-scroll td:last-child{border-bottom:0}.acc-center .acc-table-scroll td::before{content:attr(data-label);font-size:.75rem;font-weight:700;color:var(--rs-muted,var(--muted))}.acc-center .acc-table-scroll td .acc-actions{min-width:0;flex-wrap:wrap}}
+
+.acc-profile-history{border-block-start:1px solid var(--line);padding-block:1rem}
+.acc-profile-history summary{cursor:pointer;font-weight:700}
+.acc-profile-revision{margin-block:1rem}
+.acc-profile-revision h4{margin-block:.6rem}
+.acc-history-photo{width:54px;height:54px;object-fit:cover;border-radius:50%;vertical-align:middle}

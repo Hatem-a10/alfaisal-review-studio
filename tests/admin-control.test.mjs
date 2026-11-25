@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {pbkdf2Sync} from 'node:crypto';
 import {DatabaseSync} from 'node:sqlite';
 import {adminWriteGate,controlRoute} from '../lib/admin-control.mjs';
+import {managedAccountRoute} from '../lib/managed-accounts.mjs';
 
 const origin='https://staging.example';
 const prefix='clerk:'+'a'.repeat(64)+':';
@@ -15,7 +16,7 @@ const phrase='test phrase used only locally';
 
 function harness() {
  const sqlite=new DatabaseSync(':memory:');
- for(const file of ['staging/managed-accounts.sql','staging/schema.sql','staging/admin-control.sql','staging/admin-content.sql','staging/admin-resources.sql',
+ for(const file of ['staging/managed-accounts.sql','staging/schema.sql','staging/admin-control.sql','staging/profile-history.sql','staging/admin-content.sql','staging/admin-resources.sql',
   'drizzle/0000_huge_gladiator.sql','drizzle/0001_purple_norman_osborn.sql'])sqlite.exec(readFileSync(file,'utf8'));
  function stmt(sql,params=[]){
   return {sql,params,bind:(...args)=>stmt(sql,args),
@@ -191,6 +192,35 @@ test('student details are owner-only and return a scoped avatar and minimal sess
  assert.ok(h.sqlite.prepare("SELECT id FROM control_audit WHERE action='student.details-viewed' AND target=?").get(student.id));
  clerk.sessions.getSessionList=async()=>({data:[{userId:'user_editor'}]});
  assert.equal((await (await h.call(route,owner,undefined,{clerk})).json()).sessions,null);
+});
+
+test('profile revisions preserve previous names and photos only for the verified owner',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const clerk={users:{getUser:async id=>({id})},sessions:{getSessionList:async()=>({data:[]})}};
+ const photo='data:image/jpeg;base64,/9j/2Q==';
+ const row=()=>h.sqlite.prepare('SELECT * FROM review_accounts WHERE id=?').get(student.id);
+ const save=profile=>managedAccountRoute(new Request(origin+'/auth/account',{
+  method:'POST',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify({profile}),
+ }),h.env,student,row());
+ const details=account=>'students/details?id='+encodeURIComponent(account.id);
+ const profile={name:'Updated Student',studentGroup:'M2',studentSection:'A',labGroup:'2.1',profilePhoto:photo};
+ assert.equal((await save(profile)).status,200);
+ assert.equal((await save(profile)).status,200);
+ assert.equal((await save({...profile,profilePhoto:'data:text/html;base64,AA=='})).status,400);
+ assert.equal((await save({...profile,name:'Second Name',profilePhoto:''})).status,200);
+ assert.equal((await h.call(details(student),student,undefined,{clerk})).status,403);
+ assert.equal((await h.call(details(student),editor,undefined,{clerk})).status,403);
+ const history=(await (await h.call(details(student),owner,undefined,{clerk})).json()).revisions;
+ assert.equal(history.length,2);
+ assert.deepEqual(history[0].changes,[
+  {field:'name',previous:'Updated Student',current:'Second Name'},
+  {field:'profilePhoto',previous:photo,current:''},
+ ]);
+ assert.ok(history.every(revision=>revision.kind==='profile'&&Number.isFinite(Date.parse(revision.at))));
+ assert.deepEqual((await (await h.call(details(editor),owner,undefined,{clerk})).json()).revisions,[]);
+ const update=h.sqlite.prepare("UPDATE review_accounts SET profile_json=json_set(profile_json,'$.name',?) WHERE id=?");
+ for(let n=0;n<35;n++)update.run('History '+n,student.id);
+ assert.equal(h.sqlite.prepare('SELECT count(*) AS count FROM review_profile_history WHERE account_id=?').get(student.id).count,30);
 });
 
 test('profile corrections are validated, audited and reversible without changing the source profile',async t=>{

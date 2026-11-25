@@ -2,7 +2,7 @@ import {escapeHTML as esc} from './html-escape.mjs';
 /* global render, view, go, DATA, LEARNING, ORIGINAL_EXAMS, lessonId, guideTopic, guideTopicLesson, cardIndex, learnTab, etExam, originalRun, etPracticeTab, originalQuestionById, visibleOriginalRun, lessonById, inlineTopicsFor, inlineGroups, allLearningQuestions, TEACHING, storeOptions, saveOptions, today, tasks, dates, done, state, rec, persist, AssessmentPlan, assessmentClock, syncMeta, storageOK, openEdit, settings, toast */
 import {activeBookletPaths} from './active-booklet-core.mjs';
 import {courses,lectureCourses} from './course-registry.mjs';
-import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,practicalResumeEntries,nextClass} from './study-next-core.mjs';
+import {catchupPreview,revisionQueue,topicCoverage,renalPlanPreview,practicalResumeEntries} from './study-next-core.mjs';
 
 const content=()=>document.getElementById('content');
 const label=code=>courses[code]?.label||code;
@@ -184,16 +184,6 @@ function applyPlan(){
  }
  preview=null;persist();render();
 }
-function nextClassBanner(){
- const host=content();if(!host)return;
- host.querySelector('#studyNextClass')?.remove();
- if(!settings.groupConfigured||typeof campusScheduleWeeks!=='function'||typeof campusWeekEvents!=='function')return;
- const clock=assessmentClock(),starts=[...new Set(campusScheduleWeeks().map(w=>w.start).filter(start=>start>=campusWeekStart(clock.date)))];
- const selected=nextClass(starts.flatMap(start=>campusWeekEvents(start,false)),clock);
- const describe=e=>esc([campusEventTitle(e).title,campusEventTitle(e).detail,e.date,campusTime(e.start)+'–'+campusTime(e.end),e.room].filter(Boolean).join(' · '));
- if(!selected.current.length&&!selected.next)return;
- html('studyNextClass','<h2>Next class</h2>'+(selected.current.length?'<p><strong>In progress:</strong> '+selected.current.map(describe).join('<br>')+'</p>':'')+(selected.next?'<p><strong>Upcoming:</strong> '+describe(selected.next)+'</p>':'')+(selected.overlaps.length?'<p role="status">Overlapping timetable entries: '+selected.overlaps.map(describe).join('<br>')+'. Verify your assigned session.</p>':'')+'<button type="button" data-study-open-schedule>Open schedule</button>');
-}
 function scheduleAlerts(){
  const payload=window.reviewPublishedAcademic?.(),rows=payload?.changes;
  if(!rows?.length||seenSchedule===payload.revisionId)return;
@@ -315,11 +305,10 @@ function openNotebook(){
  search.addEventListener('input',fill);d.append(title,label,list,close);d.addEventListener('close',()=>{d.remove();if(notebookDialog===d)notebookDialog=null},{once:true});document.body.append(d);d.showModal();fill();
 }
 function notebookEntry(){
- if(view==='dashboard')html('studyNotebook','<h2>Personal notebook</h2><p>'+noteRows().length+' saved topic notes</p><button type="button" data-study-notebook>Open notebook</button>');
  if(view==='learning'&&learnTab==='lesson'){
   const section=document.querySelector('.guide-section,.teaching-card'),context=noteContext();
   if(section&&context&&!section.querySelector('[data-study-note]')){
-   const button=document.createElement('button');button.type='button';button.dataset.studyNote='';button.textContent=options().notebook?.[context.id]?.deleted===false?'Edit personal note':'Add personal note';button.onclick=()=>notebookEditor(context);section.prepend(button);
+   const button=document.createElement('button');button.type='button';button.dataset.studyNote='';button.textContent=options().notebook?.[context.id]?.deleted===false?'Edit personal note':'Add personal note';button.onclick=()=>notebookEditor(context);const book=document.createElement('button');book.type='button';book.textContent='Open notebook';book.onclick=openNotebook;section.prepend(button,book);
   }
  }
 }
@@ -327,7 +316,7 @@ window.addEventListener('review-profile-changed',()=>notebookDialog?.close());
 function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
- if(view==='dashboard'){resumeCard();scheduleAlerts();nextClassBanner();}
+ if(view==='dashboard'){resumeCard();scheduleAlerts();}
  tourEntry();firstLessonControls();notebookEntry();
  if(view==='calendar'){
   scheduleAlerts();
@@ -345,7 +334,6 @@ function paint(){
 }
 const before=render;render=function(...args){const result=before.apply(this,args);paint();return result;};
 window.addEventListener('review:academic-config',paint);
-setInterval(()=>{if(view==='dashboard'&&document.documentElement.dataset.boot==='ready'&&!document.hidden)nextClassBanner();},60000);
 const actionHandlers={
  'tour':openWelcomeTour,'notebook':openNotebook,
  'open-schedule':()=>go('calendar'),

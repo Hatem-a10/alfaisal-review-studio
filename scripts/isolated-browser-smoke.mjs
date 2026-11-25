@@ -19,7 +19,7 @@ delete cfg.account_id;delete cfg.observability;writeFileSync(config,JSON.stringi
 const wrangler=resolve('node_modules/wrangler/bin/wrangler.js'),origin='https://localhost:8787',local=['--config',config,'--local','--persist-to',temp];
 let server;
 try{
- for(const file of ['drizzle/0000_huge_gladiator.sql','drizzle/0001_purple_norman_osborn.sql','staging/schema.sql','staging/managed-accounts.sql','staging/admin-control.sql','staging/admin-content.sql','staging/admin-academics.sql','staging/admin-resources.sql']){
+ for(const file of ['drizzle/0000_huge_gladiator.sql','drizzle/0001_purple_norman_osborn.sql','staging/schema.sql','staging/managed-accounts.sql','staging/admin-control.sql','staging/profile-history.sql','staging/admin-content.sql','staging/admin-academics.sql','staging/admin-resources.sql']){
   const result=spawnSync(process.execPath,[wrangler,'d1','execute','DB',...local,'--file',file],{stdio:'inherit',env:{...process.env,CLOUDFLARE_API_TOKEN:'',CLOUDFLARE_ACCOUNT_ID:''}});
   if(result.status!==0)throw Error('Local synthetic schema failed: '+file);
  }

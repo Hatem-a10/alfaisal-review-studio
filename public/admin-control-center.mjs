@@ -289,6 +289,26 @@ export async function openAdminCenter(){
    ...(studentNumberOverride?[['Student number override',studentNumberOverride]]:[])]),
    node('h3','Recent sign-ins'),
    table(['Signed in','Device','Browser','Last active'],sessionRows,result.sessions?'No recent sessions.':'Clerk session history is unavailable.'));
+  const history=node('details',null,{class:'acc-profile-history'});
+  history.append(node('summary','Profile history'+(result.revisions?.length?' · '+result.revisions.length:'')));
+  const labels={name:'Display name',providerName:'Sign-in name',email:'Verified email',studentNumber:'Student number',studentGroup:'Class',studentSection:'Section',labGroup:'Lab group',englishEnabled:'English schedule',englishFrequency:'English days per week',englishStartTime:'English start',profilePhoto:'Profile picture'};
+  const describe=(value,field)=>{
+   if(field==='profilePhoto'&&value)return node('img',null,{src:value,alt:'Recorded profile picture',class:'acc-history-photo',loading:'lazy'});
+   return node('span',value==null||value===''?'Unset':typeof value==='boolean'?(value?'On':'Off'):String(value));
+  };
+  for(const revision of result.revisions||[]){
+   const section=node('section',null,{class:'acc-profile-revision'});
+   const header=node('h4');
+   const timestamp=new Date(revision.at).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'medium'});
+   header.append(node('time',timestamp,{datetime:revision.at}),' · '+({profile:'Student profile',assignment:'Admin corrections',identity:'Sign-in identity'})[revision.kind]);
+   section.append(header);
+   section.append(table(['Field','Previous','Updated'],revision.changes.map(change=>[
+    labels[change.field],describe(change.previous,change.field),describe(change.current,change.field),
+   ])));
+   history.append(section);
+  }
+  if(!result.revisions?.length)history.append(node('p',result.revisions?'No profile changes recorded yet.':'Profile history is unavailable on this deployment.'));
+  details.append(history);
   const note=node('p',null,{role:'status',class:'acc-status'});
   if(person.role!=='owner'){
    const edit=button('Edit information',async()=>{

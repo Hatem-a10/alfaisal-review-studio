@@ -583,3 +583,16 @@ html:root body:not(.xp-exam-active) .booklet-option-reasons>summary{font-size:1.
 #microscopeWorkspace .microscope-library button[aria-pressed=true]{background:var(--rs-grad-tint);border-color:var(--accent-border)}
 #microscopeWorkspace .microscope-import{display:grid;margin-top:18px}
 @media(max-width:760px){#microscopeWorkspace .microscope-layout{grid-template-columns:minmax(0,1fr)}}
+
+.renal-concept{margin-block:1rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--rs-surface);border-inline-start:3px solid var(--accent-border)}
+.renal-concept h3{margin:0 0 .2rem}
+.renal-concept .concept-sources{margin-block-end:0}
+.renal-transcript-link{display:inline-block;margin-block:.5rem}
+.countdown-card[data-assessment-type] .countdown-type{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;font-weight:750;line-height:1.2}
+.countdown-card[data-assessment-type="exams"]{border-block-start:5px solid var(--st-b)}
+.countdown-card[data-assessment-type="exams"] .countdown-type{border-radius:5px;background:color-mix(in srgb,var(--st-b) 28%,var(--rs-surface))}
+.countdown-card[data-assessment-type="tbls"]{border-inline-start:5px solid var(--st-c);border-start-start-radius:7px}
+.countdown-card[data-assessment-type="tbls"] .countdown-type{border-radius:999px;background:color-mix(in srgb,var(--st-c) 24%,var(--rs-surface))}
+.countdown-card[data-assessment-type="ospe"]{border-block-end:5px double var(--st-c)}
+.countdown-card[data-assessment-type="ospe"] .countdown-type{border-radius:8px;border:1px dashed var(--st-c);background:color-mix(in srgb,var(--st-c) 12%,var(--rs-surface))}
+.countdown-card.countdown-featured[data-assessment-type] .countdown-type{background:rgb(0 0 0 /.28)}

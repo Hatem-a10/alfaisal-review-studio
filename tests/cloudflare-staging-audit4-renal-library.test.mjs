@@ -11,7 +11,7 @@ test('all actual REN manifest entries validate and mapped originals reach lectur
  for(const row of manifest.filter(r=>r.kind==='lecture'&&r.sessions.length)){
   const source=rows.find(r=>r.id==='ren123-'+row.id);
   assert.deepEqual(Array.from(source.lectureIds),row.sessions.map(code=>'REN-'+code));
-  for(const code of row.sessions)assert.equal(api.libraryMaterials({id:'REN-'+code},null,[source]).slides[0].source,source);
+  for(const code of row.sessions)assert.equal(api.libraryMaterials({id:'REN-'+code},null,[source])[row.path.endsWith('.txt')?'transcript':'slides'][0].source,source);
  }
 });
 test('malformed, duplicate and out-of-course manifest paths never modify the source list',()=>{

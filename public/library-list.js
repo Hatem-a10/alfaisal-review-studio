@@ -4,7 +4,7 @@ function libraryDocumentURL(source, page = 1, lookup) {
  if (!source) return null;
  const target = sourceTarget({source: source.id, page},lookup);
  if (!target || !/^(?:\/api\/(?:materials|study-assets)\/[\w-]+(?:[?#]|$)|\/(?:api\/site-assets\/)?(?:materials|study_material)\/|https:\/\/)/.test(target.url)) return null;
- if (!/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?|docx)(?:$|[?#])/i.test(source.name)) return null;
+ if (!/\.(?:pdf|pptx?|docx|txt)(?:$|[?#])/i.test(target.url) && !/\.(?:pdf|pptx?|docx|txt)(?:$|[?#])/i.test(source.name)) return null;
  return sourcePageURL(target);
 }
 
@@ -86,14 +86,14 @@ function renalManifestSources(rows, sources) {
  if(!Array.isArray(rows))throw Error('Invalid Renal document index.');
  const ids=new Set(),paths=new Set(),existingIds=new Set(sources.map(s=>s.id)),existingURLs=new Set(sources.map(s=>s.url)),added=[];
  for(const row of rows){
-  if(!row||typeof row.id!=='string'||!/^[a-z0-9][a-z0-9-]*$/i.test(row.id)||typeof row.title!=='string'||!row.title.trim()||typeof row.path!=='string'||!/^materials\/ren123\/[a-z0-9][a-z0-9._-]*\.(?:pdf|pptx?|docx)$/i.test(row.path)||!['lecture','lab','overview','booklet'].includes(row.kind)||!Array.isArray(row.sessions)||row.sessions.some(code=>typeof code!=='string'||!/^[A-Z]+\d+$/.test(code)))throw Error('Invalid Renal document entry.');
+  if(!row||typeof row.id!=='string'||!/^[a-z0-9][a-z0-9-]*$/i.test(row.id)||typeof row.title!=='string'||!row.title.trim()||typeof row.path!=='string'||!/^materials\/ren123\/[a-z0-9][a-z0-9._-]*\.(?:pdf|pptx?|docx|txt)$/i.test(row.path)||!['lecture','lab','overview','booklet'].includes(row.kind)||!Array.isArray(row.sessions)||row.sessions.some(code=>typeof code!=='string'||!/^[A-Z]+\d+$/.test(code)))throw Error('Invalid Renal document entry.');
   if(ids.has(row.id)||paths.has(row.path))throw Error('Duplicate Renal document entry.');
   ids.add(row.id);paths.add(row.path);
   const id='ren123-'+row.id,url='/api/site-assets/'+row.path;
   // Existing canonical course sources take precedence. Never create a second source with the same identity.
   if(existingURLs.has(url)||existingIds.has(id))continue;
   const file=row.path.split('/').at(-1),lectureIds=[...new Set(row.sessions)].map(code=>'REN-'+code);
-  added.push({id,name:file,displayName:row.title,course:'REN',kind:row.kind==='lecture'&&lectureIds.length?'Original lecture':row.kind,lectureIds,unit:/\.pptx?$/i.test(file)?'slide':'page',url,pages:[]});
+  added.push({id,name:file,displayName:row.title,course:'REN',kind:/\.txt$/i.test(file)?'Lecture transcript':row.kind==='lecture'&&lectureIds.length?'Original lecture':row.kind,lectureIds,unit:/\.pptx?$/i.test(file)?'slide':'page',url,pages:[]});
  }
  return added;
 }

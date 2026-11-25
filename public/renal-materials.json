@@ -163,5 +163,115 @@
     "path": "materials/ren123/schedule.pdf",
     "size": 401183,
     "sha": "b5aa18ed04ea058baf6549e3c542a6f15803486247572d57f16176ccce90c9e2"
+  },
+  {
+    "id": "tubular-functions",
+    "title": "Tubular functions I–II",
+    "kind": "lecture",
+    "sessions": [
+      "P5",
+      "P6"
+    ],
+    "units": 35,
+    "path": "materials/ren123/tubular-functions.pdf",
+    "size": 4373285,
+    "sha": "ade6171a23747d7dfd8b009a72736a211a2df942ffb6228c1c23a3377a500c6a"
+  },
+  {
+    "id": "urine-concentration",
+    "title": "Urine concentration and dilution I–II",
+    "kind": "lecture",
+    "sessions": [
+      "P7",
+      "P8"
+    ],
+    "units": 25,
+    "path": "materials/ren123/urine-concentration.pdf",
+    "size": 3255592,
+    "sha": "b2cf02aadfcdb044c2707f6ba6713519cf4c99167d33e35a8884992997f3ca47"
+  },
+  {
+    "id": "kidney-histology-2",
+    "title": "Histology of the nephron · original slides",
+    "kind": "lecture",
+    "sessions": [
+      "A6"
+    ],
+    "units": 29,
+    "path": "materials/ren123/kidney-histology-2.pptx",
+    "size": 22214206,
+    "sha": "fa1c26d2a158af1d92a9f2ab62b549bf42b12388af0421b7388e44e29275a655"
+  },
+  {
+    "id": "kidney-histology-1-transcript",
+    "title": "Histological organization of the kidney · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A5"
+    ],
+    "units": 1162,
+    "path": "materials/ren123/kidney-histology-1-transcript.txt",
+    "size": 51805,
+    "sha": "1da5456db902c4f1a5f648b5df492186cc4202cb0dbcfc619f99ff934aaff7b9"
+  },
+  {
+    "id": "kidney-histology-2-transcript",
+    "title": "Histology of the nephron · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A6"
+    ],
+    "units": 1125,
+    "path": "materials/ren123/kidney-histology-2-transcript.txt",
+    "size": 51587,
+    "sha": "20933953a20d1144de1ff0c90c9cebd71a343c7ad4937e6eded7f0a587e32979"
+  },
+  {
+    "id": "mass-balance-transcript",
+    "title": "Mass balances and renal clearance · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "P2"
+    ],
+    "units": 882,
+    "path": "materials/ren123/mass-balance-transcript.txt",
+    "size": 38576,
+    "sha": "3e0bfabb8f5aef279f86f6a5057983b08cc066f517e4cf6a7bc171908eba0fd6"
+  },
+  {
+    "id": "kidney-functions-transcript",
+    "title": "Kidney structure and functions · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "P1"
+    ],
+    "units": 711,
+    "path": "materials/ren123/kidney-functions-transcript.txt",
+    "size": 28693,
+    "sha": "e0da8d999f6e31c6037ed98987166c52f96df6a51d410816642bbb48d88575a3"
+  },
+  {
+    "id": "posterior-wall-1-transcript",
+    "title": "Posterior abdominal wall I · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A1"
+    ],
+    "units": 1061,
+    "path": "materials/ren123/posterior-wall-1-transcript.txt",
+    "size": 46749,
+    "sha": "80c17d23dd85902908bc4d80e03189fbe3f2084884ca2c6198f9d1980070ada1"
+  },
+  {
+    "id": "posterior-wall-2-transcript",
+    "title": "Posterior abdominal wall II · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A2"
+    ],
+    "units": 657,
+    "path": "materials/ren123/posterior-wall-2-transcript.txt",
+    "size": 29295,
+    "sha": "a65fded88d6fce0bef98bd5156bb9fecc1f104138982d69fa5991c197becf7c3"
   }
 ]

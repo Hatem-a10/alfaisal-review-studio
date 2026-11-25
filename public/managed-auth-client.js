@@ -36,8 +36,8 @@
   try{
    while(profileQueued){
     profileQueued=false;
-    if(typeof settings==='undefined'||!settings?.profileCreatedAt||!settings.profileName)continue;
-    const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime},fingerprint=JSON.stringify(profile);
+    if(document.documentElement.dataset.boot!=='ready'||typeof settings==='undefined'||!settings?.profileCreatedAt||!settings.profileName)continue;
+    const profile={name:settings.profileName,studentGroup:settings.studentGroup,studentSection:settings.studentSection,labGroup:settings.labGroup,englishFrequency:settings.englishFrequency,englishStartTime:settings.englishStartTime,englishEnabled:settings.englishEnabled!==false,studentNumber:settings.studentNumber||'',profilePhoto:settings.profilePhoto||''},fingerprint=JSON.stringify(profile);
     if(fingerprint===profileFingerprint)continue;
     try{const r=await fetch('/auth/account',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile})});if(r.ok)profileFingerprint=fingerprint;}catch{}
    }
