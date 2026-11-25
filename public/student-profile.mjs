@@ -28,7 +28,7 @@ function groupValues(form){return {studentGroup:form.querySelector('[name=group]
 export function groups(settings,save){style();let panel=document.getElementById('studentGroupSettings');if(!panel){panel=document.createElement('section');panel.id='studentGroupSettings';panel.className='panel';panel.innerHTML='<h3>Profile and schedule</h3>'+groupFields()+'<label>Lab group<select data-lab><option value="">Not selected</option></select></label><label class="student-settings-english"><input type="checkbox" data-english-enabled> Show English classes</label><label>English days<select data-frequency><option value="2">2 days · Monday & Wednesday</option><option value="3">3 days · Sunday, Tuesday & Thursday</option></select></label><label>Start time<select data-english-time><option value="17:00">5:00 PM</option><option value="17:30">5:30 PM</option></select></label><button type="button" data-save-preferences>Save preferences</button><div data-preference-status role="status"></div><div data-plan-warning role="status"></div><button type="button" data-reset-profile>Reset profile</button>';document.querySelector('#siteAdmin .admin-frame')?.append(panel)}const warning=panel.querySelector('[data-plan-warning]'),plan=typeof storeOptions==='function'?storeOptions().onboardingPlanWarnings:null;warning.replaceChildren();if(Array.isArray(plan?.items)&&plan.items.length){const p=document.createElement('p');p.textContent=plan.items.length+' reviews could not be placed before their deadline or within the available capacity. Existing dates were retained. Unscheduled Renal reviews need a personal plan; open My Study Plan when ready.';const b=document.createElement('button');b.type='button';b.textContent='Dismiss planning warning';b.onclick=()=>{const o={...storeOptions()};delete o.onboardingPlanWarnings;saveOptions(o);warning.replaceChildren()};warning.append(p,b)}const g=panel.querySelector('[name=group]'),section=panel.querySelector('[name=section]'),lab=panel.querySelector('[data-lab]');const legacy=settings.legacyProfile&&!settings.groupConfigured;g.value=settings.studentGroup||(legacy?'M1':'');section.value=settings.studentSection||(legacy?'A':'');const initialGroup=g.value,initialSection=section.value,storedLab=settings.labGroup||(legacy&&!settings.labGroupConfigured?'1.6':'');const fill=(keepSaved=false)=>{const prior=lab.value;lab.replaceChildren(new Option('Not selected',''));for(const value of labChoices(g.value,section.value))lab.add(new Option(value,value));if(keepSaved&&g.value===initialGroup&&section.value===initialSection&&validLab(storedLab)&&!Array.from(lab.options).some(o=>o.value===storedLab))lab.add(new Option(storedLab,storedLab));lab.value=Array.from(lab.options).some(o=>o.value===prior)?prior:''};fill(true);lab.value=storedLab;g.onchange=()=>fill();section.onchange=()=>fill();loadGroups().then(()=>fill(true));panel.querySelector('[data-english-enabled]').checked=settings.englishEnabled!==false;panel.querySelector('[data-frequency]').value=String(settings.englishFrequency||2);panel.querySelector('[data-english-time]').value=settings.englishStartTime||'17:30';panel.querySelector('[data-save-preferences]').onclick=()=>{save({...groupValues(panel),labGroupConfigured:true,labGroup:lab.value,englishEnabled:panel.querySelector('[data-english-enabled]').checked,englishFrequency:Number(panel.querySelector('[data-frequency]').value),englishStartTime:panel.querySelector('[data-english-time]').value});panel.querySelector('[data-preference-status]').textContent='Schedule updated.'};panel.querySelector('[data-reset-profile]').onclick=async()=>{document.getElementById('siteAdmin')?.close();const p=await setup({reset:true,...StudentProfile.reviewSetupContext()});if(p){await StudentProfile.addSetupReviews(p);save({...p,legacyProfile:false,profilePhoto:''})}}}
 
 function appearance(d){const bar=document.createElement('div');bar.className='student-appearance';bar.setAttribute('role','group');bar.setAttribute('aria-label','Appearance');bar.innerHTML='<button type="button" aria-label="Switch appearance mode"></button>';d.querySelector('.welcome-appearance-preview')?.append(bar);const theme=bar.querySelector('button'),original=document.getElementById('themeToggle');const paint=()=>{theme.innerHTML=(original?.innerHTML||'◐')+'<span>'+(settings.theme==='amoled'?'Switch to light':'Switch to dark')+'</span>';theme.setAttribute('aria-label',original?.getAttribute('aria-label')||'Switch appearance mode')};paint();theme.onclick=()=>{settings.theme=settings.theme==='amoled'?'light':'amoled';applyTheme();paint()};mountGradientPicker(bar,{selected:settings.accentAuto!==false?'auto':chosenGradient(settings)?.id,onPick(g){if(g){settings.accentAuto=false;settings.accentPalette=g.id;settings.accent=g.b}else settings.accentAuto=true;applyTheme()}})}
-function mountReviewProgress(progress,items,records,count){
+function mountReviewProgress(progress,items,records,count,onChange){
  const byCourse=new Map();
  for(const item of items){if(!byCourse.has(item.course))byCourse.set(item.course,[]);byCourse.get(item.course).push(item);}
  const courses=[...new Set(['REN','MOL',...byCourse.keys()])].filter(course=>byCourse.has(course));
@@ -49,6 +49,7 @@ function mountReviewProgress(progress,items,records,count){
    subtotal.textContent=total+' complete';subtotal.dataset.count=total;
    const sum=[...courseNav.querySelectorAll('small')].reduce((n,node)=>n+Number(node.dataset.count||0),0);
    count.textContent=sum+' completed '+(sum===1?'review':'reviews');
+   onChange();
   });
  }
  function select(course){for(const {button,panel} of panels){
@@ -174,7 +175,25 @@ export function setup({reset=false,items=[],reviewRecords={}}={}){
   const reviews=d.querySelector('[data-review-options]');let reviewsMounted=false;
   // Steps: one section at a time; Continue checks the current step's required fields.
   let step=0;const sections=[...d.querySelectorAll('.student-step')],back=d.querySelector('[data-back]'),next=d.querySelector('[data-next]');
-  const show=i=>{step=i;sections.forEach((el,n)=>el.hidden=n!==i);d.querySelectorAll('[data-step-dot]').forEach((el,n)=>{el.classList.toggle('current',n===i);el.classList.toggle('done',n<i);if(n===i)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current')});back.hidden=i===0;next.textContent=i<sections.length-1?'Continue':reset?'Save profile':'Go to Home';status.textContent='';if(sections[i].dataset.step==='progress'&&!reviewsMounted){reviewsMounted=true;mountReviewProgress(reviews.querySelector('[data-progress]'),items,reviewRecords,reviews.querySelector('[data-review-count]'))}sections[i].querySelector('input:not([type=checkbox]),select')?.focus({preventScroll:true})};
+  const updateNextLabel=()=>{
+   const skip=sections[step].dataset.step==='progress'&&!form.querySelector('[data-item]:checked:not(:disabled)');
+   next.textContent=step<sections.length-1?'Continue':skip?'Skip':reset?'Save profile':'Go to Home';
+  };
+  const show=i=>{
+   step=i;
+   sections.forEach((el,n)=>el.hidden=n!==i);
+   d.querySelectorAll('[data-step-dot]').forEach((el,n)=>{
+    el.classList.toggle('current',n===i);el.classList.toggle('done',n<i);
+    if(n===i)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');
+   });
+   back.hidden=i===0;status.textContent='';
+   if(sections[i].dataset.step==='progress'&&!reviewsMounted){
+    reviewsMounted=true;
+    mountReviewProgress(reviews.querySelector('[data-progress]'),items,reviewRecords,reviews.querySelector('[data-review-count]'),updateNextLabel);
+   }
+   updateNextLabel();
+   sections[i].querySelector('input:not([type=checkbox]),select')?.focus({preventScroll:true});
+  };
   const requiredFor=i=>({you:[name],class:managed&&!reset?[group,section,lab]:[]})[sections[i].dataset.step]||[];
   back.onclick=()=>show(Math.max(0,step-1));
   const initialAppearance={theme:settings.theme,accent:settings.accent,accentAuto:settings.accentAuto,accentPalette:settings.accentPalette};

@@ -75,6 +75,7 @@ function sharedSlide(slide){
  },total);
 }
 
+const isLabelScan=slide=>/-scan-1$/i.test(slide.id)||/\bScan\s+1\s*$/i.test(slide.name);
 export function microscopeCards(group){
  const specimens=new Map();
  for(const slide of group.slides){
@@ -83,15 +84,18 @@ export function microscopeCards(group){
   specimens.get(key).push(slide);
  }
  return '<h3>'+escape(group.title)+'</h3><div class="microscope-cards">'+[...specimens.values()].map(scans=>{
-  const [first,...otherScans]=scans;
+  const [first]=scans;
+  const [primary,...otherScans]=scans.filter(slide=>!isLabelScan(slide));
   const title=first.specimen||first.name;
   const cover=/^\/api\/site-assets\/materials\/ren123\/microscope\/[a-z0-9-]+-cover\.jpg$/.test(first.cover||'')
    ?'<img src="'+escape(first.cover)+'" alt="Original slide label and specimen" loading="lazy" decoding="async">':'';
   const detail=first.name.replace(/ · Scan \d+$/,'');
-  return `<article class="microscope-card"><button class="microscope-card-cover" type="button" data-slide="${escape(first.id)}" aria-pressed="false">
-   ${cover}<span class="microscope-card-copy"><strong>${escape(title)}</strong>
-   <small>${[first.accession,detail].filter(Boolean).map(escape).join(' · ')}</small></span></button>
-   ${otherScans.length?`<div class="microscope-scan-options" aria-label="More scans of ${escape(title)}">${otherScans.map((slide,i)=>`<button type="button" data-slide="${escape(slide.id)}" aria-pressed="false">Scan ${i+2}</button>`).join('')}</div>`:''}</article>`;
+  const copy=`${cover}<span class="microscope-card-copy"><strong>${escape(title)}</strong>
+   <small>${[first.accession,detail].filter(Boolean).map(escape).join(' · ')}</small></span>`;
+  return `<article class="microscope-card">${primary
+   ?`<button class="microscope-card-cover" type="button" data-slide="${escape(primary.id)}" aria-pressed="false">${copy}</button>`
+   :`<div class="microscope-card-cover">${copy}<small class="microscope-card-copy">No tissue scan available</small></div>`}
+   ${otherScans.length?`<div class="microscope-scan-options" aria-label="More scans of ${escape(title)}">${otherScans.map(slide=>`<button type="button" data-slide="${escape(slide.id)}" aria-pressed="false">${escape(slide.name.match(/Scan \d+$/i)?.[0]||slide.name)}</button>`).join('')}</div>`:''}</article>`;
  }).join('')+'</div>';
 }
 
@@ -141,7 +145,7 @@ export function mount(host){
    list.onclick=event=>{
     const button=event.target.closest('[data-slide]');
     const slide=groups.flatMap(group=>group.slides).find(item=>item.id===button?.dataset.slide);
-    if(!slide)return;
+    if(!slide||isLabelScan(slide))return;
     for(const node of list.querySelectorAll('[data-slide]'))node.setAttribute('aria-pressed',String(node===button));
     if(matchMedia('(max-width:760px)').matches)stage.closest('.anatomy-workspace').scrollIntoView({block:'start'});
     open(slide.specimen?[slide.specimen,slide.accession,slide.name.match(/Scan \d+$/)?.[0]].filter(Boolean).join(' · '):slide.name,()=>sharedSlide(slide));

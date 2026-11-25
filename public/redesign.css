@@ -603,3 +603,72 @@ html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessme
 html:root body:not(.xp-exam-active) .countdown-card[class*=stain-][data-assessment-type="ospe"]:not(.countdown-featured){background:radial-gradient(ellipse at 50% 112%,color-mix(in srgb,var(--st-b) 28%,var(--rs-surface)),var(--rs-surface) 76%)}
 html:root body:not(.xp-exam-active) .countdown-card.countdown-featured[data-assessment-type="tbls"]{background:linear-gradient(145deg,var(--st-a),var(--st-b) 70%,color-mix(in srgb,var(--st-b),var(--st-c) 35%))}
 html:root body:not(.xp-exam-active) .countdown-card.countdown-featured[data-assessment-type="ospe"]{background:radial-gradient(ellipse at 55% 135%,var(--st-b),var(--st-a) 80%)}
+
+/* Learn and Booklet readers share the site's surface and accent tokens. */
+html:root body:not(.xp-exam-active) .study-reader-title{margin:clamp(18px,3vw,36px) 0 20px;font-size:clamp(2rem,4vw,3.125rem)}
+html:root body:not(.xp-exam-active) .learning-layout{gap:clamp(14px,2.1vw,28px)}
+html:root body:not(.xp-exam-active) .learning-layout .lesson-catalog{box-shadow:none}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-head{display:grid;gap:10px;padding:16px;background:var(--rs-surface)}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-head h3{font-size:1rem;margin:0}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-head :is(input,select){width:100%;min-height:42px;margin:0}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-list button{display:grid;gap:4px;text-align:start}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-list button>span:first-child{font-size:.72rem;font-weight:720;color:var(--accent-text,var(--accent))}
+html:root body:not(.xp-exam-active) .learning-layout .catalog-list button[aria-current=true]{border-color:var(--accent-border)}
+html:root body:not(.xp-exam-active) .learning-layout .learning-heading{background:linear-gradient(148deg,var(--rs-accent-tint),var(--rs-surface) 68%);padding:clamp(18px,3vw,34px);margin-bottom:16px}
+html:root body:not(.xp-exam-active) .learning-layout .learning-heading h2{font-size:clamp(1.55rem,3.2vw,2.55rem);line-height:1.1;margin:.55rem 0}
+html:root body:not(.xp-exam-active) .learning-layout .learning-heading p{max-inline-size:68ch;line-height:1.55}
+html:root body:not(.xp-exam-active) .learning-layout .guide-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+html:root body:not(.xp-exam-active) .learning-layout .guide-toolbar [data-print-lesson]{margin-inline-start:auto}
+html:root body:not(.xp-exam-active) .learning-layout .reader-mastery{margin:8px 0;color:var(--muted);font-size:.86rem}
+html:root body:not(.xp-exam-active) .learning-layout .reader-mastery strong{color:var(--rs-ink)}
+html:root body:not(.xp-exam-active) .learning-layout .guide-toolbar .segmented{display:flex;gap:6px}
+html:root body:not(.xp-exam-active) .learning-layout .guide-toolbar button{min-height:44px;font-size:.84rem;padding-inline:10px}
+html:root body:not(.xp-exam-active) .learning-layout .complete-guide .topic-controls{position:static;background:var(--rs-surface);border:0;box-shadow:none;padding:0}
+html:root body:not(.xp-exam-active) .learning-layout .guide-section{border-inline:0;border-radius:0;box-shadow:none;padding-inline:0}
+html:root body:not(.xp-exam-active) .learning-layout .guide-section>p{max-inline-size:74ch;line-height:1.7}
+html:root body:not(.xp-exam-active) #lessonCatalogToggle{display:none}
+@media(max-width:850px){
+ html:root body:not(.xp-exam-active) .learning-layout:has(#lessonCatalogToggle){grid-template-columns:minmax(0,1fr)}
+ html:root body:not(.xp-exam-active) #lessonCatalogToggle{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:48px;padding-inline:16px;background:var(--rs-surface);border:0;border-radius:0}
+ html:root body:not(.xp-exam-active) .lesson-catalog[data-expanded=false] #lessonCatalogControls{display:none}
+ html:root body:not(.xp-exam-active) .learning-layout .catalog-head h3{display:none}
+}
+@media(max-width:480px){
+ html:root body:not(.xp-exam-active) .learning-layout .learning-tabs{gap:14px}
+ html:root body:not(.xp-exam-active) .learning-layout .guide-toolbar [data-print-lesson]{margin-inline-start:0}
+}
+
+html:root body:not(.xp-exam-active) .phase2-booklet{max-width:1050px;margin-inline:auto}
+html:root body:not(.xp-exam-active) .phase2-booklet :is(.booklet-overview,.booklet-question){padding:clamp(16px,3.2vw,34px);margin-bottom:16px}
+html:root body:not(.xp-exam-active) .phase2-booklet .booklet-overview{background:linear-gradient(155deg,var(--rs-accent-tint),var(--rs-surface) 64%)}
+html:root body:not(.xp-exam-active) .phase2-booklet .booklet-overview-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:start;gap:12px}
+html:root body:not(.xp-exam-active) .phase2-booklet h1{margin:0 0 6px;font-size:clamp(1.65rem,4vw,2.8rem);line-height:1.12}
+html:root body:not(.xp-exam-active) .booklet-overview-heading p{margin:0;color:var(--muted);font-size:.85rem}
+html:root body:not(.xp-exam-active) .booklet-overview .renal-source-index{margin:0}
+html:root body:not(.xp-exam-active) .booklet-progress{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;margin:18px 0;color:var(--muted);font-size:.82rem}
+html:root body:not(.xp-exam-active) .booklet-progress progress{flex:1;min-width:120px;height:8px;accent-color:var(--accent);border:0;border-radius:999px;overflow:hidden;background:var(--rs-line)}
+html:root body:not(.xp-exam-active) .booklet-progress progress::-webkit-progress-bar{background:var(--rs-line)}
+html:root body:not(.xp-exam-active) .booklet-progress progress::-webkit-progress-value{background:var(--rs-grad)}
+html:root body:not(.xp-exam-active) .booklet-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:10px;margin:0}
+html:root body:not(.xp-exam-active) .booklet-filters>label{display:grid;gap:4px;font-size:.78rem;color:var(--muted);margin:0}
+html:root body:not(.xp-exam-active) .booklet-filters>label select{width:100%;min-height:42px;margin:0}
+html:root body:not(.xp-exam-active) .booklet-modes{grid-column:1/-1;order:1;gap:6px}
+html:root body:not(.xp-exam-active) .booklet-modes label{padding-inline:10px;border:1px solid var(--rs-line);border-radius:9px;background:var(--rs-surface);font-size:.78rem}
+html:root body:not(.xp-exam-active) .booklet-modes label:has(:checked){background:var(--rs-accent-tint);border-color:var(--accent-border)}
+html:root body:not(.xp-exam-active) .booklet-question-meta{margin-block:0 10px}
+html:root body:not(.xp-exam-active) .booklet-question .booklet-annotations{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+html:root body:not(.xp-exam-active) .booklet-question .booklet-annotations details[open]{flex-basis:100%}
+html:root body:not(.xp-exam-active) .booklet-question #bookletStem{font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.42;max-inline-size:72ch;white-space:pre-wrap;margin:18px 0}
+html:root body:not(.xp-exam-active) .booklet-question>img{display:block;margin:12px 0 18px;max-block-size:72dvh;object-fit:contain;object-position:left}
+html:root body:not(.xp-exam-active) .booklet-answers{display:grid;gap:8px}
+html:root body:not(.xp-exam-active) .booklet-answers .answer-option{position:relative;display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:10px;min-height:52px;padding:10px 14px;margin:0;overflow-wrap:anywhere;border-radius:12px;cursor:pointer}
+html:root body:not(.xp-exam-active) .booklet-answers .answer-option input{position:absolute;opacity:0;inline-size:1px;block-size:1px}
+html:root body:not(.xp-exam-active) .booklet-option-letter{display:grid;place-items:center;inline-size:28px;block-size:28px;border-radius:7px;background:var(--rs-accent-tint);color:var(--accent-text,var(--accent));font-size:.8rem;font-weight:750}
+html:root body:not(.xp-exam-active) .booklet-answers .answer-option:has(input:checked:not(:disabled)){border-color:var(--accent-border);background:var(--rs-accent-tint)}
+html:root body:not(.xp-exam-active) .booklet-answers .answer-option:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+html:root body:not(.xp-exam-active) .booklet-actions .primary{margin-inline-start:auto}
+html:root body:not(.xp-exam-active) .booklet-shortcuts{margin-top:16px;color:var(--muted);font-size:.83rem}
+html:root body:not(.xp-exam-active) .booklet-shortcuts kbd{font:inherit;font-weight:700;color:var(--rs-ink)}
+@media(max-width:480px){
+ html:root body:not(.xp-exam-active) .booklet-actions .primary{margin-inline-start:0}
+}

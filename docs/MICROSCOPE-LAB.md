@@ -2,7 +2,7 @@
 
 More → Microscope Lab uses OpenSeadragon to browse the professor-provided REN 123 slides. It requests the visible tiles at the current magnification. The originals stay in their original folders. Shared conversions use the same authenticated, range-enabled R2 storage as other site materials. The viewer library is loaded when a slide is first opened.
 
-The Renal catalog uses the professor’s [Kidney and Lower Urinary Tract folders](https://drive.google.com/drive/folders/1xIYZylMv6aaEjZEw_WGc4qfew6tUyKdu?usp=sharing). Each specimen card uses its original embedded overview image. The displayed title and accession follow the photographed label when legible. One card can open several scans. Cover images and the catalog use the same private asset bindings as scan tiles.
+The Renal catalog uses the professor’s [Kidney and Lower Urinary Tract folders](https://drive.google.com/drive/folders/1xIYZylMv6aaEjZEw_WGc4qfew6tUyKdu?usp=sharing). Each specimen card uses its original embedded overview image. The displayed title and accession follow the photographed label when legible. One card can open several tissue scans. Scan 1 stays in the cover area. If there is no tissue scan beyond the label, the card shows a cover without a viewer action. Cover images and the catalog use the same private asset bindings as scan tiles.
 
 ## Import another Olympus slide
 

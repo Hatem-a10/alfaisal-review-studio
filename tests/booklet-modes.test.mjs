@@ -13,3 +13,13 @@ test('explicit Renal SAQs and OSPEs can be practiced independently',()=>{
  const onlySAQ=selectBooklet(questions,{bookletIncludeMCQ:false,bookletIncludeOSPE:false}).list;
  assert.deepEqual(onlySAQ,[questions[1]]);
 });
+
+test('keyboard scrolling reveals clipped choices with minimal movement and handles tall choices',async()=>{
+ const {bookletScrollOffset}=await import('../public/phase2-practice.mjs');
+ const visible=(top,bottom)=>bookletScrollOffset({top,bottom},100,640);
+ assert.equal(visible(120,180),0);
+ assert.equal(visible(610,680),40);
+ assert.equal(visible(40,110),-60);
+ assert.equal(visible(580,1370),480);
+ assert.equal(visible(100,900),0);
+});

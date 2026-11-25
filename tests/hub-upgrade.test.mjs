@@ -49,3 +49,8 @@ test('Renal uses the owner-confirmed start rule and exact documented exam times'
  const ctx={};vm.runInNewContext(read('data.js')+read('academic-events.js')+';this.events=DATA.events',ctx);const start=ctx.events.find(e=>e.id==='renal-123-course-start');assert.equal(start.date,'2026-11-22');assert.equal(start.userRule,true);assert.equal(start.detail,'');assert.equal(api.nextSunday('2026-11-18'),start.date);assert.equal(api.nextSunday('2026-11-22'),'2026-11-29');const exam=ctx.events.find(e=>e.id==='renal-123-final-2026'),ospe=ctx.events.find(e=>e.id==='renal-123-ospe-2026');assert.equal(exam.date,'2026-12-16');assert.equal(exam.detail,'09:00–12:00');assert.equal(ospe.date,'2026-12-17');assert.equal(ospe.detail,'12:30–15:30');
  vm.runInNewContext(read('academic-events.js').slice(read('academic-events.js').indexOf('// Renal dates')), {...ctx,DATA:{events:ctx.events}});assert.equal(ctx.events.filter(e=>e.id==='renal-123-course-start').length,1);
 });
+test('Countdown display removes the Official prefix from final exams only',()=>{
+ assert.equal(api.countdownLabel('COM 116 · Official Final Exam'),'COM 116 · Final exam');
+ assert.equal(api.countdownLabel('ENG 101 · Official final exam'),'ENG 101 · Final exam');
+ assert.equal(api.countdownLabel('Renal TBL 1'),'Renal TBL 1');
+});
