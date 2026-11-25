@@ -282,6 +282,23 @@ test('student and role listing keyset pages preserve ties and exclude duplicate 
  assert.ok(h.sqlite.prepare("SELECT name FROM sqlite_master WHERE name='review_accounts_created_id_idx'").get());
 });
 
+test('owner audit filters are parameterized and preserve last-90-day boundary',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const insert=h.sqlite.prepare('INSERT INTO control_audit(id,actor,role,action,target,created_at) VALUES(?,?,?,?,?,?)');
+ const id=prefix+'user_student',today=new Date().toISOString(),old=new Date(Date.now()-100*86400000).toISOString();
+ insert.run('audit-1',id,'owner','student.profile-corrected','student-one',today);
+ insert.run('audit-2',id,'moderator','question.report','report-two',today);
+ insert.run('audit-3',id,'owner','student.profile-corrected','student-old',old);
+ const list=async p=>(await (await h.call('audit?'+p,owner)).json()).entries.map(x=>x.id);
+ assert.deepEqual(await list('role=owner&action=student.&q=student-one'),['audit-1']);
+ assert.deepEqual(await list('role=moderator'),['audit-2']);
+ assert.deepEqual(await list('q=student-old'),[]);
+ assert.equal((await h.call('audit?role=admin',owner)).status,400);
+ assert.equal((await h.call('audit?from=2026-11-25&to=2026-11-20',owner)).status,400);
+ assert.equal((await h.call('audit?action=student.%27%20OR%201%3D1',owner)).status,400);
+ assert.equal((await h.call('audit?q=student-one',student)).status,403);
+});
+
 test('owner system health is read-only, probes real bindings, and never exposes account identifiers',async t=>{
  const h=harness();t.after(()=>h.sqlite.close());
  const seen=[];h.env.BUCKET={async list(options){seen.push(options);return {objects:[],truncated:false}}};
