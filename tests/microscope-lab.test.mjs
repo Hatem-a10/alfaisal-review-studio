@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {slideSource} from '../public/microscope-lab.mjs';
+import {microscopeCards,slideSource} from '../public/microscope-lab.mjs';
 
 function fixture(override={}){
  const json=new TextEncoder().encode(JSON.stringify({width:1024,height:768,tileSize:512,overlap:1,tiles:{'0/0_0':[0,3],'10/1_1':[3,4]},...override}));
@@ -25,4 +25,15 @@ test('invalid layout and truncated local slides fail before tile reads',async()=
  const {read,reads}=fixture();
  await assert.rejects(slideSource(read,5),/Invalid slide index/);
  assert.deepEqual(reads,[[0,4]]);
+});
+
+test('one specimen card keeps its photographed label and every scan selectable',()=>{
+ const cover='/api/site-assets/materials/ren123/microscope/kidney-22-cover.jpg';
+ const slides=[1,2,3].map(n=>({sourceSlide:'kidney-22',id:'kidney-22-scan-'+n,name:'Kidney 22 · Scan '+n,
+  specimen:'Mammal kidney · sagittal section',accession:'315776',cover}));
+ const html=microscopeCards({title:'Kidney',slides});
+ assert.equal((html.match(/class="microscope-card"/g)||[]).length,1);
+ assert.equal((html.match(/data-slide=/g)||[]).length,3);
+ assert.match(html,/315776/);
+ assert.ok(html.includes(cover));
 });

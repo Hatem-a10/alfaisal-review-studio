@@ -196,7 +196,7 @@ export function setup({reset=false,items=[],reviewRecords={}}={}){
    finish({profileName:name.value.trim(),studentNumber:field('number').value.trim().replace(/^#+/,'').trim(),
     profileCreatedAt:new Date().toISOString(),labGroupConfigured:true,labGroup:lab.value==='later'?'':lab.value,
     englishEnabled:englishEnabled.checked,englishFrequency:Number(field('frequency').value),englishStartTime:field('englishTime').value,
-    ...groupValues(d),_selectedReviews:selected,_renalPlanChoice:form.querySelector('[name=renalPlanChoice]:checked')?.value==='schedule'?'schedule':'manual'});
+    ...groupValues(d),_selectedReviews:selected,_reviewQueueHidden:!Object.keys(selected).length&&!items.some(item=>[0,1,2].some(pass=>reviewRecords[item.id]?.done?.[pass])),_renalPlanChoice:form.querySelector('[name=renalPlanChoice]:checked')?.value==='schedule'?'schedule':'manual'});
   };
   form.noValidate=true;
   d.showModal();

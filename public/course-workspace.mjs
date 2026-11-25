@@ -169,11 +169,11 @@ render=function(...args){
  const value=legacyRender(...args);
  for(const selector of content.querySelectorAll(':scope > .workspace-course-select'))selector.remove();
  if(context&&(context.course==='CVP'||context.course==='MOL')&&!document.getElementById('xpExam')){
-  const combined=['library','labs','ospe'].includes(context.view)?'':courseSelector(context.view);
+  const combined=['library','labs','ospe','booklet'].includes(context.view)?'':courseSelector(context.view);
   if(combined)content.insertAdjacentHTML('afterbegin',combined);
   else if(context.course==='CVP'&&!scopedViews.has(context.view))content.insertAdjacentHTML('afterbegin','<div class="course-workspace-links course-workspace-back">'+archiveLink()+'</div>');
  }
- if(context?.course==='REN'&&['booklet','practice'].includes(view)&&!document.getElementById('xpExam'))content.insertAdjacentHTML('afterbegin',courseSelector(view));
+ if(context?.course==='REN'&&view==='practice'&&!document.getElementById('xpExam'))content.insertAdjacentHTML('afterbegin',courseSelector(view));
  if(context){highlight();window.mountOtherTools?.();}
  return value;
 };
