@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 const app=fs.readFileSync(new URL('../public/app.js',import.meta.url),'utf8');
-const code=app.slice(app.indexOf('function syncValuesEqual('),app.indexOf('window.reviewPendingSyncCounts='));
+const code=app.slice(app.indexOf('function syncValuesEqual('),app.indexOf("if(typeof window!=='undefined')window.reviewPendingSyncCounts="));
 const count=vm.runInNewContext(code+'\npendingSyncCounts');
 test('pending snapshot comparison counts unique changed records, settings and store values',()=>{
  const old={records:{a:{n:1},b:{n:2}},settings:{theme:'dark'},extras:{stores:{anki:{value:{a:1},at:1}}}};
