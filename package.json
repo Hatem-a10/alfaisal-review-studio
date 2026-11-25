@@ -17,6 +17,7 @@
     "build:staging": "node scripts/build-cloudflare-staging.mjs",
     "dev:staging": "REVIEW_STUDIO_TARGET=staging node scripts/run-framework.mjs dev",
     "deploy:staging": "node scripts/deploy-cloudflare-staging.mjs",
+    "lint:public": "node scripts/lint-public.mjs",
     "check:staging": "node --test tests/cloudflare-staging*.test.mjs"
   },
   "dependencies": {

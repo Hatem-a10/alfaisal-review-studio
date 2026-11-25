@@ -18,6 +18,8 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci
+      - name: Check authored browser JavaScript
+        run: npm run lint:public
       - name: vinext compatibility report
         run: npx --no-install vinext check | tee vinext-compatibility.log
       - name: Reviewed release tests
