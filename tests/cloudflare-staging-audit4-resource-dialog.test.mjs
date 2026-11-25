@@ -40,7 +40,7 @@ test('failed sign-out shows a safe retry and retains the offline lock',async()=>
  const mount={replaceChildren(){},append(...children){this.children=children}};
  const document={body:{dataset:{authPage:'sign-out'}},getElementById:()=>mount,createElement:()=>({dataset:{},setAttribute(){}}),head:{append(node){node.onload()}}};
  let calls=0,lock;const Clerk={async load(){},async signOut(){calls++;if(calls===1)throw Error('private provider detail')}};
- await runInNewContext(source,{document,window:{Clerk},fetch:async()=>response({frontendAPI:'https://clerk.example'}),localStorage:{setItem(k,v){lock=v}}});
+ await runInNewContext(source,{document,setTimeout,clearTimeout,window:{Clerk},fetch:async()=>response({frontendAPI:'https://clerk.example'}),localStorage:{setItem(k,v){lock=v}}});
  const [button,status]=mount.children;await button.onclick();assert.equal(button.disabled,false);assert.equal(lock,'1');assert.match(status.textContent,/try again/);assert.doesNotMatch(status.textContent,/private provider/);
  await button.onclick();assert.equal(calls,2);
 });

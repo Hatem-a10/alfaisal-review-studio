@@ -1,9 +1,10 @@
 /* Included only by the independent managed-auth Worker. Never stores credentials. */
 (async()=>{
- const response=await fetch('/auth/config',{cache:'no-store',credentials:'same-origin'});if(!response.ok)throw Error('Account service is unavailable.');const cfg=await response.json();
+ const deadline=async(operation,ms=15000)=>{let timer;try{return await Promise.race([Promise.resolve().then(operation),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Account service timed out.')),ms)})])}finally{clearTimeout(timer)}};
+ const response=await deadline(()=>fetch('/auth/config',{cache:'no-store',credentials:'same-origin'}));if(!response.ok)throw Error('Account service is unavailable.');const cfg=await response.json();
  const load=(src,key)=>new Promise((resolve,reject)=>{const script=document.createElement('script');script.crossOrigin='anonymous';script.src=src;if(key)script.dataset.clerkPublishableKey=key;script.onload=resolve;script.onerror=()=>reject(Error('Secure sign-in could not load. Reconnect and retry.'));document.head.append(script)});
- await load(cfg.frontendAPI+'/npm/@clerk/ui@1/dist/ui.browser.js');await load(cfg.frontendAPI+'/npm/@clerk/clerk-js@6.44.0/dist/clerk.browser.js',cfg.publishableKey);
- await window.Clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}});
+ await deadline(()=>load(cfg.frontendAPI+'/npm/@clerk/ui@1/dist/ui.browser.js'));await deadline(()=>load(cfg.frontendAPI+'/npm/@clerk/clerk-js@6.44.0/dist/clerk.browser.js',cfg.publishableKey));
+ await deadline(()=>window.Clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}}));
  const mode=document.body.dataset.authPage,mount=document.getElementById('managedAuthMount');
  if(mode==='sign-out'){
   mount.replaceChildren();const button=document.createElement('button'),status=document.createElement('p');button.type='button';button.textContent='Sign out on this device';status.setAttribute('role','status');button.onclick=async()=>{
@@ -207,10 +208,15 @@
  }
 })().catch(()=>{
  const mount=document.getElementById('managedAuthMount');
- if(!mount){console.error('Account service unavailable.');return}
+ if(!mount){
+  const banner=document.createElement('section');banner.className='notice';banner.setAttribute('role','status');
+  const text=document.createElement('p');text.textContent='Account controls are temporarily unavailable. Your device study data has not been cleared. Cloud actions still require secure verification.';
+  const retry=document.createElement('button');retry.type='button';retry.textContent='Retry account controls';retry.onclick=()=>window.location.reload();banner.append(text,retry);
+  document.body.prepend(banner);return;
+ }
  const message=document.createElement('p');
  message.setAttribute('role','status');
- message.textContent='Sign-in did not load. Try again, or return to sign-in to choose another method.';
+ message.textContent='Sign-in did not load. Account verification may be temporarily unavailable. Retry when connected; do not clear browser data.';
  const retry=document.createElement('button');
  retry.type='button';
  retry.textContent='Retry';

@@ -21,7 +21,7 @@ test('actual Clerk mount options use a fragment-free absolute root after both si
  for(const mode of ['sign-in','sign-up']){
   let mounted;
   const mount={replaceChildren(){}},Clerk={load:async()=>{},mountSignIn:(el,opts)=>{mounted={mode:'sign-in',opts}},mountSignUp:(el,opts)=>{mounted={mode:'sign-up',opts}}};
-  const ctx={URL,window:{Clerk,location:{origin}},fetch:async()=>({ok:true,json:async()=>({frontendAPI:'https://clerk.example',publishableKey:'test'})}),document:{body:{dataset:{authPage:mode}},getElementById:()=>mount,createElement:()=>({dataset:{}}),head:{append:s=>s.onload()}}};
+  const ctx={URL,setTimeout,clearTimeout,window:{Clerk,location:{origin}},fetch:async()=>({ok:true,json:async()=>({frontendAPI:'https://clerk.example',publishableKey:'test'})}),document:{body:{dataset:{authPage:mode}},getElementById:()=>mount,createElement:()=>({dataset:{}}),head:{append:s=>s.onload()}}};
   await runInNewContext(source,ctx);
   assert.equal(mounted.mode,mode);assert.equal(mounted.opts.forceRedirectUrl,origin+'/');assert.equal(mounted.opts.routing,'hash');
  }
