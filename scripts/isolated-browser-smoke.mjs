@@ -42,6 +42,19 @@ try{
    const session=await context.request.get(origin+'/staging/session');assert.equal((await session.json()).authenticated,true);
    await page.locator('html[data-boot="ready"]').waitFor({timeout:60000});await page.locator('#content').waitFor({state:'visible'});
    assert.ok((await page.locator('#content').innerText()).trim().length>0,'Dashboard is empty.');
+   const welcome=page.locator('#studentProfileSetup');
+   await welcome.waitFor({state:'visible',timeout:30000});
+   await welcome.locator('[name=name]').fill('Synthetic Student');
+   await welcome.locator('[data-next]').click();
+   await welcome.locator('[name=group]').selectOption('M1');
+   await welcome.locator('[name=section]').selectOption('A');
+   const lab=welcome.locator('[name=lab]');
+   await lab.locator('option:not([value=""])').first().waitFor({state:'attached'});
+   await lab.selectOption({index:1});
+   await welcome.locator('[data-next]').click();
+   await welcome.locator('[data-next]').click();
+   if(await welcome.isVisible())await welcome.locator('[data-next]').click();
+   await welcome.waitFor({state:'hidden',timeout:30000});
    const nav=page.locator('button[data-view="calendar"]:visible').first();
    if(await nav.count()){await nav.click();await page.waitForFunction(()=>location.hash.includes('calendar')||document.querySelector('#content')?.querySelector('.campus-board'),null,{timeout:20000});}
    const width=await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+8);assert.ok(width,'Unexpected page-level horizontal overflow.');
