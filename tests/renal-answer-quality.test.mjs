@@ -6,10 +6,10 @@ import {renalPhysiology} from '../public/renal-physiology.mjs';
 
 test('every current Renal practice check has a unique ID, checked answer, and four useful option rationales',()=>{
  const pack=renalTeachingPack();
- assert.equal(renalLessons.length,8);
+ assert.equal(renalLessons.length,13);
  assert.equal(renalPhysiology.length,4);
- assert.equal(pack.questions.length,125);
- assert.equal(new Set(pack.questions.map(question=>question.id)).size,125);
+ assert.equal(pack.questions.length,151);
+ assert.equal(new Set(pack.questions.map(question=>question.id)).size,151);
  for(const q of pack.questions){
   assert.equal(q.options.length,4,q.id);
   assert.equal(q.reasons.length,q.options.length,q.id);
@@ -34,4 +34,24 @@ test('the validator fails closed for incomplete distractor explanations',()=>{
  changed[0].topics[0].checks[0][2][1]='';
  assert.throws(()=>validateRenalLessons(changed),/option-specific explanations/);
  assert.ok(anatomyChecks['A1-aorta'].some(row=>row.some(value=>typeof value==='string'&&value.includes('ren-booklet-p93'))));
+});
+test('Renal teaching concepts cover every objective and identify lecturer-confirmed scope',()=>{
+ const {guides,sources}=renalTeachingPack();
+ const knownSources=new Set(sources.map(source=>source.id));
+ assert.equal(Object.keys(guides).length,13);
+ assert.equal(guides['REN-A4'],undefined);
+ for(const [id,guide] of Object.entries(guides)){
+  const concepts=guide.sections.flatMap(section=>section.concepts);
+  assert.equal(concepts.length,6,id);
+  assert.deepEqual(new Set(concepts.map(concept=>concept.objective)),new Set(guide.objectives),id);
+  for(const concept of concepts){
+   assert.ok(concept.references.length>0,id);
+   assert.ok(concept.references.every(ref=>knownSources.has(ref.source)&&Number.isInteger(ref.page)&&ref.page>0),id);
+  }
+ }
+ const sections=Object.values(guides).flatMap(guide=>guide.sections);
+ assert.deepEqual([...new Set(sections.flatMap(section=>section.transcript?[section.transcript]:[]))].length,6);
+ const cues=sections.flatMap(section=>section.recordedExamCue?[section.recordedExamCue]:[]);
+ assert.deepEqual(cues.map(cue=>[cue.label,cue.time]),[['Identify the lining of a blood vessel','25:13']]);
+ assert.equal(sections.find(section=>section.scopeNote)?.scopeNote.time,'29:29');
 });

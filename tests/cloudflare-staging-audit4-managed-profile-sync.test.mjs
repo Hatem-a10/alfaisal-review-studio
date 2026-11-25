@@ -6,7 +6,7 @@ const source=readFileSync(new URL('../public/managed-auth-client.js',import.meta
 function profileHarness(fetch,state={}){
  const handlers={},settings={profileCreatedAt:'2026-11-24',profileName:'First'};
  const code=source.slice(source.indexOf(' let profileFingerprint='),source.indexOf(' function installManagedApp()'));
- const api=runInNewContext(code+'\n({syncProfile,studyCounts})',{settings,state,fetch,window:{addEventListener:(event,fn)=>handlers[event]=fn}});
+ const api=runInNewContext(code+'\n({syncProfile,studyCounts})',{settings,state,fetch,document:{documentElement:{dataset:{boot:'ready'}}},window:{addEventListener:(event,fn)=>handlers[event]=fn}});
  return {api,handlers,settings};
 }
 test('profile changed during pending save is sent after older request completes',async()=>{

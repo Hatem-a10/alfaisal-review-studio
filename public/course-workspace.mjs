@@ -119,6 +119,7 @@ window.chooseLesson=function(id,...args){
  if(!enabled())return selectLesson(id,...args);
  if(typeof id!=='string'||!DATA.items.some(item=>item.id===id))return;
  if(Object.hasOwn(renalTeaching.guides,id)){
+  if(renalLessonId!==id&&typeof resetDeepLearning==='function')resetDeepLearning();
   const filter=lessonCourse;
   renalLessonId=id;
   if(location.hash!=='#renal/learning')history.pushState(null,'','#renal/learning');

@@ -1,18 +1,19 @@
 import {SITE_ASSETS} from './site-assets-manifest';
+import RENAL_LESSON_FIGURES from './renal-lesson-figures.json';
 import RENAL_MATERIALS from '../public/renal-materials.json';
 import ACTIVE_BOOKLETS from './active-booklet-assets.json';
 import RENAL_BOOKLET_ASSET from './renal-booklet-asset.json';
 import MOL_STUDY_ASSETS from '../public/mol-study-assets.json';
 import MICROSCOPE_ASSETS from './microscope-assets.json';
 import RENAL_ASSESSMENT_ASSETS from './renal-assessment-assets.json';
-const byPath=new Map<string,{path:string,size:number,sha:string}>([...SITE_ASSETS,...ACTIVE_BOOKLETS,...RENAL_MATERIALS,...RENAL_ASSESSMENT_ASSETS,...MICROSCOPE_ASSETS,RENAL_BOOKLET_ASSET,MOL_STUDY_ASSETS.booklet,MOL_STUDY_ASSETS.assessments,...MOL_STUDY_ASSETS.sources].map(x=>[x.path,x]));
+const byPath=new Map<string,{path:string,size:number,sha:string}>([...SITE_ASSETS,...ACTIVE_BOOKLETS,...RENAL_MATERIALS,...RENAL_LESSON_FIGURES,...RENAL_ASSESSMENT_ASSETS,...MICROSCOPE_ASSETS,RENAL_BOOKLET_ASSET,MOL_STUDY_ASSETS.booklet,MOL_STUDY_ASSETS.assessments,...MOL_STUDY_ASSETS.sources].map(x=>[x.path,x]));
 export {SITE_ASSETS};
 export function integrityAssets(){return [...new Map([...byPath.values()].map(asset=>[asset.sha,asset])).values()]}
 export function assetFor(path:string){return byPath.get(path)}
 export function dataKey(sha:string){return 'site-assets/data/'+sha}
 export function proofKey(sha:string){return 'site-assets/verified/'+sha}
 export const migrated=true;
-const STATIC_CONTENT_TYPES:Readonly<Record<string,string>>=Object.freeze({pdf:'application/pdf',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',m4a:'audio/mp4',ppt:'application/vnd.ms-powerpoint',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',json:'application/json'});
+const STATIC_CONTENT_TYPES:Readonly<Record<string,string>>=Object.freeze({pdf:'application/pdf',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',m4a:'audio/mp4',ppt:'application/vnd.ms-powerpoint',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',json:'application/json',txt:'text/plain; charset=utf-8'});
 export function contentType(path:string){const e=path.slice(path.lastIndexOf('.')+1).toLowerCase();return STATIC_CONTENT_TYPES[e]||'application/octet-stream'}
 export async function serveAsset(request:Request,bucket:R2Bucket,path:string,headOnly=false){
  const asset=assetFor(path),error=(message:string,status:number)=>new Response(message,{status,headers:{'Cache-Control':'no-store'}});if(!asset)return error('Not found',404);
