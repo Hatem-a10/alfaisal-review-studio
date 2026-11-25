@@ -90,3 +90,22 @@ export function renalPlanPreview(items,records,{events=[],group,section,date,min
  }
  return {plans,unplaced,notReleased,final,ospe};
 }
+
+export function practicalResumeEntries(practical,now=Date.now()){
+ const latest=new Map();
+ for(const [key,draft] of Object.entries(practical?.drafts||{})){
+  if(!draft||draft.discarded||!Number.isFinite(Date.parse(draft.at)))continue;
+  let row;
+  const lab=/^((REN|MOL|CVP)-LAB-[a-z0-9-]+):[a-z0-9-]+$/i.exec(key);
+  if(lab&&draft.topic===key&&draft.submitted===false&&Object.values(draft.answers||{}).some(Number.isInteger)){
+   row={kind:'lab',course:lab[2],id:key,module:lab[1],title:'Lab practice',detail:Object.values(draft.answers).filter(Number.isInteger).length+' responses saved'};
+  }else if((key==='ospe-current'||key==='ospe-current:REN')&&typeof draft.id==='string'&&Array.isArray(draft.slots)&&draft.slots.some(s=>s?.station)&&Number.isFinite(Date.parse(draft.startedAt))&&Number.isInteger(draft.seconds)&&draft.seconds>=10&&draft.seconds<=600){
+   const expired=draft.finished===true||now>=Date.parse(draft.startedAt)+draft.slots.length*draft.seconds*1000;
+   row={kind:'ospe',course:key.endsWith(':REN')?'REN':'CVP',id:key,title:'OSPE circuit',detail:expired?'Mark and save your result':'Timed circuit in progress'};
+  }
+  if(!row)continue;row.at=draft.at;
+  const slot=row.kind+':'+row.course,old=latest.get(slot);
+  if(!old||Date.parse(row.at)>Date.parse(old.at))latest.set(slot,row);
+ }
+ return [...latest.values()].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+}
