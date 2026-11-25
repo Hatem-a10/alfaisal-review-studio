@@ -13,3 +13,12 @@ export function localDeckSelection(records,account,legacyOwner){
  return records.filter(d=>d?.id&&(d.accountKey===account||(!d.accountKey&&legacyOwner===account&&!owned.has(d.id)))).map(d=>({...d,storageId:d.id,id:d.deckId||d.id}));
 }
 export function localDeckRecord(deck){if(!deck.accountKey)throw Error('Account required');return {...deck,id:deck.accountKey+'::'+deck.id,deckId:deck.id}}
+
+export function updateCardReview(progress,key,action,original,at){
+ if(typeof key!=='string'||!key.includes(':')||!['suspend','resume','reset'].includes(action)||!Number.isFinite(Date.parse(at)))throw Error('Invalid card update.');
+ const valid=x=>x&&[x.interval,x.due,x.reps].every(Number.isFinite)&&x.interval>=0&&x.reps>=0;
+ if(!valid(original))throw Error('Imported schedule is unavailable.');
+ const cards={...(progress?.cards||{})},prior=valid(cards[key])?cards[key]:original;
+ cards[key]=action==='reset'?{...original,suspended:false,reset:true,at}:({...prior,suspended:action==='suspend',at});
+ return {...progress,cards};
+}
