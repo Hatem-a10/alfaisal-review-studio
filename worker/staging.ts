@@ -38,7 +38,7 @@ const stagingWorker = {
  async scheduled(controller:ScheduledController,env:Cloudflare.Env,ctx:ExecutionContext){
   // No production schedule or writes; this is a staging-only audit of academic objects.
   if(env.REVIEW_STUDIO_DEPLOYMENT!=='staging'||!env.BUCKET)return;
-  ctx.waitUntil((async()=>{const {checkIntegrityBatch}=await import('../lib/r2-integrity.mjs');const report=await checkIntegrityBatch(env.BUCKET,integrityAssets(),controller.scheduledTime);console.log(JSON.stringify({kind:'r2-academic-integrity',environment:'staging',...report}))})());
+  ctx.waitUntil((async()=>{const {checkIntegrityBatch}=await import('../lib/r2-integrity.mjs');const report=await checkIntegrityBatch(env.BUCKET,integrityAssets(),controller.scheduledTime);console.log(JSON.stringify({kind:'r2-academic-integrity',environment:'staging',...report}));const {reviewProgressRetention}=await import('../lib/progress-retention.mjs');const retention=await reviewProgressRetention(env.DB,env.BUCKET,controller.scheduledTime,{deleteEnabled:(env as unknown as Record<string,unknown>).REVIEW_STUDIO_RETENTION_DELETE==='1'});console.log(JSON.stringify({kind:'r2-progress-retention',environment:'staging',...retention}))})());
  },
  async fetch(incoming:Request,env:Cloudflare.Env,ctx:ExecutionContext){
   const environment = env.REVIEW_STUDIO_DEPLOYMENT as string;
