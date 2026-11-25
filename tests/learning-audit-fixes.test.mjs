@@ -240,7 +240,7 @@ test('checking a mapped topic question records it under the open lesson',()=>{
  const context={state,DATA:{items},rec:x=>state[x.id],today:()=> '2026-11-08',
   etEligibleQuestion:()=>false,persist(){},LEARNING:{lessons:[]},
   Learn:{record:(r,q,choice)=>({results:{[q.id]:{ok:choice===q.answer}}})}};
- const record=vm.runInNewContext(load('exam-tools.js').split('\n').find(line=>line.startsWith('function etRecordSet'))+';etRecordSet',context);
+ const record=vm.runInNewContext(load('exam-engine.js')+'\n'+load('exam-tools.js').split('\n').find(line=>line.startsWith('function etRecordSet'))+';etRecordSet',context);
  const q={id:'mapped',lectureIds:['first','open'],concept:'legacy-concept',objectiveId:'open-topic',options:['A','B','C'],answer:2};
  record([q],[2],'Lesson topic questions',{lessonId:'open'});
  assert.equal(state.open.learning.results.mapped.ok,true);

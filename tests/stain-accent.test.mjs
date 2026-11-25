@@ -1,23 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {ASSESSMENT_GRADIENTS,gradientById} from '../public/accent-gradients.mjs';
 import {readFileSync} from 'node:fs';
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 const css = read('public/redesign.css');
 const runtime = read('public/phase1-runtime.mjs');
 
-test('default accent follows the next assessment stain and matches the CSS palettes', () => {
-  const accents = JSON.parse(runtime.match(/STAIN_ACCENTS=(\[[^\]]+\])/)[1].replace(/'/g, '"'));
-  assert.equal(accents.length, 8);
-  accents.forEach((hex, i) => {
-    assert.match(css, new RegExp(`\\.assessment-theme-${i},\\.stain-${i}\\)\\{--st-a:#[0-9a-f]{6};--st-b:${hex}`), `card palette ${i}`);
-    if (i) assert.match(css, new RegExp(`data-stain="${i}"\\] body:not\\(\\.xp-exam-active\\)\\{--ax-a:#[0-9a-f]{6};--ax-b:${hex}`), `site palette ${i}`);
-  });
-  assert.match(runtime, /color=palette\?palette\.b:STAIN_ACCENTS\[stain\]/);
+test('assessment cards and Auto share the picker palette and keep distinct category tones', () => {
+  const palettes=ASSESSMENT_GRADIENTS.map(gradientById);
+  assert.equal(palettes.length,8);
+  assert.equal(new Set(palettes.map(item=>item.b)).size,8);
+  assert.match(runtime, /const palette=auto\?assessmentPalettes\[stain\]/);
+  assert.match(runtime, /const category=assessmentPalettes\[index\]/);
+  assert.match(css, /--ax-a:var\(--pal-a,/);
   assert.match(read('public/app.js'), /accentAuto:typeof s\?\.accentAuto==='boolean'/);
   assert.match(read('public/learning.js'), /settings\.accentAuto=false/);
-  assert.match(css, /data-accent=palette\] body:not\(\.xp-exam-active\)\{--ax-a:var\(--pal-a\);--ax-b:var\(--pal-b\);--ax-c:var\(--pal-c\)\}/);
-  assert.match(runtime, /DEFAULT_ACCENTS=\/\^#\(\?:5b4bd0\|2f6c52\)\$\/i/);
 });
 
 test('every stain has its own histology image', () => {

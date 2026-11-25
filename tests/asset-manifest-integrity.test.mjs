@@ -38,7 +38,7 @@ test('all combined site-asset registries have valid noncolliding public paths an
  const renal=json('public/renal-materials.json'),mol=json('public/mol-study-assets.json');
  validate(renal,{label:'REN material IDs',key:'id',renal:true});
  validate(renal,{label:'REN material paths',key:'path',renal:true});
- validate([...generated('lib/site-assets-manifest.ts'),...json('lib/active-booklet-assets.json'),...renal,...json('lib/renal-assessment-assets.json'),json('lib/renal-booklet-asset.json'),mol.booklet,mol.assessments,...mol.sources],{label:'combined site assets',key:'path'});
+ validate([...generated('lib/site-assets-manifest.ts'),...json('lib/active-booklet-assets.json'),...renal,...json('lib/renal-assessment-assets.json'),...json('lib/microscope-assets.json'),json('lib/renal-booklet-asset.json'),mol.booklet,mol.assessments,...mol.sources],{label:'combined site assets',key:'path'});
 });
 test('study-asset and private-media manifests have unique IDs or paths and valid byte metadata',()=>{
  validate(generated('lib/study-asset-registry.ts'),{label:'study assets',key:'id',typed:true});

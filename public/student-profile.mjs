@@ -20,7 +20,7 @@ function loadGroups(){
 }
 function labChoices(group,section){return [...new Set(groupConfig.filter(x=>x.studentGroup===group&&x.studentSection===section).flatMap(x=>x.labGroups).filter(validLab))]}
 
-function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=185';document.head.append(link)}
+function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=186';document.head.append(link)}
 function shell(title,body){style();const d=document.createElement('dialog');d.className='student-welcome';d.setAttribute('aria-labelledby','studentWelcomeTitle');d.innerHTML='<div class="student-welcome-mark" aria-hidden="true">✦</div><h2 id="studentWelcomeTitle">'+title+'</h2>'+body;document.body.append(d);return d}
 
 function groupFields(required=false){const optional=required?'':' (optional)';return '<div class="student-group-fields"><label>Academic group'+optional+'<select name="group"><option value="">Not selected</option>'+['M1','M2','F1','F2'].map(g=>'<option>'+g+'</option>').join('')+'</select></label><label>Section'+optional+'<select name="section"><option value="">Not selected</option><option>A</option><option>B</option></select></label></div>'}
@@ -29,6 +29,34 @@ export function groups(settings,save){style();let panel=document.getElementById(
 
 function appearance(d){const bar=document.createElement('div');bar.className='student-appearance';bar.setAttribute('role','group');bar.setAttribute('aria-label','Appearance');bar.innerHTML='<button type="button" aria-label="Switch appearance mode"></button>';d.querySelector('.welcome-appearance-preview')?.append(bar);const theme=bar.querySelector('button'),original=document.getElementById('themeToggle');const paint=()=>{theme.innerHTML=(original?.innerHTML||'◐')+'<span>'+(settings.theme==='amoled'?'Switch to light':'Switch to dark')+'</span>';theme.setAttribute('aria-label',original?.getAttribute('aria-label')||'Switch appearance mode')};paint();theme.onclick=()=>{settings.theme=settings.theme==='amoled'?'light':'amoled';applyTheme();paint()};mountGradientPicker(bar,{selected:settings.accentAuto!==false?'auto':chosenGradient(settings)?.id,onPick(g){if(g){settings.accentAuto=false;settings.accentPalette=g.id;settings.accent=g.b}else settings.accentAuto=true;applyTheme()}})}
 function mountReviewProgress(progress,items,records,count){
+ const byCourse=new Map();
+ for(const item of items){if(!byCourse.has(item.course))byCourse.set(item.course,[]);byCourse.get(item.course).push(item);}
+ const courses=[...new Set(['REN','MOL',...byCourse.keys()])].filter(course=>byCourse.has(course));
+ const courseNav=document.createElement('div');
+ courseNav.className='student-review-courses';
+ courseNav.setAttribute('role','group');courseNav.setAttribute('aria-label','Review course');
+ const panels=[];
+ progress.append(courseNav);
+ for(const course of courses){
+  const panel=document.createElement('section'),button=document.createElement('button'),heading=document.createElement('h4'),subtotal=document.createElement('small');
+  const label=({REN:'Renal · REN 123',MOL:'Molecular Medicine · MOL 114',CVP:'CVP 112'})[course]||course;
+  heading.textContent=label;heading.className='sr-only';
+  button.type='button';button.append(label,subtotal);button.setAttribute('aria-controls','setup-review-'+course);
+  panel.id='setup-review-'+course;panel.className='student-course-reviews';panel.append(heading);
+  courseNav.append(button);progress.append(panel);panels.push({button,panel});
+  button.onclick=()=>select(course);
+  mountCourseReviews(panel,byCourse.get(course),records,total=>{
+   subtotal.textContent=total+' complete';subtotal.dataset.count=total;
+   const sum=[...courseNav.querySelectorAll('small')].reduce((n,node)=>n+Number(node.dataset.count||0),0);
+   count.textContent=sum+' completed '+(sum===1?'review':'reviews');
+  });
+ }
+ function select(course){for(const {button,panel} of panels){
+  const active=panel.id==='setup-review-'+course;panel.hidden=!active;button.setAttribute('aria-pressed',String(active));
+ }}
+ select(courses[0]);
+}
+function mountCourseReviews(progress,items,records,onCount){
  const groups=[],columns=[[],[],[]];
  function checkbox(label,attrs={}){
   const wrap=document.createElement('label'),box=document.createElement('input');
@@ -52,11 +80,11 @@ function mountReviewProgress(progress,items,records,count){
    box.indeterminate=selected>0&&selected<children.length;
   }
   const total=columns.flat().filter(box=>box.checked).length;
-  count.textContent=total+' completed '+(total===1?'review':'reviews');
+  onCount(total);
  }
  const header=document.createElement('div');
  header.className='student-progress-row student-progress-column-controls';
- const heading=document.createElement('strong');heading.textContent='Select a review column';header.append(heading);
+ const heading=document.createElement('strong');heading.textContent='Lesson';header.append(heading);
  progress.append(header);
  for(const x of items){
   const row=document.createElement('div'),name=document.createElement('div'),title=document.createElement('strong');
@@ -64,14 +92,14 @@ function mountReviewProgress(progress,items,records,count){
   title.textContent=x.code+' · '+x.title;name.append(title);row.append(name);
   const targets=[];
   columns.forEach((column,pass)=>{
-   const {wrap,box}=checkbox('Review '+(pass+1),{item:x.id,pass});
+   const {wrap,box}=checkbox(''+(pass+1),{item:x.id,pass});
    box.checked=box.disabled=Boolean(records[x.id]?.done?.[pass]);
    box.setAttribute('aria-label','Review '+(pass+1)+' for '+x.title+(box.disabled?' (already recorded)':''));
    box.addEventListener('change',refresh);targets.push(box);column.push(box);row.append(wrap);
   });
   name.append(master('All reviews',targets,'Select all reviews for '+x.title));progress.append(row);
  }
- columns.forEach((column,pass)=>header.append(master('All review '+(pass+1),column,'Select review '+(pass+1)+' for all lessons')));
+ columns.forEach((column,pass)=>header.append(master('All '+(pass+1),column,'Select review '+(pass+1)+' for all lessons')));
  refresh();
 }
 export function setup({reset=false,items=[],reviewRecords={}}={}){
@@ -106,9 +134,9 @@ export function setup({reset=false,items=[],reviewRecords={}}={}){
     ${items.length?`<section class="student-step" data-step="progress" hidden>
      <h3>How many reviews have you done?</h3>
      <p class="student-step-lead">Tick the reviews you have finished so your plan starts from the right place. You can skip this.</p>
-     ${!reset&&managed?'<p class="student-step-lead">CVP remains archived for new accounts; your active course choices are kept separate.</p>':''}
-     ${!reset&&items.some(item=>item.course==='REN')?'<fieldset><legend>REN 123 review dates</legend><label><input type="radio" name="renalPlanChoice" value="manual" checked> Leave unscheduled; choose my dates later</label><label><input type="radio" name="renalPlanChoice" value="schedule"> Schedule released Renal lectures before the final, if they fit</label><p class="student-step-lead">Unreleased or unplaceable lessons remain unscheduled. Existing dates are not overwritten.</p></fieldset>':''}
+
      <div data-review-options><p class="student-review-count" data-review-count aria-live="polite"></p><div data-progress aria-label="Select completed reviews"></div></div>
+     ${!reset&&items.some(item=>item.course==='REN')?'<details class="student-review-plan"><summary>Renal review dates</summary><label><input type="radio" name="renalPlanChoice" value="manual" checked> Leave unscheduled; choose my dates later</label><label><input type="radio" name="renalPlanChoice" value="schedule"> Schedule released Renal lectures before the final, if they fit</label></details>':''}
     </section>`:''}
     <p class="student-profile-error" role="status"></p>
     <div class="student-wizard-actions">

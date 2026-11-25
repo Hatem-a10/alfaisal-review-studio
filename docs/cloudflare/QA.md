@@ -113,3 +113,12 @@ Production baseline verified before changes was source `9fbb903d47a3a8d6ae340fbb
 The [audit](../content-audits/lecture-coverage.md) covers 79 numbered lectures and 610 topics from the assembled repository curriculum. The local full suite passed 442 tests. The audit preserves the existing core floor and tracks editorial evidence separately. No course data, test answers, IDs or progress schemas were changed.
 
 Fresh signed-out browser sessions verified both Microsoft entry points on Clerk Development and the redirect to Microsoft. Google initiates OAuth in staging and production, email is present, Apple is absent, and Microsoft is absent in production. The full Microsoft callback and existing-account linking require approved test credentials. See the [Microsoft provider preflight](MICROSOFT-SIGN-IN.md).
+
+## v1.86 candidate
+
+- The Reviews step keeps recorded checkmarks locked and uses separate Renal-first and MOL panels. Desktop Chromium and iPhone WebKit emulation preserved selections between panels.
+- Standard mocks use the shared reviewed Booklet files, map course headings to known lesson IDs and honor lesson selection. The original exam snapshots and the archived CVP Accurate recipe are preserved. Browser checks generated a filtered Renal mock and opened Examplify without the question-report control.
+- Countdown ticks update changed digits in place and display elapsed time from the assessment start. The category palettes also drive Auto accent. The source notes are still registered as provenance.
+- The microscope catalog uses private, authenticated range reads. The first staging catalog contains 22 scans from 11 supplied Olympus slide names. Additional large scan regions are outside that initial catalog. A real ureter slide rendered and zoomed on both browser engines. The local viewer module and assets load on demand.
+- Signed-in accounts share two bounded study counters. The prior opt-out control is removed. The account status gate, per-account writes, and small-group analytics suppression remain covered by targeted tests.
+- Audit #22 was merged with dry-run retention selected in staging. Branch refs were removed only where the tip was reachable or the exact PR head was verified merged. Older unmatched audit refs and deferred items remain available.

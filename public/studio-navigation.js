@@ -1,6 +1,7 @@
 /* One primary rail; secondary tools retain their original renderers and data. */
 (()=>{
  const sidebar=document.querySelector('#mainSidebar'),nav=sidebar?.querySelector('nav');if(!nav)return;const extras=sidebar.querySelector('#navExtras'),anatomy=extras?.querySelector('[data-view="anatomy"]');
+ let microscopeCleanup;
  const railIcon=path=>'<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
  const homeIcon=railIcon('<path d="m3 10 9-7 9 7M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 21v-6a2 2 0 0 1 4 0v6"/>');
  const otherIcon=navGlyph('more');
@@ -11,7 +12,9 @@
  const profile=sidebar.querySelector('.brand');
  const routeButton=(root,id)=>root.querySelector('button[data-view="'+id+'"]');
  const toolFrom=b=>({id:b.dataset.view,label:b.textContent.trim(),icon:b.querySelector('svg')?.outerHTML||navGlyph('extras')});
+ const microscope={id:'microscope',label:'Microscope Lab',icon:railIcon('<path d="m9 3 4 2-3 7-4-2 3-7Zm1 9a5 5 0 1 1 0 8H5m2-4h8M4 22h16"/>')};
  const tools=[...(extras?.querySelectorAll('button[data-view]')||[])].map(toolFrom);
+ tools.push(microscope);
  tools.sort((a,b)=>Number(b.id==='activity')-Number(a.id==='activity'));
  const ids=new Set([...tools.map(t=>t.id).filter(id=>!desktopOnly.includes(id)),'lectures','weakness','methods']);
  const other=document.createElement('button');other.type='button';other.id='otherToolsNav';
@@ -46,7 +49,18 @@
    if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
   }
  };
- const before=render;render=function(...args){const result=before.apply(this,args);window.mountOtherTools();return result};
+ const before=render;render=function(...args){let result;
+  const active=document.querySelector('#microscopeWorkspace');
+  if(view==='microscope'){
+   if(!active){
+    const host=document.createElement('section');host.id='microscopeWorkspace';host.textContent='Opening Microscope Lab…';
+    document.getElementById('content').replaceChildren(host);
+    import('./microscope-lab.mjs').then(module=>{if(host.isConnected&&view==='microscope')microscopeCleanup=module.mount(host)}).catch(()=>{if(host.isConnected)host.textContent='Microscope Lab could not load. Reopen the tool to retry.'});
+   }
+  }else{
+   microscopeCleanup?.();microscopeCleanup=null;result=before.apply(this,args);
+  }
+  window.mountOtherTools();return result};
  function restore(){const hash=location.hash.slice(1),id=hash.startsWith('other/')?hash.slice(6):hash==='other'?selected:null;if(ids.has(id)){selectOther(id);if(id==='weakness'&&typeof filters==='object'&&filters)filters.status='weak';else if(id==='lectures'&&typeof filters==='object'&&filters?.status==='weak')filters.status='all';if(view!==id){view=id;render()}}}
  for(const e of ['popstate','hashchange'])window.addEventListener(e,restore);restore();
  const mobile=document.querySelector('.ui-mobile-nav');
@@ -68,7 +82,7 @@
  function populate(){
   const groups=[
    ['Study',[
-    ...(anatomy?[toolFrom(anatomy)]:[]),
+    ...(anatomy?[toolFrom(anatomy)]:[]),microscope,
     {id:'anki',label:'Anki',icon:navGlyph('cards')},
    ]],
    ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:navGlyph('hourglass')}]],

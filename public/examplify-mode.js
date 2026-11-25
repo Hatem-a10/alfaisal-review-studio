@@ -33,7 +33,10 @@
  function remaining(){return Number.isFinite(exam().deadline)?ExamEngine.remaining(exam()):Infinity}
  function clockTarget(){return isOriginal()?originalRun.xp:etExam}
  function track(){const now=Date.now(),e=exam();if(e&&active()&&view==='practice'&&(isOriginal()||etPracticeTab==='mock')&&!hidden&&!reviewing&&!document.hidden&&document.hasFocus()&&!Number.isFinite(e.pausedAt))ExamEngine.addActiveTime(e,data().current,Math.min(2000,Math.max(0,now-lastActiveAt)));lastActiveAt=now}
- function questionAnswer(q){return Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length?`<p><strong>Correct answer: ${esc(q.letters?.[q.answer]||String.fromCharCode(65+q.answer))}. ${esc(q.options[q.answer])}</strong></p>`:'<p>No usable answer key is available; self-check this question.</p>'}
+ function questionAnswer(q){
+  const choices=q.options.flatMap((option,index)=>ExamEngine.isCorrect(q,index)?[esc(q.letters?.[index]||String.fromCharCode(65+index))+'. '+esc(option)]:[]);
+  return choices.length?'<p><strong>'+ (choices.length===1?'Correct answer: ':'Accepted answers: ')+choices.join(' / ')+'</strong></p>':'<p>No usable answer key is available; self-check this question.</p>';
+ }
  function finish(reason){track();reviewing=false;hidden=false;tool='';filter='all';if(!isOriginal()){etFinishExam(reason);return}const run=originalRun;if(!run||run.finishedAt)return;run.finishedAt=new Date().toISOString();run.xp.reason=reason;run.xp.presentation='classic';delete run.xp.snapshotAnswers;saveOriginalRun();render();toast(reason==='expired'?'Time expired · original printed answers are ready to review':'Original answers revealed · printed-key score is separate from readiness')}
  function cancel(){if(!isOriginal())return etCancelExam();if(!confirm('Cancel this exam view? Answers entered since opening it will be discarded; your earlier saved original-set answers will remain.'))return false;const run=originalRun;run.answers={...(run.xp.snapshotAnswers||{})};run.xp={presentation:'classic'};originalAdapterRun=null;originalAdapter=null;saveOriginalRun();render();return true}
  function cheatEnabled(){return !!(isOriginal()?originalRun.xp?.cheatMode:etExam?.cheatMode)}

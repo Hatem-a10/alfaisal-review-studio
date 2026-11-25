@@ -35,18 +35,8 @@ html:root[data-theme=amoled] body:not(.xp-exam-active){
   background:#000;
 }
 
-/* Site gradient: follows the next assessment's stain (html[data-stain], set in phase1-runtime.mjs).
-   Students can instead pick a fixed gradient in Settings (html[data-accent=palette]). */
-html:root body:not(.xp-exam-active){--ax-a:#221b57;--ax-b:#3a2f86;--ax-c:#d9547f}
-html:root[data-stain="1"] body:not(.xp-exam-active){--ax-a:#0f2547;--ax-b:#245796;--ax-c:#c2414f}
-html:root[data-stain="2"] body:not(.xp-exam-active){--ax-a:#3d0f33;--ax-b:#8e2a6c;--ax-c:#db66ad}
-html:root[data-stain="3"] body:not(.xp-exam-active){--ax-a:#0d2a44;--ax-b:#226a8f;--ax-c:#9a6ad6}
-html:root[data-stain="4"] body:not(.xp-exam-active){--ax-a:#241a10;--ax-b:#5c4428;--ax-c:#b8872b}
-html:root[data-stain="5"] body:not(.xp-exam-active){--ax-a:#0d2e25;--ax-b:#246b52;--ax-c:#3e9f63}
-html:root[data-stain="6"] body:not(.xp-exam-active){--ax-a:#1d1a52;--ax-b:#4d3a99;--ax-c:#db66a9}
-html:root[data-stain="7"] body:not(.xp-exam-active){--ax-a:#3b0f18;--ax-b:#93302d;--ax-c:#ec6817}
-/* A gradient the student picked in Settings (html[data-accent=palette], stops set inline). */
-html:root[data-accent=palette] body:not(.xp-exam-active){--ax-a:var(--pal-a);--ax-b:var(--pal-b);--ax-c:var(--pal-c)}
+/* Both Auto and saved gradients resolve to the same palette tokens. */
+html:root body:not(.xp-exam-active){--ax-a:var(--pal-a,#24135e);--ax-b:var(--pal-b,#5a3bd6);--ax-c:var(--pal-c,#c42f8f)}
 /* Full-strength stops that turn early: deep start, main colour by 22%, second colour by 68%. */
 html:root body:not(.xp-exam-active){
   --rs-grad:linear-gradient(125deg,var(--ax-a) 0%,var(--ax-b) 22%,var(--ax-c) 68%,var(--ax-c) 100%);
@@ -585,3 +575,11 @@ html:root body:not(.xp-exam-active) .booklet-question-meta .rs-report-trigger{ma
 html:root body:not(.xp-exam-active) .booklet-actions{display:flex;gap:8px;flex-wrap:wrap;margin-block:14px 8px}
 html:root body:not(.xp-exam-active) .booklet-actions button{min-height:44px}
 html:root body:not(.xp-exam-active) .booklet-option-reasons>summary{font-size:1.08rem;font-weight:650;min-height:44px;align-content:center}
+
+#microscopeWorkspace .microscope-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(12rem,1fr);gap:14px;align-items:start}
+#microscopeWorkspace .microscope-stage{height:clamp(290px,58dvh,720px);background:#101320;border-radius:12px;overflow:hidden}
+#microscopeWorkspace .microscope-library h3{margin:.9rem 0 .45rem}
+#microscopeWorkspace .microscope-library button{display:block;width:100%;text-align:left;margin-block:4px}
+#microscopeWorkspace .microscope-library button[aria-pressed=true]{background:var(--rs-grad-tint);border-color:var(--accent-border)}
+#microscopeWorkspace .microscope-import{display:grid;margin-top:18px}
+@media(max-width:760px){#microscopeWorkspace .microscope-layout{grid-template-columns:minmax(0,1fr)}}

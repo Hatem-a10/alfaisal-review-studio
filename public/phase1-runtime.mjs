@@ -1,6 +1,6 @@
 /* global applyTheme, persist, settings, render, view, storeOptions, DATA, LEARNING, uploads, inlineTopicsFor, lessonById, allLearningQuestions, TOPIC_CHECKS, inlineGroups, chooseLesson, go, libraryDocumentURL, sourceById */
 import {deriveAccent} from './phase1-accent.mjs';
-import {chosenGradient,mountGradientPicker} from './accent-gradients.mjs';
+import {ASSESSMENT_GRADIENTS,gradientById,chosenGradient,mountGradientPicker} from './accent-gradients.mjs';
 import {declutter} from './phase1-copy.mjs';
 import {mountAcademicAdmin} from './phase1-academic-admin.mjs';
 import {installSearch} from './phase1-search.mjs';
@@ -12,13 +12,35 @@ await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates
 await import("./mobile-dock.js?v=1498");
 await import("./studio-navigation.js?v=1498");
 let solver,solverRetries=0;
-// Mid tones of the eight stain palettes in redesign.css (--st-b), in the same order.
-export const STAIN_ACCENTS=['#3a2f86','#245796','#8e2a6c','#226a8f','#5c4428','#246b52','#4d3a99','#93302d'];
+const assessmentPalettes=ASSESSMENT_GRADIENTS.map(gradientById);
+export const STAIN_ACCENTS=assessmentPalettes.map(p=>p.b);
 const DEFAULT_ACCENTS=/^#(?:5b4bd0|2f6c52)$/i;
-function themes(){const old=applyTheme;let lastColor,lastDark,paletteEntries;applyTheme=function(...args){const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent)),palette=auto?null:chosenGradient({...settings,accentAuto:false}),color=palette?palette.b:STAIN_ACCENTS[stain],dark=settings.theme==='amoled',stainValue=String(stain),accentValue=palette?'palette':'auto';if(root.dataset.stain!==stainValue)root.dataset.stain=stainValue;if(root.dataset.accent!==accentValue)root.dataset.accent=accentValue;for(const [key,value] of [['--pal-a',palette?.a],['--pal-b',palette?.b],['--pal-c',palette?.c]]){if(value){if(root.style.getPropertyValue?.(key)!==value)root.style.setProperty?.(key,value)}else root.style.removeProperty?.(key)};if(!paletteEntries||color!==lastColor||dark!==lastDark){paletteEntries=Object.entries(deriveAccent(color,dark));lastColor=color;lastDark=dark}for(const[key,value]of paletteEntries)if(root.style.getPropertyValue?.(key)!==value||root.style.getPropertyPriority?.(key))root.style.setProperty(key,value);rememberBootGradient(palette,stain,dark);return result};applyTheme()}
-// The loading spinner runs before any stylesheet or module, so keep the gradient in use (stops, theme) for it.
-const STAIN_STOPS=[['#221b57','#3a2f86','#d9547f'],['#0f2547','#245796','#c2414f'],['#3d0f33','#8e2a6c','#db66ad'],['#0d2a44','#226a8f','#9a6ad6'],['#241a10','#5c4428','#b8872b'],['#0d2e25','#246b52','#3e9f63'],['#1d1a52','#4d3a99','#db66a9'],['#3b0f18','#93302d','#ec6817']];
-let bootGradient='';function rememberBootGradient(palette,stain,dark){const stops=palette?[palette.a,palette.b,palette.c]:STAIN_STOPS[stain]||STAIN_STOPS[0],value=JSON.stringify({stops,dark});if(value===bootGradient)return;bootGradient=value;try{localStorage.setItem('review-studio-boot-gradient',value)}catch{}}
+let bootGradient='';
+function themes(){
+ const old=applyTheme;
+ let lastColor,lastDark,paletteEntries;
+ const isAuto=()=>typeof settings.accentAuto==='boolean'?settings.accentAuto:!(/^#[0-9a-f]{6}$/i.test(settings.accent||'')&&!DEFAULT_ACCENTS.test(settings.accent));
+ const paletteFor=index=>{
+  const category=assessmentPalettes[index]||assessmentPalettes[0];
+  const manual=isAuto()?null:chosenGradient({...settings,accentAuto:false});
+  return manual?{a:manual.a,b:category.b,c:'color-mix(in srgb,'+category.c+' 70%,'+manual.c+')'}:category;
+ };
+ window.reviewGradientStyleFor=index=>Object.entries(paletteFor(index)).filter(([key])=>['a','b','c'].includes(key)).map(([key,value])=>'--st-'+key+':'+value).join(';');
+ applyTheme=function(...args){
+  const result=old.apply(this,args),root=document.documentElement,stain=Number(window.reviewNextStain?.()??0)%8,auto=isAuto();
+  const palette=auto?assessmentPalettes[stain]:chosenGradient({...settings,accentAuto:false}),dark=settings.theme==='amoled';
+  const accentMode=auto?'auto':'palette',stainValue=String(stain);
+  if(root.dataset.stain!==stainValue)root.dataset.stain=stainValue;
+  if(root.dataset.accent!==accentMode)root.dataset.accent=accentMode;
+  for(const key of ['a','b','c'])if(root.style.getPropertyValue('--pal-'+key)!==palette[key])root.style.setProperty('--pal-'+key,palette[key]);
+  if(!paletteEntries||palette.b!==lastColor||dark!==lastDark){paletteEntries=Object.entries(deriveAccent(palette.b,dark));lastColor=palette.b;lastDark=dark}
+  for(const [key,value] of paletteEntries)if(root.style.getPropertyValue(key)!==value||root.style.getPropertyPriority(key))root.style.setProperty(key,value);
+  const value=JSON.stringify({stops:[palette.a,palette.b,palette.c],dark});
+  if(value!==bootGradient){bootGradient=value;try{localStorage.setItem('review-studio-boot-gradient',value)}catch{}}
+  return result;
+ };
+ applyTheme();
+}
 async function readingData({enrich=false}={}){
  const archived=item=>window.reviewArchivedStudyItem?.(item)===true||window.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&window.reviewViewingArchive?.()!==true&&item?.course==='CVP';
  // Course content loads on demand; search and reading need every active (non-archived) course.

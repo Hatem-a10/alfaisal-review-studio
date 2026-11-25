@@ -71,7 +71,7 @@ test('A5-285 measures actual full and ranged R2 response bytes using the authori
  const module={exports:{}};new Function('require','module','exports',out)(name=>({
   './site-assets-manifest':{SITE_ASSETS:[asset]},'../public/renal-materials.json':[],'./active-booklet-assets.json':[],
   './renal-booklet-asset.json':asset,'../public/mol-study-assets.json':{booklet:asset,assessments:asset,sources:[]},
-  './renal-assessment-assets.json':[]
+  './microscope-assets.json':[],'./renal-assessment-assets.json':[]
  })[name],module,module.exports);
  const bucket={head:async()=>({size:asset.size}),get:async(_key,options)=>({size:asset.size,body:new Uint8Array(options?.range?.length??asset.size)})};
  const meter=new R2TransferMeter();

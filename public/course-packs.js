@@ -72,7 +72,7 @@ function __reviewMergeKeys(path,target,entries){
   return '<section class="panel course-load-shell" role="status" aria-live="polite" aria-busy="true"><h2>Opening '+esc(safe)+' study content</h2><p>Loading verified course materials. Your saved progress remains on this device.</p><div class="course-load-skeleton" aria-hidden="true"><div class="course-load-title"></div><div class="course-load-row"></div><div class="course-load-row short"></div><div class="course-load-row"></div><div class="course-load-row short"></div></div></section>';
  }
  // Views that show no course content render without any pack.
- const noContent=new Set(['dashboard','planner','calendar','countdowns','grades','activity','methods','anatomy','index']);
+ const noContent=new Set(['dashboard','planner','calendar','countdowns','grades','activity','methods','anatomy','microscope','booklet','index']);
  const everything=new Set(['weakness','wrong-bank','sources','search']);
  // The course the student is looking at decides what loads; mixed views load every active course.
  function needed(){

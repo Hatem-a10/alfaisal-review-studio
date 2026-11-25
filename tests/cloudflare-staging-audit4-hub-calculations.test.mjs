@@ -25,9 +25,9 @@ test('countdowns recognize single-digit and explicit 12-hour start clocks and re
  for(const detail of ['99:00','09:60','13:00 PM'])assert.equal(hub.countdown({date,detail},now).known,false);
  const assumed=hub.countdown({date,detail:'Room A'},now);assert.equal(assumed.assumed,true);assert.equal(assumed.time,'08:00');
 });
-test('past countdowns retain true start time even though remaining seconds are zero',()=>{
+test('past countdowns display elapsed time since the true start',()=>{
  const date='2026-12-20',now=Date.parse('2026-12-21T00:00:00Z'),a=hub.countdown({date,detail:'09:00'},now),b=hub.countdown({date,detail:'12:00'},now);
- assert.equal(a.seconds,0);assert.equal(b.seconds,0);assert.ok(a.startAt<b.startAt);
+ assert.equal(a.seconds,18*3600);assert.equal(b.seconds,15*3600);assert.ok(a.startAt<b.startAt);assert.equal(a.text,'00 : 18 : 00 : 00');assert.equal(a.past,true);
 });
 test('activity counts only finite positive session durations and tolerates malformed rows',()=>{
  const at='2026-11-24T08:00:00Z',records={bad:null,broken:{learning:{attempts:{}},mcqs:{},sessions:{}},a:{sessions:[null,{id:'1',endedAt:at,seconds:60},{id:'2',endedAt:at,seconds:Infinity},{id:'3',endedAt:at,seconds:'bad'},{id:'4',endedAt:at,seconds:0},{id:'5',endedAt:at,seconds:-60}]}};

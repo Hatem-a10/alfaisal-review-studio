@@ -22,18 +22,20 @@ test('exam pools preserve Unicode, distinct figure questions and ordinary course
  assert.equal(nearDuplicate(c,d),false);assert.equal(nearDuplicate(c,{...c,options:['different','options']}),false);
 });
 test('mock bank includes ordinary course questions and restricts original questions to selected mix',()=>{
- const code=source.split('\n').find(l=>l.startsWith('function phase2MockPool('));
- const context={etMockScope:'MOL',etAccurate:false,ExamEngine:engine,LEARNING:{sources:[]},ORIGINAL_EXAMS:{sources:[],questions:[question('original1','MOL-1'),question('original2','MOL-2')]},mixBank:()=>[question('bank1','MOL-1'),question('bank2','MOL-2')],lessonMix:{mock:{enabled:false,ids:[]}},MockSources:{filter:(qs,course)=>qs.filter(q=>q.lectureIds.every(id=>id.startsWith(course+'-')))},window:{}};
- const pool=runInNewContext(code+'\nphase2MockPool',context);
+ const code=source.slice(source.indexOf('function phase2MockPool('),source.indexOf('function etMockPanel('));
+ const context={etMockScope:'MOL',etAccurate:false,ExamEngine:engine,LEARNING:{sources:[]},ORIGINAL_EXAMS:{sources:[],questions:[question('original1','MOL-1'),question('original2','MOL-2')]},mixBank:()=>[question('bank1','MOL-1'),question('bank2','MOL-2')],lessonMix:{mock:{enabled:false,ids:[]}},MockSources:{choices:()=>({booklet:true}),groups:()=>[],filter:(qs,course)=>qs.filter(q=>q.lectureIds.every(id=>id.startsWith(course+'-')))},window:{}};
+ const mix=readFileSync(new URL('../public/lesson-mix-controls.js',import.meta.url),'utf8');
+ const filter=mix.slice(mix.indexOf('function mockLessonSelection'),mix.indexOf('function mixSelected'));
+ const pool=runInNewContext(code+'\n'+filter+'\nphase2MockPool',context);
  assert.equal(pool().length,4);context.lessonMix.mock={enabled:true,ids:['MOL-2']};assert.deepEqual(Array.from(pool(),q=>q.id).sort(),['bank2','original2']);
  context.lessonMix.mock.ids=[];assert.equal(pool().length,0);
 });
 test('overlapping starts cannot overwrite an exam and stale selections do not launch it',async()=>{
  const code=source.slice(source.indexOf('async function etLaunchMock('),source.indexOf('function etCancelExam()'));
  let release;const wait=new Promise(r=>release=r),fields={etMockCount:{value:'1'},etMockMinutes:{value:'60'},etStartMock:{disabled:false}},toasts=[],created=[];
- const ctx={etStartingMock:false,etExam:null,etMockCount:1,etMockMinutes:60,etMockScope:'MOL',etMockType:'exam',etAccurate:false,etPracticeTab:'mock',view:'practice',reviewCourseScope:'MOL',lessonMix:{mock:{enabled:false,ids:[]}},phase2CheatPreference:()=>false,$:s=>fields[s.slice(1)],window:{loadFacultyQuestions:()=>wait,Phase2Practice:{recordMock:x=>created.push(x)}},ExamEngine:engine,phase2MockPool:()=>[question()],crypto:{randomUUID:()=> 'synthetic'},toast:m=>toasts.push(m),etSaveExam(){},render(){},etTick(){},etRetrySnapshot:()=>true};
+ const ctx={etStartingMock:false,etExam:null,etMockCount:1,etMockMinutes:60,etMockScope:'MOL',etMockType:'exam',etAccurate:false,etPracticeTab:'mock',view:'practice',reviewCourseScope:'MOL',lessonMix:{mock:{enabled:false,ids:[]}},phase2CheatPreference:()=>false,$:s=>fields[s.slice(1)],MockSources:{choices:()=>({booklet:true})},window:{reviewMockBookletStatus:()=>'ready',reviewLoadMockBooklet:()=>wait,Phase2Practice:{recordMock:x=>created.push(x)}},ExamEngine:engine,phase2MockPool:()=>[question()],crypto:{randomUUID:()=> 'synthetic'},toast:m=>toasts.push(m),etSaveExam(){},render(){},etTick(){},etRetrySnapshot:()=>true};
  const launch=runInNewContext(code+'\netLaunchMock',ctx);
- const first=launch(fields.etStartMock);assert.equal(await launch(fields.etStartMock),false);fields.etMockCount.value='2';release();
+ const first=launch(fields.etStartMock);assert.equal(await launch(fields.etStartMock),false);fields.etMockCount.value='2';release(true);
  assert.equal(await first,false);assert.equal(created.length,0);assert.equal(ctx.etStartingMock,false);
  fields.etMockCount.value='1';assert.equal(await launch(fields.etStartMock),true);assert.equal(created.length,1);assert.equal(await launch(fields.etStartMock),false);assert.equal(created.length,1);
 });

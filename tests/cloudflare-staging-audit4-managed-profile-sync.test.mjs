@@ -5,8 +5,8 @@ import {runInNewContext} from 'node:vm';
 const source=readFileSync(new URL('../public/managed-auth-client.js',import.meta.url),'utf8');
 function profileHarness(fetch,state={}){
  const handlers={},settings={profileCreatedAt:'2026-11-24',profileName:'First'};
- const code=source.slice(source.indexOf(' let profileFingerprint='),source.indexOf(' async function getAccount()'));
- const api=runInNewContext(code+'\n({syncProfile,privacyPayload,studyCounts})',{settings,state,fetch,window:{addEventListener:(event,fn)=>handlers[event]=fn}});
+ const code=source.slice(source.indexOf(' let profileFingerprint='),source.indexOf(' function installManagedApp()'));
+ const api=runInNewContext(code+'\n({syncProfile,studyCounts})',{settings,state,fetch,window:{addEventListener:(event,fn)=>handlers[event]=fn}});
  return {api,handlers,settings};
 }
 test('profile changed during pending save is sent after older request completes',async()=>{
@@ -21,11 +21,11 @@ test('failed profile saves can retry on reconnect or focus without another edit'
  await h.api.syncProfile();await h.handlers.online();await h.handlers.focus();
  assert.equal(calls,2);
 });
-test('privacy-only requests do not overwrite profile or send analytics on opt-out',()=>{
- const h=profileHarness(async()=>({ok:true}),{a:{done:{0:'today'},mcqs:[{total:3}]}});
- assert.equal(JSON.stringify(h.api.privacyPayload(false)),JSON.stringify({analyticsOptIn:false}));
- assert.equal(JSON.stringify(h.api.privacyPayload(true)),JSON.stringify({analyticsOptIn:true,analytics:{completedReviews:1,answeredQuestions:3}}));
- assert.match(source,/JSON\.stringify\(privacyPayload\(checkbox\.checked\)\)/);
+test('study-total payload contains counts only and settings has no switch for it',()=>{
+ const h=profileHarness(async()=>({ok:true}),{a:{done:{0:'today'},mcqs:[{total:3,answers:['private']}],notes:'private'}});
+ assert.deepEqual(JSON.parse(JSON.stringify(h.api.studyCounts())),{completedReviews:1,answeredQuestions:3});
+ assert.doesNotMatch(source,/Share study totals with the site owner|privacyPayload/);
+ assert.match(source,/api\+'study-counts'/);
 });
 test('study counts ignore malformed records, nonintegral and nonfinite totals',()=>{
  const h=profileHarness(async()=>({ok:true}),{bad:null,one:{done:{0:'today'},mcqs:[null,{total:2},{total:Infinity},{total:-4},{total:1.5},{total:'8'}]},two:{done:'bad',mcqs:{}}});

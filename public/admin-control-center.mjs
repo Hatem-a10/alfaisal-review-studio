@@ -538,7 +538,7 @@ export async function openAdminCenter(){
   const data=await request('analytics');
   if(version!==viewVersion)return;
   const s=data.summary;
-  panel.append(cards([['Registered',s.registered],['Active in 7 days',s.active7],['Active in 30 days',s.active30],['Onboarded',s.onboarded],['Study analytics opt-ins',s.sharing],['Shared completed reviews',s.completedReviews??'Suppressed'],['Shared practice answers',s.answeredQuestions??'Suppressed']]),
+  panel.append(cards([['Registered',s.registered],['Active in 7 days',s.active7],['Active in 30 days',s.active30],['Onboarded',s.onboarded],['Accounts with study totals',s.sharing],['Shared completed reviews',s.completedReviews??'Suppressed'],['Shared practice answers',s.answeredQuestions??'Suppressed']]),
    node('h4','Registrations'),table(['Day','Accounts'],data.registrations.map(x=>[x.day,x.count])),
    node('h4','Academic reports'),table(['Category','Reports'],data.problems.map(x=>[x.category,x.count])),
    node('h4','Shared resource downloads'),table(['Resource','Downloads in 30 days'],(data.popularity||[]).map(x=>[x.title,x.count])),
