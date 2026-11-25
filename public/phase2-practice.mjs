@@ -167,6 +167,18 @@ function handleBookletKey(event){
     event.target.closest?.('textarea,select,[contenteditable=true],input:not([name=p2answer])')||document.querySelector('dialog[open]'))return;
  const vertical=key==='ArrowUp'||key==='ArrowDown';
  if(event.repeat&&!vertical)return;
+ if(key==='ArrowDown'&&!event.repeat){
+  const reasons=document.querySelector('.booklet-question .booklet-option-reasons:not([open])');
+  const page=document.scrollingElement;
+  if(reasons&&page&&Math.ceil(page.scrollTop+page.clientHeight)>=page.scrollHeight-2){
+   event.preventDefault();
+   reasons.open=true;
+   const summary=reasons.querySelector('summary');
+   summary?.focus({preventScroll:true});
+   revealBookletTarget(summary);
+   return;
+  }
+ }
  if(vertical||/^[a-e1-5]$/i.test(key)){
   const choices=[...document.querySelectorAll('.booklet-answers input:not(:disabled)')];
   if(!choices.length)return;
