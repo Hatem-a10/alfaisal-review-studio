@@ -29,8 +29,7 @@ async function boot({online = true, response, key = owner, active = owner, initi
    const t = {objectStore: () => ({
     get: k => request(meta.get(k)),
     put: (v, k) => request(meta.set(k, v)),
-    getAllKeys: () => request([]),
-    getAll: () => request([]),
+    openCursor: () => request(null),
    })};
    function request(value) {
     const req = {result: value};
