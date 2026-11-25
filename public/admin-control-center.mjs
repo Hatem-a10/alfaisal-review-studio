@@ -1,3 +1,4 @@
+import {csvRows} from './admin-csv.mjs';
 const apiRoot = '/api/control-center/';
 const tabs = {
  overview:'Overview', students:'Students', roles:'Roles & Permissions', academics:'Academic Management',
@@ -557,13 +558,8 @@ export async function openAdminCenter(){
      if(next>80||more&&rows.length>=2000)throw Error('Too many audit events to export at once. Narrow the date or action filters.');
     }
     if(version!==viewVersion)return;
-    const escapeCell=value=>{
-     let text=String(value??'');
-     if(/^[\\s]*[=+@-]/.test(text))text="'"+text;
-     return '"'+text.replaceAll('"','""')+'"';
-    };
     const headers=['id','created_at','role','action','actor','target'];
-    const csv=[headers.join(','),...rows.map(item=>headers.map(key=>escapeCell(item[key])).join(','))].join('\\r\\n');
+    const csv=csvRows(rows,headers);
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),link=document.createElement('a');
     link.href=url;link.download='review-studio-audit-'+new Date().toISOString().slice(0,10)+'.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     status.textContent=rows.length+' filtered records exported · last 90 days maximum.';
@@ -701,11 +697,7 @@ export async function openAdminCenter(){
     }
     if(version!==viewVersion)return;
     const headers=['id','questionId','category','kind','status','details','createdAt','updatedAt','reviewNote','revisionStatus'];
-    const csvCell=value=>{
-     let input=String(value??'');if(/^\\s*[=+@-]/.test(input))input="'"+input;
-     return '"'+input.replaceAll('"','""')+'"';
-    };
-    const csv=[headers.join(','),...rows.map(row=>headers.map(key=>csvCell(row[key])).join(','))].join('\\r\\n');
+    const csv=csvRows(rows,headers);
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');
     a.href=url;a.download='review-studio-reports-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     status.textContent=rows.length+' reports exported. Reporter identities excluded.';
