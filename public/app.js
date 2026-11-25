@@ -118,7 +118,7 @@ function pendingSyncCounts(local,baseline){
  const stores=x=>Object.fromEntries(Object.entries(x?.extras?.stores||{}).map(([key,value])=>[key,value.value]));
  return {records:count(local.records,baseline.records),settings:count(local.settings,baseline.settings),stores:count(stores(local),stores(baseline))};
 }
-window.reviewPendingSyncCounts=()=>{if(!syncMeta.dirty)return {records:0,settings:0,stores:0};if(!deltaBaseline||deltaRevision!==syncMeta.revision||syncConflict)return null;try{return pendingSyncCounts(bundle(),deltaBaseline)}catch{return null}};
+if(typeof window!=='undefined')window.reviewPendingSyncCounts=()=>{if(!syncMeta.dirty)return {records:0,settings:0,stores:0};if(!deltaBaseline||deltaRevision!==syncMeta.revision||syncConflict)return null;try{return pendingSyncCounts(bundle(),deltaBaseline)}catch{return null}};
 function syncConflictCounts(local,cloud){
  const map=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
  const array=value=>Array.isArray(value)?value:[];
