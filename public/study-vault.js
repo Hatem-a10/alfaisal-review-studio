@@ -46,5 +46,82 @@ const StudyVault=(()=>{
  else if(k==='mock'&&old.value.id===v.value.id){if(!!old.value.finishedAt!==!!v.value.finishedAt)value=old.value.finishedAt?old.value:v.value;else if(!recent.value.finishedAt)value={...older.value,...recent.value,answers:{...older.value.answers,...recent.value.answers},flags:{...older.value.flags,...recent.value.flags}};}
  }stores[k]={at:recent.at,value}}return {version:1,stores}}
  function apply(v,{mergeMissing=true}={}){v=valid(v);const next=mergeMissing?{version:1,stores:{...snapshot().stores,...v.stores}}:v,newMeta={...meta},entries=Object.entries(next.stores).map(([k,e])=>{newMeta[k]=e.at;return [byName[k],e.value===null?null:JSON.stringify(e.value)]});entries.push([metaKey,JSON.stringify(newMeta)]);const oldEntries=entries.map(([k])=>[k,localStorage.getItem(k)]);muted=true;try{if(typeof window!=='undefined'&&window.ReviewDevice?.stageBatch)window.ReviewDevice.stageBatch(entries);else{try{for(const [k,value] of entries)value===null?rawRemove.call(localStorage,k):rawSet.call(localStorage,k,value)}catch(e){for(const [k,value] of oldEntries)try{value===null?rawRemove.call(localStorage,k):rawSet.call(localStorage,k,value)}catch{}throw Error('Restore did not finish. Keep both recovery copies and retry.')}}meta=newMeta;for(const [k]of entries)corrupt.delete(k)}finally{muted=false}window.dispatchEvent(new CustomEvent('study-vault-restored'))}
- function damagedCopies(){return Object.fromEntries([...corrupt].map(key=>[key,localStorage.getItem(key)]))}return {read,set,valid,snapshot,apply,merge,damagedCopies};
+ function damagedCopies(){return Object.fromEntries([...corrupt].map(key=>[key,localStorage.getItem(key)]))}
+ function inspectDamaged(){
+  for(const name of Object.keys(byName))read(name);
+  return Object.entries(byName).filter(([,key])=>corrupt.has(key)).map(([name,key])=>({name,raw:localStorage.getItem(key)}));
+ }
+ const resetting=new Set();
+ async function resetDamaged(name,expectedRaw){
+  if(!known(name)||resetting.has(name))throw Error('Choose one damaged store.');
+  const key=byName[name],accountKey=prefix+'-account',account=localStorage.getItem(accountKey),device=window.ReviewDevice;
+  if(!account||!device?.available||!device.backup||!device.stageBatch||!device.flush)throw Error('Verified device recovery storage is unavailable. Download the damaged copy and reconnect; nothing was reset.');
+  const unchanged=()=>localStorage.getItem(accountKey)===account&&corrupt.has(key)&&typeof expectedRaw==='string'&&localStorage.getItem(key)===expectedRaw;
+  if(!unchanged())throw Error('The damaged data has changed. Inspect it again before resetting.');
+  resetting.add(name);
+  try{
+   // Backup key is scoped to this account and store, separate from ordinary full-progress recovery.
+   const at=new Date().toISOString(),backupKey=account+'|damaged:'+name+':'+crypto.randomUUID();
+   await device.backup(backupKey,JSON.stringify({version:1,name,at,raw:expectedRaw}));
+   if(!unchanged())throw Error('Account or damaged data changed. Nothing was reset.');
+   const oldMeta=localStorage.getItem(metaKey),nextMeta={...meta,[name]:at};
+   try{
+    device.stageBatch([[key,null],[metaKey,JSON.stringify(nextMeta)]]);
+    await device.flush();
+    if(localStorage.getItem(accountKey)!==account)throw Error('Account changed.');
+    if(localStorage.getItem(key)!==null||localStorage.getItem(metaKey)!==JSON.stringify(nextMeta))throw Error('Reset could not be verified.');
+   }catch(error){
+    if(localStorage.getItem(accountKey)===account){
+     // Retain the corrupted bytes and previous metadata on any write failure.
+     try{device.stageBatch([[key,expectedRaw],[metaKey,oldMeta]]);await device.flush()}catch{}
+     corrupt.add(key);
+    }
+    throw Error('Reset was not confirmed. The verified damaged copy is retained; reconnect and retry.');
+   }
+   meta=nextMeta;corrupt.delete(key);
+   if(typeof scheduleSync==='function')scheduleSync();
+   return true;
+  }finally{resetting.delete(name)}
+ }
+ return {read,set,valid,snapshot,apply,merge,damagedCopies,inspectDamaged,resetDamaged};
 })();
+
+/* A private, opt-in recovery surface. Raw content is never inserted as HTML or sent to telemetry. */
+if(typeof document!=='undefined'&&typeof window!=='undefined'){
+ const label={wrongBank:'Wrong bank',history:'Mock history',mock:'Current mock',originals:'Original exam runs',drafts:'Lesson drafts',resume:'Study resume',practice:'Practice sets',queue:'Upload review inbox',visual:'Visual recall',anki:'Anki progress',options:'Study options and additional study history'};
+ let panel,inspecting=false;
+ function refreshDamagedPanel(){
+  const frame=document.querySelector('#siteAdmin .admin-frame');
+  if(!frame||inspecting)return;
+  inspecting=true;
+  try{
+   const rows=StudyVault.inspectDamaged();
+   if(!panel){panel=document.createElement('section');panel.className='panel';panel.id='damagedStoreRepair';frame.append(panel)}
+   panel.replaceChildren();
+   const h=document.createElement('h3');h.textContent='Inspect & repair damaged study stores';panel.append(h);
+   if(!rows.length){const p=document.createElement('p');p.textContent='No unreadable companion stores detected.';panel.append(p);return}
+   const note=document.createElement('p');note.textContent='Download the damaged data first. Reset affects only the selected store; its contents may be lost on synced devices after cloud reconciliation. A separate verified device recovery copy is required.';panel.append(note);
+   for(const row of rows){
+    const box=document.createElement('details'),summary=document.createElement('summary');summary.textContent=label[row.name]||row.name;box.append(summary);
+    const preview=document.createElement('textarea');preview.readOnly=true;preview.rows=6;preview.setAttribute('aria-label','Damaged data preview');preview.value=String(row.raw).slice(0,16000);box.append(preview);
+    if(String(row.raw).length>16000){const p=document.createElement('p');p.textContent='Preview limited to 16,000 characters; export contains the complete damaged data.';box.append(p)}
+    const download=document.createElement('button');download.type='button';download.textContent='Export damaged store';
+    const consent=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.disabled=true;consent.append(check,document.createTextNode(' I exported the damaged data and understand this store may be cleared from cloud sync.'));
+    const reset=document.createElement('button');reset.type='button';reset.textContent='Reset only this store and reload';reset.disabled=true;
+    const status=document.createElement('p');status.setAttribute('role','status');
+    download.onclick=()=>{
+     const url=URL.createObjectURL(new Blob([row.raw],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='review-studio-damaged-'+row.name+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);check.disabled=false;
+    };
+    check.onchange=()=>reset.disabled=!check.checked;
+    reset.onclick=async()=>{
+     if(!check.checked)return;reset.disabled=true;check.disabled=true;download.disabled=true;status.textContent='Verifying a private device recovery copy…';
+     try{await StudyVault.resetDamaged(row.name,row.raw);status.textContent='Selected store reset. Reloading…';location.reload()}
+     catch(error){status.textContent=error.message;download.disabled=false;check.disabled=false;reset.disabled=!check.checked}
+    };
+    box.append(download,consent,reset,status);panel.append(box);
+   }
+  }finally{inspecting=false}
+ }
+ document.addEventListener('click',event=>{if(event.target.closest?.('#openSiteAdmin'))refreshDamagedPanel()});
+ window.addEventListener('study-vault-corrupt',()=>{if(document.querySelector('#siteAdmin')?.open)refreshDamagedPanel()});
+}

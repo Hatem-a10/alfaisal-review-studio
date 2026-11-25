@@ -50,3 +50,24 @@ test('visual result merge follows result timestamp instead of unrelated companio
  const {api}=vault(),a=wrap('visual',{exercises:{},results:{figure:{correct:2,total:2,at:recent}}},old),b=wrap('visual',{exercises:{other:[]},results:{figure:{correct:0,total:2,at:old}}},recent);
  const m=api.merge(a,b).stores.visual.value;assert.equal(m.results.figure.correct,2);assert.ok(Array.isArray(m.exercises.other));
 });
+
+test('guided repair exports corrupt bytes and resets only the selected store after verified device backup',async()=>{
+ const raw='{bad json',damaged=prefix+'-wrong-bank-v1',other=prefix+'-study-options-v1',accountKey=prefix+'-account';
+ const data=new Map([[damaged,raw],[other,'{"font":20}'],[accountKey,'account-a']]);
+ class Storage{getItem(k){return data.get(k)??null}setItem(k,v){data.set(k,String(v))}removeItem(k){data.delete(k)}}
+ const backups=new Map(),batches=[],localStorage=new Storage();let failBackup=true,failFlush=false;
+ const device={available:true,async backup(k,v){if(failBackup)throw Error('Backup unavailable');backups.set(k,v)},stageBatch(rows){batches.push(rows);for(const [k,v] of rows)v===null?data.delete(k):data.set(k,v)},async flush(){if(failFlush){failFlush=false;throw Error('Disk failure')}}};
+ let scheduled=0;
+ const api=runInNewContext(source+';StudyVault',{Storage,localStorage,window:{ReviewDevice:device,dispatchEvent(){}},CustomEvent:class{},crypto:{randomUUID:()=>String(backups.size)},scheduleSync:()=>scheduled++});
+ assert.equal(api.inspectDamaged()[0].raw,raw);
+ await assert.rejects(api.resetDamaged('wrongBank',raw),/Backup unavailable/);assert.equal(data.get(damaged),raw);assert.equal(batches.length,0);
+ failBackup=false;failFlush=true;
+ await assert.rejects(api.resetDamaged('wrongBank',raw),/not confirmed/);assert.equal(data.get(damaged),raw);assert.equal(data.get(other),'{"font":20}');
+ assert.ok(backups.size);assert.equal(scheduled,0);
+ await assert.rejects(api.resetDamaged('wrongBank','different bytes'),/changed/);
+ assert.equal(await api.resetDamaged('wrongBank',raw),true);
+ assert.equal(data.has(damaged),false);assert.equal(data.get(other),'{"font":20}');
+ assert.equal(api.inspectDamaged().length,0);assert.equal(api.snapshot().stores.wrongBank.value,null);assert.equal(scheduled,1);
+ assert.ok([...backups.keys()].every(k=>k.startsWith('account-a|damaged:wrongBank:')));
+ assert.ok([...backups.values()].every(v=>JSON.parse(v).raw===raw));
+});
