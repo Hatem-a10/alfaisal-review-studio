@@ -85,3 +85,17 @@ document.addEventListener('click',event=>{
  window.addEventListener('afterprint',cleanup,{once:true});
  try{window.print();}catch{cleanup();toast('Printing is unavailable. Try your browser print controls.');}
 });
+
+// Calculation drills are loaded only for verified relevant physiology lessons.
+let lessonFormulaModule=null,lessonFormulaLoading=null;
+const lessonReaderBeforeFormulaDrills=lessonReader;
+lessonReader=function(x,l,s){
+ const markup=lessonReaderBeforeFormulaDrills(x,l,s),eligible=/^CVP-P\d+$/.test(x.id)||['REN-P2','REN-P3','REN-P4'].includes(x.id);
+ if(!eligible)return markup;
+ if(lessonFormulaModule){
+  const topic=typeof guideFor==='function'?guideFor(x.id)?.sections?.[deepMode==='cards'?cardIndex:guideTopic]?.id:null;
+  return markup+lessonFormulaModule.lessonFormulaMarkup(x.id,topic);
+ }
+ lessonFormulaLoading??=import('/lesson-formula-drills.mjs').then(module=>{lessonFormulaModule=module;module.installLessonFormulaDrills();if(view==='learning')render()}).catch(()=>{lessonFormulaLoading=null});
+ return markup;
+};
