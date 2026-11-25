@@ -42,4 +42,5 @@ if(built.vars.REVIEW_STUDIO_DEPLOYMENT!==environment||built.name!==cfg.name||bui
 if (production && (built.vars.REVIEW_STUDIO_ACCESS !== 'restricted' || built.vars.REVIEW_STUDIO_OWNER_REAUTH !== '1' || built.workers_dev !== false || built.preview_urls !== false || built.routes?.length)) {
  throw Error('Production candidate unexpectedly exposes routes');
 }
+if(!production&&built.placement?.mode!=='smart')throw Error('Staging Smart Placement was lost during build');
 console.log('Cloudflare '+environment+' build complete.');
