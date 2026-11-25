@@ -107,8 +107,8 @@ function table(columns, rows, empty='Nothing to show yet.') {
  head.append(header);
  for(const items of rows){
   const row=node('tr');
-  for(const item of items){
-   const cell=node('td');
+  for(const [index,item] of items.entries()){
+   const cell=node('td');cell.setAttribute('data-label',String(columns[index]||''));
    if(item instanceof Node)cell.append(item);else cell.textContent=item??'—';
    row.append(cell);
   }
