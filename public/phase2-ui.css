@@ -3,7 +3,7 @@
 html[data-theme=amoled]{--p2-blue-soft:#17374b;--p2-line:#414446;--p2-rest:#292c2e}
 
 /* Examplify keeps the same layout and controls while using a neutral exam palette. */
-#xpExam[data-exam-theme=dark]{--xp-canvas:#303132;--xp-text:#f4f4f1;--xp-muted:#c2c5c6;--xp-header:#454647;--xp-header-text:#f7f7f4;--xp-nav:#38393a;--xp-option:#3b3c3d;--xp-option-border:#dededb;--xp-footer:#454647;--xp-menu:#393a3b;--xp-line:#555758;--xp-blue:#168bd2;--xp-tool:#38393a;--xp-answered:#5b5c5d;--xp-answered-border:#dfdfd8;color-scheme:dark}
+#xpExam[data-exam-theme=dark]{--xp-canvas:#303132;--xp-text:#f4f4f1;--xp-muted:#c2c5c6;--xp-header:#454647;--xp-header-text:#f7f7f4;--xp-nav:#38393a;--xp-option:#3b3c3d;--xp-option-border:#dededb;--xp-footer:#454647;--xp-menu:#393939;--xp-line:#555758;--xp-blue:#168bd2;--xp-tool:#383838;--xp-answered:#5b5c5d;--xp-answered-border:#dfdfd8;color-scheme:dark}
 #xpExam *{box-sizing:border-box}
 #xpExam .xp-nav,#xpExam .xp-question-scroll{overscroll-behavior:contain;scrollbar-color:#777 #363738}
 #xpExam .xp-option{user-select:none;-webkit-user-select:none;cursor:pointer}
