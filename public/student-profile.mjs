@@ -20,7 +20,7 @@ function loadGroups(){
 }
 function labChoices(group,section){return [...new Set(groupConfig.filter(x=>x.studentGroup===group&&x.studentSection===section).flatMap(x=>x.labGroups).filter(validLab))]}
 
-function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=186';document.head.append(link)}
+function style(){if(document.getElementById('studentProfileStyle'))return;const link=document.createElement('link');link.id='studentProfileStyle';link.rel='stylesheet';link.href='/student-profile.css?v=187';document.head.append(link)}
 function shell(title,body){style();const d=document.createElement('dialog');d.className='student-welcome';d.setAttribute('aria-labelledby','studentWelcomeTitle');d.innerHTML='<div class="student-welcome-mark" aria-hidden="true">✦</div><h2 id="studentWelcomeTitle">'+title+'</h2>'+body;document.body.append(d);return d}
 
 function groupFields(required=false){const optional=required?'':' (optional)';return '<div class="student-group-fields"><label>Academic group'+optional+'<select name="group"><option value="">Not selected</option>'+['M1','M2','F1','F2'].map(g=>'<option>'+g+'</option>').join('')+'</select></label><label>Section'+optional+'<select name="section"><option value="">Not selected</option><option>A</option><option>B</option></select></label></div>'}
@@ -103,6 +103,36 @@ function mountCourseReviews(progress,items,records,onCount){
  columns.forEach((column,pass)=>header.append(master('All '+(pass+1),column,'Select review '+(pass+1)+' for all lessons')));
  refresh();
 }
+const walkthroughSteps=[
+ ['Learn','Open a lesson, read one topic, and check your understanding with its quiz.'],
+ ['Practise','Use Booklet for past questions and lecture-by-lecture progress. Open Practice for timed mocks and previous assessments.'],
+ ['Plan','Check your classes in Schedule. Open More for My Study Plan, the 3D Anatomy Lab, Microscope Lab, and Anki.'],
+];
+export function walkthrough(){
+ const existing=document.getElementById('studentWelcomeTour');
+ if(existing)return Promise.resolve();
+ const dialog=shell('Quick walkthrough','<section class="student-step" aria-live="polite"></section><div class="student-wizard-actions"><button type="button" data-skip-tour>Skip tutorial</button><button type="button" data-tour-back>Back</button><button type="button" class="primary" data-tour-next></button></div>');
+ dialog.id='studentWelcomeTour';
+ const body=dialog.querySelector('section'),back=dialog.querySelector('[data-tour-back]'),next=dialog.querySelector('[data-tour-next]');
+ let step=0;
+ function draw(){
+  const [title,description]=walkthroughSteps[step];
+  body.innerHTML=`<small>Step ${step+1} of ${walkthroughSteps.length}</small><h3>${title}</h3><p class="student-step-lead">${description}</p>`;
+  back.hidden=step===0;
+  next.textContent=step===walkthroughSteps.length-1?'Finish tutorial':'Next';
+  next.focus();
+ }
+ return new Promise(resolve=>{
+  dialog.addEventListener('cancel',event=>event.preventDefault());
+  dialog.addEventListener('close',()=>{dialog.remove();resolve();},{once:true});
+  dialog.querySelector('[data-skip-tour]').onclick=()=>dialog.close();
+  back.onclick=()=>{step--;draw();};
+  next.onclick=()=>{if(step===walkthroughSteps.length-1)dialog.close();else{step++;draw();}};
+  dialog.showModal();
+  draw();
+ });
+}
+
 export function setup({reset=false,items=[],reviewRecords={}}={}){
  return new Promise(resolve=>{
   const managed=window.REVIEW_STUDIO_FRESH_ACCOUNTS===true;
@@ -198,7 +228,11 @@ export function setup({reset=false,items=[],reviewRecords={}}={}){
   back.onclick=()=>show(Math.max(0,step-1));
   const initialAppearance={theme:settings.theme,accent:settings.accent,accentAuto:settings.accentAuto,accentPalette:settings.accentPalette};
   appearance(d);
-  function finish(result){d.close();d.remove();resolve(result);}
+  function finish(result){
+   d.close();d.remove();
+   if(managed&&!reset&&result)walkthrough().then(()=>resolve(result));
+   else resolve(result);
+  }
   const cancel=()=>{Object.assign(settings,initialAppearance);applyTheme();if(reset)persist();finish(null)};
   d.addEventListener('cancel',e=>{e.preventDefault();if(reset)cancel()});
   d.querySelector('[data-cancel-profile]')?.addEventListener('click',cancel);

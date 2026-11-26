@@ -75,6 +75,32 @@ function read(){return storeOptions().phase2Practice||{booklet:{},mocks:[],filte
 function write(d,navigate=true){if(navigate)d.navigationAt=new Date().toISOString();const o=storeOptions();o.phase2Practice=d;if(JSON.stringify(o).length>6900000){toast('Account storage limit reached; remove a saved mock before adding more.');return false}try{saveOptions(o);return true}catch(e){toast('Could not save practice progress: '+e.message);return false}}
 function load(){if(!loading)loading=loadCvpBooklet().then(p=>{pack=p;render()}).catch(e=>{loading=null;toast(e.message)});return loading}
 function current(d){const pack=bookletPack(),x=selectBooklet(pack.questions,d);return {a:x.list,q:x.question?withQuestionContext(x.question,pack):null,position:x.question?Math.max(0,x.list.findIndex(q=>q.id===x.question.id)):x.position}}
+let bookletProgressCourse=null;
+const bookletProgressLabels={correct:'Correct',wrong:'Needs correction',pending:'Unanswered'};
+function progressMarkup(pack,entries){
+ const groups=new Map();
+ for(const question of pack.questions){
+  const heading=question.group?.trim()||(question.lectureIds||[]).join(' & ')||question.discipline||'Other questions';
+  if(!groups.has(heading))groups.set(heading,[]);
+  groups.get(heading).push(question);
+ }
+ return `<section class="panel booklet-progress-page">
+  <div class="section-head"><h1>Booklet progress by lecture</h1><button type="button" data-booklet-progress="close">Back to questions</button></div>
+  <p>Questions follow the lecture headings in the source booklet. Shared sections stay together.</p>
+  <ul class="booklet-progress-legend" aria-label="Progress colours">${Object.entries(bookletProgressLabels).map(([state,label])=>`<li data-state="${state}">${label}</li>`).join('')}</ul>
+  ${Array.from(groups,([heading,questions])=>{
+   const counts={correct:0,wrong:0,pending:0};
+   const cells=questions.map((question,index)=>{
+    const entry=bookletEntry(question,entries);
+    const state=entry?.correct===false?'wrong':entry?.completed&&entry.correct===true?'correct':'pending';
+    counts[state]++;
+    const label=state==='pending'&&entry?.completed?'Self-checked without a grade':bookletProgressLabels[state];
+    return `<button type="button" data-booklet-review-id="${escapeHTML(question.id)}" data-state="${state}" aria-label="Question ${index+1}: ${label}" title="Question ${index+1}: ${label}">${index+1}</button>`;
+   });
+   const summary=`${counts.correct} correct · ${counts.wrong} to correct · ${counts.pending} unanswered or ungraded`;
+   return `<details class="booklet-progress-lecture"><summary><strong>${escapeHTML(heading)}</strong><span>${summary}</span><span class="booklet-progress-meter" aria-hidden="true">${Object.entries(counts).map(([state,count])=>`<span data-state="${state}" style="flex-grow:${count}"></span>`).join('')}</span></summary><div class="booklet-progress-cells">${cells.join('')}</div></details>`;
+  }).join('')}</section>`;
+}
 let displayedBookletQuestion=null;
 function bookMarkup(){
  displayedBookletQuestion=null;const renal=isRenalBooklet(),mol=bookletCourse()==='MOL',pack=bookletPack();
@@ -89,9 +115,11 @@ if(!pack){
  if(renal||mol){if(!bookletErrors[bookletCourse()]&&!window.reviewAutoRetry?.pending('booklet-'+bookletCourse()))loadActiveBooklet(bookletCourse())}else load();
  return '<section class="panel booklet-overview"><h1>'+heading+'</h1><p role="status">Loading booklet…</p>'+source+'</section>';
 }
-const d=readBooklet(),{a,q,position}=current(d),completed=pack.questions.filter(q=>{const x=bookletEntry(q,d.booklet);return x?.completed&&x.correct!==false}).length;
+const d=readBooklet();
+if(bookletProgressCourse===bookletCourse())return progressMarkup(pack,d.booklet);
+const {a,q,position}=current(d),completed=pack.questions.filter(q=>{const x=bookletEntry(q,d.booklet);return x?.completed&&x.correct!==false}).length;
 const inventory=pack.counts?'<p>'+pack.counts.mcq+' unique MCQs'+(pack.counts.saq?' · '+pack.counts.saq+' written questions':'')+(pack.counts.ospe?' · '+pack.counts.ospe+' OSPE questions':'')+'</p>':'';
-const overview=`<section class="panel booklet-overview"><div class="booklet-overview-heading"><div><h1>${heading}</h1>${inventory}</div>${source}</div>
+const overview=`<section class="panel booklet-overview"><div class="booklet-overview-heading"><div><h1>${heading}</h1>${inventory}</div><div class="booklet-overview-actions"><button type="button" data-booklet-progress="open">Lecture progress</button>${source}</div></div>
  <div class="booklet-progress"><progress value="${completed}" max="${pack.questions.length}" aria-label="Booklet completion"></progress><span>${completed} of ${pack.questions.length} completed</span></div>
  ${filters(d)}</section>`;
 if(!q)return overview+'<section class="panel booklet-empty">No questions match these filters.</section>';
@@ -163,7 +191,7 @@ function revealBookletTarget(element){
 }
 function handleBookletKey(event){
  const key=event.key;
- if(view!=='booklet'||event.isComposing||event.metaKey||event.ctrlKey||event.altKey||
+ if(view!=='booklet'||bookletProgressCourse===bookletCourse()||event.isComposing||event.metaKey||event.ctrlKey||event.altKey||
     event.target.closest?.('textarea,select,[contenteditable=true],input:not([name=p2answer])')||document.querySelector('dialog[open]'))return;
  const vertical=key==='ArrowUp'||key==='ArrowDown';
  if(event.repeat&&!vertical)return;
@@ -229,7 +257,26 @@ export function install(){if(installed)return;installed=true;window.reviewRenalP
  document.addEventListener('input',e=>{if(e.target.id!=='p2written'||!bookletPack())return;const d=readBooklet(),{q}=current(d);if(!q)return;d.booklet??={};d.booklet[q.id]={...d.booklet[q.id],answer:e.target.value,at:new Date().toISOString()};writeBooklet(d)});
  document.addEventListener('change',e=>{if(e.target.name==='p2answer'&&bookletPack()){const q=displayedBookletQuestion;if(q?.id===e.target.closest('[data-question-id]')?.dataset.questionId){const d=readBooklet();d.booklet??={};d.booklet[q.id]={...d.booklet[q.id],answer:Number(e.target.value),...(q.choiceRevision?{choiceRevision:q.choiceRevision}:{}),at:new Date().toISOString()};writeBooklet(d)}}if(e.target.dataset.bookletMode&&bookletPack()){const d=readBooklet(),key=e.target.dataset.bookletMode;if(!['bookletRandom','bookletIncludeSAQ','bookletIncludeOSPE','bookletIncludeMCQ'].includes(key))return;d[key]=e.target.checked;if(key==='bookletRandom'&&d[key])randomizeBooklet(bookletPack().questions,d);delete d.bookletFeedbackId;delete d.bookletViewId;d.bookletHistory=[];d.bookletForward=[];d.bookletQueue=[];d.position=0;writeBooklet(d);render();return}if(e.target.id==='p2filter'||e.target.id==='bookletDiscipline'){const d=readBooklet();delete d.bookletFeedbackId;delete d.bookletViewId;d.bookletForward=[];d.bookletHistory=[];if(e.target.id==='bookletDiscipline')d.bookletDiscipline=e.target.value;else d.filter=e.target.value;d.position=0;writeBooklet(d);render()}});
  document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.p2Tab){if(b.dataset.p2Tab==='weak'&&window.reviewAdmin!==true)return;selected=b.dataset.p2Tab;render();return}if(b.dataset.p2Export){const m=(read().mocks||[]).find(x=>x.id===b.dataset.p2Export);if(m)downloadJSON({app:'alfaisal-review-studio-saved-mock',mock:m},'saved-mock-'+m.id+'.json');return}if(b.dataset.p2Delete){if(!confirm('Delete this saved mock and its snapshot?'))return;const d=read();d.mocks=(d.mocks||[]).filter(x=>x.id!==b.dataset.p2Delete);d.deletedMocks??={};d.deletedMocks[b.dataset.p2Delete]=new Date().toISOString();write(d);render();return}if(b.dataset.p2Retry){const m=(read().mocks||[]).find(x=>x.id===b.dataset.p2Retry);if(m&&(!globalThis.reviewArchivedStudyItem?.(m.snapshot)||globalThis.reviewCourseScope==='CVP')&&window.Phase2Practice.startRetry){try{window.Phase2Practice.startRetry(clone(m.snapshot))}catch(err){toast(err.message)}}else toast('Retry is unavailable.');return}if(b.id==='p2weak'){if(window.reviewAdmin!==true)return;const archive=globalThis.reviewCourseScope==='CVP'||!globalThis.reviewCvpArchived?.();
- if(archive&&!pack)await load();const d=read(),weak=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items),wrong=StudyVault.read('wrongBank',{entries:[]}).entries.filter(x=>globalThis.reviewStudyItemVisible?.(x.question)!==false);const pool=rankWeakQuestions(etMockPool(),weak,wrong);if(window.Phase2Practice.startWeighted){try{window.Phase2Practice.startWeighted(pool)}catch(err){toast(err.message)}}else toast('Weak-area mock is unavailable.');return}if(b.id==='renalMockRetry'){loadActiveBooklet(etMockScope);render();return}if(b.id==='renalBookletRetry'){loadActiveBooklet(bookletCourse());return}const booklet=bookletPack();if(!booklet||view!=='booklet')return;const d=readBooklet(),{a,q}=current(d);if(!q)return;d.booklet??={};
+ if(archive&&!pack)await load();const d=read(),weak=analytics(d.booklet,(d.mocks||[]).filter(m=>archive||!globalThis.reviewArchivedStudyItem?.(m.snapshot)),archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items),wrong=StudyVault.read('wrongBank',{entries:[]}).entries.filter(x=>globalThis.reviewStudyItemVisible?.(x.question)!==false);const pool=rankWeakQuestions(etMockPool(),weak,wrong);if(window.Phase2Practice.startWeighted){try{window.Phase2Practice.startWeighted(pool)}catch(err){toast(err.message)}}else toast('Weak-area mock is unavailable.');return}if(b.id==='renalMockRetry'){loadActiveBooklet(etMockScope);render();return}if(b.id==='renalBookletRetry'){loadActiveBooklet(bookletCourse());return}const booklet=bookletPack();if(!booklet||view!=='booklet')return;
+ if(b.dataset.bookletProgress){
+  bookletProgressCourse=b.dataset.bookletProgress==='open'?bookletCourse():null;
+  render();
+  const target=document.querySelector('[data-booklet-progress]');
+  target?.focus({preventScroll:true});
+  return;
+ }
+ if(b.dataset.bookletReviewId){
+  const question=booklet.questions.find(item=>item.id===b.dataset.bookletReviewId);
+  if(!question)return;
+  const d=readBooklet();
+  d.filter='all';d.bookletViewId=question.id;d.bookletDiscipline='all';
+  d.bookletIncludeMCQ=true;d.bookletIncludeSAQ=true;d.bookletIncludeOSPE=true;
+  d.bookletHistory=[];d.bookletForward=[];d.bookletQueue=[];
+  delete d.bookletFeedbackId;
+  if(writeBooklet(d)){bookletProgressCourse=null;render();const stem=document.getElementById('bookletStem');stem?.focus({preventScroll:true});revealBookletTarget(stem);}
+  return;
+ }
+ const d=readBooklet(),{a,q}=current(d);if(!q)return;d.booklet??={};
  if(b.id==='p2flag'||b.id==='p2saveNote'){
   const old=bookletAnnotation(q,d.bookletAnnotations),at=new Date().toISOString();
   const note=document.querySelector('#p2note')?.value;

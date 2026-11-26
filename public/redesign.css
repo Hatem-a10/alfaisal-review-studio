@@ -583,23 +583,25 @@ html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{or
 .renal-concept{line-height:1.65}
 .coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
 /* Keep every card of a given assessment type on the same palette. */
-.countdown-card[data-assessment-type="exams"]{--count-a:#102756;--count-b:#2457a0;--count-c:#2f438a}
-.countdown-card[data-assessment-type="tbls"]{--count-a:#502019;--count-b:#8f4516;--count-c:#723219}
-.countdown-card[data-assessment-type="ospe"]{--count-a:#122f2e;--count-b:#1b6961;--count-c:#124650}
-.countdown-card[data-assessment-type="starts"]{--count-a:#302047;--count-b:#674388;--count-c:#58356a}
-.countdown-card[data-assessment-type="other"]{--count-a:#303348;--count-b:#505674;--count-c:#3e4260}
+.countdown-card[data-assessment-type="exams"]{--count-accent:#6666bb}
+.countdown-card[data-assessment-type="tbls"]{--count-accent:#267e86}
+.countdown-card[data-assessment-type="ospe"]{--count-accent:#a16b3e}
+.countdown-card[data-assessment-type="starts"]{--count-accent:#a25d83}
+.countdown-card[data-assessment-type="other"]{--count-accent:#66758d}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- background:#303348;
- background:linear-gradient(135deg,var(--count-a),var(--count-b) 58%,var(--count-c));
- color:#fff;border:0;outline:0
+ background:linear-gradient(125deg,color-mix(in srgb,var(--count-accent) 24%,var(--rs-surface)),var(--rs-surface) 84%);
+ border:1px solid color-mix(in srgb,var(--count-accent) 35%,var(--rs-line));
+ color:var(--rs-ink);
+ outline:0;
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,p,span,strong,small,.countdown-date,.countdown-unit){
- color:#fff
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,p,span,strong,small,.countdown-date,.countdown-unit,.countdown-unit *){
+ color:var(--rs-ink);
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(.course-token,.countdown-unit){
- background:rgb(255 255 255 / .12);border-color:rgb(255 255 255 / .24)
+ background:color-mix(in srgb,var(--count-accent) 14%,var(--rs-surface));
+ border-color:color-mix(in srgb,var(--count-accent) 28%,var(--rs-line));
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{filter:none;opacity:.27}
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{display:none}
 html:root[data-accent=auto] body:not(.xp-exam-active) .home-spotlight[class*=assessment-theme]{background:var(--rs-grad)}
 
 /* Learn and Booklet readers share the site's surface and accent tokens. */
@@ -708,3 +710,25 @@ html:root body:not(.xp-exam-active) :is(#content .practice-start .practice-tool-
  box-shadow:var(--rs-shadow);
  background:linear-gradient(color-mix(in srgb,var(--ax-b) 10%,var(--rs-surface)),var(--rs-surface)) padding-box,var(--rs-grad-ring) border-box;
 }
+
+
+.assessment-library-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px 18px}
+.assessment-library-controls [role=group]{display:flex;flex-wrap:wrap;gap:6px}
+.assessment-library-controls label{display:grid;gap:5px}
+.assessment-library-controls input{min-width:min(14rem,100%);max-width:100%}
+.assessment-library-controls button[aria-pressed=true]{border-color:var(--accent-border);background:var(--accent-soft)}
+.assessment-library-group+ .assessment-library-group{margin-top:24px}
+
+.booklet-overview-actions{display:flex;align-items:start;gap:10px;flex-wrap:wrap}
+.booklet-progress-page [data-state=correct]{--progress-colour:#72bd91;--progress-ink:#102e21}
+.booklet-progress-page [data-state=wrong]{--progress-colour:#e09392;--progress-ink:#3e1516}
+.booklet-progress-page [data-state=pending]{--progress-colour:#a1a2aa;--progress-ink:#23242c}
+.booklet-progress-legend{display:flex;gap:12px 22px;flex-wrap:wrap;list-style:none;padding:0}
+.booklet-progress-legend li::before{content:"";display:inline-block;width:.75em;height:.75em;border-radius:3px;background:var(--progress-colour);margin-inline-end:.5em}
+.booklet-progress-lecture{border-top:1px solid var(--rs-line);padding:14px 0}
+.booklet-progress-lecture summary{cursor:pointer}
+.booklet-progress-lecture summary>span:not(.booklet-progress-meter){display:block;color:var(--muted);font-size:.88rem;margin:.35rem 0}
+.booklet-progress-meter{display:flex;overflow:hidden;height:8px;border-radius:10px;margin-top:8px}
+.booklet-progress-meter span{flex-basis:0;background:var(--progress-colour)}
+.booklet-progress-cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:5px;margin-top:12px}
+.booklet-progress-page .booklet-progress-cells button{min-width:0;padding:6px 0;background:var(--progress-colour);color:var(--progress-ink);border-color:transparent}

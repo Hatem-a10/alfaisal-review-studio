@@ -72,3 +72,7 @@ html:root body #studentProfileSetup [data-review-options]{max-height:none;overfl
 #studentProfileSetup .student-review-plan{margin:0;padding:8px 12px;border:1px solid var(--rs-line);border-radius:10px}
 #studentProfileSetup .student-review-plan summary{cursor:pointer}
 #studentProfileSetup .student-review-plan label{display:flex;align-items:baseline;gap:8px;padding:6px 0}
+
+#studentWelcomeTour .student-wizard-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+#studentWelcomeTour .student-step h3{margin:.4rem 0}
+#studentWelcomeTour .student-step-lead{margin:.4rem 0;max-width:46ch}

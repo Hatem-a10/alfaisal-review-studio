@@ -82,7 +82,7 @@ function originalWorkspace(){
  if(course==='REN'&&status==='loading')return '<p role="status">Loading Renal assessments…</p>';
  if(course==='REN'&&status==='error')return '<p role="status">Could not load Renal assessments. <button data-retry-assessments="REN">Retry</button></p>';
  if(typeof originalCatalog!=='function'){
- originalCatalog??=Promise.all([import('/original-catalog.mjs?v=3'),import('/cvp-final-mock-data.mjs'),import('/cvp-past-papers.mjs')]).then(([catalog, mock, papers])=>{
+ originalCatalog??=Promise.all([import('/original-catalog.mjs?v=4'),import('/cvp-final-mock-data.mjs'),import('/cvp-past-papers.mjs')]).then(([catalog, mock, papers])=>{
   mock.registerCvpMock(ORIGINAL_EXAMS);
   papers.registerCvpPapers(ORIGINAL_EXAMS);
   window.Cvp19?.applyOriginal();
