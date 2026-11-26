@@ -17,15 +17,49 @@ function renderer(){
  }).catch(error=>{viewerRequest=null;throw error});
 }
 
+// Ignore isolated bright specks near the edges of otherwise black scan margins.
+export function tissueFrame(pixels,width,height){
+ const rows=new Uint16Array(height),columns=new Uint16Array(width);
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+  const i=4*(y*width+x);
+  if(pixels[i+3]<128||Math.max(pixels[i],pixels[i+1],pixels[i+2])<44)continue;
+  rows[y]++;columns[x]++;
+ }
+ const span=(counts,cross)=>{
+  const threshold=Math.max(2,Math.ceil(cross*.025)),start=counts.findIndex(n=>n>=threshold),end=counts.findLastIndex(n=>n>=threshold)+1;
+  if(start<0||end-start<counts.length*.12)return null;
+  const margin=Math.ceil((end-start)*.04);
+  return [Math.max(0,start-margin)/counts.length,Math.min(counts.length,end+margin)/counts.length];
+ };
+ const horizontal=span(columns,height),vertical=span(rows,width);
+ return horizontal&&vertical?{x:horizontal[0],y:vertical[0],width:horizontal[1]-horizontal[0],height:vertical[1]-vertical[0]}:null;
+}
+
+async function thumbnailFrame(bytes){
+ const bitmap=await createImageBitmap(new Blob([bytes],{type:'image/jpeg'}));
+ try{
+  const canvas=document.createElement('canvas');
+  canvas.width=bitmap.width;canvas.height=bitmap.height;
+  const context=canvas.getContext('2d');
+  context.drawImage(bitmap,0,0);
+  return tissueFrame(context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height);
+ }finally{bitmap.close()}
+}
+
 export async function slideSource(read,size){
  const length=new DataView(await read(0,4)).getUint32(0);
  if(length<2||length>8*1024*1024||4+length>=size)throw Error('Invalid slide index.');
  const {width,height,tileSize,overlap,tiles}=JSON.parse(new TextDecoder().decode(await read(4,length)));
  const positive=(v,max)=>Number.isSafeInteger(v)&&v>0&&v<=max;
  if(!positive(width,1000000)||!positive(height,1000000)||!positive(tileSize,1024)||overlap!==1||!tiles||typeof tiles!=='object')throw Error('Invalid slide layout.');
- const start=4+length;
+ const start=4+length,maxLevel=Math.ceil(Math.log2(Math.max(width,height)));
+ const thumbnail=tiles[Math.min(maxLevel,Math.floor(Math.log2(tileSize)))+'/0_0'];
+ const frame=()=>Array.isArray(thumbnail)&&Number.isSafeInteger(thumbnail[0])&&thumbnail[0]>=0&&
+  positive(thumbnail[1],2*1024*1024)&&start+thumbnail[0]+thumbnail[1]<=size
+  ?read(start+thumbnail[0],thumbnail[1]).then(thumbnailFrame).catch(()=>null):Promise.resolve(null);
  return {
-  width,height,tileSize,tileOverlap:overlap,minLevel:0,maxLevel:Math.ceil(Math.log2(Math.max(width,height))),
+  frame,
+  width,height,tileSize,tileOverlap:overlap,minLevel:0,maxLevel,
   getTileUrl(level,x,y){return level+'/'+x+'_'+y},
   tileExists(level,x,y){return Object.hasOwn(tiles,this.getTileUrl(level,x,y))},
   async downloadTileStart(job){
@@ -120,8 +154,8 @@ export function mount(host){
  </div>`;
  const stage=host.querySelector('[data-slide-stage]'),status=host.querySelector('[data-slide-status]'),title=host.querySelector('[data-slide-title]'),list=host.querySelector('[data-slide-library]');
  const controls=[...host.querySelectorAll('[data-mag]')];
- let releaseImage;
- const reset=()=>{viewer?.destroy();viewer=null;releaseImage?.();releaseImage=null;stage.replaceChildren();for(const button of controls)button.disabled=true};
+ let releaseImage,fitSlide;
+ const reset=()=>{viewer?.destroy();viewer=null;fitSlide=null;releaseImage?.();releaseImage=null;stage.replaceChildren();for(const button of controls)button.disabled=true};
  async function open(name,source){
   const revision=++generation;
   reset();title.textContent=name;status.textContent='Opening slide…';
@@ -129,7 +163,9 @@ export function mount(host){
    const [create,tileSource]=await Promise.all([renderer(),Promise.resolve().then(source)]);
    if(revision!==generation||!host.isConnected){if(tileSource.type==='image')URL.revokeObjectURL(tileSource.url);return}
    if(tileSource.type==='image')releaseImage=()=>URL.revokeObjectURL(tileSource.url);
-   viewer=create({element:stage,tileSources:tileSource,drawer:'canvas',showNavigationControl:false,showNavigator:true,
+   const {frame:readFrame,...sourceOptions}=tileSource;
+   const framePromise=readFrame?.();
+   viewer=create({element:stage,tileSources:sourceOptions,drawer:'canvas',showNavigationControl:false,showNavigator:true,
     minZoomImageRatio:1,visibilityRatio:1,maxZoomPixelRatio:2,animationTime:matchMedia('(prefers-reduced-motion: reduce)').matches?0:.35,
     maxImageCacheCount:120,imageLoaderLimit:5,gestureSettingsTouch:{pinchToZoom:true}});
    const updateZoomOut=()=>{
@@ -137,7 +173,31 @@ export function mount(host){
     controls[0].disabled=!viewport||viewport.getZoom()<=viewport.getMinZoom()+1e-6;
    };
    for(const event of ['zoom','animation-finish','resize'])viewer.addHandler(event,updateZoomOut);
-   viewer.addOnceHandler('open',()=>{status.textContent='Drag to move. Pinch or use + and − to zoom.';for(const button of controls)button.disabled=false;updateZoomOut()});
+   viewer.addOnceHandler('open',async()=>{
+    const frame=await framePromise;
+    if(revision!==generation||!viewer)return;
+    const viewport=viewer.viewport;
+    fitSlide=()=>{
+     viewport.minZoomLevel=null;
+     if(!frame){viewport.goHome(true);return}
+     const aspect=sourceOptions.height/sourceOptions.width,rect=new create.Rect(frame.x,frame.y*aspect,frame.width,frame.height*aspect);
+     viewport.fitBounds(rect,true);
+     // The fit is the floor for wheel, pinch, and button zoom.
+     viewport.minZoomLevel=Math.max(viewport.getHomeZoom(),viewport.getZoom());
+     viewport.applyConstraints(true);
+    };
+    fitSlide();
+    viewer.addHandler('resize',()=>{
+     if(!frame)return;
+     const aspect=sourceOptions.height/sourceOptions.width;
+     viewport.minZoomLevel=Math.max(viewport.getHomeZoom(),Math.min(1/frame.width,1/(frame.height*aspect*viewport.getAspectRatio())));
+     viewport.applyConstraints(true);
+     updateZoomOut();
+    });
+    status.textContent='Drag to move. Pinch or use + and − to zoom.';
+    for(const button of controls)button.disabled=false;
+    updateZoomOut();
+   });
    viewer.addOnceHandler('open-failed',()=>{status.textContent='This slide could not open. Select it again to retry.'});
    viewer.addHandler('tile-load-failed',()=>{status.textContent='Some slide tiles could not load. Select the slide again to retry.'});
   }catch(error){if(revision===generation)status.textContent=error.message}
@@ -176,7 +236,7 @@ export function mount(host){
  for(const button of controls)button.onclick=()=>{
   const viewport=viewer?.viewport;
   if(!viewport)return;
-  if(button.dataset.mag==='home')viewport.goHome();
+  if(button.dataset.mag==='home')fitSlide?.();
   else viewport.zoomBy(button.dataset.mag==='in'?1.6:.625).applyConstraints();
  };
  return ()=>{generation++;controller.abort();reset()};

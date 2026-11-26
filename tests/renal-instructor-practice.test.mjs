@@ -47,11 +47,14 @@ test('Renal instructor practice retains keys, placement of visuals, IDs and exis
 
 test('Question visuals stay visible in an attempt and explanation visuals appear only in review', () => {
  const source = readFileSync(new URL('../public/original-exams.js', import.meta.url), 'utf8');
- const markup = source.slice(source.indexOf('function originalFigureMarkup'), source.indexOf('const assessmentLoads'));
+ const markup = source.slice(source.indexOf('function originalOptionLabel'), source.indexOf('const assessmentLoads'));
  const originalRun = {setId:'synthetic', answers:{q:0}};
  const context = vm.createContext({originalRun, esc:String, window:{}, repeatBadge:()=>'', decorateOptions:x=>x,
   ORIGINAL_EXAMS:{sources:[{id:'source', web:true, url:'https://example.test/practice', linkLabel:'Moodle practice set'}]}});
  vm.runInContext(markup, context);
+ assert.equal(context.originalOptionLabel({source:'ren-19-anzhelika-123'},'proximal tubule'),'Proximal tubule');
+ assert.equal(context.originalOptionLabel({source:'ren-19-anzhelika-123'},'pH is lower'),'pH is lower');
+ assert.equal(context.originalOptionLabel({source:'unrelated'},'proximal tubule'),'proximal tubule');
  const q = {id:'q', type:'mcq', source:'source', page:2, question:'Fixture', options:['A','B'], letters:['A','B'], answer:0,
   figures:[{image:'/question.png', caption:'Question figure'}],
   reviewFigures:[{image:'/review.png', caption:'Explanation figure'}]};

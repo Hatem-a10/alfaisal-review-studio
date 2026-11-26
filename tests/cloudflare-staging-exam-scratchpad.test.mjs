@@ -1,19 +1,10 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {runInNewContext} from 'node:vm';
-const source=readFileSync(new URL('../public/examplify-mode.js',import.meta.url),'utf8');
-test('question scratchpad is bounded and uses existing per-question exam notes',()=>{
- const code=source.slice(source.indexOf('function scratchpadText('),source.indexOf('function scratchpadMarkup('));
- const extract=runInNewContext(code+';scratchpadText');
- assert.equal(extract({notes:{0:'first question',1:'second question'}},1),'second question');
- assert.equal(extract({notes:{0:'z'.repeat(13000)}},0).length,12000);
- assert.equal(extract({notes:{0:{malformed:true}}},0),'');
- assert.match(source,/maxlength="12000" aria-label="Private working notes for question/);
- assert.match(source,/esc\(scratchpadText\(d,d\.current\)\)/);
- assert.match(source,/d\.notes\[d\.current\]=t\.value\.slice\(0,12000\);save\(\)/);
-});
-test('vignette highlighting and notes shortcut retain answer-independent behavior',()=>{
- assert.match(source,/data-xp-action="scratch" aria-keyshortcuts="N"/);
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const source=readFileSync('public/examplify-mode.js','utf8');
+test('Examplify omits notes and exposes practice instructions only through Exam Controls',()=>{
  assert.match(source,/highlighted\(q\.caseText,'case'\)/);
- assert.match(source,/tool==='scratch'/);
- assert.match(source,/n:'scratch'/);
- assert.match(source,/not submitted as an answer and do not affect scoring/);
+ assert.doesNotMatch(source,/scratchpad|xpNotes|data-xp-action="scratch"/i);
+ assert.equal([...source.matchAll(/data-xp-action="notice"/g)].length,1);
+ assert.match(source,/<summary>Exam controls<\/summary>[\s\S]*?<button type="button" data-xp-action="notice">Practice instructions/);
 });

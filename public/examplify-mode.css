@@ -43,3 +43,11 @@
 @media(max-width:500px){.xp-topbar{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:'brand brand' 'timer timer' 'controls toolkit';gap:2px 8px;padding:6px 9px}.xp-topbar .xp-brand{grid-area:brand;justify-self:start}.xp-topbar .xp-time{position:static;transform:none;grid-area:timer;justify-self:center;margin:0;padding:2px 0}.xp-topbar .xp-controls{grid-area:controls;margin:0;justify-self:start}.xp-topbar .xp-toolkit-toggle{grid-area:toolkit;justify-self:end;align-self:center}.xp-topbar .xp-controls>summary{padding:5px 8px}}
 
 .xp-time-extension{padding:12px 16px;border-top:1px solid var(--xp-line,#87919a)}.xp-time-extension label{display:block;font-size:12px;margin-bottom:8px}.xp-time-extension>div{display:flex;gap:8px;align-items:center}.xp-time-extension input{width:68px;min-width:0;padding:8px;background:var(--xp-option);color:inherit;border:1px solid currentColor;border-radius:4px}.xp-controls .xp-time-extension button{width:auto;flex:1;padding:8px;text-align:center;border:1px solid currentColor;border-radius:4px}
+
+/* The attachment already scales to its available width, including during a drag. */
+#xpExam .xp-toolkit{position:relative;flex:0 0 clamp(160px,var(--xp-toolkit-width,350px),max(260px,60vw));overflow:visible;min-width:0}
+#xpExam .xp-toolkit-resize{position:absolute;z-index:2;inset:0 auto 0 -7px;width:14px;cursor:col-resize;touch-action:none;outline-offset:-2px}
+#xpExam .xp-toolkit-resize::after{content:"";position:absolute;width:3px;height:36px;top:calc(50% - 18px);left:5px;border-radius:3px;background:var(--xp-line)}
+#xpExam .xp-toolkit-resize:is(:hover,:focus-visible)::after{background:var(--xp-blue)}
+@media(max-width:1050px){#xpExam .xp-toolkit{flex-basis:clamp(160px,var(--xp-toolkit-width,300px),max(260px,60vw))}}
+@media(max-width:760px){#xpExam .xp-toolkit{position:absolute;width:clamp(160px,var(--xp-toolkit-width,330px),calc(100vw - 65px))}}
