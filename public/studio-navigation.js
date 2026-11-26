@@ -55,7 +55,7 @@
    if(!active){
     const host=document.createElement('section');host.id='microscopeWorkspace';host.textContent='Opening Microscope Lab…';
     document.getElementById('content').replaceChildren(host);
-    import('./microscope-lab.mjs').then(module=>{if(host.isConnected&&view==='microscope')microscopeCleanup=module.mount(host)}).catch(()=>{if(host.isConnected)host.textContent='Microscope Lab could not load. Reopen the tool to retry.'});
+    import('./microscope-lab.mjs?v=2').then(module=>{if(host.isConnected&&view==='microscope')microscopeCleanup=module.mount(host)}).catch(()=>{if(host.isConnected)host.textContent='Microscope Lab could not load. Reopen the tool to retry.'});
    }
   }else{
    microscopeCleanup?.();microscopeCleanup=null;result=before.apply(this,args);

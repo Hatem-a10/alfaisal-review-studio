@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {microscopeCards,slideSource} from '../public/microscope-lab.mjs';
+import {microscopeCards,slideSource,tissueFrame} from '../public/microscope-lab.mjs';
 
 function fixture(override={}){
  const json=new TextEncoder().encode(JSON.stringify({width:1024,height:768,tileSize:512,overlap:1,tiles:{'0/0_0':[0,3],'10/1_1':[3,4]},...override}));
@@ -51,4 +51,17 @@ test('capillaries can open Scan 2 when that is the only tissue scan in a specime
  const html=microscopeCards({title:'Kidney',slides:[{id:'capillaries-scan-2',name:'Capillaries · Scan 2'}]});
  assert.match(html,/data-slide="capillaries-scan-2"/);
  assert.doesNotMatch(html,/No tissue scan available/);
+});
+
+test('tissue framing ignores black borders and isolated bright specks',()=>{
+ const width=100,height=100,pixels=new Uint8ClampedArray(width*height*4);
+ const pixel=(x,y)=>pixels.set([150,110,150,255],(y*width+x)*4);
+ assert.equal(tissueFrame(pixels,width,height),null);
+ for(let y=30;y<70;y++)for(let x=20;x<80;x++)pixel(x,y);
+ pixel(1,1);pixel(99,99);
+ const frame=tissueFrame(pixels,width,height);
+ assert.ok(frame.x>=.15&&frame.x<.2);
+ assert.ok(frame.y>=.25&&frame.y<.30);
+ assert.ok(frame.x+frame.width>.8&&frame.x+frame.width<.86);
+ assert.ok(frame.y+frame.height>.7&&frame.y+frame.height<.76);
 });

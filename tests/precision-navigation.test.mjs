@@ -5,7 +5,7 @@ import {visibleCatalogSets,catalogKind} from '../public/original-catalog.mjs';
 test('practice home uses three uniform centred columns with a centred final row and restricts weak areas to admins',()=>{
  const src=fs.readFileSync(new URL('../public/phase2-practice.mjs',import.meta.url),'utf8');
  const css=fs.readFileSync(new URL('../public/redesign.css',import.meta.url),'utf8');
- assert.match(src,/const practiceCards=\[[\s\S]*?\['mock','Timed mock'[\s\S]*?\['sets','Practice a topic'[\s\S]*?\['original','Previous exams & TBLs'[\s\S]*?\['wrong','Wrong answers'[\s\S]*?\['previous','Previous mocks'/);
+ assert.match(src,/const practiceCards=\[[\s\S]*?\['mock','Timed mock'[\s\S]*?\['original','Previous exams & TBLs'[\s\S]*?\['sets','Practice a topic'[\s\S]*?\['wrong','Wrong answers'[\s\S]*?\['previous','Previous mocks'/);
  assert.equal(src.match(/class="practice-start-actions"/g)?.length,1);
  assert.match(css,/\.practice-start-actions\{[^}]*--pt-cols:3[^}]*justify-content:center/);
  assert.match(css,/\.practice-tool-card\{flex:0 0 calc\(\(100% - \(var\(--pt-cols\) - 1\) \* var\(--pt-gap\)\) \/ var\(--pt-cols\)\)[^}]*align-items:center[^}]*text-align:center/);

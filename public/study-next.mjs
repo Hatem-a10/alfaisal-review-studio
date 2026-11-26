@@ -256,12 +256,6 @@ const noteAccount=()=>localStorage.getItem('alfaisal-review-studio-v1-account');
 function noteRows(){
  return Object.entries(options().notebook||{}).filter(([,x])=>x&&x.deleted!==true&&typeof x.text==='string'&&x.text.trim()&&!hiddenCourse(x.lectureId?.split('-')[0])).sort((a,b)=>Date.parse(b[1].at)-Date.parse(a[1].at));
 }
-function noteContext(){
- const lesson=lessonById(lessonId),item=itemById(lessonId);if(!lesson||!item||hiddenCourse(item.course))return null;
- const index=guideTopicLesson===lessonId?Number(guideTopic)||0:Number(cardIndex)||0;
- const topic=inlineTopicsFor(lesson)[index];if(!topic?.id)return null;
- return {id:lessonId+':'+topic.id,lectureId:lessonId,topicId:topic.id,title:String(topic.title||topic.concept||item.title).slice(0,240)};
-}
 function notebookEditor(context){
  if(notebookDialog?.open)notebookDialog.close();
  const account=noteAccount(),original=options().notebook?.[context.id],d=document.createElement('dialog');
@@ -294,7 +288,7 @@ function openNotebook(){
  function fill(){
   list.replaceChildren();if(noteAccount()!==account){d.close();return}
   const term=search.value.trim().toLowerCase(),rows=noteRows().filter(([,x])=>(x.title+' '+x.lectureId+' '+x.text).toLowerCase().includes(term));
-  if(!rows.length){const p=document.createElement('p');p.textContent='No matching notes. Add a note from a lesson topic.';list.append(p)}
+  if(!rows.length){const p=document.createElement('p');p.textContent='No matching notes.';list.append(p)}
   for(const [id,note] of rows){
    const article=document.createElement('article');article.className='panel';const heading=document.createElement('h3');heading.textContent=note.title+' · '+note.lectureId;const text=document.createElement('p');text.textContent=note.text;text.style.whiteSpace='pre-wrap';
    const edit=document.createElement('button');edit.type='button';edit.textContent='Edit note';edit.onclick=()=>notebookEditor({id,lectureId:note.lectureId,topicId:note.topicId,title:note.title});
@@ -304,20 +298,12 @@ function openNotebook(){
  }
  search.addEventListener('input',fill);d.append(title,label,list,close);d.addEventListener('close',()=>{d.remove();if(notebookDialog===d)notebookDialog=null},{once:true});document.body.append(d);d.showModal();fill();
 }
-function notebookEntry(){
- if(view==='learning'&&learnTab==='lesson'){
-  const section=document.querySelector('.guide-section,.teaching-card'),context=noteContext();
-  if(section&&context&&!section.querySelector('[data-study-note]')){
-   const button=document.createElement('button');button.type='button';button.dataset.studyNote='';button.textContent=options().notebook?.[context.id]?.deleted===false?'Edit personal note':'Add personal note';button.onclick=()=>notebookEditor(context);const book=document.createElement('button');book.type='button';book.textContent='Open notebook';book.onclick=openNotebook;section.prepend(button,book);
-  }
- }
-}
 window.addEventListener('review-profile-changed',()=>notebookDialog?.close());
 function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
  if(view==='dashboard'){resumeCard();scheduleAlerts();}
- tourEntry();firstLessonControls();notebookEntry();
+ tourEntry();firstLessonControls();
  if(view==='calendar'){
   scheduleAlerts();
   if(settings.groupConfigured&&settings.labGroupConfigured&&!settings.labGroup&&window.REVIEW_STUDIO_FRESH_ACCOUNTS)

@@ -116,8 +116,8 @@ function weakPreview(){const d=read();const archive=globalThis.reviewCourseScope
   archive?pack?.questions||[]:[...(activeBooklets.REN?.questions||[]),...(activeBooklets.MOL?.questions||[])],DATA.items.filter(x=>archive||x.course!=='CVP')).filter(x=>!x.id.startsWith('Discipline: ')).slice(0,3);if(!rows.length)return '';return `<section class="panel"><h2>Weakest lectures</h2>${rows.map(r=>`<p>${escapeHTML(r.id)} · ${Math.round(r.accuracy*100)}% (${r.correct}/${r.total})</p>`).join('')}<button id="p2weak" class="primary">Practice weakest lectures</button></section>`}
 const practiceCards=[
  ['mock','Timed mock','Generate an exam and practice against the clock.','timer'],
- ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
  ['original','Previous exams & TBLs','Attempt previous papers in their original sets.','exam'],
+ ['sets','Practice a topic','Answer a set from one lecture or topic.','book'],
  ['wrong','Wrong answers','Retry questions you missed.','practice'],
  ['previous','Previous mocks','Review or retake your saved mocks.','calendar',true],
  ['formulas','Formulas','Practice calculations and worked examples.','grades',true],

@@ -1,6 +1,6 @@
 // Network-aware speculative imports are restricted to authored, public on-demand
 // modules. No authenticated JSON, private R2 assets, or student identifiers.
-const routeMap={'quiz':'./learning-practice.mjs','grades':'./grade-solver.mjs','booklet':'./phase2-practice.mjs','practice':'./phase2-practice.mjs'};
+const routeMap={'quiz':'./learning-practice.mjs','grades':'./grade-solver.mjs','booklet':'./phase2-practice.mjs?v=3','practice':'./phase2-practice.mjs?v=3'};
 export function canPrefetch(nav,document){
  const c=nav?.connection||nav?.mozConnection||nav?.webkitConnection;
  if(nav?.onLine===false||document?.visibilityState==='hidden'||c?.saveData||['slow-2g','2g','3g'].includes(c?.effectiveType)||Number.isFinite(c?.downlink)&&c.downlink<1.5||Number.isFinite(nav?.deviceMemory)&&nav.deviceMemory<=2)return false;
