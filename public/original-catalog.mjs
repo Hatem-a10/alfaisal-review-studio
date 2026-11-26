@@ -1,5 +1,9 @@
 import {courses} from './course-registry.mjs';
-let selected = '19', selectedKind='all', selectedCourse='CVP';
+let selected,selectedKind,selectedCourse;
+export function resetCatalog(){
+ selected='19';selectedKind='all';selectedCourse='CVP';
+}
+resetCatalog();
 export function catalogKind(set){if(/shams/i.test(set.id+' '+set.title))return 'other';if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
 export function isBookletSet(set){return /^cvp19-(?!tbl)/.test(set.id||'')||/corrected\s+booklet/i.test(set.title||'')||set.source==='cvp19-corrected'}
 export function catalogCourse(set){return Object.hasOwn(courses,set.course)?set.course:/^ren(?:al)?[-_]/i.test(set.id||'')?'REN':/\bMOL\b|^mol[-_]/i.test((set.id||'')+' '+(set.title||''))?'MOL':'CVP'}

@@ -5,7 +5,7 @@ import {activeBookletPaths,bookletLoader,validateActiveBooklet} from './active-b
 import {reviewedOverlayPaths,applyReviewedOverlay,fetchReviewedOverlay} from './booklet-reviewed-overlay.mjs';
 import {bookletSections} from './renal-study.mjs';
 import {withQuestionContext,load as loadCvpBooklet} from './cvp19-booklet.mjs';
-import {formulaPage,installFormulas} from './formulas-practice.mjs';
+import {formulaPage,installFormulas,resetFormulaView} from './formulas-practice.mjs?v=2';
 import {bookletEntry,resolveBookletNavigation,deduplicateQuestions,analytics,rankWeakQuestions,updateSnapshot,coverageAudit,selectBooklet,advanceBooklet,previousBooklet,enforceHistoryLimit,randomizeBooklet} from './phase2-practice-core.mjs';
 export {deduplicateQuestions,analytics,rankWeakQuestions,updateSnapshot,coverageAudit,selectBooklet,advanceBooklet,previousBooklet,enforceHistoryLimit,randomizeBooklet} from './phase2-practice-core.mjs';
 const clone=x=>JSON.parse(JSON.stringify(x));
@@ -135,15 +135,15 @@ export function practiceNavigation(title,content){
  return '<div class="phase2-practice practice-tool">'+practiceBack()+'<h1>'+escapeHTML(title)+'</h1>'+content.replace(oldPracticeBar,'')+'</div>';
 }
 function practiceStart(){
- const savedPaper=originalRun&&!originalRun.finishedAt&&visibleOriginalRun();
- const savedMock=etExam&&!etExam.finishedAt&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
+ const savedPaper=originalRun&&!originalRun.finishedAt&&availableOriginalRun();
+ const savedMock=etExam&&!etExam.cancelled&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
  return `<div class="practice-start">
   <h1>Practice Home</h1>
   ${savedMock||savedPaper?`<div class="practice-resume">
-   ${savedMock?'<button type="button" class="primary" data-et-tab="mock">Resume timed mock</button>':''}
-   ${savedPaper?'<button type="button" class="primary" data-et-tab="original">Resume previous paper</button>':''}
+   ${savedMock?`<button type="button" class="primary" data-et-tab="mock" data-practice-resume>${etExam.finishedAt?'Review latest mock':'Resume timed mock'}</button>`:''}
+   ${savedPaper?'<button type="button" class="primary" data-et-tab="original" data-practice-resume>Resume previous paper</button>':''}
   </div>`:''}
-  <div class="practice-start-actions">${practiceCards.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div>
+  <div class="practice-start-actions">${practiceCards.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-practice-fresh="${id}" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div>
  </div>`;
 }
 export function bookletScrollOffset(target,top,bottom){
@@ -207,9 +207,23 @@ export function install(){if(installed)return;installed=true;window.reviewRenalP
   if(etPracticeTab==='start'&&selected==='main')return practiceStart();
   const tool=selected==='main'?etPracticeTab:selected;
   const markup=tool==='formulas'?formulaPage():tool==='previous'?previousMarkup():tool==='weak'?weakPreview()+weakMarkup():etPracticeWorkspace();
-  return practiceNavigation(practiceTools.get(tool)?.[1]||'Practice',markup);
+  return practiceNavigation(practiceTools.get(tool)?.[1]||'Practice',((tool==='sets'||tool==='wrong')&&!etSet?resumePracticeSetButton(tool):'')+markup);
  };
- document.addEventListener('click',e=>{if(e.target.closest('[data-et-tab],button[data-view=practice]'))selected='main'},true);
+ document.addEventListener('click',e=>{
+  const button=e.target.closest('button');if(!button)return;
+  if(button.matches('[data-et-tab],[data-view=practice]'))selected='main';
+  if(button.hasAttribute('data-practice-resume')){
+   if(button.dataset.etTab==='original')originalBrowseOnly=false;
+   if(button.dataset.etTab==='mock')etMockLanding=false;
+  }
+  switch(button.dataset.practiceFresh){
+   case 'original':resetOriginalView();break;
+   case 'mock':etMockLanding=true;etMockCustomize=false;break;
+   case 'sets':
+   case 'wrong':resetPracticeSetView(button.dataset.practiceFresh);break;
+   case 'formulas':resetFormulaView();break;
+  }
+ },true);
  loadCapabilities();window.addEventListener('review-admin-role',e=>{if(typeof e.detail?.admin==='boolean'){admin=e.detail.admin;if(!admin&&selected==='weak')selected='main';if(view==='practice')render()}});window.addEventListener('focus',()=>{if(admin===null)loadCapabilities()});window.Phase2Practice={booklet:()=>'<div class="phase2-booklet"><div class="booklet-toolbar">'+practiceBack()+(window.reviewCourseSelector?.('booklet')||'')+'</div>'+bookMarkup()+'</div>',startRetry(snapshot){selected='main';window.Phase2Exam.start(snapshot.questions,snapshot.questions.length,snapshot.minutes||60,{scope:'Retry · '+(snapshot.scope||'Mock'),accurate:snapshot.accurate,selectedLessons:snapshot.selectedLessons,parentMockId:snapshot.parentMockId||snapshot.id},true)},startWeighted(pool){if(window.reviewAdmin!==true)return;const course=etMockScope;pool=pool.filter(q=>q.lectureIds?.length&&q.lectureIds.every(id=>id.startsWith(course+'-')));selected='main';const count=Math.min(100,pool.length);if(!count){toast('No eligible questions found.');return}window.Phase2Exam.start(pool.slice(0,count),count,Math.max(1,count),{scope:'Weak areas'})},cancelMock(exam){try{const d=read(),parent=exam.parentMockId||exam.id;if(!(d.mocks||[]).some(m=>m.id===parent&&(m.attempts||[m.snapshot]).some(a=>a?.id===exam.id)))return true;const cancelled={...exam,answers:{},flags:{},xp:{},finishedAt:new Date().toISOString(),reason:'cancelled',excludedLowScore:true,cancelled:true,trackerRecorded:true};delete cancelled.receipt;d.mocks=updateSnapshot(d.mocks,cancelled,true).list;return write(d,false)}catch{return false}},recordMock(exam){if(admin===null)loadCapabilities();try{const d=read(),result=updateSnapshot(d.mocks,exam,true);d.mocks=result.list;const ok=write(d);if(!ok)toast('Full mock snapshot was not saved. Export this exam before starting another.');return ok}catch(e){toast('Could not save mock snapshot: '+e.message);return false}},deduplicateQuestions};
  document.addEventListener('keydown',handleBookletKey);
  document.addEventListener('input',e=>{if(e.target.id!=='p2written'||!bookletPack())return;const d=readBooklet(),{q}=current(d);if(!q)return;d.booklet??={};d.booklet[q.id]={...d.booklet[q.id],answer:e.target.value,at:new Date().toISOString()};writeBooklet(d)});
