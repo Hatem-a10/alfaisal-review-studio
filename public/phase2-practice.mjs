@@ -136,11 +136,11 @@ export function practiceNavigation(title,content){
 }
 function practiceStart(){
  const savedPaper=originalRun&&!originalRun.finishedAt&&availableOriginalRun();
- const savedMock=etExam&&!etExam.finishedAt&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
+ const savedMock=etExam&&!etExam.cancelled&&(!window.reviewArchivedStudyItem?.(etExam)||window.reviewCourseScope==='CVP');
  return `<div class="practice-start">
   <h1>Practice Home</h1>
   ${savedMock||savedPaper?`<div class="practice-resume">
-   ${savedMock?'<button type="button" class="primary" data-et-tab="mock" data-practice-resume>Resume timed mock</button>':''}
+   ${savedMock?`<button type="button" class="primary" data-et-tab="mock" data-practice-resume>${etExam.finishedAt?'Review latest mock':'Resume timed mock'}</button>`:''}
    ${savedPaper?'<button type="button" class="primary" data-et-tab="original" data-practice-resume>Resume previous paper</button>':''}
   </div>`:''}
   <div class="practice-start-actions">${practiceCards.filter(([id])=>toolAvailable(id)).map(([id,title,description,icon,extra])=>`<button type="button" class="practice-tool-card" data-practice-fresh="${id}" data-${extra?'p2':'et'}-tab="${id}"><span class="practice-card-icon" aria-hidden="true">${navGlyph(icon)}</span><span><strong>${title}</strong><small>${description}</small></span><span class="practice-card-arrow" aria-hidden="true">›</span></button>`).join('')}</div>
