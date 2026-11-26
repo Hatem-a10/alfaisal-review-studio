@@ -3,9 +3,14 @@
 html[data-theme=amoled]{--p2-blue-soft:#17374b;--p2-line:#414446;--p2-rest:#292c2e}
 
 /* Examplify keeps the same layout and controls while using a neutral exam palette. */
+#xpExam[data-exam-theme=dark]{--xp-canvas:#303132;--xp-text:#f4f4f1;--xp-muted:#c2c5c6;--xp-header:#454647;--xp-header-text:#f7f7f4;--xp-nav:#38393a;--xp-option:#3b3c3d;--xp-option-border:#dededb;--xp-footer:#454647;--xp-menu:#393a3b;--xp-line:#555758;--xp-blue:#168bd2;--xp-tool:#38393a;--xp-answered:#5b5c5d;--xp-answered-border:#dfdfd8;color-scheme:dark}
 #xpExam *{box-sizing:border-box}
-#xpExam .xp-nav,#xpExam .xp-question-scroll{overscroll-behavior:contain;scrollbar-color:var(--xp-option-border) var(--xp-nav)}
+#xpExam .xp-nav,#xpExam .xp-question-scroll{overscroll-behavior:contain;scrollbar-color:#777 #363738}
 #xpExam .xp-option{user-select:none;-webkit-user-select:none;cursor:pointer}
+#xpExam .xp-option.xp-selected{background:#d8efff;border:2px solid #168bd2;color:#173d53;box-shadow:inset 0 0 0 1px #fff}
+#xpExam .xp-choice-check{color:#168bd2}
+#xpExam[data-exam-theme=dark] .xp-option.xp-selected{background:#284a60;border-color:#83d7fa;color:#fff;box-shadow:none}
+#xpExam[data-exam-theme=dark] .xp-choice-check{color:#fff}
 #xpExam .xp-option .xp-view-answer{margin-left:auto;flex:none}
 #xpExam .xp-topbar .xp-time{left:50%;justify-content:center}
 #xpExam .xp-figure-viewport{max-width:100%;overflow:auto;overscroll-behavior:contain}
@@ -65,8 +70,10 @@ html[data-theme=amoled] .phase2-heatmap [data-band=unknown],html[data-theme=amol
 #content:has(.et-practice-tabs [data-p2-tab=previous].selected) article{min-width:0;padding:12px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
 #content:has(.et-practice-tabs [data-p2-tab=previous].selected) article :is(h3,p){overflow-wrap:anywhere}
 @media(max-width:760px){#content:has(.et-practice-tabs [data-p2-tab]) .et-practice-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#content:has(.et-practice-tabs [data-p2-tab]) .et-practice-tabs button{min-height:44px;padding:8px 5px}}
-#xpExam .xp-choice-check{order:2;width:28px;min-width:28px;text-align:center;margin-left:2px;color:var(--xp-blue);font-weight:800}
+#xpExam .xp-choice-check{order:2;width:28px;min-width:28px;text-align:center;margin-left:2px;color:#168bd2;font-weight:800}
 #xpExam .xp-option>button[data-xp-eliminate]{order:3;flex-basis:48px;color:var(--xp-text)}
+#xpExam .xp-option.xp-selected .xp-choice-check{color:#168bd2}
+#xpExam[data-exam-theme=dark] .xp-option.xp-selected .xp-choice-check{color:#fff}
 #xpExam .xp-option.xp-selected>button[data-xp-eliminate]{border-left:1px solid #ffffff30}
 #phase2ImageZoom{width:calc(100vw - 24px);max-width:calc(100vw - 24px);height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);padding:12px;overflow:hidden}
 .phase2-zoom-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.phase2-zoom-toolbar strong{margin-right:auto}.phase2-zoom-viewport{height:calc(100% - 65px);overflow:auto;display:grid;align-items:start;justify-items:start;margin-top:12px}.phase2-zoom-viewport img{max-width:none;max-height:none;object-fit:contain;image-rendering:auto}
