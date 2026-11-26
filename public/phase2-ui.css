@@ -3,13 +3,13 @@
 html[data-theme=amoled]{--p2-blue-soft:#17374b;--p2-line:#414446;--p2-rest:#292c2e}
 
 /* Examplify keeps the same layout and controls while using a neutral exam palette. */
-#xpExam[data-exam-theme=dark]{--xp-canvas:#303132;--xp-text:#f4f4f1;--xp-muted:#c2c5c6;--xp-header:#454647;--xp-header-text:#f7f7f4;--xp-nav:#38393a;--xp-option:#3b3c3d;--xp-option-border:#dededb;--xp-footer:#454647;--xp-menu:#393939;--xp-line:#555758;--xp-blue:#168bd2;--xp-tool:#383838;--xp-answered:#5b5c5d;--xp-answered-border:#dfdfd8;color-scheme:dark}
+#xpExam[data-exam-theme=dark]{--xp-canvas:#303132;--xp-text:#f4f4f1;--xp-muted:#c2c5c6;--xp-header:#454647;--xp-header-text:#f7f7f4;--xp-nav:#38393a;--xp-option:#3b3c3d;--xp-selected-outline:#83d7fa;--xp-option-border:#dededb;--xp-footer:#454647;--xp-menu:#393939;--xp-line:#555758;--xp-blue:#168bd2;--xp-tool:#383838;--xp-answered:#5b5c5d;--xp-answered-border:#dfdfd8;color-scheme:dark}
 #xpExam *{box-sizing:border-box}
 #xpExam .xp-nav,#xpExam .xp-question-scroll{overscroll-behavior:contain;scrollbar-color:#777 #363738}
 #xpExam .xp-option{user-select:none;-webkit-user-select:none;cursor:pointer}
 #xpExam .xp-option.xp-selected{background:#d8efff;border:2px solid #168bd2;color:#173d53;box-shadow:inset 0 0 0 1px #fff}
 #xpExam .xp-choice-check{color:#168bd2}
-#xpExam[data-exam-theme=dark] .xp-option.xp-selected{background:#284a60;border-color:#83d7fa;color:#fff;box-shadow:none}
+#xpExam[data-exam-theme=dark] .xp-option.xp-selected{background:#284a60;border-color:var(--xp-selected-outline);color:#fff;box-shadow:none}
 #xpExam[data-exam-theme=dark] .xp-choice-check{color:#fff}
 #xpExam .xp-option .xp-view-answer{margin-left:auto;flex:none}
 #xpExam #xpExam .xp-figure-viewport{max-width:100%;overflow:auto;overscroll-behavior:contain}
