@@ -5,9 +5,9 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync(new URL('../public/examplify-mode.js',import.meta.url),'utf8');
 
-test('Examplify selected-answer mark replaces the eye control and shortcuts live in Practice instructions',()=>{
+test('Examplify reserves the checkmark for selected answers and lists shortcuts in Practice instructions',()=>{
  assert.match(source,/class="xp-option-mark \$\{answer===j\?'xp-option-mark-selected':''\}"/);
- assert.match(source,/\$\{answer===j\|\|struck\.includes\(j\)\?selectedAnswerIcon\(\):examEyeIcon\(false\)\}/);
+ assert.match(source,/\$\{answer===j\?selectedAnswerIcon\(\):examEyeIcon\(struck\.includes\(j\)\)\}/);
  assert.doesNotMatch(source,/xp-choice-check/);
  assert.match(source,/data-xp-action="notice">Practice instructions/);
  assert.doesNotMatch(source,/class="xp-shortcuts"/);
