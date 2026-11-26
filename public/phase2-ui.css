@@ -12,8 +12,7 @@ html[data-theme=amoled]{--p2-blue-soft:#17374b;--p2-line:#414446;--p2-rest:#292c
 #xpExam[data-exam-theme=dark] .xp-option.xp-selected{background:#284a60;border-color:#83d7fa;color:#fff;box-shadow:none}
 #xpExam[data-exam-theme=dark] .xp-choice-check{color:#fff}
 #xpExam .xp-option .xp-view-answer{margin-left:auto;flex:none}
-#xpExam .xp-topbar .xp-time{left:50%;justify-content:center}
-#xpExam .xp-figure-viewport{max-width:100%;overflow:auto;overscroll-behavior:contain}
+#xpExam #xpExam .xp-figure-viewport{max-width:100%;overflow:auto;overscroll-behavior:contain}
 #xpExam .xp-zoom-image{display:block;width:auto;height:auto;max-width:100%;object-fit:contain;object-position:center;image-rendering:auto;cursor:zoom-in}
 #xpExam .xp-figure-viewport figure{margin:12px auto;max-width:100%}
 #xpExam .xp-figure-viewport figcaption{color:var(--xp-muted);text-align:center}
