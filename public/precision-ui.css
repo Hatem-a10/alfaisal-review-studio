@@ -121,8 +121,8 @@ html[data-theme=light] .campus-event{color:#fff!important;border-color:transpare
 #studentProfileForm .welcome-appearance-preview{grid-column:1/-1;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--bg);color:var(--ink)}#studentProfileForm .welcome-appearance-preview h3{font-size:25px;margin:14px 0;letter-spacing:-.035em}#studentProfileForm .welcome-appearance-preview>div{display:flex;justify-content:space-between;gap:16px;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:18px;margin:18px 0}#studentProfileForm .welcome-appearance-preview>div span{font-size:12px;color:var(--muted)}#studentProfileForm .preview-accent-chip{display:inline-block;padding:9px 14px;border-radius:20px;background:var(--accent);color:var(--accent-fg);font-size:12px;font-weight:650}
 /* Small reference-alignment patch, Light Mode only. */
 #xpExam[data-exam-theme=light]{--xp-option:#f4f4f1;--xp-option-border:#86898a}
-#xpExam[data-exam-theme=light] .xp-option{border:1px solid var(--xp-option-border);background:var(--xp-option);color:var(--xp-text)}
-#xpExam[data-exam-theme=light] .xp-option.xp-selected{border-color:#3b6896;box-shadow:none}
+#xpExam[data-exam-theme=light] .xp-option{border:2px solid var(--xp-option-border);background:var(--xp-option);color:var(--xp-text)}
+#xpExam[data-exam-theme=light] .xp-option.xp-selected{border-color:#2f6295;background:#dbeaf8;box-shadow:none}
 #xpExam .xp-figure-viewport{overflow:auto!important;overscroll-behavior:contain}#xpExam .xp-figure-viewport .xp-zoom-image{max-width:none!important;max-height:none!important;display:block;flex:none}#xpExam .xp-figure-viewport figure{margin:0;min-width:100%}
 /* Keep schedule names legible inside their original time periods. */
 .campus-event{overflow:auto!important;scrollbar-width:thin;min-width:0;scrollbar-gutter:auto}.campus-event :is(strong,span,small){white-space:normal!important;overflow-wrap:anywhere;flex-shrink:0;line-height:1.2!important}.campus-event .campus-doctor{margin-top:3px;font-size:10px!important}.campus-event:focus-visible{outline-offset:-2px}
