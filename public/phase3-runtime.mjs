@@ -1,5 +1,5 @@
 import {escapeHTML as escape} from './html-escape.mjs';
-import {polishExam} from './ui-hotfix.mjs';
+import {polishExam} from './ui-hotfix.mjs?v=2';
 /* global render, view, DATA, ankiDecks, lessonId, lessonById, chooseLesson, go, etQuestionMarkup, conceptQuestionMarkup, toast */
 import {matchDecks} from './phase3-crosslinks.mjs';
 import {createLectureChangeDetector} from './phase3-lecture-change.mjs';

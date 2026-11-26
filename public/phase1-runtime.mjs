@@ -67,7 +67,7 @@ enhance();
 
 await import('./phase2-runtime.mjs?v=1499');
 
-await import("./phase3-runtime.mjs");
+await import("./phase3-runtime.mjs?v=2");
 await import("./course-workspace.mjs");
 /* Settings → Appearance: a gradient picker replaces the free colour input and the separate
    Auto accent checkbox. The old controls stay in the DOM, hidden, so existing handlers and
