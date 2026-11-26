@@ -37,8 +37,9 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
  const {bookletSections}=await import('../public/renal-study.mjs');
  const {renalLessons,renalTeachingPack}=await import('../public/renal-lessons.mjs');
  const resources=JSON.parse(read('public/renal-materials.json'));
- assert.equal(resources.length,24);
- assert.equal(new Set(resources.map(resource=>resource.sha)).size,24);
+ assert.equal(resources.length,26);
+ assert.equal(new Set(resources.map(resource=>resource.sha)).size,resources.length);
+ const figures=new Set(JSON.parse(read('lib/renal-lesson-figures.json')).map(figure=>'/api/site-assets/'+figure.path));
  for(const source of resources){
   assert.match(source.path,/^materials\/ren123\/[a-z0-9-]+\.(pdf|pptx|docx|txt)$/);
   assert.match(source.sha,/^[0-9a-f]{64}$/);
@@ -55,6 +56,15 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   for(const topic of pack.guides[id].sections){
    assert.ok((topic.body.length>1||topic.concepts.length>=6)&&topic.keyPoints.length);
    assert.ok(topic.references.every(ref=>ref.page>=1&&ref.page<=asset.units));
+   if(topic.figure){
+    assert.ok(figures.has(topic.figure.image));
+    assert.ok(topic.references.some(ref=>ref.source===topic.figure.source&&ref.page===topic.figure.page));
+   }
+   if(topic.transcriptReview){
+    const transcript=resources.find(item=>item.id===topic.transcriptReview.asset);
+    assert.ok(transcript?.path.endsWith('.txt')&&transcript.sessions.includes(lesson.code));
+    assert.ok(topic.transcriptReview.passages.every(([time,note])=>/^\d\d:\d\d–\d\d:\d\d$/.test(time)&&note));
+   }
    const checks=pack.questions.filter(q=>q.concept===topic.id&&q.lectureIds.includes(id));
    assert.ok(checks.length>=5);
    assert.equal(new Set(checks.map(q=>q.question)).size,checks.length);
@@ -71,6 +81,8 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.equal(q.references[0].source,'ren123-booklet-source');
   assert.equal(q.references[0].page,Number(q.adaptedFromBookletId.match(/-p(\d+)-/)[1]));
  }
+ assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.figure).length,25);
+ assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.transcriptReview).length,7);
  const booklet=resources.find(source=>source.kind==='booklet');
  assert.equal(booklet.units,294);
  assert.deepEqual(bookletSections.map(([kind])=>kind),['MCQs','SAQs','OSPE']);

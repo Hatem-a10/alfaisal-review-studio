@@ -15,7 +15,7 @@ try{
  await new Promise(r=>setTimeout(r,600));
  const add=async(name,expression)=>{const result=await evaluate(expression);checks.push({name,passed:!!result});if(!result){console.log(JSON.stringify({errors,content:await evaluate("document.querySelector('#content').textContent.slice(0,1200)"),module:await evaluate("import('/cvp-past-papers.mjs').then(m=>m.papers.sets.length).catch(e=>e.message)"),original:await evaluate("typeof originalCatalog")}));throw Error(name)}};
  await add('all five batches have original final sets',"[14,15,16,17,18].every(b=>ORIGINAL_EXAMS.sets.some(s=>s.id==='cvp-final-b'+b+'-mcq'))");
- await evaluate("document.querySelector('[data-batch-pick=\"18\"]').click();true");await new Promise(r=>setTimeout(r,600));
+ await evaluate("(()=>{const batch=document.getElementById('originalBatchFilter');batch.value='18';batch.dispatchEvent(new Event('change'));return true})()");await new Promise(r=>setTimeout(r,600));
  await add('18th cards render and launch',"!!document.querySelector('[data-original-start=\"cvp-final-b18-mcq\"]')");
  await evaluate("document.querySelector('[data-original-start=\"cvp-final-b18-mcq\"]').click();true");
  await add('82 original questions and an untimed Examplify launch',"document.querySelectorAll('.original-question').length===82&&document.querySelector('#xpOriginalMinutes').value==='0'");
