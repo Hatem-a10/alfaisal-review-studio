@@ -190,41 +190,12 @@ function scheduleAlerts(){
  const describe=event=>event?[event.date||event.day,[event.startTime,event.endTime].filter(Boolean).join('–'),event.room,[event.studentGroup,event.studentSection,event.labGroup].filter(Boolean).join(' / ')].filter(Boolean).join(' · '):'Outside your schedule';
  html('studyNextSchedule','<h2>Schedule changes</h2><ul>'+rows.map(change=>`<li><strong>${esc(change.title)}</strong> · ${esc(describe(change.previous))} → ${esc(describe(change.next))}</li>`).join('')+'</ul><button data-study-dismiss-schedule>Dismiss</button>');
 }
-const tourSteps=[
- ['Learn','Open a lesson, read a topic, then check its questions.','learning','Open Learn'],
- ['Schedule','Find your classes and labs. Open My Study Plan to organize review tasks.','calendar','Open Schedule'],
- ['Practice','Choose a topic quiz, the Booklet, or a timed mock.','practice','Open Practice'],
-];
 function openWelcomeTour(){
- if(document.getElementById('studentWelcomeTour'))return;
- const dialog=document.createElement('dialog');
- dialog.id='studentWelcomeTour';dialog.className='study-next-dialog';
- dialog.setAttribute('aria-labelledby','studentTourTitle');
- document.body.append(dialog);
- let step=0;
- const draw=()=>{
-  const [title,description,,action]=tourSteps[step];
-  dialog.innerHTML=`<div><h2 id="studentTourTitle">${title}</h2><p>${description}</p><div class="study-next-actions">
-   <button type="button" data-tour-action="dismiss">${step===2?'Done':'Skip tour'}</button>
-   ${step?'<button type="button" data-tour-action="back">Back</button>':''}
-   ${step<2?'<button type="button" class="primary" data-tour-action="next">Next</button>':''}
-   <button type="button" data-tour-action="open">${action}</button>
-  </div><small>Step ${step+1} of ${tourSteps.length}</small></div>`;
- };
- dialog.addEventListener('click',e=>{
-  const action=e.target.closest('[data-tour-action]')?.dataset.tourAction;
-  if(action==='next'||action==='back'){step+=action==='next'?1:-1;draw();dialog.querySelector('[data-tour-action="next"],[data-tour-action="dismiss"]')?.focus();return}
-  if(action==='dismiss'||action==='open'){
-   dialog.close();
-   if(action==='open'){document.getElementById('siteAdmin')?.close();go(tourSteps[step][2]);}
-  }
- });
- dialog.addEventListener('close',()=>{saveOption('welcomeTourSeen',true);dialog.remove();},{once:true});
- draw();dialog.showModal();
+ return import('/student-profile.mjs?v=5').then(module=>module.walkthrough());
 }
 function tourEntry(){
  const settings=document.querySelector('#siteAdmin .admin-frame');
- if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay welcome tour</button>');
+ if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay tutorial</button>');
 }
 function firstLessonControls(){
  const main=document.querySelector('.learning-main');

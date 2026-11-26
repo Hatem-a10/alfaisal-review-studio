@@ -3,6 +3,8 @@ import {renalReleasedLessons} from './renal-released-lessons.mjs';
 import {anatomyChecks} from './renal-anatomy-checks.mjs';
 import {renalPhysiology} from './renal-physiology.mjs';
 import {courses} from './course-registry.mjs';
+import {renalTopicFigures} from './renal-topic-figures.mjs';
+import {renalTranscriptReview} from './renal-transcript-review.mjs';
 
 // Authored study aids. Page and slide numbers refer to the private REN 123 source decks.
 const renalAnatomy = [
@@ -150,7 +152,9 @@ export function renalTeachingPack(entries=renalLessons) {
   sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],pages:[]});
   const transcript=transcripts[entry.code];
   const sections=entry.topics.map(topic=>{
-   const concept=id+'-'+topic.key, references=topic.pages.map(cite);
+   const key=entry.code+'-'+topic.key,concept='REN-'+key,references=topic.pages.map(cite);
+   const illustration=renalTopicFigures[key],transcriptReview=renalTranscriptReview[key];
+   const figure=illustration?{...cite(illustration.page),image:'/api/site-assets/materials/ren123/'+illustration.path,caption:illustration.caption}:null;
    lessonChecks(entry,topic).forEach(([question,...choices],i)=>{
     const original=Array.isArray(choices[0]);
     const pairs=original?choices[0].map((choice,n)=>[choice,choices[1][n]]):choices.slice(0,4).map(choice=>choice.split('|'));
@@ -170,9 +174,9 @@ export function renalTeachingPack(entries=renalLessons) {
    }));
    const scopeNote=entry.code==='A1'&&topic.key==='aorta'?{label:'Outside this Renal block',text:'The lecturer explicitly excluded the two small external iliac branches (inferior epigastric and deep circumflex iliac) from questioning in this block.',url:'https://www.youtube.com/watch?v=gQtrpQmK2Qc&t=1769s',time:'29:29'}:null;
    const recordedExamCue=entry.code==='A6'?{conceptTitle:concepts[1].title,label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
-   return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,transcript,scopeNote,recordedExamCue};
+   return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,figure,transcript,transcriptReview,scopeNote,recordedExamCue};
   });
-  guides[id]={underDevelopment:!transcript,overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
+  guides[id]={underDevelopment:!transcript&&!sections.some(section=>section.transcriptReview),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
   lessons.push({id,scope:entry.overview,references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
  return {items,sources,lessons,guides,questions};

@@ -273,5 +273,30 @@
     "path": "materials/ren123/posterior-wall-2-transcript.txt",
     "size": 29295,
     "sha": "a65fded88d6fce0bef98bd5156bb9fecc1f104138982d69fa5991c197becf7c3"
+  },
+  {
+    "id": "renal-clearance-class-review",
+    "title": "Renal clearance · supplementary class transcript",
+    "kind": "lecture",
+    "sessions": [
+      "P2"
+    ],
+    "units": 769,
+    "path": "materials/ren123/renal-clearance-class-review.txt",
+    "size": 28479,
+    "sha": "0e83805527cb4e9eb31eafb36d12aa1f334012fde4eaa7d08e0aca84b4e4fe96"
+  },
+  {
+    "id": "glomerular-filtration-class-review",
+    "title": "Glomerular filtration and renal plasma flow · class transcript",
+    "kind": "lecture",
+    "sessions": [
+      "P3",
+      "P4"
+    ],
+    "units": 979,
+    "path": "materials/ren123/glomerular-filtration-class-review.txt",
+    "size": 36851,
+    "sha": "614d5df992aab76fbcf81b7082d18087bb4d34deb13ad7461553c4129c0fbc17"
   }
 ]
