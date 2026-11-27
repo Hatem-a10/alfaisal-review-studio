@@ -45,7 +45,7 @@
  }
  function installManagedApp(){
   let currentStatus, appliedStatus, lastFetch=0, pending, forcedRefresh=false, lastError=0;
-  let refreshProfile=false, libraryInstalled=false, lastTotals=null;
+  let refreshProfile=false, lastTotals=null;
   const api='/api/control-center/student/';
   async function status(force=false){
    if(pending){if(force)forcedRefresh=true;return pending}
@@ -119,21 +119,12 @@
     window.reviewStudioReloadAcademicSchedule?.();
    }
   }
-  function installLibrary(){
-   if(libraryInstalled||typeof library!=='function')return;
-   libraryInstalled=true;
-   const existing=library;
-   library=function(...args){
-    const shared=window.reviewManagedFlags?.resourceLibrary===false?'':'<section class="panel"><button type="button" id="openManagedResources">Browse shared academic resources</button></section>';
-    return shared+existing.apply(this,args);
-   };
-  }
   let resourceDialog=null;
   async function showResources(){
    if(resourceDialog?.open){resourceDialog.querySelector('button')?.focus();return}
-   const dialog=document.createElement('dialog');resourceDialog=dialog;dialog.className='acc-dialog acc-dialog-small';dialog.setAttribute('aria-label','Shared academic resources');
+   const dialog=document.createElement('dialog');resourceDialog=dialog;dialog.className='acc-dialog acc-dialog-small';dialog.setAttribute('aria-label','Shared documents');
    if(!document.querySelector('link[href="/admin-control-center.css"]')){const link=document.createElement('link');link.rel='stylesheet';link.href='/admin-control-center.css';document.head.append(link);}
-   const heading=document.createElement('h2');heading.textContent='Shared academic resources';
+   const heading=document.createElement('h2');heading.textContent='Shared documents';
    const close=document.createElement('button');close.type='button';close.textContent='Close';close.onclick=()=>dialog.close();
    const list=document.createElement('ul'),status=label('Loading…');status.setAttribute('role','status');
    const next=document.createElement('button');next.type='button';next.textContent='Load more';next.hidden=true;
@@ -149,13 +140,14 @@
      if(!response.ok)throw Error('The library could not load.');
      if(!Array.isArray(data?.resources)||data.resources.length>25||!Number.isSafeInteger(data.total)||data.total<0||data.offset!==offset||data.resources.some(r=>!r||typeof r.title!=='string'||typeof r.downloadUrl!=='string'||!/^\/api\/control-center\/student\/resources\/[a-f0-9-]{36}\/download$/i.test(r.downloadUrl)))throw Error('Invalid resource page.');
      for(const resource of data.resources){
-      if(seen.has(resource.downloadUrl))continue;
+      if(resource.resourceType!=='pdf'||seen.has(resource.downloadUrl))continue;
       const item=document.createElement('li'),link=document.createElement('a');
       link.href=resource.downloadUrl;link.textContent=resource.title;
       item.append(link,document.createTextNode(' · '+[resource.course,resource.lectureId,resource.topic].filter(v=>typeof v==='string'&&v).join(' / ')));list.append(item);seen.add(resource.downloadUrl);
      }
      offset+=data.resources.length;next.textContent='Load more';next.hidden=offset>=data.total||!data.resources.length;
-     status.textContent=!data.resources.length&&offset<data.total?'The resource list changed. Close and reopen it to refresh.':offset?'':'No shared resources have been published yet.';
+     status.textContent=!data.resources.length&&offset<data.total?'The document list changed. Close and reopen it to refresh.'
+      :seen.size?'':next.hidden?'No shared documents have been published yet.':'Load more to look for shared documents.';
     }catch{if(dialog.open&&resourceDialog===dialog){status.textContent='The library could not load. Try again.';next.textContent='Retry';next.hidden=false}}
     finally{loading=false;controller=null;next.disabled=false;}
    }
@@ -173,9 +165,9 @@
   window.addEventListener('online',()=>status(true));
   window.addEventListener('focus',()=>status());
   window.addEventListener('review-profile-changed',()=>window.reviewStudioReloadAcademicSchedule?.());
-  window.addEventListener('studio-ready',()=>{installLibrary();applyStatus();status();shareStudyCounts();});
+  window.addEventListener('studio-ready',()=>{applyStatus();status();shareStudyCounts();});
   document.addEventListener('click',event=>{if(event.target.closest('#openManagedResources'))showResources();});
-  installLibrary();status();
+  status();
  }
  async function installAccountTools(){
   if(installing)return;installing=true;try{
