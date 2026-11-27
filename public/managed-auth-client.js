@@ -45,7 +45,7 @@
  }
  function installManagedApp(){
   let currentStatus, appliedStatus, lastFetch=0, pending, forcedRefresh=false, lastError=0;
-  let refreshProfile=false, libraryInstalled=false, lastTotals=null;
+  let refreshProfile=false, lastTotals=null;
   const api='/api/control-center/student/';
   async function status(force=false){
    if(pending){if(force)forcedRefresh=true;return pending}
@@ -119,15 +119,6 @@
     window.reviewStudioReloadAcademicSchedule?.();
    }
   }
-  function installLibrary(){
-   if(libraryInstalled||typeof library!=='function')return;
-   libraryInstalled=true;
-   const existing=library;
-   library=function(...args){
-    const shared=window.reviewManagedFlags?.resourceLibrary===false?'':'<section class="panel"><button type="button" id="openManagedResources">Browse shared academic resources</button></section>';
-    return shared+existing.apply(this,args);
-   };
-  }
   let resourceDialog=null;
   async function showResources(){
    if(resourceDialog?.open){resourceDialog.querySelector('button')?.focus();return}
@@ -173,9 +164,9 @@
   window.addEventListener('online',()=>status(true));
   window.addEventListener('focus',()=>status());
   window.addEventListener('review-profile-changed',()=>window.reviewStudioReloadAcademicSchedule?.());
-  window.addEventListener('studio-ready',()=>{installLibrary();applyStatus();status();shareStudyCounts();});
+  window.addEventListener('studio-ready',()=>{applyStatus();status();shareStudyCounts();});
   document.addEventListener('click',event=>{if(event.target.closest('#openManagedResources'))showResources();});
-  installLibrary();status();
+  status();
  }
  async function installAccountTools(){
   if(installing)return;installing=true;try{

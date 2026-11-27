@@ -161,28 +161,61 @@ function searchRenalDocuments() {
 
 function libraryLectureLists() {
  const scope=globalThis.reviewCourseScope;
- const snapshot=libraryLookup(scope),sources = libraryDocuments(snapshot),candidates=libraryLectureCandidates(sources,DATA.items);
- const covered = new Set();
- const groups = [['CVP-A','CVP Anatomy'], ['CVP-P','CVP Physiology'], ['MOL-','Molecular Medicine'], ['REN-A','Renal Anatomy & Histology'], ['REN-P','Renal Physiology']];
- const lists = groups.filter(([prefix])=>scope?prefix.startsWith(scope+'-'):!prefix.startsWith('REN-')&&(!prefix.startsWith('CVP-')||!globalThis.reviewCvpArchived?.())).map(([prefix,label]) => {
-  const rows = DATA.items.filter(item => item.id.startsWith(prefix)).sort((a,b) => Number(a.id.slice(prefix.length)) - Number(b.id.slice(prefix.length)));
-  return `<section class="material-list"><h2>${label}</h2><ol>${rows.map(item => {
-   const selections = libraryMaterials(item, lessonById(item.id), candidates.get(item.id)||[]);
-   const actions = (list, label) => {
-    if (!list.length) return `<button disabled title="${label} unavailable">${label} unavailable</button>`;
-    const button = ({source,page}, caption) => {
-     covered.add(source.id);
-     const url = libraryDocumentURL(source, page,snapshot.lookup);
-     return url ? `<a class="material-action" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(source.name)}">${esc(caption)} ↗</a>`
-      : '';
-    };
-    return button(list[0], label) + (list.length > 1 ? `<details class="material-alternates"><summary>More ${label.toLowerCase()} (${list.length - 1})</summary>${list.slice(1).map(entry => button(entry, entry.source.displayName || entry.source.name)).join('')}</details>` : '');
+ const snapshot=libraryLookup(scope),sources=libraryDocuments(snapshot);
+ const candidates=libraryLectureCandidates(sources,DATA.items),covered=new Set();
+ const disciplines=[
+  ['CVP-A','Anatomy & Histology','anatomy'],['CVP-P','Physiology','physiology'],
+  ['MOL-','Molecular Medicine','molecular'],['REN-A','Anatomy & Histology','anatomy'],['REN-P','Physiology','physiology']
+ ];
+ const groups=disciplines.filter(([prefix])=>scope?prefix.startsWith(scope+'-'):!prefix.startsWith('REN-')&&(!prefix.startsWith('CVP-')||!globalThis.reviewCvpArchived?.()));
+ const lectureGroups=groups.map(([prefix,label,discipline])=>{
+  const rows=DATA.items.filter(item=>item.id.startsWith(prefix)).sort((a,b)=>Number(a.id.slice(prefix.length))-Number(b.id.slice(prefix.length)));
+  const links=(list,label)=>{
+   if(!list.length)return '';
+   const link=({source,page},caption)=>{
+    covered.add(source.id);
+    return `<a class="material-action" href="${esc(libraryDocumentURL(source,page,snapshot.lookup))}" target="_blank" rel="noopener noreferrer" title="${esc(source.name)}">${esc(caption)} ↗</a>`;
    };
-   return `<li><div><small>${esc(item.id.replace('-', ' '))}</small><strong>${esc(title(item))}</strong></div><div class="material-actions"><div>${actions(selections.slides,'Slides')}</div><div>${actions(selections.transcript,'Transcription')}</div></div></li>`;
-  }).join('')}</ol></section>`;
+   return '<div>'+link(list[0],label)+(list.length>1?`<details class="material-alternates"><summary>More ${label.toLowerCase()} (${list.length-1})</summary>${list.slice(1).map(entry=>link(entry,entry.source.displayName||entry.source.name)).join('')}</details>`:'')+'</div>';
+  };
+  const lectures=rows.map(item=>{
+   const documents=libraryMaterials(item,lessonById(item.id),candidates.get(item.id)||[]);
+   if(!documents.slides.length&&!documents.transcript.length)return '';
+   return `<li><span class="document-lecture-code">${esc(item.id.replace('-',' '))}</span><strong>${esc(title(item))}</strong>
+    <div class="material-actions">${links(documents.slides,'Slides')}${links(documents.transcript,'Transcription')}</div></li>`;
+  }).filter(Boolean);
+  if(!lectures.length)return '';
+  return `<section class="document-discipline" data-discipline="${discipline}"><div class="document-discipline-heading"><h3>${esc(label)}</h3><span>${lectures.length} lectures</span></div><ol>${lectures.join('')}</ol></section>`;
  }).join('');
+
+ const links={batch:[],course:[],external:[]};
+ const seen=new Set();
+ for(const source of sources){
+  if(covered.has(source.id))continue;
+  const url=libraryDocumentURL(source,1,snapshot.lookup),label=source.displayName||source.name;
+  if(seen.has(url))continue;
+  seen.add(url);
+  const metadata=source.kind+' '+label;
+  const category=/\b(?:batch|booklet|recalled|past[ -](?:paper|exam|question)s?)\b/i.test(metadata)?'batch'
+   :/^https:\/\//.test(url)||/\btextbook\b/i.test(metadata)?'external':'course';
+  links[category].push({url,label});
+ }
+ for(const reference of LEARNING.references||[]){
+  if(!/^https?:\/\//.test(reference.url||'')||seen.has(reference.url))continue;
+  links.external.push({url:reference.url,label:reference.title});
+  seen.add(reference.url);
+ }
+ const otherSections=[['batch','Batch resources'],['course','Course handouts'],['external','Textbooks & external resources']];
+ const shared=globalThis.REVIEW_STUDIO_FRESH_ACCOUNTS===true&&globalThis.reviewManagedFlags?.resourceLibrary!==false;
+ const sections=otherSections.filter(([id])=>links[id].length||id==='batch'&&shared);
+ const nav=[...(lectureGroups?[['lectures','Lectures']]:[]),...sections].map(([id,label])=>`<button type="button" data-document-jump="${id}">${label}</button>`).join('');
  const status=scope==='REN'&&!renalLibraryReady?renalLibraryError
   ? '<p role="status">Could not load additional Renal documents. <button data-retry-renal-library>Retry</button></p>'
   : '<p role="status">Loading course documents…</p>':'';
- return lists + status + `<details class="material-extras"><summary>Other sources and uploads</summary><ul>${sources.filter(source => !covered.has(source.id)).map(source => `<li><a href="${esc(libraryDocumentURL(source,1,snapshot.lookup))}" target="_blank" rel="noopener noreferrer">${esc(source.displayName || source.name)} ↗</a></li>`).join('')}</ul></details>`;
+ return `${nav?`<nav class="document-library-index" aria-label="Document sections">${nav}</nav>`:''}
+  ${status}
+  ${lectureGroups?`<section class="document-library-section" id="documents-lectures"><h2>Lectures</h2>${lectureGroups}</section>`:''}
+  ${sections.map(([id,label])=>`<section class="document-library-section" id="documents-${id}"><h2>${label}</h2>${id==='batch'&&shared?'<button type="button" id="openManagedResources">Browse shared documents</button>':''}
+    ${links[id].length?`<ul class="document-link-list">${links[id].map(row=>`<li><a href="${esc(row.url)}" target="_blank" rel="noopener noreferrer">${esc(row.label)} <span aria-hidden="true">↗</span></a></li>`).join('')}</ul>`:''}</section>`).join('')}
+  ${!nav&&!status?'<p>No documents are available for this course yet.</p>':''}`;
 }

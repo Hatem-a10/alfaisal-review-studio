@@ -17,7 +17,7 @@
  const tools=[...(extras?.querySelectorAll('button[data-view]')||[])].map(toolFrom);
  tools.push(microscope);
  tools.sort((a,b)=>Number(b.id==='activity')-Number(a.id==='activity'));
- const ids=new Set([...tools.map(t=>t.id).filter(id=>!desktopOnly.includes(id)),'lectures','weakness','methods']);
+ const ids=new Set([...tools.map(t=>t.id).filter(id=>id!=='methods'&&!desktopOnly.includes(id)),'lectures','weakness']);
  const other=document.createElement('button');other.type='button';other.id='otherToolsNav';
  other.innerHTML=otherIcon+'<span>More</span>';other.setAttribute('aria-haspopup','dialog');
  const secondary=[...nav.querySelectorAll(':scope > button[data-view]')].filter(b=>!mobileRoutes.includes(b.dataset.view)&&!desktopOnly.includes(b.dataset.view)).map(toolFrom);
@@ -45,6 +45,7 @@
   }
   if(profile){if(view==='dashboard'&&current!=='archive')profile.setAttribute('aria-current','page');else profile.removeAttribute('aria-current');}
   const mobileNav=document.querySelector('.ui-mobile-nav');
+  const primaryView=['labs','ospe'].includes(view)?'learning':view;
   function markCurrent(rail,selected){
    if(!rail)return;
    for(const button of rail.querySelectorAll(':scope > button')){
@@ -53,8 +54,8 @@
     if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
    }
   }
-  const desktopCurrent=current==='archive'?other:routeButton(nav,view)||(!mobileRoutes.includes(view)?other:null);
-  const mobileCurrent=current==='archive'?null:routeButton(mobileNav||document,view);
+  const desktopCurrent=current==='archive'?other:routeButton(nav,primaryView)||(!mobileRoutes.includes(primaryView)?other:null);
+  const mobileCurrent=current==='archive'?null:routeButton(mobileNav||document,primaryView);
   markCurrent(nav,desktopCurrent);
   markCurrent(mobileNav,mobileCurrent||document.getElementById('mobileMoreTools'));
  };
@@ -96,12 +97,12 @@
    ]],
    ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:countdownIcon}]],
    ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('activity')},{id:'grades',label:'Grade Calculator',icon:navGlyph('calculator')},{id:'weakness',label:'Study priorities',icon:navGlyph('weakness')}]],
-   ['Help',[{id:'library',label:'Library',icon:navGlyph('library')},{id:'methods',label:'How to study',icon:navGlyph('methods')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
+   ['Resources',[{id:'library',label:'Library',icon:navGlyph('library')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
   ];
   // OSPE and Labs live in Learn; Booklet has its own sidebar link (and appears here on phones).
   groups[0][1].push({id:'booklet',label:'Booklet',icon:navGlyph('booklet')});
   const included=new Set([...desktopOnly,...groups.flatMap(([,entries])=>entries.map(tool=>tool.id))]);
-  groups[0][1].push(...[...secondary,...tools].filter(tool=>!['sources','ospe','labs'].includes(tool.id)&&!included.has(tool.id)&&included.add(tool.id)));
+  groups[0][1].push(...[...secondary,...tools].filter(tool=>!['sources','ospe','labs','methods'].includes(tool.id)&&!included.has(tool.id)&&included.add(tool.id)));
   grid.className='more-tool-groups';
   grid.innerHTML=groups.map(([group,links])=>'<section><h3>'+group+'</h3><div class="mobile-tools-grid">'+links.filter(tool=>mobileLayout.matches||!desktopOnly.includes(tool.id)).map(tool=>'<button type="button" data-view="'+tool.id+'">'+tool.icon+'<span>'+esc(tool.label)+'</span></button>').join('')+'</div></section>').join('');
   if(sync){sync.hidden=!mobileLayout.matches;sync.removeAttribute('data-mobile-extra');grid.append(sync);}

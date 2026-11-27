@@ -7,7 +7,7 @@ resetCatalog();
 export function catalogKind(set){if(/shams/i.test(set.id+' '+set.title))return 'other';if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
 export function isBookletSet(set){return /^cvp19-(?!tbl)/.test(set.id||'')||/corrected\s+booklet/i.test(set.title||'')||set.source==='cvp19-corrected'}
 export function catalogCourse(set){return Object.hasOwn(courses,set.course)?set.course:/^ren(?:al)?[-_]/i.test(set.id||'')?'REN':/\bMOL\b|^mol[-_]/i.test((set.id||'')+' '+(set.title||''))?'MOL':'CVP'}
-export function visibleCatalogSets(sets,kind='all',course=selectedCourse){return (sets||[]).filter(set=>!isBookletSet(set)&&catalogCourse(set)===course&&batchFor(set)!=='other'&&(kind==='all'||catalogKind(set)===kind))}
+export function visibleCatalogSets(sets,kind='all',course=selectedCourse){return (sets||[]).filter(set=>!isBookletSet(set)&&catalogCourse(set)===course&&!['other','topics'].includes(batchFor(set))&&(kind==='all'||catalogKind(set)===kind))}
 export function catalogGroups(set){return /corrected\s+booklet/i.test(set.title||'')||/^cvp19-(?!tbl)/.test(set.id||'')?['topics','19']:[batchFor(set)]}
 export function batchFor(set) {
  if(/shams/i.test(set.id+' '+set.title))return '19';
@@ -24,9 +24,11 @@ function titleFor(id) {
  return id+([11,12,13].includes(n%100)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'))+' Batch';
 }
 
+const displayPaperTitle=title=>title.replace(/\brecalled\b\s*/gi,'').replace(/\bfinal\b/gi,'Final');
+
 function paperCard(set) {
  const questionCount=set.ids.length;
- const batch=titleFor(batchFor(set)),title=examSetTitle(set),run=originalRuns[set.id];
+ const batch=titleFor(batchFor(set)),title=displayPaperTitle(examSetTitle(set)),run=originalRuns[set.id];
  const renamed=settings.examNames?.[set.id];
  const displayTitle=renamed?title:title.replace(/^\d+(?:st|nd|rd|th) batch\s*[·:–-]\s*/i,'')||title;
  const action=run?(run.finishedAt?'View saved results':'Resume saved set'):set.adapted?'Open mock exam':'Open original set';
@@ -38,11 +40,10 @@ function paperCard(set) {
   <div class="assessment-paper-copy">
    <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questionCount} ${set.adapted?'practice':'original'} question${questionCount===1?'':'s'}</span></div>
    <h3>${esc(displayTitle)}</h3>
-   ${renamed?`<small>Source: ${esc(set.title)}</small>`:''}
+   ${renamed?`<small>Source: ${esc(displayPaperTitle(set.title))}</small>`:''}
   </div>
   <div class="assessment-paper-actions">
    ${set.sourceLedger?`<a href="${esc(set.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:''}
-   ${set.url&&!set.sourceInAssessment?`<a href="${esc(set.url)}" target="_blank" rel="noopener noreferrer">${set.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:''}
    <button type="button" class="primary" data-original-start="${esc(set.id)}">${action}</button>
   </div>
  </article>`;
@@ -59,7 +60,7 @@ function assessmentFamily(set,kind){
  if(/\b(?:ospe|practicals?)\b/i.test(label))return {title:'OSPE',tail:1};
  if(/\b(?:saqs?|short answers?|written(?: questions| cases)?|clinical scenarios?)\b/i.test(label))return {title:'SAQs',tail:2};
  if(/\bmid[\s-]*term\b/i.test(label))return {title:'Midterm'};
- if(/\bfinal\b/i.test(label))return {title:'Final exam'};
+ if(/\bfinal\b/i.test(label))return {title:'Final Exam'};
  return {title:label};
 }
 
@@ -120,7 +121,6 @@ export function catalog() {
    ${scope?'':`<label>Course<select id="originalCourseFilter">${Object.keys(courses).filter(c=>c!=='REN'&&(c!=='CVP'||!globalThis.reviewCvpArchived?.())).map(c=>`<option value="${c}" ${selectedCourse===c?'selected':''}>${courses[c].label}</option>`).join('')}</select></label>`}
   </div>
   <p role="status" class="muted" data-assessment-count></p><div data-assessment-results></div>
-  ${selectedCourse==='MOL'?'<div class="source-links"><a href="/api/site-assets/materials/mol-midterm-guide.pdf" target="_blank" rel="noopener noreferrer">MOL Midterm Guide ↗</a></div>':''}
  </section>`;
 }
 
@@ -137,7 +137,7 @@ function mount(sets) {
   const term=search.trim().toLowerCase();
   const filtered=sets.filter(set=>(selectedBatch==='all'||batchFor(set)===selectedBatch)
    &&(selectedKind==='all'||selectedKind===catalogKind(set))
-   &&[examSetTitle(set),set.title].some(value=>String(value||'').toLowerCase().includes(term)));
+   &&[examSetTitle(set),set.title].some(value=>displayPaperTitle(String(value||'')).toLowerCase().includes(term)));
   count.textContent=filtered.length+(filtered.length===1?' assessment':' assessments');
   results.innerHTML=assessmentGroups(filtered,schedule,clock.date,clock.minute).map(group=>`
    <section class="assessment-library-group" data-assessment-family="${group.kind}" ${group.upcoming?'data-upcoming':''}>
