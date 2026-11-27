@@ -850,6 +850,12 @@ html:root body:not(.xp-exam-active) #content .document-library-heading{
 .document-library .library-search{display:flex;gap:8px;margin-bottom:14px}
 .document-library .library-search input{flex:1;min-width:0}
 .document-library-index{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+html:root body:not(.xp-exam-active) #content .document-library :is([data-document-jump],#openManagedResources){
+ color:var(--rs-ink);background:var(--rs-surface);border:1px solid var(--rs-line);min-height:40px;
+}
+html:root body:not(.xp-exam-active) #content .document-library :is([data-document-jump],#openManagedResources):hover{
+ color:var(--rs-ink);background:var(--rs-sunken);border-color:var(--rs-line-strong);
+}
 .document-library-section{margin-block:26px;scroll-margin-block-start:24px}
 .document-library-section>h2{margin:0 0 12px}
 .document-discipline{
