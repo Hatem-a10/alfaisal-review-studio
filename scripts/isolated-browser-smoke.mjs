@@ -8,6 +8,9 @@ import {pbkdf2Sync,randomBytes,randomUUID} from 'node:crypto';
 import {setTimeout as delay} from 'node:timers/promises';
 const require=createRequire(import.meta.url);
 const {chromium,webkit}=require(process.env.REVIEW_BROWSER_MODULE||'playwright');
+// WCAG 2 A/AA scan with axe-core (baseline: 0 violations). Set REVIEW_AXE_SOURCE to axe.min.js; skipped when absent locally.
+const axeSource=process.env.REVIEW_AXE_SOURCE?readFileSync(process.env.REVIEW_AXE_SOURCE,'utf8'):null;
+const axeViews=['dashboard','learning','practice','calendar','planner','countdowns','library','anki','sources'];
 const temp=mkdtempSync(join(tmpdir(),'review-browser-')),config=resolve('dist/server/browser-fixture.json');
 const base=JSON.parse(readFileSync('dist/server/wrangler.json','utf8'));
 if(base.vars?.REVIEW_STUDIO_DEPLOYMENT!=='staging')throw Error('Build staging first; never use a production candidate.');
@@ -60,6 +63,18 @@ try{
    const width=await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+8);assert.ok(width,'Unexpected page-level horizontal overflow.');
    const snapshot=await context.request.get(origin+'/api/progress');assert.equal(snapshot.status(),200);
    const other=await browser.newContext({viewport,ignoreHTTPSErrors:true});const second=await other.request.get(origin+'/api/progress');assert.equal(second.status(),401);await other.close();
+   if(axeSource){
+    const found=[];await page.addScriptTag({content:axeSource});
+    for(const theme of ['light','amoled']){
+     await page.evaluate(t=>{if((document.documentElement.dataset.theme==='amoled')!==(t==='amoled'))document.querySelector('#themeToggle')?.click()},theme);
+     for(const view of axeViews){
+      await page.evaluate(v=>{location.hash=v},view);await delay(1500);
+      const violations=await page.evaluate(async()=>(await window.axe.run(document,{runOnly:['wcag2a','wcag2aa'],resultTypes:['violations']})).violations.map(v=>v.id+' ('+v.impact+') '+v.nodes.slice(0,3).map(n=>n.target.join(' ')).join(' | ')));
+      for(const v of violations)found.push(theme+'/'+view+': '+v);
+     }
+    }
+    assert.deepEqual(found,[],'Accessibility (axe WCAG 2 A/AA) violations');console.log('PASS',label,'axe WCAG 2 A/AA:',axeViews.length*2,'views clean.');
+   }
    assert.deepEqual(errors,[],'Uncaught browser script errors');console.log('PASS',label,'synthetic login, dashboard, private API and responsive layout.');
    await context.close();
   }finally{await browser.close()}

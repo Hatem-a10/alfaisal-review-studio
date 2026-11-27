@@ -21,10 +21,11 @@ jobs:
       - run: npm run build:staging
       - name: Install pinned browser runner in disposable directory
         run: |
-          npm install --prefix "$RUNNER_TEMP/review-browser" --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.58.2
+          npm install --prefix "$RUNNER_TEMP/review-browser" --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.58.2 axe-core@4.14.1
           "$RUNNER_TEMP/review-browser/node_modules/.bin/playwright" install --with-deps chromium webkit
       - name: Browser checks on local synthetic Worker
         env:
           REVIEW_BROWSER_MODULE: ${{ runner.temp }}/review-browser/node_modules/playwright
+          REVIEW_AXE_SOURCE: ${{ runner.temp }}/review-browser/node_modules/axe-core/axe.min.js
         run: node scripts/isolated-browser-smoke.mjs
 # No hosting credentials, remote bindings, production data, or deployments.
