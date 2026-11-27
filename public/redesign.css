@@ -516,6 +516,12 @@ html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close:hover{backgr
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{gap:8px}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{min-height:clamp(56px,7.8vh,68px);padding:13px 16px;gap:15px;font-size:1.1rem;font-weight:600;border-radius:var(--rs-r-item,12px)}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button .nav-icon{width:26px;height:26px;flex:none}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns]{color:var(--rs-ink-2)}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns] .nav-icon{width:22px;height:22px;margin-inline:2px}
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns].active{
+  background:var(--rs-sunken)!important;color:var(--rs-ink);box-shadow:inset 0 0 0 1px var(--rs-line);
+ }
+ html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns].active .nav-icon{color:var(--accent-text)}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar .brand{gap:14px}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar #syncWidget>summary{min-height:64px}
  /* Semi-closed rail: icons only, centred, and the sync card shrinks to a square with its dot. */
@@ -584,16 +590,24 @@ html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{or
 .renal-concept h3{font-size:1rem;margin:1em 0 .25em}
 .renal-concept p,.reader-concept-count{margin-top:0}
 .coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
-/* Countdown cards use a readable timer strip and a shared neutral subject tag. */
+/* Countdown cards use category tints around neutral timer cells and subject tags. */
 .countdown-card[data-assessment-type="exams"]{--count-accent:#c93858}
 .countdown-card[data-assessment-type="tbls"]{--count-accent:#198d84}
 .countdown-card[data-assessment-type="ospe"]{--count-accent:#bd7626}
 .countdown-card[data-assessment-type="starts"]{--count-accent:#8058bd}
 .countdown-card[data-assessment-type="other"]{--count-accent:#5475a8}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- --count-line:color-mix(in srgb,var(--count-accent) 22%,var(--rs-line));
- background:var(--rs-surface);
- color:var(--rs-ink);border:1px solid var(--rs-line);outline:0;
+ --count-line:color-mix(in srgb,var(--count-accent) 32%,var(--rs-line));
+ --count-fill:color-mix(in srgb,var(--count-accent) 18%,var(--rs-surface));
+ --count-number-bg:#e6e7e9;
+ --count-number-line:#c6c8cc;
+ background:linear-gradient(132deg,var(--count-fill),color-mix(in srgb,var(--count-fill) 66%,var(--rs-surface)));
+ color:var(--rs-ink);border:1px solid var(--count-line);outline:0;
+}
+html:root[data-theme=amoled] body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
+ --count-fill:color-mix(in srgb,var(--count-accent) 30%,var(--rs-surface));
+ --count-number-bg:#27282c;
+ --count-number-line:#3e3f43;
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{display:none}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,p,span,strong,b,small,.countdown-card-top,.countdown-card-bottom){color:var(--rs-ink)}
@@ -605,20 +619,27 @@ html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-typ
  color:color-mix(in srgb,var(--count-accent) 46%,var(--rs-ink));padding:.3em .65em;border-radius:7px;
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-digits{
- margin:16px 0;max-width:none;gap:0;
- padding:8px 0;background:color-mix(in srgb,var(--count-accent) 8%,var(--rs-sunken));
- border:1px solid var(--count-line);border-radius:12px;
+ margin:16px 0;max-width:none;gap:clamp(4px,1vw,10px);
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] .countdown-unit{
- padding:6px 2px;background:none;border:0;border-radius:0!important;backdrop-filter:none;
+ padding:9px 3px;background:var(--count-number-bg);border:1px solid var(--count-number-line);backdrop-filter:none;
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-unit+.countdown-unit{border-inline-start:1px solid var(--count-line)}
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] :is(.countdown-unit small,.countdown-date,.countdown-card-bottom span){color:var(--rs-muted)}
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-unit small{font-size:clamp(.55rem,1.5vw,.67rem);letter-spacing:normal;text-transform:none;margin-top:4px}
 html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type]{
  padding:clamp(16px,3vw,30px);
  border-color:var(--count-line);border-inline-start:4px solid var(--count-accent);
- background:linear-gradient(120deg,color-mix(in srgb,var(--count-accent) 7%,var(--rs-surface)),var(--rs-surface) 55%);
+ background:linear-gradient(120deg,var(--count-fill) 20%,color-mix(in srgb,var(--count-fill) 73%,var(--rs-surface)));
+}
+html:root body:not(.xp-exam-active) #content .countdown-filters{
+ display:flex;gap:4px;flex-wrap:wrap;width:fit-content;max-width:100%;
+ padding:4px;border:1px solid var(--rs-line);border-radius:14px;background:var(--rs-sunken);
+}
+html:root body:not(.xp-exam-active) #content .countdown-filters>button{
+ min-height:42px;padding-inline:13px;background:none;border:1px solid transparent;box-shadow:none;color:var(--rs-ink);
+}
+html:root body:not(.xp-exam-active) #content .countdown-filters>button[aria-pressed=true]{
+ background:var(--rs-surface);border-color:var(--accent-border);color:var(--rs-ink);
 }
 html:root body:not(.xp-exam-active) #content .countdown-priority{align-items:stretch;max-width:none;margin:20px 0}
 html:root body:not(.xp-exam-active) #content .countdown-priority-label{letter-spacing:normal;font-size:.83rem}
@@ -631,6 +652,12 @@ html:root[data-accent=auto] body:not(.xp-exam-active) .home-spotlight[class*=ass
 /* Learn and Booklet readers share the site's surface and accent tokens. */
 html:root body:not(.xp-exam-active) .study-reader-title{margin:clamp(18px,3vw,36px) 0 20px;font-size:clamp(2rem,4vw,3.125rem)}
 html:root body:not(.xp-exam-active) .learning-layout{gap:clamp(14px,2.1vw,28px)}
+html:root body:not(.xp-exam-active)[data-sidebar-stage=collapsed] .learning-layout{
+ max-inline-size:84rem;margin-inline:auto;
+}
+html:root body:not(.xp-exam-active) .learning-main .question-kind-foot{
+ inline-size:100%;max-inline-size:none;margin-inline:auto;text-align:center;
+}
 html:root body:not(.xp-exam-active) .learning-layout .lesson-catalog{box-shadow:none;height:auto;max-height:none;position:sticky;top:16px;align-self:start}
 html:root body:not(.xp-exam-active) #lessonCatalogControls{
  display:grid;grid-template-rows:auto minmax(0,1fr);max-height:calc(100vh - 42px);max-height:calc(100dvh - 42px)
@@ -778,17 +805,23 @@ html:root body:not(.xp-exam-active) :is(#content .practice-start .practice-tool-
  border-inline-start:4px solid var(--accent);border-radius:8px;background:var(--accent-soft);
 }
 .assessment-library-group>.assessment-family-heading span,.assessment-batch{font-size:.83rem;font-weight:700;color:var(--accent-text)}
-.assessment-paper-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.assessment-paper-meta{display:flex;align-items:center;justify-content:center;gap:6px 10px;flex-wrap:wrap}
+.assessment-paper-copy{text-align:center}
+.assessment-library .assessment-paper-editable{padding-block-start:46px}
+.assessment-library .assessment-paper-editable .rename-set-button{
+ position:absolute;inset-block-start:8px;inset-inline-end:8px;
+ display:grid;place-items:center;inline-size:36px;block-size:36px;padding:0;
+}
+.assessment-library .assessment-paper-editable .rename-set-button:hover{color:var(--accent-text);background:var(--accent-soft)}
 .assessment-library .original-set-grid{grid-template-columns:repeat(auto-fill,minmax(min(205px,100%),1fr));margin:0}
-.assessment-library .original-set-grid>article{min-width:0;overflow-wrap:anywhere}
+.assessment-library .original-set-grid>article{position:relative;min-width:0;overflow-wrap:anywhere}
 .assessment-paper-copy,.assessment-paper-actions{display:grid;align-content:start;gap:8px}
 .assessment-paper-actions>button{width:100%}
-.assessment-library .original-set-grid>article{align-content:space-between}
+.assessment-library .original-set-grid>article .assessment-paper-actions{margin-block-start:auto}
 @media(min-width:760px){
  .assessment-library-group[data-assessment-family="other"] .original-set-grid>article:only-child{
   grid-column:1/-1;
  }
- .assessment-library-group[data-assessment-family="other"] article:only-child .assessment-paper-meta{justify-content:flex-start;gap:10px}
 }
 
 .booklet-overview-actions{display:flex;align-items:start;gap:10px;flex-wrap:wrap}
