@@ -36,7 +36,9 @@ function inlineSession(l) {
  const ids = selected.questions.map(q=>q.id);
  const old = inlineTopicSessions.get(key);
  if (old?.questions.map(q=>q.id).join('|') === ids.join('|')) return old;
- const draft = old ? {...old,ids:old.questions.map(q=>q.id)} : inlineReadDrafts()[key];
+ const drafts=old?null:inlineReadDrafts();
+ const legacy=selected.topic.legacyTopic&&l.id+':'+selected.topic.legacyTopic;
+ const draft=old?{...old,ids:old.questions.map(q=>q.id)}:drafts[key]||(legacy?drafts[legacy]:null);
  const previous = new Map((Array.isArray(draft?.ids) ? draft.ids : []).map((id,i)=>[id,i]));
  const answers = {}, graded = {};
  const orders = selected.questions.map((q,i) => {

@@ -1,3 +1,4 @@
+import {nephronTopicPlan} from './renal-nephron-topics.mjs';
 import {renalConcepts} from './renal-concepts.mjs';
 import {renalReleasedLessons} from './renal-released-lessons.mjs';
 import {anatomyChecks} from './renal-anatomy-checks.mjs';
@@ -151,7 +152,7 @@ export function renalTeachingPack(entries=renalLessons) {
   items.push({id,code:entry.code,course:'REN',title:entry.title,group:entry.group,dates:[]});
   sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],pages:[]});
   const transcript=transcripts[entry.code];
-  const sections=entry.topics.map(topic=>{
+  let sections=entry.topics.map(topic=>{
    const key=entry.code+'-'+topic.key,concept='REN-'+key,references=topic.pages.map(cite);
    const illustration=renalTopicFigures[key],transcriptReview=renalTranscriptReview[key];
    const figure=illustration?{...cite(illustration.page),image:'/api/site-assets/materials/ren123/'+illustration.path,caption:illustration.caption}:null;
@@ -176,11 +177,32 @@ export function renalTeachingPack(entries=renalLessons) {
    const recordedExamCue=entry.code==='A6'?{conceptTitle:concepts[1].title,label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
    return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,figure,transcript,transcriptReview,scopeNote,recordedExamCue};
   });
+  let questionTopics;
+  if(entry.code==='A6'&&sections.length===1&&sections[0].id===id+'-applied'){
+   const previous=sections[0];
+   questionTopics={};
+   sections=nephronTopicPlan.map(({key,title,parts,previousChecks,checks})=>{
+    const topicId=id+'-'+key,concepts=parts.map(index=>previous.concepts[index]);
+    for(const index of previousChecks)questionTopics[previous.id+'-check-'+index]=topicId;
+    for(const [index,[pages,question,...choices]] of checks.entries()){
+     const order=choices.map((_,position)=>(position+index+key.length)%choices.length);
+     questions.push({
+      id:topicId+'-review-'+(index+1),lectureIds:[id],kind:'Application check · authored from slides',
+      difficulty:'medium',concept:topicId,question,options:order.map(position=>choices[position][0]),
+      answer:order.indexOf(0),explanation:choices[0][1],reasons:order.map(position=>choices[position][1]),references:pages.map(cite),
+     });
+    }
+    return {...previous,id:topicId,concept:topicId,title,concepts,legacyTopic:previous.id,
+     keyPoints:concepts.map(part=>part.title),references:[...new Set(concepts.flatMap(part=>part.references.map(ref=>ref.page)))].sort((a,b)=>a-b).map(cite),
+     recordedExamCue:parts.includes(1)?previous.recordedExamCue:null};
+   });
+   for(const question of questions)if(questionTopics[question.id])question.concept=questionTopics[question.id];
+  }
   const concepts=sections.flatMap(section=>section.concepts);
   const coveredObjectives=new Set(concepts.map(concept=>concept.objective));
   const hasTranscript=Boolean(transcript||sections.some(section=>section.transcriptReview));
-  guides[id]={underDevelopment:!hasTranscript||concepts.length<2||entry.objectives.some(objective=>!coveredObjectives.has(objective)),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
-  lessons.push({id,scope:entry.overview,references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
+  guides[id]={underDevelopment:!hasTranscript||entry.objectives.some(objective=>!coveredObjectives.has(objective)),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
+  lessons.push({id,scope:entry.overview,...(questionTopics?{questionTopics}:{}),references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,...(t.legacyTopic?{legacyTopic:t.legacyTopic}:{}),concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
  return {items,sources,lessons,guides,questions};
 }

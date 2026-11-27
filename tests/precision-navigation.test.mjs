@@ -23,15 +23,16 @@ test('assessment families keep matching TBLs together and promote only the next 
  const paper=(title,batch,category)=>({id:title+'-'+batch,title,batch,category});
  const sets=[paper('Renal TBL 1',14,'tbl'),paper('Renal Final MCQs',18,'exam'),
   paper('Renal TBL 2',19,'tbl'),paper('Renal TBL 1',18,'tbl'),
-  paper('Instructor practice',19,'other'),paper('Renal TBL 3',17,'tbl')];
+  paper('Instructor practice',19,'other'),paper('Renal TBL 3',17,'tbl'),
+  paper('Renal Final SAQs',18,'exam'),paper('Renal Final OSPE',18,'exam')];
  const schedule=[{kind:'tbl',number:1,date:'2026-11-29',endMinute:590},
   {kind:'tbl',number:2,date:'2026-12-06',endMinute:590},
   {kind:'tbl',number:3,date:'2026-12-07',endMinute:590,hubCustom:true}];
  const before=assessmentGroups(sets,schedule,'2026-11-29',589);
- assert.deepEqual(before.map(group=>group.title),['Other','TBL 1','Final exam','TBL 2','TBL 3']);
+ assert.deepEqual(before.map(group=>group.title),['Other','TBL 1','Final exam','TBL 2','TBL 3','OSPE','SAQs']);
  assert.deepEqual(before[1].sets.map(set=>set.batch),[18,14]);
  assert.equal(before[1].upcoming,true);
  const after=assessmentGroups(sets,schedule,'2026-11-29',590);
- assert.deepEqual(after.map(group=>group.title),['Other','TBL 2','Final exam','TBL 1','TBL 3']);
+ assert.deepEqual(after.map(group=>group.title),['Other','TBL 2','Final exam','TBL 1','TBL 3','OSPE','SAQs']);
  assert.equal(after[1].date,'2026-12-06');
 });
