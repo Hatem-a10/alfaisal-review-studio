@@ -53,7 +53,7 @@
  }
  window.refreshAdminAuthorization=refreshAdminAuthorization;
  async function openControlCenter(){
-  try {const {openAdminCenter}=await import('/admin-control-center.mjs');await openAdminCenter();}
+  try {const {openAdminCenter}=await import('/admin-control-center.mjs?v=2');await openAdminCenter();}
   catch {const status=admin.querySelector('#adminUnlockStatus');unlockForm.hidden=false;status.textContent='The Control Center could not open. Reconnect and try again.';}
  }
  adminToggle.onclick=()=>{
