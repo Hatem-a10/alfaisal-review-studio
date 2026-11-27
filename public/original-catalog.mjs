@@ -25,22 +25,22 @@ function titleFor(id) {
 }
 
 function paperCard(set) {
- const questions=set.ids.map(originalQuestionById).filter(Boolean);
- const figures=questions.filter(question=>question.figures?.length).length;
- const written=questions.filter(question=>question.type==='short').length;
+ const questionCount=set.ids.length;
  const batch=titleFor(batchFor(set)),title=examSetTitle(set),run=originalRuns[set.id];
  const renamed=settings.examNames?.[set.id];
  const displayTitle=renamed?title:title.replace(/^\d+(?:st|nd|rd|th) batch\s*[·:–-]\s*/i,'')||title;
  const action=run?(run.finishedAt?'View saved results':'Resume saved set'):set.adapted?'Open mock exam':'Open original set';
- return `<article>
+ const canRename=globalThis.reviewAdmin===true;
+ return `<article${canRename?' class="assessment-paper-editable"':''}>
+  ${canRename?`<button type="button" class="rename-set-button" data-rename-set="${esc(set.id)}" aria-label="Rename ${esc(title)}" title="Rename assessment">
+   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 16 11-11 4 4-11 11-5 1 1-5Zm9-9 4 4"/></svg>
+  </button>`:''}
   <div class="assessment-paper-copy">
-   <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questions.length} ${set.adapted?'practice':'original'} question${questions.length===1?'':'s'}</span></div>
-   <div class="original-set-title"><h3>${esc(displayTitle)}</h3>${globalThis.reviewAdmin===true?`<button type="button" class="rename-set-button" data-rename-set="${esc(set.id)}" aria-label="Rename ${esc(title)}">✎ Rename</button>`:''}</div>
+   <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questionCount} ${set.adapted?'practice':'original'} question${questionCount===1?'':'s'}</span></div>
+   <h3>${esc(displayTitle)}</h3>
    ${renamed?`<small>Source: ${esc(set.title)}</small>`:''}
-   <small>${figures} question${figures===1?'':'s'} with source figures · ${written} short answers</small>
   </div>
   <div class="assessment-paper-actions">
-   <details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(set.id)}">Show topics</button><div data-study-coverage-body></div></details>
    ${set.sourceLedger?`<a href="${esc(set.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:''}
    ${set.url&&!set.sourceInAssessment?`<a href="${esc(set.url)}" target="_blank" rel="noopener noreferrer">${set.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:''}
    <button type="button" class="primary" data-original-start="${esc(set.id)}">${action}</button>

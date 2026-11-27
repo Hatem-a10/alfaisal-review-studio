@@ -5,6 +5,7 @@
  const railIcon=path=>'<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
  const homeIcon=railIcon('<path d="m3 10 9-7 9 7M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 21v-6a2 2 0 0 1 4 0v6"/>');
  const otherIcon=navGlyph('more');
+ const countdownIcon=railIcon('<path d="M9 2h6M12 2v3m6.5 2 1.5-1.5"/><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/>');
  const mobileRoutes=['dashboard','learning','practice','calendar'];
  const desktopRoutes=[['learning','Learn','book'],['practice','Practice','practice'],['calendar','Schedule','calendar'],['countdowns','Countdowns','hourglass'],['booklet','Booklet','booklet']];
  const desktopOnly=['countdowns','booklet'];
@@ -23,7 +24,7 @@
  const desktop=desktopRoutes.map(([id,label,icon])=>{
   const button=routeButton(nav,id)||document.createElement('button');
   button.type='button';button.dataset.view=id;
-  button.innerHTML=navGlyph(icon)+'<span>'+label+'</span>';
+  button.innerHTML=(id==='countdowns'?countdownIcon:navGlyph(icon))+'<span>'+label+'</span>';
   button.setAttribute('aria-label',label);button.title=label;
   return button;
  });
@@ -93,7 +94,7 @@
     ...(anatomy?[toolFrom(anatomy)]:[]),microscope,
     {id:'anki',label:'Anki',icon:navGlyph('cards')},
    ]],
-   ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:navGlyph('hourglass')}]],
+   ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:countdownIcon}]],
    ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('activity')},{id:'grades',label:'Grade Calculator',icon:navGlyph('calculator')},{id:'weakness',label:'Study priorities',icon:navGlyph('weakness')}]],
    ['Help',[{id:'library',label:'Library',icon:navGlyph('library')},{id:'methods',label:'How to study',icon:navGlyph('methods')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
   ];

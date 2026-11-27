@@ -136,3 +136,5 @@
   #xpExam .xp-palette button{flex-basis:26px;width:26px;min-height:26px;padding:2px}
   #xpExam .xp-palette button span{width:18px;height:18px}
 }
+
+#content:fullscreen{max-width:none;margin:0;padding:0}
