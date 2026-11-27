@@ -24,8 +24,29 @@ function titleFor(id) {
  return id+([11,12,13].includes(n%100)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'))+' Batch';
 }
 
-function paperCard(s) {
- const qs=s.ids.map(originalQuestionById).filter(Boolean),figures=qs.filter(q=>q.figures?.length).length;return `<article><div class="assessment-paper-meta"><span class="assessment-batch">${esc(titleFor(batchFor(s)))}</span><span class="pill">${qs.length} ${s.adapted?"practice":"original"} question${qs.length===1?'':'s'}</span></div><div class="original-set-title"><h3>${esc(examSetTitle(s))}</h3><button class="rename-set-button" data-rename-set="${esc(s.id)}" aria-label="Rename ${esc(examSetTitle(s))}">✎ Rename</button></div>${settings.examNames?.[s.id]?`<small>Source: ${esc(s.title)}</small>`:''}<p>${esc(s.note||'Original wording and supplied answer key.')}</p><small>${figures} question${figures===1?'':'s'} with source figures · ${qs.filter(q=>q.type==='short').length} short answers</small><button class="primary" data-original-start="${esc(s.id)}">${originalRuns[s.id]?originalRuns[s.id].finishedAt?'View saved results':'Resume saved set':s.adapted?'Open mock exam':'Open original set'}</button><details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(s.id)}">Show topics</button><div data-study-coverage-body></div></details>${s.sourceLedger?`<a href="${esc(s.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:""}${s.url&&!s.sourceInAssessment?`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${s.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:""}</article>`
+function paperCard(set) {
+ const questions=set.ids.map(originalQuestionById).filter(Boolean);
+ const figures=questions.filter(question=>question.figures?.length).length;
+ const written=questions.filter(question=>question.type==='short').length;
+ const batch=titleFor(batchFor(set)),title=examSetTitle(set),run=originalRuns[set.id];
+ const renamed=settings.examNames?.[set.id];
+ const displayTitle=renamed?title:title.replace(/^\d+(?:st|nd|rd|th) batch\s*[·:–-]\s*/i,'')||title;
+ const action=run?(run.finishedAt?'View saved results':'Resume saved set'):set.adapted?'Open mock exam':'Open original set';
+ return `<article>
+  <div class="assessment-paper-copy">
+   <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questions.length} ${set.adapted?'practice':'original'} question${questions.length===1?'':'s'}</span></div>
+   <div class="original-set-title"><h3>${esc(displayTitle)}</h3><button type="button" class="rename-set-button" data-rename-set="${esc(set.id)}" aria-label="Rename ${esc(title)}">✎ Rename</button></div>
+   ${renamed?`<small>Source: ${esc(set.title)}</small>`:''}
+   <p>${esc(set.note||'Original wording and supplied answer key.')}</p>
+   <small>${figures} question${figures===1?'':'s'} with source figures · ${written} short answers</small>
+  </div>
+  <div class="assessment-paper-actions">
+   <button type="button" class="primary" data-original-start="${esc(set.id)}">${action}</button>
+   <details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(set.id)}">Show topics</button><div data-study-coverage-body></div></details>
+   ${set.sourceLedger?`<a href="${esc(set.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:''}
+   ${set.url&&!set.sourceInAssessment?`<a href="${esc(set.url)}" target="_blank" rel="noopener noreferrer">${set.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:''}
+  </div>
+ </article>`;
 }
 
 const kinds=[['all','All'],['other','Other'],['past','Exams'],['tbl','TBLs']];
@@ -119,7 +140,7 @@ function mount(sets) {
   count.textContent=filtered.length+(filtered.length===1?' assessment':' assessments');
   results.innerHTML=assessmentGroups(filtered,schedule,clock.date,clock.minute).map(group=>`
    <section class="assessment-library-group" data-assessment-family="${group.kind}" ${group.upcoming?'data-upcoming':''}>
-    <header><h2>${esc(group.title)}</h2>${group.upcoming?`<span>Upcoming · ${esc(fmt(group.date))}</span>`:''}</header>
+    <div class="assessment-family-heading"><h2>${esc(group.title)}</h2>${group.upcoming?`<span>Upcoming · ${esc(fmt(group.date))}</span>`:''}</div>
     <div class="original-set-grid">${group.sets.map(paperCard).join('')}</div>
    </section>`).join('')||'<p class="notice">No assessments match these filters.</p>';
   for(const button of types)button.setAttribute('aria-pressed',String(button.dataset.assessmentKind===selectedKind));

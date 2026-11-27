@@ -746,19 +746,29 @@ html:root body:not(.xp-exam-active) :is(#content .practice-start .practice-tool-
 .assessment-library-controls input{min-width:min(14rem,100%);max-width:100%}
 .assessment-library-controls button[aria-pressed=true]{border-color:var(--accent-border);background:var(--accent-soft)}
 .assessment-library-group+ .assessment-library-group{margin-top:28px}
-.assessment-library-group>header{
+.assessment-library-group>.assessment-family-heading{
  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
  margin:0 0 12px;padding:0 0 9px;border-bottom:1px solid var(--line);
 }
-.assessment-library-group>header h2{margin:0;font-size:1.2rem}
-.assessment-library-group[data-upcoming]>header{
+.assessment-library-group>.assessment-family-heading h2{margin:0;font-size:1.2rem}
+.assessment-library-group[data-upcoming]>.assessment-family-heading{
  padding:10px 12px;border:1px solid var(--accent-border);
  border-inline-start:4px solid var(--accent);border-radius:8px;background:var(--accent-soft);
 }
-.assessment-library-group>header span,.assessment-batch{font-size:.83rem;font-weight:700;color:var(--accent-text)}
+.assessment-library-group>.assessment-family-heading span,.assessment-batch{font-size:.83rem;font-weight:700;color:var(--accent-text)}
 .assessment-paper-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
-.assessment-library .original-set-grid{grid-template-columns:repeat(auto-fill,minmax(min(225px,100%),1fr))}
+.assessment-library .original-set-grid{grid-template-columns:repeat(auto-fill,minmax(min(205px,100%),1fr))}
 .assessment-library .original-set-grid>article{min-width:0;overflow-wrap:anywhere}
+.assessment-paper-copy,.assessment-paper-actions{display:grid;align-content:start;gap:8px}
+.assessment-paper-copy p{margin:0}
+.assessment-paper-actions>button{width:100%}
+.assessment-library .original-set-grid>article{align-content:space-between}
+@media(min-width:760px){
+ .assessment-library-group[data-assessment-family="other"] .original-set-grid>article:only-child{
+  grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(9rem,13rem);align-items:center;gap:16px 24px;
+ }
+ .assessment-library-group[data-assessment-family="other"] article:only-child .assessment-paper-meta{justify-content:flex-start;gap:10px}
+}
 
 .booklet-overview-actions{display:flex;align-items:start;gap:10px;flex-wrap:wrap}
 .booklet-progress-page [data-state=correct]{--progress-colour:#72bd91;--progress-ink:#102e21}
