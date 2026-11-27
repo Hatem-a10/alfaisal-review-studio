@@ -5,8 +5,8 @@
  const railIcon=path=>'<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+path+'</svg>';
  const homeIcon=railIcon('<path d="m3 10 9-7 9 7M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 21v-6a2 2 0 0 1 4 0v6"/>');
  const otherIcon=navGlyph('more');
- const mobileRoutes=['dashboard','learning','calendar','practice'];
- const desktopRoutes=[['learning','Learn','book'],['calendar','Schedule','calendar'],['practice','Practice','practice'],['countdowns','Countdowns','hourglass'],['booklet','Booklet','booklet']];
+ const mobileRoutes=['dashboard','learning','practice','calendar'];
+ const desktopRoutes=[['learning','Learn','book'],['practice','Practice','practice'],['calendar','Schedule','calendar'],['countdowns','Countdowns','hourglass'],['booklet','Booklet','booklet']];
  const desktopOnly=['countdowns','booklet'];
  const mobileLayout=matchMedia('(max-width:760px)');
  const profile=sidebar.querySelector('.brand');
@@ -43,11 +43,19 @@
    tabs.innerHTML='<button type="button" data-open-more>← More tools</button>';content.prepend(tabs);
   }
   if(profile){if(view==='dashboard'&&current!=='archive')profile.setAttribute('aria-current','page');else profile.removeAttribute('aria-current');}
-  for(const button of [other,document.getElementById('mobileMoreTools')].filter(Boolean)){
-   const active=visible||!mobileRoutes.includes(view)&&(button!==other||!desktopOnly.includes(view));
-   button.classList.toggle('active',active);
-   if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
+  const mobileNav=document.querySelector('.ui-mobile-nav');
+  function markCurrent(rail,selected){
+   if(!rail)return;
+   for(const button of rail.querySelectorAll(':scope > button')){
+    const active=button===selected;
+    button.classList.toggle('active',active);
+    if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
+   }
   }
+  const desktopCurrent=current==='archive'?other:routeButton(nav,view)||(!mobileRoutes.includes(view)?other:null);
+  const mobileCurrent=current==='archive'?null:routeButton(mobileNav||document,view);
+  markCurrent(nav,desktopCurrent);
+  markCurrent(mobileNav,mobileCurrent||document.getElementById('mobileMoreTools'));
  };
  const before=render;render=function(...args){let result;
   const active=document.querySelector('#microscopeWorkspace');

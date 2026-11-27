@@ -146,12 +146,6 @@ function restore(){
  show(route);
  if(enabled()&&!route&&view!=='dashboard'&&renalViews.includes(view))show({course:'REN',view});
 }
-function highlight(){
- const current=context?.course==='CVP'?'other':view;
- for(const button of document.querySelectorAll('#mainSidebar nav button[data-view],.ui-mobile-nav button[data-view]')){
-  button.classList.toggle('active',button.dataset.view===current);
- }
-}
 render=function(...args){
  if(document.documentElement.dataset.boot==='loading'&&!window.reviewBootRender)return legacyRender(...args);
  if(!enabled())show(null);
@@ -163,7 +157,7 @@ render=function(...args){
   paintProfile();
   document.body.classList.remove('schedule-expanded');
   content.innerHTML=archiveIndex();
-  highlight();window.mountOtherTools?.();
+  window.mountOtherTools?.();
   return;
  }
  if(view==='learning'&&globalThis.reviewLessonVisible?.(lessonId)===false){
@@ -186,10 +180,10 @@ render=function(...args){
   else if(context.course==='CVP'&&!scopedViews.has(context.view))content.insertAdjacentHTML('afterbegin','<div class="course-workspace-links course-workspace-back">'+archiveLink()+'</div>');
  }
  if(context?.course==='REN'&&view==='practice'&&!document.getElementById('xpExam'))content.insertAdjacentHTML('afterbegin',courseSelector(view));
- if(context){highlight();window.mountOtherTools?.();}
+ window.mountOtherTools?.();
  return value;
 };
-window.addEventListener('review-admin-role',()=>{if(view==='learning')render()});
+window.addEventListener('review-admin-role',()=>{if(view==='learning'||view==='practice'&&etPracticeTab==='original')render()});
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-workspace]');
  if(button)open(...button.dataset.workspace.split('/'));

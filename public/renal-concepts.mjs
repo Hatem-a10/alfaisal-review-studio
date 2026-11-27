@@ -44,18 +44,15 @@ export const renalConcepts={
  P3:[
   c('barrier','Trace the barrier in order',0,[2,3,4,5],'Start in blood and cross fenestrated endothelium, the shared basement membrane and the podocyte slit diaphragm. The filtrate then enters Bowman space.'),
   c('barrier','Predict which contents cross',0,[5,6,7,8],'Small unbound solutes filter readily. Blood cells and most protein remain in the circulation. Think about size and the barrier properties rather than treating plasma and filtrate as identical.'),
-  c('forces','Assign signs to filtration forces',1,[9,10,11,12],'Capillary hydrostatic pressure favors filtration. Bowman-space pressure and plasma oncotic pressure oppose it. Bowman-space oncotic pressure is normally negligible.'),
+  c('forces','Track the forces along the tuft',1,[9,10,11,12],'Capillary hydrostatic pressure favors filtration. Bowman-space pressure and plasma oncotic pressure oppose it. Bowman-space oncotic pressure is normally negligible. As water leaves the tuft, retained plasma proteins become more concentrated, increasing the oncotic opposition to filtration.'),
   c('forces','Calculate pressure and GFR separately',1,[12,13,16,17],'If pressures are 60, 15 and 30 mmHg for capillary, Bowman and opposing capillary oncotic pressure, the net pressure is 15 mmHg. Multiply by Kf to calculate a flow rate.'),
   c('forces','Obstruction versus loss of effective surface area',1,[13,16,17,23],'Obstruction raises pressure in Bowman space. Mesangial contraction reduces filtration area and Kf. Both lower GFR through different terms of the same relationship.'),
-  c('forces','Pressure changes along the tuft',1,[9,10,11,12],'As water is filtered, protein left behind becomes more concentrated. The rising glomerular oncotic pressure increasingly opposes additional filtration.'),
  ],
  P4:[
-  c('tone','Afferent versus efferent constriction',0,[14,15,16,18],'Constrict the inlet and glomerular hydrostatic pressure falls. Moderately constrict the outlet and tuft pressure can rise while total plasma flow still falls.'),
-  c('tone','Why severe efferent constriction can lower GFR',0,[18,19,20],'Very low plasma flow raises the concentration of retained protein along the tuft. That stronger oncotic opposition can outweigh the hydrostatic effect.'),
+  c('tone','Compare afferent and efferent constriction',0,[14,15,16,18,19,20],'Constriction at the inlet lowers glomerular hydrostatic pressure. Moderate constriction at the outlet may raise tuft pressure even as plasma flow falls. Severe efferent constriction can lower GFR because very low flow increases the oncotic pressure of the retained plasma proteins.'),
   c('tone','Read filtration fraction as a ratio',0,[19,20,21],'Use GFR/RPF. If GFR remains 120 mL/min while RPF falls from 600 to 480 mL/min, the filtration fraction rises from 20% to 25%.'),
   c('tone','Downstream uptake after filtration',1,[21,22,24],'A higher filtration fraction leaves protein-rich efferent blood. Low hydrostatic and high oncotic pressure in peritubular capillaries favor uptake from interstitium.'),
-  c('feedback','High macula densa NaCl',2,[24,25,26],'Increased salt delivery supports ATP/adenosine signaling and afferent constriction and reduces renin. Start at the sensed salt delivery and trace the feedback to GFR.'),
-  c('feedback','Low macula densa NaCl',2,[26,27,28],'Low delivery favors afferent dilation and renin release. It can reflect increased proximal reabsorption as well as low filtered load.'),
+  c('feedback','Compare high and low salt delivery at the macula densa',2,[24,25,26,27,28],'High NaCl delivery promotes ATP and adenosine signaling, constricts the afferent arteriole and reduces renin. Low delivery favors afferent dilation and renin release. It can result from increased proximal reabsorption or a low filtered load.'),
  ],
 };
 

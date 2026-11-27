@@ -10,7 +10,7 @@ preloadCriticalModules(document,import.meta.url,navigator.connection);
 installAdaptivePrefetch(document,navigator,import.meta.url);
 await Promise.all([import("./reading-tools.js?v=1497"),import("./lecture-updates.js?v=1498")]);
 await import("./mobile-dock.js?v=1498");
-await import("./studio-navigation.js?v=1499");
+await import("./studio-navigation.js?v=1500");
 let solver,solverRetries=0;
 const assessmentPalettes=ASSESSMENT_GRADIENTS.map(gradientById);
 export const STAIN_ACCENTS=assessmentPalettes.map(p=>p.b);

@@ -35,16 +35,15 @@ function paperCard(set) {
  return `<article>
   <div class="assessment-paper-copy">
    <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questions.length} ${set.adapted?'practice':'original'} question${questions.length===1?'':'s'}</span></div>
-   <div class="original-set-title"><h3>${esc(displayTitle)}</h3><button type="button" class="rename-set-button" data-rename-set="${esc(set.id)}" aria-label="Rename ${esc(title)}">✎ Rename</button></div>
+   <div class="original-set-title"><h3>${esc(displayTitle)}</h3>${globalThis.reviewAdmin===true?`<button type="button" class="rename-set-button" data-rename-set="${esc(set.id)}" aria-label="Rename ${esc(title)}">✎ Rename</button>`:''}</div>
    ${renamed?`<small>Source: ${esc(set.title)}</small>`:''}
-   <p>${esc(set.note||'Original wording and supplied answer key.')}</p>
    <small>${figures} question${figures===1?'':'s'} with source figures · ${written} short answers</small>
   </div>
   <div class="assessment-paper-actions">
-   <button type="button" class="primary" data-original-start="${esc(set.id)}">${action}</button>
    <details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(set.id)}">Show topics</button><div data-study-coverage-body></div></details>
    ${set.sourceLedger?`<a href="${esc(set.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:''}
    ${set.url&&!set.sourceInAssessment?`<a href="${esc(set.url)}" target="_blank" rel="noopener noreferrer">${set.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:''}
+   <button type="button" class="primary" data-original-start="${esc(set.id)}">${action}</button>
   </div>
  </article>`;
 }
@@ -57,7 +56,8 @@ function assessmentFamily(set,kind){
   const number=Number(label.match(/\bTBL[\s-]*(\d+)/i)?.[1]||set.id?.match(/(?:^|-)tbl-(\d+)$/i)?.[1]);
   return number?{title:'TBL '+number,number}:{title:'Other TBL material'};
  }
- if(/\b(?:ospe|practical)\b/i.test(label))return {title:'OSPE & practical exams'};
+ if(/\b(?:ospe|practicals?)\b/i.test(label))return {title:'OSPE',tail:1};
+ if(/\b(?:saqs?|short answers?|written(?: questions| cases)?|clinical scenarios?)\b/i.test(label))return {title:'SAQs',tail:2};
  if(/\bmid[\s-]*term\b/i.test(label))return {title:'Midterm'};
  if(/\bfinal\b/i.test(label))return {title:'Final exam'};
  return {title:label};
@@ -71,8 +71,8 @@ export function assessmentGroups(sets,schedule=[],date='',minute=0){
  for(const set of ordered){
   const kind=catalogKind(set);
   if(kind==='other')continue;
-  const {title,number}=assessmentFamily(set,kind),key=kind+':'+title;
-  if(!groups.has(key))groups.set(key,{title,number,kind,sets:[]});
+  const {title,number,tail}=assessmentFamily(set,kind),key=kind+':'+title;
+  if(!groups.has(key))groups.set(key,{title,number,tail,kind,sets:[]});
   groups.get(key).sets.push(set);
  }
  const upcoming=event=>event.date>date||event.date===date&&event.endMinute>minute;
@@ -99,7 +99,8 @@ export function assessmentGroups(sets,schedule=[],date='',minute=0){
  if(next){next.upcoming=true;next.date=tblDates.get(nextNumber).date;}
  return [
   ...(other.length?[{kind:'other',title:'Other',sets:other}]:[]),
-  ...(next?[next]:[]),...exams,...tbls.filter(group=>group!==next),
+  ...(next?[next]:[]),...exams.filter(group=>!group.tail),...tbls.filter(group=>group!==next),
+  ...exams.filter(group=>group.tail).sort((a,b)=>a.tail-b.tail),
  ];
 }
 
@@ -114,7 +115,7 @@ export function catalog() {
  return `<section class="original-library assessment-library">
   <div class="assessment-library-controls">
    <div role="group" aria-label="Assessment type">${kinds.map(([id,label])=>`<button type="button" data-assessment-kind="${id}" aria-pressed="${selectedKind===id}">${label}</button>`).join('')}</div>
-   <label>Search assessments<input type="search" id="originalSearch" value="${esc(search)}" placeholder="Title or topic"></label>
+   <label>Search assessments<input type="search" id="originalSearch" value="${esc(search)}" placeholder="Assessment title"></label>
    <label>Batch<select id="originalBatchFilter"><option value="all">All batches</option>${batches.map(batch=>`<option value="${esc(batch)}" ${batch===selectedBatch?'selected':''}>${esc(titleFor(batch))}</option>`).join('')}</select></label>
    ${scope?'':`<label>Course<select id="originalCourseFilter">${Object.keys(courses).filter(c=>c!=='REN'&&(c!=='CVP'||!globalThis.reviewCvpArchived?.())).map(c=>`<option value="${c}" ${selectedCourse===c?'selected':''}>${courses[c].label}</option>`).join('')}</select></label>`}
   </div>
@@ -136,7 +137,7 @@ function mount(sets) {
   const term=search.trim().toLowerCase();
   const filtered=sets.filter(set=>(selectedBatch==='all'||batchFor(set)===selectedBatch)
    &&(selectedKind==='all'||selectedKind===catalogKind(set))
-   &&[examSetTitle(set),set.title,set.note].some(value=>String(value||'').toLowerCase().includes(term)));
+   &&[examSetTitle(set),set.title].some(value=>String(value||'').toLowerCase().includes(term)));
   count.textContent=filtered.length+(filtered.length===1?' assessment':' assessments');
   results.innerHTML=assessmentGroups(filtered,schedule,clock.date,clock.minute).map(group=>`
    <section class="assessment-library-group" data-assessment-family="${group.kind}" ${group.upcoming?'data-upcoming':''}>

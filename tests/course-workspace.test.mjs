@@ -1,3 +1,4 @@
+import {runInNewContext} from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -54,7 +55,7 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.equal(pack.sources.find(source=>source.lectureIds?.includes(id)).url,'/api/site-assets/'+asset.path);
   assert.ok(pack.guides[id].objectives.length&&pack.guides[id].summary.length);
   for(const topic of pack.guides[id].sections){
-   assert.ok((topic.body.length>1||topic.concepts.length>=6)&&topic.keyPoints.length);
+   assert.ok((topic.body.length>1||topic.concepts.length>0)&&topic.keyPoints.length);
    assert.ok(topic.references.every(ref=>ref.page>=1&&ref.page<=asset.units));
    if(topic.figure){
     assert.ok(figures.has(topic.figure.image));
@@ -87,6 +88,24 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
  assert.equal(booklet.units,294);
  assert.deepEqual(bookletSections.map(([kind])=>kind),['MCQs','SAQs','OSPE']);
  assert.ok(bookletSections.flatMap(([,sections])=>sections).every(([,page])=>page>=3&&page<=booklet.units));
+});
+
+test('nephron topics retain the existing questions and score their saved attempts in the new groups',async()=>{
+ const {renalTeachingPack}=await import('../public/renal-lessons.mjs');
+ const pack=renalTeachingPack(),lesson=pack.lessons.find(item=>item.id==='REN-A6');
+ const ids=Array.from({length:6},(_,index)=>'REN-A6-applied-check-'+(index+1));
+ assert.deepEqual(lesson.facts.map(fact=>fact.id),['REN-A6-circulation','REN-A6-filtration-flow','REN-A6-jga-hormones']);
+ assert.deepEqual(ids.map(id=>pack.questions.find(question=>question.id===id).concept),[
+  'REN-A6-circulation','REN-A6-circulation','REN-A6-filtration-flow','REN-A6-circulation','REN-A6-jga-hormones','REN-A6-jga-hormones'
+ ]);
+ const Learn=runInNewContext(read('public/learn-engine.js')+';Learn');
+ const results=Object.fromEntries(ids.map(id=>[id,{c:'REN-A6-applied',ok:true,at:'2026-11-27T12:00:00Z'}]));
+ const status=Learn.status(lesson,{learning:{results,read:['REN-A6-applied']}});
+ assert.equal(status.answered,6);
+ assert.equal(status.known,3);
+ assert.equal(status.read,3);
+ assert.equal(pack.guides['REN-P3'].sections.flatMap(topic=>topic.concepts).length,5);
+ assert.equal(pack.guides['REN-P4'].sections.flatMap(topic=>topic.concepts).length,4);
 });
 
 test('Renal and CVP booklet positions merge independently with stable answer IDs',async()=>{
