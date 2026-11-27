@@ -354,3 +354,18 @@ test('group CSV preview is non-mutating; apply requires a matching review and re
  assert.equal(JSON.parse(h.sqlite.prepare('SELECT assignment FROM control_students WHERE account_id=?').get(student.id).assignment).studentGroup,'M1');
  assert.equal((await h.call('students/group-import-apply',owner,{rows,token:p.token})).status,409);
 });
+
+test('the new-user walkthrough defaults off and only the owner can enable it',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const fields={readOnly:false,sharedUploads:true,reports:true,resourceLibrary:true,maintenance:''};
+ const enabled=async()=>(await (await h.call('student/status',student)).json()).flags.newUserWalkthrough;
+ assert.equal(await enabled(),false);
+ assert.equal((await h.call('site/save',student,{...fields,newUserWalkthrough:true})).status,403);
+ await h.challenge();
+ assert.equal((await h.call('site/save',owner,{...fields,newUserWalkthrough:true})).status,200);
+ assert.equal(await enabled(),true);
+ assert.equal((await h.call('site/save',owner,fields)).status,200);
+ assert.equal(await enabled(),true);
+ assert.equal((await h.call('site/save',owner,{...fields,newUserWalkthrough:false})).status,200);
+ assert.equal(await enabled(),false);
+});

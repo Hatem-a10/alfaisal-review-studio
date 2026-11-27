@@ -108,7 +108,7 @@ const walkthroughSteps=[
  ['Practise','Use Booklet for past questions and lecture-by-lecture progress. Open Practice for timed mocks and previous assessments.'],
  ['Plan','Check your classes in Schedule. Open More for My Study Plan, the 3D Anatomy Lab, Microscope Lab, and Anki.'],
 ];
-export function walkthrough(){
+function walkthrough(){
  const existing=document.getElementById('studentWelcomeTour');
  if(existing)return Promise.resolve();
  const dialog=shell('Quick walkthrough','<section class="student-step" aria-live="polite"></section><div class="student-wizard-actions"><button type="button" data-skip-tour>Skip tutorial</button><button type="button" data-tour-back>Back</button><button type="button" class="primary" data-tour-next></button></div>');
@@ -230,8 +230,14 @@ export function setup({reset=false,items=[],reviewRecords={}}={}){
   appearance(d);
   function finish(result){
    d.close();d.remove();
-   if(managed&&!reset&&result)walkthrough().then(()=>resolve(result));
-   else resolve(result);
+   if(managed&&!reset&&result){
+    fetch('/api/control-center/student/status',{cache:'no-store',signal:AbortSignal.timeout(3000)})
+     .then(response=>response.ok?response.json():null)
+     .catch(()=>null)
+     .then(status=>status?.flags?.newUserWalkthrough===true?walkthrough():null)
+     .catch(()=>null)
+     .finally(()=>resolve(result));
+   }else resolve(result);
   }
   const cancel=()=>{Object.assign(settings,initialAppearance);applyTheme();if(reset)persist();finish(null)};
   d.addEventListener('cancel',e=>{e.preventDefault();if(reset)cancel()});

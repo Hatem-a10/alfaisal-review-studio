@@ -117,7 +117,7 @@ go=function(next){
 const selectLesson=window.chooseLesson;
 window.chooseLesson=function(id,...args){
  if(!enabled())return selectLesson(id,...args);
- if(typeof id!=='string'||!DATA.items.some(item=>item.id===id))return;
+ if(typeof id!=='string'||globalThis.reviewLessonVisible?.(id)===false||!DATA.items.some(item=>item.id===id))return;
  if(Object.hasOwn(renalTeaching.guides,id)){
   if(renalLessonId!==id&&typeof resetDeepLearning==='function')resetDeepLearning();
   const filter=lessonCourse;
@@ -166,6 +166,18 @@ render=function(...args){
   highlight();window.mountOtherTools?.();
   return;
  }
+ if(view==='learning'&&globalThis.reviewLessonVisible?.(lessonId)===false){
+  const course=context?.course||DATA.items.find(item=>item.id===lessonId)?.course;
+  const replacement=DATA.items.find(item=>item.course===course&&globalThis.reviewLessonVisible(item.id));
+  if(!replacement){
+   content.innerHTML='<h1 class="study-reader-title">Learn</h1>'+lessonCatalog()+'<p class="notice">No published lessons for this course yet.</p>';
+   return;
+  }
+  lessonId=replacement.id;
+  if(course==='REN')renalLessonId=lessonId;
+  learnTab='lesson';
+  resetDeepLearning();
+ }
  const value=legacyRender(...args);
  for(const selector of content.querySelectorAll(':scope > .workspace-course-select'))selector.remove();
  if(context&&(context.course==='CVP'||context.course==='MOL')&&!document.getElementById('xpExam')){
@@ -177,6 +189,7 @@ render=function(...args){
  if(context){highlight();window.mountOtherTools?.();}
  return value;
 };
+window.addEventListener('review-admin-role',()=>{if(view==='learning')render()});
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-workspace]');
  if(button)open(...button.dataset.workspace.split('/'));

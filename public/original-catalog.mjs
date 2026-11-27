@@ -25,10 +25,62 @@ function titleFor(id) {
 }
 
 function paperCard(s) {
- const qs=s.ids.map(originalQuestionById).filter(Boolean),figures=qs.filter(q=>q.figures?.length).length;return `<article><span class="pill">${qs.length} ${s.adapted?"practice":"original"} question${qs.length===1?'':'s'}</span><div class="original-set-title"><h3>${esc(examSetTitle(s))}</h3><button class="rename-set-button" data-rename-set="${esc(s.id)}" aria-label="Rename ${esc(examSetTitle(s))}">✎ Rename</button></div>${settings.examNames?.[s.id]?`<small>Source: ${esc(s.title)}</small>`:''}<p>${esc(s.note||'Original wording and supplied answer key.')}</p><small>${figures} question${figures===1?'':'s'} with source figures · ${qs.filter(q=>q.type==='short').length} short answers</small><button class="primary" data-original-start="${esc(s.id)}">${originalRuns[s.id]?originalRuns[s.id].finishedAt?'View saved results':'Resume saved set':s.adapted?'Open mock exam':'Open original set'}</button><details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(s.id)}">Show topics</button><div data-study-coverage-body></div></details>${s.sourceLedger?`<a href="${esc(s.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:""}${s.url&&!s.sourceInAssessment?`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${s.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:""}</article>`
+ const qs=s.ids.map(originalQuestionById).filter(Boolean),figures=qs.filter(q=>q.figures?.length).length;return `<article><div class="assessment-paper-meta"><span class="assessment-batch">${esc(titleFor(batchFor(s)))}</span><span class="pill">${qs.length} ${s.adapted?"practice":"original"} question${qs.length===1?'':'s'}</span></div><div class="original-set-title"><h3>${esc(examSetTitle(s))}</h3><button class="rename-set-button" data-rename-set="${esc(s.id)}" aria-label="Rename ${esc(examSetTitle(s))}">✎ Rename</button></div>${settings.examNames?.[s.id]?`<small>Source: ${esc(s.title)}</small>`:''}<p>${esc(s.note||'Original wording and supplied answer key.')}</p><small>${figures} question${figures===1?'':'s'} with source figures · ${qs.filter(q=>q.type==='short').length} short answers</small><button class="primary" data-original-start="${esc(s.id)}">${originalRuns[s.id]?originalRuns[s.id].finishedAt?'View saved results':'Resume saved set':s.adapted?'Open mock exam':'Open original set'}</button><details><summary>Topic coverage</summary><button type="button" data-study-coverage="${esc(s.id)}">Show topics</button><div data-study-coverage-body></div></details>${s.sourceLedger?`<a href="${esc(s.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:""}${s.url&&!s.sourceInAssessment?`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${s.id==='cvp-working-a13-p15'?'Source text & figures':'Full original PDF'} ↗</a>`:""}</article>`
 }
 
-const kinds=[['all','All'],['past','Exams'],['tbl','TBLs'],['other','Other']];
+const kinds=[['all','All'],['other','Other'],['past','Exams'],['tbl','TBLs']];
+
+function assessmentFamily(set,kind){
+ const label=set.title||'';
+ if(kind==='tbl'){
+  const number=Number(label.match(/\bTBL[\s-]*(\d+)/i)?.[1]||set.id?.match(/(?:^|-)tbl-(\d+)$/i)?.[1]);
+  return number?{title:'TBL '+number,number}:{title:'Other TBL material'};
+ }
+ if(/\b(?:ospe|practical)\b/i.test(label))return {title:'OSPE & practical exams'};
+ if(/\bmid[\s-]*term\b/i.test(label))return {title:'Midterm'};
+ if(/\bfinal\b/i.test(label))return {title:'Final exam'};
+ return {title:label};
+}
+
+export function assessmentGroups(sets,schedule=[],date='',minute=0){
+ const recent=(a,b)=>(Number(batchFor(b))||0)-(Number(batchFor(a))||0);
+ const ordered=[...sets].sort(recent);
+ const other=ordered.filter(set=>catalogKind(set)==='other');
+ const groups=new Map();
+ for(const set of ordered){
+  const kind=catalogKind(set);
+  if(kind==='other')continue;
+  const {title,number}=assessmentFamily(set,kind),key=kind+':'+title;
+  if(!groups.has(key))groups.set(key,{title,number,kind,sets:[]});
+  groups.get(key).sets.push(set);
+ }
+ const upcoming=event=>event.date>date||event.date===date&&event.endMinute>minute;
+ const byDate=(a,b)=>a.date.localeCompare(b.date)||a.endMinute-b.endMinute;
+ const scheduled=schedule.filter(event=>event.kind==='tbl'&&event.number&&!event.hubCustom);
+ const tblDates=new Map();
+ for(const event of scheduled){
+  const previous=tblDates.get(event.number);
+  if(!previous||upcoming(event)&&(!upcoming(previous)||byDate(event,previous)<0)||
+     !upcoming(event)&&!upcoming(previous)&&byDate(event,previous)>0)tblDates.set(event.number,event);
+ }
+ const future=[...tblDates.values()].filter(upcoming).sort(byDate);
+ const nextNumber=future[0]?.number;
+ const exams=[...groups.values()].filter(group=>group.kind==='past');
+ const tbls=[...groups.values()].filter(group=>group.kind==='tbl').sort((a,b)=>{
+  const left=tblDates.get(a.number),right=tblDates.get(b.number);
+  const leftFuture=left&&upcoming(left),rightFuture=right&&upcoming(right);
+  if(Boolean(leftFuture)!==Boolean(rightFuture))return leftFuture?-1:1;
+  if(left&&right&&left.date!==right.date)return leftFuture?left.date.localeCompare(right.date):right.date.localeCompare(left.date);
+  if(Boolean(left)!==Boolean(right))return left?-1:1;
+  return (a.number??Infinity)-(b.number??Infinity);
+ });
+ const next=nextNumber?tbls.find(group=>group.number===nextNumber):null;
+ if(next){next.upcoming=true;next.date=tblDates.get(nextNumber).date;}
+ return [
+  ...(other.length?[{kind:'other',title:'Other',sets:other}]:[]),
+  ...(next?[next]:[]),...exams,...tbls.filter(group=>group!==next),
+ ];
+}
 
 export function catalog() {
  const scope=globalThis.reviewCourseScope;
@@ -57,17 +109,19 @@ function mount(sets) {
  const results=panel.querySelector('[data-assessment-results]');
  const count=panel.querySelector('[data-assessment-count]');
  const types=Array.from(panel.querySelectorAll('[data-assessment-kind]'));
- const ordered=[...sets].sort((a,b)=>(Number(batchFor(b))||0)-(Number(batchFor(a))||0));
+ const schedule=AssessmentPlan.catalog(DATA.events,DATA.items).filter(event=>event.course===selectedCourse);
  function paint(){
+  const clock=assessmentClock();
   const term=search.trim().toLowerCase();
-  const filtered=ordered.filter(set=>(selectedBatch==='all'||batchFor(set)===selectedBatch)
+  const filtered=sets.filter(set=>(selectedBatch==='all'||batchFor(set)===selectedBatch)
    &&(selectedKind==='all'||selectedKind===catalogKind(set))
    &&[examSetTitle(set),set.title,set.note].some(value=>String(value||'').toLowerCase().includes(term)));
   count.textContent=filtered.length+(filtered.length===1?' assessment':' assessments');
-  results.innerHTML=kinds.slice(1).map(([id,label])=>{
-   const group=filtered.filter(set=>catalogKind(set)===id);
-   return group.length?`<section class="assessment-library-group"><h2>${label}</h2><div class="original-set-grid">${group.map(paperCard).join('')}</div></section>`:'';
-  }).join('')||'<p class="notice">No assessments match these filters.</p>';
+  results.innerHTML=assessmentGroups(filtered,schedule,clock.date,clock.minute).map(group=>`
+   <section class="assessment-library-group" data-assessment-family="${group.kind}" ${group.upcoming?'data-upcoming':''}>
+    <header><h2>${esc(group.title)}</h2>${group.upcoming?`<span>Upcoming · ${esc(fmt(group.date))}</span>`:''}</header>
+    <div class="original-set-grid">${group.sets.map(paperCard).join('')}</div>
+   </section>`).join('')||'<p class="notice">No assessments match these filters.</p>';
   for(const button of types)button.setAttribute('aria-pressed',String(button.dataset.assessmentKind===selectedKind));
  }
  panel.querySelector('#originalSearch').addEventListener('input',event=>{search=event.target.value;paint()});

@@ -190,13 +190,6 @@ function scheduleAlerts(){
  const describe=event=>event?[event.date||event.day,[event.startTime,event.endTime].filter(Boolean).join('–'),event.room,[event.studentGroup,event.studentSection,event.labGroup].filter(Boolean).join(' / ')].filter(Boolean).join(' · '):'Outside your schedule';
  html('studyNextSchedule','<h2>Schedule changes</h2><ul>'+rows.map(change=>`<li><strong>${esc(change.title)}</strong> · ${esc(describe(change.previous))} → ${esc(describe(change.next))}</li>`).join('')+'</ul><button data-study-dismiss-schedule>Dismiss</button>');
 }
-function openWelcomeTour(){
- return import('/student-profile.mjs?v=5').then(module=>module.walkthrough());
-}
-function tourEntry(){
- const settings=document.querySelector('#siteAdmin .admin-frame');
- if(settings&&!settings.querySelector('[data-study-tour]'))settings.insertAdjacentHTML('beforeend','<button type="button" data-study-tour>Replay tutorial</button>');
-}
 function firstLessonControls(){
  const main=document.querySelector('.learning-main');
  if(!main||view!=='learning'||learnTab!=='lesson')return;
@@ -274,7 +267,7 @@ function paint(){
  if(document.documentElement.dataset.boot!=='ready')return;
  if(!document.getElementById('studySyncDetails'))window.reviewPaintSyncDetails();
  if(view==='dashboard'){resumeCard();scheduleAlerts();}
- tourEntry();firstLessonControls();
+ firstLessonControls();
  if(view==='calendar'){
   scheduleAlerts();
   if(settings.groupConfigured&&settings.labGroupConfigured&&!settings.labGroup&&window.REVIEW_STUDIO_FRESH_ACCOUNTS)
@@ -292,7 +285,7 @@ function paint(){
 const before=render;render=function(...args){const result=before.apply(this,args);paint();return result;};
 window.addEventListener('review:academic-config',paint);
 const actionHandlers={
- 'tour':openWelcomeTour,'notebook':openNotebook,
+ 'notebook':openNotebook,
  'open-schedule':()=>go('calendar'),
  'lab-settings':()=>document.getElementById('openSiteAdmin')?.click(),
  'sync-edit':()=>itemById(issue?.recordId)&&openEdit(issue.recordId),

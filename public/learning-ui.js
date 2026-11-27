@@ -2,6 +2,8 @@
 let guideTopic=0,guideTopicLesson=null,objectiveCardIndex=0;
 let deepMode='guide',conceptBatch=null,recallAnswers={},recallFeedback={};
 const guideFor=id=>typeof TEACHING!=='undefined'?(TEACHING.guides?.[id]||TEACHING[id]):null;
+function reviewLessonVisible(id){return window.reviewAdmin===true||!guideFor(id)?.underDevelopment}
+function lessonConceptCount(id){return objectiveCards(guideFor(id)?.sections||[]).length}
 function resetDeepLearning(){guideTopic=0;objectiveCardIndex=0;guideTopicLesson=null;deepMode='guide';conceptBatch=null;recallAnswers={};recallFeedback={}}
 const staticGuideParagraphs=new WeakMap();
 // A5-143: memoize identical text-only teaching paragraphs by the original array;
@@ -42,7 +44,7 @@ function objectiveConcepts(section){
  const evidence=note=>'<a href="'+esc(note.url)+'" target="_blank" rel="noopener noreferrer">Recording · '+esc(note.time)+'</a>';
  return (cue?'<aside class="exam-focus"><strong>★ Explicit lecturer question · '+esc(cue.label)+'</strong><p>'+esc(cue.text)+'</p>'+evidence(cue)+'</aside>':'')
   +(scope?'<aside class="notice"><strong>'+esc(scope.label)+'</strong><p>'+esc(scope.text)+'</p>'+evidence(scope)+'</aside>':'')
-  +(section.concepts?.map(concept=>'<p class="renal-concept">'+esc(concept.text)+'</p>'+
+  +(section.concepts?.map(concept=>'<div class="renal-concept"><h3>'+esc(concept.title)+'</h3><p>'+esc(concept.text)+'</p></div>'+
    (concept.figure?guideFigure(concept.figure,concept.title):'')).join('')||'');
 }
 function transcriptReviewMarkup(review){

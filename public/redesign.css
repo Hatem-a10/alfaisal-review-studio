@@ -581,27 +581,46 @@ html:root body:not(.xp-exam-active) .booklet-toolbar{display:flex;align-items:ce
 html:root body:not(.xp-exam-active) .booklet-toolbar :is(.practice-back,.workspace-course-select){margin:0}
 html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{order:1;margin-inline-start:auto}
 .renal-concept{line-height:1.65}
+.renal-concept h3{font-size:1rem;margin:1em 0 .25em}
+.renal-concept p,.reader-concept-count{margin-top:0}
 .coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
-/* Keep every card of a given assessment type on the same palette. */
-.countdown-card[data-assessment-type="exams"]{--count-accent:#6666bb}
-.countdown-card[data-assessment-type="tbls"]{--count-accent:#267e86}
-.countdown-card[data-assessment-type="ospe"]{--count-accent:#a16b3e}
-.countdown-card[data-assessment-type="starts"]{--count-accent:#a25d83}
-.countdown-card[data-assessment-type="other"]{--count-accent:#66758d}
+/* Assessment palettes carry through the date, timer and card edge. */
+.countdown-card[data-assessment-type="exams"]{--count-accent:#b8294b;--count-deep:#57102b;--count-highlight:#e86a7c}
+.countdown-card[data-assessment-type="tbls"]{--count-accent:#08767a;--count-deep:#123949;--count-highlight:#5ad0bd}
+.countdown-card[data-assessment-type="ospe"]{--count-accent:#9c581e;--count-deep:#56290d;--count-highlight:#e8a14c}
+.countdown-card[data-assessment-type="starts"]{--count-accent:#7142b5;--count-deep:#341d64;--count-highlight:#af90f5}
+.countdown-card[data-assessment-type="other"]{--count-accent:#416197;--count-deep:#1c3057;--count-highlight:#8ba9ec}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- background:linear-gradient(125deg,color-mix(in srgb,var(--count-accent) 24%,var(--rs-surface)),var(--rs-surface) 84%);
- border:1px solid color-mix(in srgb,var(--count-accent) 35%,var(--rs-line));
+ --count-ink:color-mix(in srgb,var(--count-accent) 55%,var(--rs-ink));
+ --count-line:color-mix(in srgb,var(--count-accent) 33%,var(--rs-line));
+ background:radial-gradient(125% 140% at 100% 0%,color-mix(in srgb,var(--count-highlight) 24%,var(--rs-surface)),transparent 66%),var(--rs-surface);
+ border:1px solid var(--count-line);
+ border-block-start:3px solid var(--count-accent);
  color:var(--rs-ink);
  outline:0;
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,p,span,strong,small,.countdown-date,.countdown-unit,.countdown-unit *){
- color:var(--rs-ink);
-}
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{display:block;opacity:.12}
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(.countdown-date,.countdown-card-top,.countdown-unit b){color:var(--count-ink)}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(.course-token,.countdown-unit){
- background:color-mix(in srgb,var(--count-accent) 14%,var(--rs-surface));
- border-color:color-mix(in srgb,var(--count-accent) 28%,var(--rs-line));
+ background:color-mix(in srgb,var(--count-accent) 9%,var(--rs-surface));
+ border-color:var(--count-line);
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{display:none}
+html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type]{
+ background:radial-gradient(ellipse at 100% 0%,color-mix(in srgb,var(--count-highlight) 42%,transparent),transparent 66%),linear-gradient(115deg,var(--count-deep),var(--count-accent));
+ border-block-start-color:var(--count-highlight);
+}
+html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type]::before{filter:none;opacity:.48}
+html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type] :is(h2,p,span,strong,b,small,.countdown-card-bottom){
+ color:#fff;
+}
+html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type] :is(.course-token,.countdown-unit){
+ background:rgb(0 0 0 / .18);
+ border-color:rgb(255 255 255 / .32);
+}
+html:root body:not(.xp-exam-active) #content .countdown-card.event-past[class*=stain-][data-assessment-type]{
+ background:var(--rs-surface);
+ border-block-start-color:var(--count-line);
+}
 html:root[data-accent=auto] body:not(.xp-exam-active) .home-spotlight[class*=assessment-theme]{background:var(--rs-grad)}
 
 /* Learn and Booklet readers share the site's surface and accent tokens. */
@@ -684,15 +703,24 @@ html:root body:not(.xp-exam-active) .booklet-shortcuts kbd{font:inherit;font-wei
 }
 
 /* The timetable uses neutral controls so event categories carry the color. */
-html:root body:not(.xp-exam-active) .schedule-page{--accent:var(--rs-muted);--accent-text:var(--rs-ink);--accent-border:var(--rs-line-strong);--rs-accent-tint:var(--rs-sunken)}
-html:root body:not(.xp-exam-active) .schedule-page .schedule-hero{margin-block:24px 16px;gap:16px}
+html:root body:not(.xp-exam-active) .schedule-page .schedule-hero{
+ margin-block:24px 16px;gap:16px;padding:clamp(14px,2.4vw,26px);
+ border:1px solid var(--rs-line);border-inline-start:4px solid var(--accent);
+ border-radius:14px;background:linear-gradient(110deg,var(--rs-accent-tint),var(--rs-surface) 75%);
+}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-hero h1{margin:0 0 6px}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-hero p{margin:0 0 6px;color:var(--rs-muted)}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-group{display:inline-block;font-size:.85rem;font-weight:650;color:var(--rs-ink-2)}
-html:root body:not(.xp-exam-active) .schedule-page :is(#expandSchedule,.schedule-week-picker .selected,.schedule-mobile-picker .selected,.campus-day-head.day-current){background:var(--rs-sunken);border:1px solid var(--rs-line-strong);color:var(--rs-ink);box-shadow:none}
+html:root body:not(.xp-exam-active) .schedule-page :is(.schedule-week-picker .selected,.schedule-mobile-picker .selected,.campus-day-head.day-current){
+ background:var(--rs-accent-tint);border:1px solid var(--accent-border);color:var(--rs-ink);box-shadow:inset 0 2px var(--accent)
+}
+html:root body:not(.xp-exam-active) .schedule-page .campus-day-head.day-current :is(span,small){color:var(--rs-ink-2)}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-toolbar{display:flex;align-items:center;justify-content:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:16px}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-scroll{border-color:var(--rs-line);box-shadow:none}
-html:root body:not(.xp-exam-active) .schedule-page .campus-day-column.column-current{background:var(--rs-surface)}
+html:root body:not(.xp-exam-active) .schedule-page .campus-day-column.column-current{
+ background:repeating-linear-gradient(to bottom,var(--rs-accent-tint) 0 calc(var(--hour-height) - 1px),var(--rs-line) calc(var(--hour-height) - 1px) var(--hour-height)),var(--rs-surface);
+}
+html:root body:not(.xp-exam-active) .schedule-page .campus-event{box-shadow:inset 3px 0 rgb(255 255 255 / .25),0 2px 5px rgb(0 0 0 / .1)}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-legend{gap:8px 16px}
 @media(max-width:700px){
  html:root body:not(.xp-exam-active) .schedule-page .schedule-panel:has(.schedule-agenda-primary) .schedule-scroll,
@@ -717,7 +745,20 @@ html:root body:not(.xp-exam-active) :is(#content .practice-start .practice-tool-
 .assessment-library-controls label{display:grid;gap:5px}
 .assessment-library-controls input{min-width:min(14rem,100%);max-width:100%}
 .assessment-library-controls button[aria-pressed=true]{border-color:var(--accent-border);background:var(--accent-soft)}
-.assessment-library-group+ .assessment-library-group{margin-top:24px}
+.assessment-library-group+ .assessment-library-group{margin-top:28px}
+.assessment-library-group>header{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+ margin:0 0 12px;padding:0 0 9px;border-bottom:1px solid var(--line);
+}
+.assessment-library-group>header h2{margin:0;font-size:1.2rem}
+.assessment-library-group[data-upcoming]>header{
+ padding:10px 12px;border:1px solid var(--accent-border);
+ border-inline-start:4px solid var(--accent);border-radius:8px;background:var(--accent-soft);
+}
+.assessment-library-group>header span,.assessment-batch{font-size:.83rem;font-weight:700;color:var(--accent-text)}
+.assessment-paper-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.assessment-library .original-set-grid{grid-template-columns:repeat(auto-fill,minmax(min(225px,100%),1fr))}
+.assessment-library .original-set-grid>article{min-width:0;overflow-wrap:anywhere}
 
 .booklet-overview-actions{display:flex;align-items:start;gap:10px;flex-wrap:wrap}
 .booklet-progress-page [data-state=correct]{--progress-colour:#72bd91;--progress-ink:#102e21}

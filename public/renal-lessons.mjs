@@ -176,7 +176,10 @@ export function renalTeachingPack(entries=renalLessons) {
    const recordedExamCue=entry.code==='A6'?{conceptTitle:concepts[1].title,label:'Identify the lining of a blood vessel',text:'Name it as endothelium (simple squamous epithelium). The lecturer explicitly said she would ask students to identify this lining.',url:'https://www.youtube.com/watch?v=GxTmFVtMokc&t=1513s',time:'25:13'}:null;
    return {id:concept,concept,title:topic.title,body:topic.body,keyPoints:topic.remember,pitfalls:topic.trap?[topic.trap]:[],references,concepts,figure,transcript,transcriptReview,scopeNote,recordedExamCue};
   });
-  guides[id]={underDevelopment:!transcript&&!sections.some(section=>section.transcriptReview),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
+  const concepts=sections.flatMap(section=>section.concepts);
+  const coveredObjectives=new Set(concepts.map(concept=>concept.objective));
+  const hasTranscript=Boolean(transcript||sections.some(section=>section.transcriptReview));
+  guides[id]={underDevelopment:!hasTranscript||concepts.length<2||entry.objectives.some(objective=>!coveredObjectives.has(objective)),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
   lessons.push({id,scope:entry.overview,references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
  return {items,sources,lessons,guides,questions};
