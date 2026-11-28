@@ -17,7 +17,8 @@
   const date=today(),savedTasks=tasks().filter(t=>!t.done&&t.date<=date&&!(t.p===2&&state[t.x.id]?.skipThird)&&!learningStatus(t.x.id).passed),todayIds=new Set(HubDomain.lessonIdsForDay(savedTasks,date)),overdueIds=new Set(HubDomain.lessonIdsForDay(savedTasks,date,true));
   const scope=globalThis.reviewCourseScope;
   const matches=(value,x)=>{if(globalThis.reviewLessonVisible?.(x.id)===false||x.course==='REN'&&!globalThis.reviewCvpArchived?.()||scope&&x.course!==scope)return false;const p=value.startsWith('priority:')?groups.find(a=>a.course===value.slice(9)):null;return (value==='today'?todayIds.has(x.id):value==='overdue'?overdueIds.has(x.id):value==='all'?true:p?p.lectureIds.includes(x.id):x.course===value)&&(!lessonSearch||(title(x)+' '+x.code).toLowerCase().includes(lessonSearch.toLowerCase()))};
-  const all=DATA.items.filter(x=>matches(lessonCourse,x)&&(!globalThis.reviewCvpArchived?.()||scope==='CVP'||x.course!=='CVP'));
+  const all=DATA.items.filter(x=>matches(lessonCourse,x)&&(!globalThis.reviewCvpArchived?.()||scope==='CVP'||x.course!=='CVP'))
+   .sort((a,b)=>Number(b.id==='REN-TBL1')-Number(a.id==='REN-TBL1'));
   const option=(value,label)=>{const count=DATA.items.filter(x=>matches(value,x)).length;return `<option value="${esc(value)}" ${lessonCourse===value?'selected':''}>${esc(label)} · ${count}</option>`};
   const renalOption=globalThis.reviewCvpArchived?.()?option('REN','REN 123'):'';
   const menu=renalOption+option('today','Today’s lessons')+option('overdue','Overdue lessons')+option('all','All courses')+['MOL','CVP'].filter(c=>c!=='CVP'||!globalThis.reviewCvpArchived?.()).map(c=>{const a=groups.find(a=>a.course===c);return `<optgroup label="${c} ${c==='CVP'?'112':'114'}">${option(c,'All '+c+' lessons')}${a?option('priority:'+c,a.label+' · '+(daysLeft(a)===0?'Today':daysLeft(a)+' days')):''}</optgroup>`}).join('');
