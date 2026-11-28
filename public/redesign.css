@@ -579,6 +579,7 @@ html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data
  background:radial-gradient(ellipse at 101% -25%,var(--dusk-light),transparent 73%),linear-gradient(140deg,#29233c,#39304d);
  position:relative;overflow:hidden;border:1px solid var(--dusk-border);outline:0;color:#f8f5ff;
 }
+html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type]::before{content:none}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,b,.countdown-card-top){color:#f8f5ff}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(.countdown-date,.countdown-unit small,.countdown-card-bottom span,.countdown-elapsed){color:#e1daee}
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .course-token{
