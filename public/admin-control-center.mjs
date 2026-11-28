@@ -178,6 +178,16 @@ function confirm(title, wording) {return openForm(title,[node('p',wording)],'Con
 const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library',archiveCvp:'Enable Archive for all users',newUserWalkthrough:'Enable walkthrough for new users'};
 
 let active;
+export async function saveScheduleDefaultColors(colors){
+ const options=json(colors);
+ try{return await request('site/schedule-colors',options);}
+ catch(error){
+  if(error.status!==428)throw error;
+  const verified=await openForm('Confirm owner access',[field('phrase','Admin phrase',{type:'password',required:true})],'Verify',values=>request('challenge',json(values)));
+  return verified?request('site/schedule-colors',options):null;
+ }
+}
+
 export async function openAdminCenter(){
  if(active?.open)return;
  const access=await request('access');

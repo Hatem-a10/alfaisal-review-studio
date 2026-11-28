@@ -17,7 +17,7 @@
  const tools=[...(extras?.querySelectorAll('button[data-view]')||[])].map(toolFrom);
  tools.push(microscope);
  tools.sort((a,b)=>Number(b.id==='activity')-Number(a.id==='activity'));
- const ids=new Set([...tools.map(t=>t.id).filter(id=>id!=='methods'&&!desktopOnly.includes(id)),'lectures','weakness']);
+ const ids=new Set([...tools.map(t=>t.id).filter(id=>!['methods','weakness'].includes(id)&&!desktopOnly.includes(id)),'lectures']);
  const other=document.createElement('button');other.type='button';other.id='otherToolsNav';
  other.innerHTML=otherIcon+'<span>More</span>';other.setAttribute('aria-haspopup','dialog');
  const secondary=[...nav.querySelectorAll(':scope > button[data-view]')].filter(b=>!mobileRoutes.includes(b.dataset.view)&&!desktopOnly.includes(b.dataset.view)).map(toolFrom);
@@ -71,7 +71,7 @@
    microscopeCleanup?.();microscopeCleanup=null;result=before.apply(this,args);
   }
   window.mountOtherTools();return result};
- function restore(){const hash=location.hash.slice(1),id=hash.startsWith('other/')?hash.slice(6):hash==='other'?selected:null;if(ids.has(id)){selectOther(id);if(id==='weakness'&&typeof filters==='object'&&filters)filters.status='weak';else if(id==='lectures'&&typeof filters==='object'&&filters?.status==='weak')filters.status='all';if(view!==id){view=id;render()}}}
+ function restore(){const hash=location.hash.slice(1),id=hash.startsWith('other/')?hash.slice(6):hash==='other'?selected:null;if(ids.has(id)){selectOther(id);if(id==='lectures'&&typeof filters==='object'&&filters?.status==='weak')filters.status='all';if(view!==id){view=id;render()}}}
  for(const e of ['popstate','hashchange'])window.addEventListener(e,restore);restore();
  const mobile=document.querySelector('.ui-mobile-nav');
  if(!mobile)return;
@@ -95,8 +95,8 @@
     ...(anatomy?[toolFrom(anatomy)]:[]),microscope,
     {id:'anki',label:'Anki',icon:navGlyph('cards')},
    ]],
-   ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review notes & dates',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:countdownIcon}]],
-   ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('activity')},{id:'grades',label:'Grade Calculator',icon:navGlyph('calculator')},{id:'weakness',label:'Study priorities',icon:navGlyph('weakness')}]],
+   ['Plan',[{id:'planner',label:'My Study Plan',icon:navGlyph('planner')},{id:'lectures',label:'Review Tracker',icon:navGlyph('list')},{id:'countdowns',label:'Countdowns',icon:countdownIcon}]],
+   ['Progress',[{id:'activity',label:'Study Activity',icon:navGlyph('activity')},{id:'grades',label:'Grade Calculator',icon:navGlyph('calculator')}]],
    ['Resources',[{id:'library',label:'Library',icon:navGlyph('library')},...(window.reviewArchiveEnabled?.()?[{id:'archive',label:'Archive',icon:navGlyph('archive')}]:[])]],
   ];
   // OSPE and Labs live in Learn; Booklet has its own sidebar link (and appears here on phones).

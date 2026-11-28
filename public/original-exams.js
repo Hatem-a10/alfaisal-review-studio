@@ -45,7 +45,7 @@ function loadCourseAssessments(course){
   if(midterm){midterm.batch=18;midterm.title='18th batch · recalled MOL midterm';}
   for(const set of ORIGINAL_EXAMS.sets)if(['mol-exam-1','mol-exam-2','mol-exam-16'].includes(set.id))set.sourceInAssessment=true;
  }
- fetch('/api/site-assets/'+config.assessmentPath+(course==='REN'?'?v=2':'')).then(response=>{
+ fetch('/api/site-assets/'+config.assessmentPath+(course==='REN'?'?v=3':'')).then(response=>{
   if(!response.ok)throw Error('Assessments could not load.');
   return response.json();
  }).then(data=>{

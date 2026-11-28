@@ -85,7 +85,7 @@ html:root body:not(.xp-exam-active){
   & #mainSidebar :is(.sync-widget,#syncWidget) :is(strong,span,small,#syncSummary,#siteVersion){color:var(--rs-ink-2)}
   & #mainSidebar .profile-upload-icon{background:var(--rs-surface);color:var(--rs-ink);border-color:var(--rs-line-strong)}
   & #mainSidebar .student{letter-spacing:0;text-transform:none;font-size:.8rem;color:var(--rs-muted)}
-  & #mainSidebar .student strong{color:var(--rs-ink-2)}
+  & #mainSidebar .student strong{color:var(--rs-ink-2);font-size:.95rem;font-weight:680;line-height:1.25}
   & .sidebar-toggle{background:var(--rs-surface);border:1px solid var(--rs-line);color:var(--rs-ink-2);border-radius:var(--rs-r-sm)}
   & #content{background:transparent}
 
@@ -138,9 +138,8 @@ html:root body:not(.xp-exam-active){
 
   /* ---------- Home ---------- */
   & .home-top h1::after{color:var(--rs-eosin)}
-  /* Eight histology stains. Each upcoming assessment (home) and countdown card (by position)
-     gets its own: a = deep base, b = mid tone, c = highlight. */
-  & :is(.home-spotlight,.countdown-card){--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f}
+  /* Eight histology stains for the Home spotlight. */
+  & .home-spotlight{--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f}
   & :is(.assessment-theme-0,.stain-0){--st-a:#221b57;--st-b:#3a2f86;--st-c:#d9547f} /* H&E */
   & :is(.assessment-theme-1,.stain-1){--st-a:#0f2547;--st-b:#245796;--st-c:#c2414f} /* Masson trichrome */
   & :is(.assessment-theme-2,.stain-2){--st-a:#3d0f33;--st-b:#8e2a6c;--st-c:#db66ad} /* PAS */
@@ -162,7 +161,7 @@ html:root body:not(.xp-exam-active){
       radial-gradient(110% 90% at 95% 5%,color-mix(in srgb,var(--st-c) 85%,transparent),transparent 62%),
       linear-gradient(135deg,var(--st-a) 0%,var(--st-b) 26%,var(--st-c) 88%)
   }
-  & :is(.home-spotlight,.countdown-card)::before{
+  & .home-spotlight::before{
     /* Stained-slide texture: each stain has its own histology motif (--st-img), fading toward the text side. */
     content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;
     background-image:var(--st-img);
@@ -171,7 +170,7 @@ html:root body:not(.xp-exam-active){
   }
   /* Histology motif per stain: H&E nuclei, trichrome collagen, PAS goblet cells, toluidine mast-cell
      granules, reticulin network, light-green collagen strands, Giemsa blood smear, oil red O lipid. */
-  & :is(.home-spotlight,.countdown-card){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='%23fff' fill-opacity='.30'%3E%3Cellipse cx='22' cy='30' rx='7.0' ry='4.9' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5.0' ry='3.5' transform='rotate(0 88 18)'/%3E%3Cellipse cx='150' cy='44' rx='8.0' ry='5.6' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='210' cy='22' rx='4.5' ry='3.1' transform='rotate(0 210 22)'/%3E%3Cellipse cx='54' cy='92' rx='6.0' ry='4.2' transform='rotate(40 54 92)'/%3E%3Cellipse cx='122' cy='104' rx='4.0' ry='2.8' transform='rotate(0 122 104)'/%3E%3Cellipse cx='188' cy='118' rx='7.0' ry='4.9' transform='rotate(10 188 118)'/%3E%3Cellipse cx='30' cy='160' rx='5.0' ry='3.5' transform='rotate(0 30 160)'/%3E%3Cellipse cx='100' cy='166' rx='7.5' ry='5.2' transform='rotate(-30 100 166)'/%3E%3Cellipse cx='168' cy='178' rx='4.0' ry='2.8' transform='rotate(0 168 178)'/%3E%3Cellipse cx='226' cy='82' rx='5.0' ry='3.5' transform='rotate(20 226 82)'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.16'%3E%3Cpath d='M0 66c40-14 70 10 110-2s74-30 130-12'/%3E%3Cpath d='M0 138c36-10 72 12 112 0s78-24 128-6'/%3E%3C/g%3E%3C/svg%3E")}
+  & .home-spotlight{--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='%23fff' fill-opacity='.30'%3E%3Cellipse cx='22' cy='30' rx='7.0' ry='4.9' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5.0' ry='3.5' transform='rotate(0 88 18)'/%3E%3Cellipse cx='150' cy='44' rx='8.0' ry='5.6' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='210' cy='22' rx='4.5' ry='3.1' transform='rotate(0 210 22)'/%3E%3Cellipse cx='54' cy='92' rx='6.0' ry='4.2' transform='rotate(40 54 92)'/%3E%3Cellipse cx='122' cy='104' rx='4.0' ry='2.8' transform='rotate(0 122 104)'/%3E%3Cellipse cx='188' cy='118' rx='7.0' ry='4.9' transform='rotate(10 188 118)'/%3E%3Cellipse cx='30' cy='160' rx='5.0' ry='3.5' transform='rotate(0 30 160)'/%3E%3Cellipse cx='100' cy='166' rx='7.5' ry='5.2' transform='rotate(-30 100 166)'/%3E%3Cellipse cx='168' cy='178' rx='4.0' ry='2.8' transform='rotate(0 168 178)'/%3E%3Cellipse cx='226' cy='82' rx='5.0' ry='3.5' transform='rotate(20 226 82)'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.16'%3E%3Cpath d='M0 66c40-14 70 10 110-2s74-30 130-12'/%3E%3Cpath d='M0 138c36-10 72 12 112 0s78-24 128-6'/%3E%3C/g%3E%3C/svg%3E")}
   & :is(.assessment-theme-0,.stain-0){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='%23fff' fill-opacity='.30'%3E%3Cellipse cx='22' cy='30' rx='7.0' ry='4.9' transform='rotate(18 22 30)'/%3E%3Cellipse cx='88' cy='18' rx='5.0' ry='3.5' transform='rotate(0 88 18)'/%3E%3Cellipse cx='150' cy='44' rx='8.0' ry='5.6' transform='rotate(-25 150 44)'/%3E%3Cellipse cx='210' cy='22' rx='4.5' ry='3.1' transform='rotate(0 210 22)'/%3E%3Cellipse cx='54' cy='92' rx='6.0' ry='4.2' transform='rotate(40 54 92)'/%3E%3Cellipse cx='122' cy='104' rx='4.0' ry='2.8' transform='rotate(0 122 104)'/%3E%3Cellipse cx='188' cy='118' rx='7.0' ry='4.9' transform='rotate(10 188 118)'/%3E%3Cellipse cx='30' cy='160' rx='5.0' ry='3.5' transform='rotate(0 30 160)'/%3E%3Cellipse cx='100' cy='166' rx='7.5' ry='5.2' transform='rotate(-30 100 166)'/%3E%3Cellipse cx='168' cy='178' rx='4.0' ry='2.8' transform='rotate(0 168 178)'/%3E%3Cellipse cx='226' cy='82' rx='5.0' ry='3.5' transform='rotate(20 226 82)'/%3E%3C/g%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.16'%3E%3Cpath d='M0 66c40-14 70 10 110-2s74-30 130-12'/%3E%3Cpath d='M0 138c36-10 72 12 112 0s78-24 128-6'/%3E%3C/g%3E%3C/svg%3E")}
   & :is(.assessment-theme-1,.stain-1){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='none' stroke='%23fff' stroke-linecap='round'%3E%3Cpath stroke-opacity='0.22' stroke-width='2.0' d='M-10 24 C40 10 80 38 120 24 S200 10 250 24'/%3E%3Cpath stroke-opacity='0.14' stroke-width='1.2' d='M-10 36 C40 22 80 50 120 36 S200 22 250 36'/%3E%3Cpath stroke-opacity='0.24' stroke-width='2.4' d='M-10 70 C40 56 80 84 120 70 S200 56 250 70'/%3E%3Cpath stroke-opacity='0.12' stroke-width='1.0' d='M-10 84 C40 70 80 98 120 84 S200 70 250 84'/%3E%3Cpath stroke-opacity='0.20' stroke-width='2.0' d='M-10 120 C40 106 80 134 120 120 S200 106 250 120'/%3E%3Cpath stroke-opacity='0.14' stroke-width='1.2' d='M-10 132 C40 118 80 146 120 132 S200 118 250 132'/%3E%3Cpath stroke-opacity='0.22' stroke-width='2.2' d='M-10 168 C40 154 80 182 120 168 S200 154 250 168'/%3E%3Cpath stroke-opacity='0.12' stroke-width='1.0' d='M-10 182 C40 168 80 196 120 182 S200 168 250 182'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='.30'%3E%3Ccircle cx='60' cy='52' r='4'/%3E%3Ccircle cx='176' cy='104' r='4.5'/%3E%3Ccircle cx='112' cy='152' r='3.5'/%3E%3C/g%3E%3C/svg%3E")}
   & :is(.assessment-theme-2,.stain-2){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.18' stroke-width='1.4'%3E%3Cpath d='M10 76 C70 44 170 44 230 80'/%3E%3Cpath d='M20 166 C80 134 170 134 230 168'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='.26'%3E%3Cpath d='M30 60 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M60 52 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M92 48 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M124 50 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M156 56 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M188 64 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M40 150 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M80 142 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M120 140 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M160 144 q8 -18 16 0 q-8 10 -16 0z'/%3E%3Cpath d='M200 152 q8 -18 16 0 q-8 10 -16 0z'/%3E%3C/g%3E%3C/svg%3E")}
@@ -181,28 +180,6 @@ html:root body:not(.xp-exam-active){
   & :is(.assessment-theme-6,.stain-6){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Ccircle cx='26' cy='28' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='26' cy='28' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='70' cy='40' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='70' cy='40' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='120' cy='24' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='120' cy='24' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='176' cy='36' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='176' cy='36' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='222' cy='22' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='222' cy='22' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='40' cy='90' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='40' cy='90' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='150' cy='96' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='150' cy='96' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='206' cy='110' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='206' cy='110' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='24' cy='150' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='24' cy='150' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='80' cy='170' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='80' cy='170' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='128' cy='150' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='128' cy='150' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Ccircle cx='190' cy='176' r='11' fill='%23fff' fill-opacity='.20'/%3E%3Ccircle cx='190' cy='176' r='4.5' fill='%23000' fill-opacity='.18'/%3E%3Cg fill='%23fff' fill-opacity='.38'%3E%3Ccircle cx='96' cy='104' r='6'/%3E%3Ccircle cx='106' cy='98' r='5'/%3E%3Ccircle cx='108' cy='110' r='5.5'/%3E%3C/g%3E%3C/svg%3E")}
   & :is(.assessment-theme-7,.stain-7){--st-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' viewBox='0 0 240 200'%3E%3Cg fill='%23fff' fill-opacity='.22'%3E%3Ccircle cx='194' cy='52' r='5.0'/%3E%3Ccircle cx='114' cy='128' r='12.0'/%3E%3Ccircle cx='45' cy='69' r='5.0'/%3E%3Ccircle cx='205' cy='4' r='5.0'/%3E%3Ccircle cx='9' cy='3' r='3.0'/%3E%3Ccircle cx='187' cy='129' r='9.0'/%3E%3Ccircle cx='48' cy='131' r='7.0'/%3E%3Ccircle cx='62' cy='114' r='3.0'/%3E%3Ccircle cx='168' cy='166' r='7.0'/%3E%3Ccircle cx='168' cy='126' r='9.0'/%3E%3Ccircle cx='213' cy='100' r='9.0'/%3E%3Ccircle cx='78' cy='176' r='4.0'/%3E%3Ccircle cx='58' cy='87' r='4.0'/%3E%3Ccircle cx='213' cy='180' r='12.0'/%3E%3Ccircle cx='162' cy='35' r='7.0'/%3E%3Ccircle cx='88' cy='13' r='4.0'/%3E%3Ccircle cx='3' cy='18' r='12.0'/%3E%3Ccircle cx='189' cy='65' r='7.0'/%3E%3Ccircle cx='41' cy='14' r='3.0'/%3E%3Ccircle cx='170' cy='97' r='9.0'/%3E%3Ccircle cx='171' cy='72' r='9.0'/%3E%3Ccircle cx='62' cy='177' r='5.0'/%3E%3Ccircle cx='11' cy='117' r='4.0'/%3E%3Ccircle cx='40' cy='68' r='7.0'/%3E%3Ccircle cx='0' cy='67' r='5.0'/%3E%3Ccircle cx='84' cy='140' r='5.0'/%3E%3C/g%3E%3C/svg%3E")}
 
-  /* Countdown cards: same stain set, as a light wash so the digits stay readable. */
-  & .countdown-card[class*=stain-]{
-    position:relative;isolation:isolate;overflow:hidden;border-radius:var(--rs-r-lg);
-    border-color:color-mix(in srgb,var(--st-b) 28%,var(--rs-line));
-    background:
-      radial-gradient(85% 75% at 100% 0,color-mix(in srgb,var(--st-c) 34%,transparent),transparent 62%),
-      linear-gradient(165deg,color-mix(in srgb,var(--st-b) 30%,var(--rs-surface)) 0%,color-mix(in srgb,var(--st-b) 10%,var(--rs-surface)) 58%,var(--rs-surface) 100%)
-  }
-  & .countdown-card[class*=stain-]::before{filter:invert(1);opacity:.07;width:auto;inset:0;-webkit-mask-image:linear-gradient(100deg,transparent 35%,#000 85%);mask-image:linear-gradient(100deg,transparent 35%,#000 85%)}
-  & .countdown-card[class*=stain-] .course-token{background:color-mix(in srgb,var(--st-b) 16%,var(--rs-surface));color:color-mix(in srgb,var(--st-b) 80%,var(--rs-ink));border:0}
-  & .countdown-card[class*=stain-] .countdown-unit{background:color-mix(in srgb,var(--rs-surface) 82%,transparent);border-color:color-mix(in srgb,var(--st-b) 18%,var(--rs-line))}
-  & .countdown-card.countdown-featured[class*=stain-]{
-    color:#fff;border:0;
-    background:
-      radial-gradient(110% 90% at 95% 5%,color-mix(in srgb,var(--st-c) 85%,transparent),transparent 62%),
-      linear-gradient(135deg,var(--st-a) 0%,var(--st-b) 26%,var(--st-c) 88%)
-  }
-  & .countdown-card.countdown-featured[class*=stain-]::before{filter:none;opacity:.55}
-  & .countdown-card.countdown-featured[class*=stain-] :is(h2,p,span,strong,small,.countdown-date,.countdown-card-top,.countdown-card-bottom,.countdown-unit,.countdown-unit *){color:#fff}
-  & .countdown-card.countdown-featured[class*=stain-] .countdown-unit{background:rgb(255 255 255 / .1);border-color:rgb(255 255 255 / .18);backdrop-filter:blur(4px)}
-  & .countdown-card.countdown-featured[class*=stain-] .countdown-card-bottom{border-color:rgb(255 255 255 / .2)}
-  & .countdown-card.countdown-featured[class*=stain-] .course-token{background:rgb(255 255 255 / .16);color:#fff}
   & .home-spotlight :is(h1,h2,h3,p,strong,span,.home-countdown){color:#fff}
   & .home-spotlight :is(.home-overline,small,p){color:rgb(255 255 255 / .78)}
   & .home-spotlight .home-countdown{font-family:var(--rs-display);font-weight:800;letter-spacing:-.035em}
@@ -597,39 +574,29 @@ html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{or
 .countdown-card[data-assessment-type="starts"]{--count-accent:#8058bd}
 .countdown-card[data-assessment-type="other"]{--count-accent:#5475a8}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- --count-line:color-mix(in srgb,var(--count-accent) 32%,var(--rs-line));
- --count-fill:color-mix(in srgb,var(--count-accent) 18%,var(--rs-surface));
- --count-number-bg:#e6e7e9;
- --count-number-line:#c6c8cc;
- background:linear-gradient(132deg,var(--count-fill),color-mix(in srgb,var(--count-fill) 66%,var(--rs-surface)));
- color:var(--rs-ink);border:1px solid var(--count-line);outline:0;
+ --dusk-light:color-mix(in srgb,var(--count-accent) 42%,#3e2d54);
+ --dusk-border:color-mix(in srgb,var(--count-accent) 48%,#9c89b4);
+ background:radial-gradient(ellipse at 101% -25%,var(--dusk-light),transparent 73%),linear-gradient(140deg,#29233c,#39304d);
+ position:relative;overflow:hidden;border:1px solid var(--dusk-border);outline:0;color:#f8f5ff;
 }
-html:root[data-theme=amoled] body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- --count-fill:color-mix(in srgb,var(--count-accent) 30%,var(--rs-surface));
- --count-number-bg:#27282c;
- --count-number-line:#3e3f43;
-}
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]::before{display:none}
-html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,p,span,strong,b,small,.countdown-card-top,.countdown-card-bottom){color:var(--rs-ink)}
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(h2,b,.countdown-card-top){color:#f8f5ff}
+html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] :is(.countdown-date,.countdown-unit small,.countdown-card-bottom span,.countdown-elapsed){color:#e1daee}
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .course-token{
- background:var(--rs-sunken);color:var(--rs-ink);border:1px solid var(--rs-line);font-size:.72rem;
+ background:#e9e6ed;color:#332b41;border:1px solid #e9e6ed;font-size:.72rem;
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-card-top>span:last-child{
- background:color-mix(in srgb,var(--count-accent) 10%,var(--rs-surface));
- color:color-mix(in srgb,var(--count-accent) 46%,var(--rs-ink));padding:.3em .65em;border-radius:7px;
+ background:#241e33;color:color-mix(in srgb,var(--count-accent) 29%,#fff);border:1px solid var(--dusk-border);
+ padding:.3em .65em;border-radius:7px;
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-digits{
  margin:16px 0;max-width:none;gap:clamp(4px,1vw,10px);
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type] .countdown-unit{
- padding:9px 3px;background:var(--count-number-bg);border:1px solid var(--count-number-line);backdrop-filter:none;
+ padding:9px 3px;background:#282839;border:1px solid #79718d;backdrop-filter:none;
 }
-html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] :is(.countdown-unit small,.countdown-date,.countdown-card-bottom span){color:var(--rs-muted)}
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-unit small{font-size:clamp(.55rem,1.5vw,.67rem);letter-spacing:normal;text-transform:none;margin-top:4px}
 html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type]{
- padding:clamp(16px,3vw,30px);
- border-color:var(--count-line);border-inline-start:4px solid var(--count-accent);
- background:linear-gradient(120deg,var(--count-fill) 20%,color-mix(in srgb,var(--count-fill) 73%,var(--rs-surface)));
+ padding:clamp(16px,3vw,30px);border-inline-start:4px solid var(--dusk-border);
 }
 html:root body:not(.xp-exam-active) #content .countdown-filters{
  display:flex;gap:4px;flex-wrap:wrap;width:fit-content;max-width:100%;
@@ -646,7 +613,7 @@ html:root body:not(.xp-exam-active) #content .countdown-priority-label{letter-sp
 html:root body:not(.xp-exam-active) #content .countdown-featured :is(h2,.countdown-date){text-align:start}
 html:root body:not(.xp-exam-active) #content .countdown-featured h2{margin-top:14px}
 html:root body:not(.xp-exam-active) #content .countdown-featured .countdown-unit b{font-size:clamp(1.7rem,4vw,2.8rem)}
-html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-card-bottom{border-top-color:var(--rs-line);padding-top:10px}
+html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type] .countdown-card-bottom{border-top-color:#aea2c166;padding-top:10px}
 html:root[data-accent=auto] body:not(.xp-exam-active) .home-spotlight[class*=assessment-theme]{background:var(--rs-grad)}
 
 /* Learn and Booklet readers share the site's surface and accent tokens. */
@@ -739,7 +706,7 @@ html:root body:not(.xp-exam-active) .schedule-page .schedule-hero{
 }
 html:root body:not(.xp-exam-active) .schedule-page .schedule-hero h1{margin:0 0 6px}
 html:root body:not(.xp-exam-active) .schedule-page .schedule-hero p{margin:0 0 6px;color:var(--rs-muted)}
-html:root body:not(.xp-exam-active) .schedule-page .schedule-group{display:inline-block;font-size:.85rem;font-weight:650;color:var(--rs-ink-2)}
+html:root body:not(.xp-exam-active) .schedule-page .schedule-group{display:inline-block;font-size:1rem;font-weight:650;color:var(--rs-ink-2)}
 html:root body:not(.xp-exam-active) .schedule-page :is(.schedule-week-picker .selected,.schedule-mobile-picker .selected,.campus-day-head.day-current){
  background:var(--rs-accent-tint);border:1px solid var(--accent-border);color:var(--rs-ink);box-shadow:inset 0 2px var(--accent)
 }
@@ -887,4 +854,10 @@ html:root body:not(.xp-exam-active) #content .document-library :is([data-documen
 @media(max-width:720px){
  .document-discipline li{grid-template-columns:auto minmax(0,1fr)}
  .document-discipline .material-actions{grid-column:2;justify-content:flex-start}
+}
+
+/* Keep touch layouts at their existing scale and match the desktop 110% view. */
+@media (min-width: 1050px) {
+ html:root body:not(.xp-exam-active) { zoom: 1.1; }
+ html:root body:not(.xp-exam-active) #mainSidebar { max-height: 100%; }
 }

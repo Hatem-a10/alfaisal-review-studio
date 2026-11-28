@@ -3,7 +3,7 @@ import {archiveViews,renalViews,workspaceRoute,isCvpStudyItem} from './course-wo
 import {courses} from './course-registry.mjs';
 import {renalTeachingPack} from './renal-lessons.mjs';
 
-const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials'};
+const labels={dashboard:'Overview',learning:'Lessons',booklet:'Booklets',practice:'Practice & exams',labs:'Labs',ospe:'OSPE',library:'Materials',anatomy:'3D Anatomy Lab'};
 // A5-133: immutable course registry order is stable; compute it once, not on every selector render.
 const registryCourseEntries=Object.entries(courses);
 const orderedCourses=registryCourseEntries.slice().sort(([a],[b])=>Number(b==='REN')-Number(a==='REN'));
@@ -55,7 +55,7 @@ const archiveLink=()=>courseButton('archive','index','CVP archive');
 function archiveIndex(){
  return intro('CVP 112','Course archive','')+
   '<section class="panel"><h2>Cardiovascular & Respiratory</h2><div class="course-workspace-links">'+
-  archiveViews.map(route=>courseButton('archive',route,labels[route])).join('')+'</div></section>';
+  [...archiveViews,'anatomy'].map(route=>courseButton('archive',route,labels[route])).join('')+'</div></section>';
 }
 function show(route){
  if(route?.view==='library'&&context?.course!==route.course){libraryTab='documents';documentId=null;sourceSearch='';sourceLecture='all';}
@@ -103,7 +103,7 @@ campusWeekEvents=function(...args){
 go=function(next){
  if(!enabled()){show(null);return legacyGo(next);}
  if(next==='archive')return open('archive','index');
- if(context?.course==='CVP'&&['labs','ospe','library'].includes(next))return open('archive',next);
+ if(context?.course==='CVP'&&['labs','ospe','library','anatomy'].includes(next))return open('archive',next);
  if(context?.course==='MOL'&&['labs','library'].includes(next))return open('mol',next);
  if(next==='practice'&&originalRun&&!originalRun.finishedAt&&originalRun.setId?.startsWith('ren-'))return open('renal','practice');
  if(next==='practice'&&((etExam&&!etExam.finishedAt&&!window.reviewArchivedStudyItem(etExam))||(originalRun&&!originalRun.finishedAt&&!window.reviewArchivedStudyItem(ORIGINAL_EXAMS.sets.find(s=>s.id===originalRun.setId))))){
