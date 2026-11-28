@@ -4,7 +4,18 @@ export function resetCatalog(){
  selectedBatch='all';selectedKind='all';selectedCourse='CVP';search='';
 }
 resetCatalog();
-export function catalogKind(set){if(/shams/i.test(set.id+' '+set.title))return 'other';if(set.adapted||/^cvp19-(?:saq|ospe)-/i.test(set.id||'')||/corrected\s+booklet/i.test(set.title||''))return 'other';if(set.category==='tbl'||/\btbl\b/i.test(set.title||''))return 'tbl';if(set.category==='batch'||set.category==='exam'&&!set.adapted)return 'past';return 'other'}
+export function catalogKind(set){
+ const title=set.title||'';
+ if(set.adapted||isBookletSet(set))return 'other';
+ if(set.category==='ospe'||set.category==='saq')return set.category;
+ if(set.category==='tbl')return 'tbl';
+ if(/\b(?:ospe|practicals?)\b/i.test(title))return 'ospe';
+ if(/\b(?:saqs?|short answers?|written(?: questions| cases)?|clinical scenarios?)\b/i.test(title))return 'saq';
+ if(/shams/i.test(set.id+' '+title))return 'other';
+ if(/\btbl\b/i.test(title))return 'tbl';
+ if(set.category==='batch'||set.category==='exam')return 'past';
+ return 'other';
+}
 export function isBookletSet(set){return /^cvp19-(?!tbl)/.test(set.id||'')||/corrected\s+booklet/i.test(set.title||'')||set.source==='cvp19-corrected'}
 export function catalogCourse(set){return Object.hasOwn(courses,set.course)?set.course:/^ren(?:al)?[-_]/i.test(set.id||'')?'REN':/\bMOL\b|^mol[-_]/i.test((set.id||'')+' '+(set.title||''))?'MOL':'CVP'}
 export function visibleCatalogSets(sets,kind='all',course=selectedCourse){return (sets||[]).filter(set=>!isBookletSet(set)&&catalogCourse(set)===course&&!['other','topics'].includes(batchFor(set))&&(kind==='all'||catalogKind(set)===kind))}
@@ -24,7 +35,9 @@ function titleFor(id) {
  return id+([11,12,13].includes(n%100)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'))+' Batch';
 }
 
-const displayPaperTitle=title=>title.replace(/\brecalled\b\s*/gi,'').replace(/\bfinal\b/gi,'Final');
+const displayPaperTitle=title=>title.replace(/\brecalled\b\s*/gi,'').replace(/\bfinal\b/gi,'Final')
+ .replace(/\bFinal Exam\s*[·–-]\s*(OSPE|SAQs?)\b/gi,(_,kind)=>'Final '+(kind.toUpperCase()==='OSPE'?'OSPE':'SAQs'))
+ .replace(/\bospe\b/gi,'OSPE').replace(/\bsaqs?\b/gi,'SAQs');
 
 function paperCard(set) {
  const questionCount=set.ids.length;
@@ -49,7 +62,7 @@ function paperCard(set) {
  </article>`;
 }
 
-const kinds=[['all','All'],['other','Other'],['past','Exams'],['tbl','TBLs']];
+const kinds=[['all','All'],['other','Other'],['past','Exams'],['tbl','TBLs'],['ospe','OSPE'],['saq','SAQs']];
 
 function assessmentFamily(set,kind){
  const label=set.title||'';
@@ -57,8 +70,8 @@ function assessmentFamily(set,kind){
   const number=Number(label.match(/\bTBL[\s-]*(\d+)/i)?.[1]||set.id?.match(/(?:^|-)tbl-(\d+)$/i)?.[1]);
   return number?{title:'TBL '+number,number}:{title:'Other TBL material'};
  }
- if(/\b(?:ospe|practicals?)\b/i.test(label))return {title:'OSPE',tail:1};
- if(/\b(?:saqs?|short answers?|written(?: questions| cases)?|clinical scenarios?)\b/i.test(label))return {title:'SAQs',tail:2};
+ if(kind==='ospe')return {title:'OSPE'};
+ if(kind==='saq')return {title:'SAQs'};
  if(/\bmid[\s-]*term\b/i.test(label))return {title:'Midterm'};
  if(/\bfinal\b/i.test(label))return {title:'Final Exam'};
  return {title:label};
@@ -72,8 +85,8 @@ export function assessmentGroups(sets,schedule=[],date='',minute=0){
  for(const set of ordered){
   const kind=catalogKind(set);
   if(kind==='other')continue;
-  const {title,number,tail}=assessmentFamily(set,kind),key=kind+':'+title;
-  if(!groups.has(key))groups.set(key,{title,number,tail,kind,sets:[]});
+  const {title,number}=assessmentFamily(set,kind),key=kind+':'+title;
+  if(!groups.has(key))groups.set(key,{title,number,kind,sets:[]});
   groups.get(key).sets.push(set);
  }
  const upcoming=event=>event.date>date||event.date===date&&event.endMinute>minute;
@@ -100,8 +113,8 @@ export function assessmentGroups(sets,schedule=[],date='',minute=0){
  if(next){next.upcoming=true;next.date=tblDates.get(nextNumber).date;}
  return [
   ...(other.length?[{kind:'other',title:'Other',sets:other}]:[]),
-  ...(next?[next]:[]),...exams.filter(group=>!group.tail),...tbls.filter(group=>group!==next),
-  ...exams.filter(group=>group.tail).sort((a,b)=>a.tail-b.tail),
+  ...(next?[next]:[]),...exams,...tbls.filter(group=>group!==next),
+  ...['ospe:OSPE','saq:SAQs'].map(key=>groups.get(key)).filter(Boolean),
  ];
 }
 

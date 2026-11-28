@@ -14,9 +14,14 @@ const AnatomyAtlas=(()=>{
   lungs:['Lungs & bronchopulmonary segments','Pulmonary','Isolate named segments and see how they surround the branching airway.','A16 A17 P16 P17 P23 P24','#4d6ca2'],
  };
  const renalModels={
+  'renal-kidney-section':['Kidney section & collecting system','Internal anatomy','Use the cut surface to trace the cortex, pyramids and calyces into the renal pelvis. This model is schematic.','A3 A4','#936087'],
   'renal-urinary':['Kidneys & urinary tract','Urinary anatomy','Trace both ureters from the kidneys to the bladder, then locate the urethra.','A3','#9d5869'],
-  'renal-vessels':['Renal vessels & hilum','Vascular anatomy','Compare renal arteries and veins against the aorta and inferior vena cava.','A1 A3','#695d94'],
+  'renal-vessels':['Renal vessels & hilum','Vascular anatomy','Compare renal arteries and veins against the aorta and inferior vena cava.','A1 A3 A4','#695d94'],
   'renal-nephron':['Nephron & collecting duct','Renal histology','Follow filtrate from the glomerular capsule through the nephron into the collecting duct.','A5 A6','#457e78'],
+  'renal-posterior-wall':['Kidneys & posterior abdominal wall','Regional anatomy','Orient the kidneys against the lumbar spine, ribs, psoas major and iliacus.','A1 A2 A3','#a05c71'],
+  'renal-lumbar-spine':['Lumbar vertebrae & landmarks','Skeletal anatomy','Compare lumbar levels and find the twelfth ribs and sacrum used to orient practical specimens.','A1 A2 A3','#947056'],
+  'renal-lower-tract':['Bladder, prostate & urethra','Male pelvis','Trace the distal ureters to the bladder, then compare the prostate, urethra and rectum.','A3','#625f9e'],
+  'renal-iliac-bed':['Iliac vessels & renal graft bed','Clinical anatomy','Trace the iliac branches and locate the iliac fossa on a native pelvis.','A1 A4','#596a9a'],
  };
  const isRenal=id=>Object.hasOwn(renalModels,id);
  const galleryCourse=()=>globalThis.REVIEW_STUDIO_FRESH_ACCOUNTS&&!globalThis.reviewViewingArchive?.()?'REN':'CVP';
@@ -46,7 +51,19 @@ const AnatomyAtlas=(()=>{
  layers['renal-urinary']={Kidneys:/-kidney$/, 'Ureters & bladder':/ureter|bladder|urethra/, 'Adrenal glands':/adrenal/};
  layers['renal-vessels']={Kidneys:/-kidney$/, Arteries:/artery|aorta/, Veins:/vein|vena-cava/};
  layers['renal-nephron']={'Renal corpuscle':/^glomerular/, 'Convoluted tubules':/tubule$/, 'Loop of Henle':/limb$/, 'Collecting duct':/^collecting/};
+ layers['renal-kidney-section']={'Capsule & cortex':/capsule|cortex|column/, 'Medulla':/medullary/, 'Collecting system':/calyx|pelvis|ureter/};
+ layers['renal-posterior-wall']={Kidneys:/-kidney$/, Muscles:/psoas|iliacus/, Bones:/rib|vertebra/};
+ layers['renal-lumbar-spine']={'Lumbar vertebrae':/^l\d-vertebra$/, 'Ribs & sacrum':/rib|sacrum|t12/};
+ layers['renal-lower-tract']={'Urinary tract':/bladder|urethra|ureter/, 'Prostate & seminal vesicles':/prostate|seminal/, Rectum:/rectum/, 'Bony pelvis':/hip-bone|sacrum/};
+ layers['renal-iliac-bed']={Arteries:/artery/, Veins:/vein/, 'Pelvic landmarks':/hip-bone|sacrum|iliacus|bladder/};
  const notes={
+  'renal-cortex':'The cortex lies beneath the capsule and extends inward as columns between pyramids.',
+  'renal-pelvis':'The renal pelvis receives the major calyces and narrows to form the ureter.',
+  'urinary-bladder':'The bladder lies behind the pubic symphysis and receives the two ureters.',
+  prostate:'The proximal urethra passes through the prostate below the bladder.',
+  'right-external-iliac-artery':'A renal graft artery can be connected to this native vessel in the iliac fossa.',
+  'left-external-iliac-artery':'A renal graft artery can be connected to this native vessel in the iliac fossa.',
+  'l5-vertebra':'L5 is the lowest lumbar vertebra, immediately superior to the sacrum.',
   'right-kidney':'The right kidney usually lies lower than the left. Find the hilum along its medial border.',
   'left-kidney':'Find the medial hilum, then compare its level with the right kidney.',
   'right-ureter':'Trace the ureter from the kidney down to the bladder.',
@@ -92,7 +109,8 @@ const AnatomyAtlas=(()=>{
   'Diaphragm & upper abdominal organs':/^diaphragm\//,
   'Nasal cavity & sinuses':/^nose\//,Pharynx:/^pharynx\//,Larynx:/^larynx\//,
  };
- const defaultLayer=(id,name)=>id==='complete'?name!=='Intercostal muscles':id!=='ribcage'||!name.endsWith('intercostals');
+ const defaultLayer=(id,name)=>id==='complete'?name!=='Intercostal muscles':
+  id==='renal-lower-tract'?name!=='Bony pelvis':id!=='ribcage'||!name.endsWith('intercostals');
  const normalize=value=>value.toLowerCase().replace(/[^a-z0-9]/g,'');
  function groupParts(id,ids){
   const groups=Object.entries(id==='complete'?completeLayers:layers[id]).map(([name,match])=>[name,ids.filter(part=>match.test(part))]).filter(([,parts])=>parts.length);
@@ -151,7 +169,7 @@ const AnatomyAtlas=(()=>{
  function page(id){
   const [title,group,note,lessons,,shared]=models[id];
   const asset=shared||id, official=['ribcage','mediastinum'].includes(asset);
-  const credit=asset==='renal-nephron'?'Review Studio teaching schematic. Geometry and proportions are illustrative.':
+  const credit=['renal-nephron','renal-kidney-section'].includes(asset)?'Review Studio teaching schematic. Geometry and proportions are illustrative.':
    isRenal(id)?'BodyParts3D / Anatomography 4.3, © The Database Center for Life Science · CC BY-SA 2.1 Japan':
    official?'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International':
    asset==='nose'?'Z-Anatomy and BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 4.0':
@@ -373,7 +391,7 @@ const AnatomyAtlas=(()=>{
   async function load(){
    try{
     const [response,module,layoutResponse]=await Promise.all([
-     fetch(root+'structures.json?v=4',{signal}),loadViewer(),
+     fetch(root+'structures.json?v=5',{signal}),loadViewer(),
      id==='complete'?fetch(root+'complete.json?v=1',{signal}):null
     ]);
     if(!response.ok)throw Error('The structure list could not be loaded.');

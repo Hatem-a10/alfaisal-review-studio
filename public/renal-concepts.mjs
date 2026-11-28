@@ -57,10 +57,10 @@ export const renalConcepts={
 };
 
 renalConcepts.A3=[
- c('orientation','Right versus left kidney',0,[2,3,4],'The liver generally holds the right kidney lower than the left. Identify the medial hilum and compare exposure to ribs before using the relationships to orient a specimen.'),
- c('orientation','Map anterior and posterior relations',0,[4,5,6,7],'Compare posterior relationships with diaphragm and posterior wall muscles to the different anterior visceral neighbors on the two sides. Use side-specific anatomy to interpret an image or access route.'),
- c('coverings','Follow the spaces outside the capsule',1,[7,8,9],'From inside out, distinguish fibrous capsule, perirenal fat, renal fascia and pararenal fat. Follow a collection along the fascial spaces instead of assuming it stays within the fibrous capsule.'),
- c('circulation','Identify the hilar order',1,[8,10,11,12],'At the hilum the usual anterior-to-posterior order is vein, artery and pelvis. Segmental arteries supply relatively discrete territories, relevant when planning a partial resection.'),
- c('outflow','Follow outflow from a papilla',1,[9,10,11,12],'Urine goes from papilla to minor calyx, major calyx, renal pelvis and ureter. A branched calculus can model the collecting-system outline.'),
- c('outflow','Localize abscess, calculus and a mobile kidney',2,[7,8,9,12,13],'Distinguish a collection around the kidney, a calculus in the collecting system, and position-dependent descent of the kidney. These describe different compartments or changes, even if each gives flank symptoms.'),
+ c('orientation','Right versus left kidney',0,[4,5,6],'The liver generally holds the right kidney lower than the left. Identify the medial hilum and compare exposure to ribs before using the relationships to orient a specimen.'),
+ c('orientation','Map anterior and posterior relations',0,[7,9,10],'Compare posterior relationships with diaphragm and posterior wall muscles to the different anterior visceral neighbors on the two sides. Use side-specific anatomy to interpret an image or access route.'),
+ c('coverings','Follow the spaces outside the capsule',1,[14,15,16,17],'From inside out, distinguish fibrous capsule, perirenal fat, renal fascia and pararenal fat. Follow a collection along the fascial spaces instead of assuming it stays within the fibrous capsule.'),
+ c('circulation','Identify the hilar order',1,[11,24,26],'At the hilum the usual anterior-to-posterior order is vein, artery and pelvis. Segmental arteries supply relatively discrete territories, relevant when planning a partial resection.'),
+ c('outflow','Follow outflow from a papilla',1,[21,22],'Urine goes from papilla to minor calyx, major calyx, renal pelvis and ureter. A branched calculus can model the collecting-system outline.'),
+ c('outflow','Localize abscess, calculus and a mobile kidney',2,[18,28,29],'Distinguish a collection around the kidney, a calculus in the collecting system, and position-dependent descent of the kidney. These describe different compartments or changes, even if each gives flank symptoms.'),
 ];

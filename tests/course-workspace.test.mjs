@@ -38,7 +38,7 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
  const {bookletSections}=await import('../public/renal-study.mjs');
  const {renalLessons,renalTeachingPack}=await import('../public/renal-lessons.mjs');
  const resources=JSON.parse(read('public/renal-materials.json'));
- assert.equal(resources.length,26);
+ assert.equal(resources.length,28);
  assert.equal(new Set(resources.map(resource=>resource.sha)).size,resources.length);
  const figures=new Set(JSON.parse(read('lib/renal-lesson-figures.json')).map(figure=>'/api/site-assets/'+figure.path));
  for(const source of resources){
@@ -47,7 +47,7 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.ok(source.size>0&&source.units>0);
  }
  const pack=renalTeachingPack();
- assert.deepEqual(pack.items.map(x=>x.id),['REN-A1','REN-A2','REN-A3','REN-A5','REN-A6','REN-P1','REN-P2','REN-P3','REN-P4','REN-P5','REN-P6','REN-P7','REN-P8']);
+ assert.deepEqual(pack.items.map(x=>x.id),['REN-A1','REN-A2','REN-A3','REN-A4','REN-A5','REN-A6','REN-P1','REN-P2','REN-P3','REN-P4','REN-P5','REN-P6','REN-P7','REN-P8']);
  assert.equal(new Set(pack.questions.map(q=>q.id)).size,pack.questions.length);
  for(const lesson of renalLessons){
   const asset=resources.find(item=>item.id===lesson.source),id='REN-'+lesson.code;
@@ -82,8 +82,8 @@ test('Renal guides and booklet links resolve to distinct protected sources and v
   assert.equal(q.references[0].source,'ren123-booklet-source');
   assert.equal(q.references[0].page,Number(q.adaptedFromBookletId.match(/-p(\d+)-/)[1]));
  }
- assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.figure).length,25);
- assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.transcriptReview).length,7);
+ assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.figure).length,28);
+ assert.equal(Object.values(pack.guides).flatMap(guide=>guide.sections).filter(topic=>topic.transcriptReview).length,14);
  const booklet=resources.find(source=>source.kind==='booklet');
  assert.equal(booklet.units,294);
  assert.deepEqual(bookletSections.map(([kind])=>kind),['MCQs','SAQs','OSPE']);

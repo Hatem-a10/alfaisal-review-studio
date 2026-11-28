@@ -1,3 +1,4 @@
+import {kidneyAnatomyTwo} from './renal-kidney-anatomy-2.mjs';
 import {nephronTopicPlan} from './renal-nephron-topics.mjs';
 import {renalConcepts} from './renal-concepts.mjs';
 import {renalReleasedLessons} from './renal-released-lessons.mjs';
@@ -79,6 +80,7 @@ const renalAnatomy = [
     checks:[['Where does urine go immediately after leaving the renal papilla?',['Minor calyx','Major calyx','Renal pelvis','Ureter'],['A minor calyx directly cups the papilla.','A major calyx collects from multiple minor calyces.','The renal pelvis is downstream of the major calyces.','The ureter begins beyond the pelvis.']],
      ['What finding most directly supports nephroptosis?',['The whole kidney descends abnormally when the patient stands','A calculus branches from the renal pelvis into the calyces','A collection is confined within renal fascia','A minute stone appears within a minor calyx'],['An abnormal change in renal position with standing characterizes nephroptosis.','This describes a staghorn stone.','This describes a process affecting the perinephric compartment.','This is an intrarenal calculus without evidence of positional descent.']]]},
   ]},
+ kidneyAnatomyTwo,
  {code:'A5',title:'Histological organization of the kidney',source:'kidney-histology-1',file:'kidney-histology-1.pptx',unit:'slide',group:'Histology',
   overview:'Read a renal section from low power to high power. Locate the corpuscles, identify the surrounding tubules, then follow filtrate from Bowman space to the papilla.',
   objectives:['Describe the microscopic organization of the kidney.','Trace urine through the microscopic tubules and into the collecting system.','Recognize tubule and collecting-duct profiles by epithelium and location.'],
@@ -140,17 +142,19 @@ export function validateRenalLessons(entries=renalLessons){
 }
 const questionConcepts={"A6": [1, 0, 3, 1, 4, 5], "P5": [0, 2, 4, 5, 1], "P6": [0, 2, 4, 3, 5], "P7": [0, 2, 4, 5, 3], "P8": [1, 3, 4, 2, 0]};
 const transcripts={
- A1:'posterior-wall-1-transcript',A2:'posterior-wall-2-transcript',A5:'kidney-histology-1-transcript',
+ A1:'posterior-wall-1-transcript',A2:'posterior-wall-2-transcript',
+ A3:'kidney-anatomy-1-transcript',A4:'kidney-anatomy-2-transcript',A5:'kidney-histology-1-transcript',
  A6:'kidney-histology-2-transcript',P1:'kidney-functions-transcript',P2:'mass-balance-transcript'
 };
 export function renalTeachingPack(entries=renalLessons) {
  validateRenalLessons(entries);
  const items=[], sources=[bookletSource], lessons=[], guides={}, questions=[];
  for(const entry of entries){
-  const id='REN-'+entry.code,source='ren123-'+(['P4','P6','P8'].includes(entry.code)?entry.code.toLowerCase()+'-':'')+entry.source;
+  const id='REN-'+entry.code,source='ren123-'+(['A4','P4','P6','P8'].includes(entry.code)?entry.code.toLowerCase()+'-':'')+entry.source;
   const cite=page=>({source,page});
+  const start=entry.code==='A4'?19:entry.code==='A5'?1:2;
   items.push({id,code:entry.code,course:'REN',title:entry.title,group:entry.group,dates:[]});
-  sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],pages:[]});
+  sources.push({id:source,name:entry.title+' · REN 123',kind:'Original lecture',unit:entry.unit,url:'/api/site-assets/materials/ren123/'+entry.file,lectureIds:[id],...(entry.source==='kidneys'?{lectureRanges:[{lectureId:id,start,end:entry.code==='A4'?31:18}]}:{}),pages:[]});
   const transcript=transcripts[entry.code];
   let sections=entry.topics.map(topic=>{
    const key=entry.code+'-'+topic.key,concept='REN-'+key,references=topic.pages.map(cite);
@@ -202,7 +206,7 @@ export function renalTeachingPack(entries=renalLessons) {
   const coveredObjectives=new Set(concepts.map(concept=>concept.objective));
   const hasTranscript=Boolean(transcript||sections.some(section=>section.transcriptReview));
   guides[id]={underDevelopment:!hasTranscript||entry.objectives.some(objective=>!coveredObjectives.has(objective)),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
-  lessons.push({id,scope:entry.overview,...(questionTopics?{questionTopics}:{}),references:[cite(entry.code==='A5'?1:2)],facts:sections.map(t=>({id:t.id,...(t.legacyTopic?{legacyTopic:t.legacyTopic}:{}),concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
+  lessons.push({id,scope:entry.overview,...(questionTopics?{questionTopics}:{}),references:[cite(start)],facts:sections.map(t=>({id:t.id,...(t.legacyTopic?{legacyTopic:t.legacyTopic}:{}),concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
  return {items,sources,lessons,guides,questions};
 }

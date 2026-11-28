@@ -1,5 +1,52 @@
-// Reviewed navigation notes for the two supplied recordings. Timestamps refer to the private transcripts.
+// Reviewed navigation notes. Timestamps refer to the private transcripts.
 export const renalTranscriptReview={
+ 'A3-orientation':{
+  asset:'kidney-anatomy-1-transcript',
+  passages:[
+   ['05:25–12:30','Locate the kidneys in the retroperitoneum and compare the height of the right and left kidneys. Use the vertebral plane and the medial border to orient each specimen.'],
+   ['22:00–28:35','Compare anterior relations. The descending duodenum lies in front of the right renal hilum, while the spleen is a left-sided relation.'],
+   ['28:35–33:55','Trace the hilar order from anterior to posterior and distinguish the opening (hilum) from the space beyond it (renal sinus).'],
+  ],
+ },
+ 'A3-coverings':{
+  asset:'kidney-anatomy-1-transcript',
+  passages:[
+   ['34:00–46:55','Trace the fibrous capsule, perirenal fat and renal fascia. Distinguish the fat inside the fascia from pararenal fat outside it.'],
+   ['46:55–53:29','Follow the perinephric space on the cross-section. The lecturer uses the renal fascia and nearby psoas and diaphragm to explain possible spread.'],
+  ],
+ },
+ 'A3-circulation':{
+  asset:'kidney-anatomy-2-transcript',
+  passages:[['07:00–10:05','Part II follows the renal artery from the hilum to the segmental branches, arcuate vessels and glomerulus. Use the branching diagram on slide 24 to check the terminology.']],
+ },
+ 'A3-outflow':{
+  asset:'kidney-anatomy-2-transcript',
+  passages:[
+   ['03:30–05:18','Part II follows urine from the papilla into the minor and major calyces, renal pelvis and ureter.'],
+   ['22:18–24:55','Part II compares a branching calculus within the collecting system with downward displacement of the whole kidney.'],
+  ],
+ },
+ 'A4-section':{
+  asset:'kidney-anatomy-2-transcript',
+  passages:[
+   ['00:00–03:36','Orient the longitudinal section using the outer cortex, columns between pyramids, and the inward-pointing papillae. Segmental territories and the number of pyramids are distinct.'],
+   ['03:36–07:12','Trace the papillary collecting duct outlets into a minor calyx, then follow branching spaces to the ureter.'],
+  ],
+ },
+ 'A4-segments':{
+  asset:'kidney-anatomy-2-transcript',
+  passages:[
+   ['07:12–10:15','Trace blood from the renal artery through smaller branches to the afferent arteriole, glomerulus and efferent arteriole. Slide 24 gives the complete sequence.'],
+   ['16:36–17:55','Compare the anterior and posterior views of the segment map. An accessory artery can supply part of a kidney.'],
+  ],
+ },
+ 'A4-clinical':{
+  asset:'kidney-anatomy-2-transcript',
+  passages:[
+   ['22:18–25:10','Distinguish the branching shape of a staghorn calculus from the change in position of a native kidney on standing.'],
+   ['25:12–28:35','Identify the iliac fossa graft and trace its vessels and ureter. The lecture contrasts a graft with a mobile native kidney and introduces congenital ectopia.'],
+  ],
+ },
  'P2-balance':{
   asset:'renal-clearance-class-review',
   passages:[
