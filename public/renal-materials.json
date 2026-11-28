@@ -324,5 +324,17 @@
     "path": "materials/ren123/kidney-anatomy-2-transcript.txt",
     "size": 31417,
     "sha": "49a641b816fad6f2aef6399ad151f32cf5bdaf22bc987bde1efa519d8f0880c3"
+  },
+  {
+    "id": "tbl1-objectives",
+    "title": "Renal TBL 1 · Block objectives",
+    "kind": "lecture",
+    "sessions": [
+      "TBL1"
+    ],
+    "units": 1,
+    "path": "materials/ren123/tbl1-objectives.docx",
+    "size": 308961,
+    "sha": "af059ad9afc6ea76d22f5dc8f2fe5d0803b5a6e6969cf59c054cab65dde3c43d"
   }
 ]

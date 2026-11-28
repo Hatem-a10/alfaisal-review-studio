@@ -76,11 +76,16 @@
       "units": 9,
       "size": 267145,
       "sha": "c5aabb548076816481ac307c9a75e1344cd261f7b78fe5c6d9ac956127283219"
+    },
+    {
+      "path": "materials/mol114/assessments/mol-16-final-p6-sideroblasts.jpg",
+      "size": 13280,
+      "sha": "28a4711387642500ecafeb2f1b642810d272a14ad36fc7ea0bc2519fb26846fe"
     }
   ],
   "assessments": {
     "path": "materials/mol114/interactive-assessments.json",
-    "size": 150201,
-    "sha": "6cf54327592676667bbc643e1b1e0da1f34796600445996315929ae6812dca2f"
+    "size": 164721,
+    "sha": "28c47c5cfe73951c123905495db8951013e9a7d3964e113c3788da7a9d1e6963"
   }
 }

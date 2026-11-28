@@ -1,3 +1,4 @@
+import {registerRenalTbl1, renalTbl1Id} from './renal-tbl1-lesson.mjs';
 import {kidneyAnatomyTwo} from './renal-kidney-anatomy-2.mjs';
 import {nephronTopicPlan} from './renal-nephron-topics.mjs';
 import {renalConcepts} from './renal-concepts.mjs';
@@ -115,7 +116,7 @@ const bookletSource={
  unit:'page',url:'/api/site-assets/materials/ren123/past-paper-booklet.pdf',pages:[],
 };
 export function validateRenalLessons(entries=renalLessons){
- const expected=courses.REN.lectureCodes,seen=new Set();
+ const expected=courses.REN.lectureCodes.filter(code=>'REN-'+code!==renalTbl1Id),seen=new Set();
  for(const entry of entries){
   if(!entry?.code||!expected.includes(entry.code)||seen.has(entry.code))throw Error('Invalid or duplicate REN lesson code: '+String(entry?.code));
   seen.add(entry.code);
@@ -208,5 +209,10 @@ export function renalTeachingPack(entries=renalLessons) {
   guides[id]={underDevelopment:!hasTranscript||entry.objectives.some(objective=>!coveredObjectives.has(objective)),overview:entry.overview,objectives:entry.objectives,sections,summary:entry.topics.flatMap(t=>t.remember)};
   lessons.push({id,scope:entry.overview,...(questionTopics?{questionTopics}:{}),references:[cite(start)],facts:sections.map(t=>({id:t.id,...(t.legacyTopic?{legacyTopic:t.legacyTopic}:{}),concept:t.title,prompt:'Explain '+t.title.toLowerCase()+'.',answer:t.keyPoints.join(' '),teach:t.body.length?t.body.join(' '):t.concepts.map(c=>c.text).join(' '),references:t.references}))});
  }
- return {items,sources,lessons,guides,questions};
+ const pack={items,sources,lessons,guides,questions};
+ registerRenalTbl1(pack,{
+  id:'ren123-tbl1-objectives',name:'Renal TBL 1 · Block objectives',kind:'TBL objectives',
+  unit:'page',url:'/api/site-assets/materials/ren123/tbl1-objectives.docx',lectureIds:[renalTbl1Id],pages:[]
+ });
+ return pack;
 }

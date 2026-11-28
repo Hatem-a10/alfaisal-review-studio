@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {courses} from '../public/course-registry.mjs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const json=path=>JSON.parse(read(path));
 function generated(path){
@@ -29,7 +30,7 @@ function validate(rows,{label,key,typed=false,renal=false}){
    assert.ok(validId(row.id)&&typeof row.title==='string'&&row.title.trim(),label+' invalid material metadata: '+id);
    assert.ok(['overview','lecture','lab','booklet'].includes(row.kind),label+' invalid kind: '+id);
    assert.ok(Number.isSafeInteger(row.units)&&row.units>0,label+' invalid units: '+id);
-   assert.ok(Array.isArray(row.sessions)&&row.sessions.every(code=>/^[AP]\d+$/.test(code))&&new Set(row.sessions).size===row.sessions.length,label+' invalid sessions: '+id);
+   assert.ok(Array.isArray(row.sessions)&&row.sessions.every(code=>courses.REN.lectureCodes.includes(code))&&new Set(row.sessions).size===row.sessions.length,label+' invalid sessions: '+id);
   }
  }
  return rows;

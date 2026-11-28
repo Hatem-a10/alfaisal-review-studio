@@ -47,6 +47,17 @@ export const renalTranscriptReview={
    ['25:12–28:35','Identify the iliac fossa graft and trace its vessels and ureter. The lecture contrasts a graft with a mobile native kidney and introduces congenital ectopia.'],
   ],
  },
+ 'P1-organization':{
+  asset:'kidney-functions-transcript',
+  passages:[
+   ['11:27–21:20','Compare the renal corpuscle with the tubule. Follow the epithelial features of proximal, thin and distal segments.'],
+   ['25:20–28:02','Compare the position, loop length and postglomerular capillary beds of superficial and juxtamedullary nephrons.'],
+  ],
+ },
+ 'P1-flow':{
+  asset:'kidney-functions-transcript',
+  passages:[['23:30–25:10','Trace renal sympathetic effects from vascular tone to tubular sodium retention and renin release. The recording ends before the myogenic mechanism. Use slides 12–15 for that sequence.']],
+ },
  'P2-balance':{
   asset:'renal-clearance-class-review',
   passages:[
