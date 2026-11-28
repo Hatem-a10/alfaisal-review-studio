@@ -7,7 +7,7 @@ const baseline="'use strict';\n/* Pure exam selection and grading; time is alway
 const current=readFileSync(new URL('../public/exam-engine.js',import.meta.url),'utf8');
 const load=s=>vm.runInNewContext(s+'\nExamEngine',{Date,JSON,Math});
 const before=load(baseline),after=load(current);
-const sampler=load(current.replace('return {shuffle,usable,pool','return {sample,shuffle,usable,pool')).sample;
+const sampler=load(current.replace('return {shuffle,','return {sample,shuffle,')).sample;
 const makeBank=n=>Array.from({length:n},(_,i)=>({id:'REN-'+i,lectureIds:['REN-A1'],kind:'Past paper',type:'mcq',question:'Clinical question '+i,options:['A','B','C','D'],answer:i%4,reasons:['r1','r2','r3','r4'],explanation:'Detailed explanation '+i,preserveOptionOrder:i%7===0}));
 const rngFor=seed=>{let x=seed>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}};
 const norm=x=>JSON.parse(JSON.stringify(x));

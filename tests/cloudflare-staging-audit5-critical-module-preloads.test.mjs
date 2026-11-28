@@ -12,7 +12,7 @@ function documentFixture(){
 test('A5-013 fetch independent critical module URLs early but retain side effect execution order',()=>{
  const {doc,links}=documentFixture(),created=preloadCriticalModules(doc,'https://staging.example/phase1-runtime.mjs',{effectiveType:'4g'});
  assert.equal(created.length,2);assert.equal(links.length,2);
- assert.deepEqual(links.map(x=>x.href),['https://staging.example/mobile-dock.js?v=1498','https://staging.example/studio-navigation.js?v=1499']);
+ assert.deepEqual(links.map(x=>x.href),criticalModules.map(m=>new URL(m,'https://staging.example/phase1-runtime.mjs').href));
  assert.ok(links.every(x=>x.rel==='modulepreload'));
  assert.equal(preloadCriticalModules(doc,'https://staging.example/phase1-runtime.mjs',{}).length,0);
  const reading=runtime.indexOf('await Promise.all([import("./reading-tools.js');
@@ -20,7 +20,8 @@ test('A5-013 fetch independent critical module URLs early but retain side effect
  const navigation=runtime.indexOf('await import("./studio-navigation.js');
  assert.ok(reading>=0&&mobile>reading&&navigation>mobile);
  assert.match(runtime,/preloadCriticalModules\(document,import\.meta\.url,navigator\.connection\)/);
- assert.deepEqual(criticalModules,['./mobile-dock.js?v=1498','./studio-navigation.js?v=1499']);
+ // Preloads must use exactly the URLs the runtime imports, or the browser fetches twice.
+ assert.deepEqual(criticalModules,['mobile-dock','studio-navigation'].map(name=>runtime.match(new RegExp('import\\("(\\./'+name+'\\.js\\?v=\\d+)"\\)'))?.[1]));
 });
 test('A5-013 constrained data plans do not add speculative modulepreload requests',()=>{
  for(const connection of [{saveData:true},{effectiveType:'2g'},{effectiveType:'slow-2g'}]){

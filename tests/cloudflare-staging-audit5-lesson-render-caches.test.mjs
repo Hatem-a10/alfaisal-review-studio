@@ -26,14 +26,14 @@ test('A5-143 repeated static guide render skips escaping and paragraph assembly'
 });
 const start=source.indexOf('lessonReader=function(x,l,s)'),end=source.indexOf('function practiceTopics(',start);
 const current=source.slice(start,end);
-const skip="// A5-021: the previous n/read scan was unused by this reader's output.\n const sections=guide.sections||[];guideTopic=";
-const full="const sections=guide.sections||[],read=rec(x).learning?.read||[],n=sections.filter((v,i)=>read.includes('section:'+(v.id||x.id+'-section-'+i))).length;guideTopic=";
+const skip="// A5-021: the previous n/read scan was unused by this reader's output.\n const sections=guide.sections||[]";
+const full="const sections=guide.sections||[],read=rec(x).learning?.read||[],n=sections.filter((v,i)=>read.includes('section:'+(v.id||x.id+'-section-'+i))).length";
 assert.ok(current.includes(skip));
 const baseline=current.replace(skip,full);
 function reader(code,mode='guide'){
  let reads=0,renderCalls=0;
  const guide={sections:Array.from({length:20},(_,i)=>({id:'P'+i,title:'Topic '+i})),overview:['One'],objectives:['Two'],summary:['Three'],references:[]};
- const ctx=vm.createContext({guideFor:()=>guide,customLesson:false,compactConceptReader:()=>'<old>',guideTopicLesson:null,guideTopic:0,deepMode:mode,cardIndex:0,read:[],
+ const ctx=vm.createContext({guideFor:()=>guide,objectiveCards:()=>[],customLesson:false,compactConceptReader:()=>'<old>',guideTopicLesson:null,guideTopic:0,deepMode:mode,cardIndex:0,read:[],
  rec:()=>{reads++;return {learning:{read:Array.from({length:1000},(_,i)=>'section:P'+i)}}},guideParagraphs:()=>'<p>Intro</p>',guideList:()=>'<ul></ul>',topicControls:()=>'<controls>',sectionCard:()=>{renderCalls++;return '<card>'},guideAtlas:()=>'<atlas>',topicConceptCard:()=>'<concept>',esc:String,lessonReader:()=>'<fallback>'});
  vm.runInContext(code+'\nthis.call=lessonReader',ctx);
  return {call:()=>ctx.call({id:'REN-P1'},null,{known:2}),reads:()=>reads,renderCalls:()=>renderCalls};

@@ -11,7 +11,7 @@ const StudentProfile=(()=>{
   profileWait=null;
   paint();
  }
- window.addEventListener('studio-ready',()=>{
+ window.addEventListener?.('studio-ready',()=>{
   if(!freshAccounts||ready||settings.profileName&&settings.profileCreatedAt&&!settings.legacyProfile)return;
   profileWait=document.createElement('dialog');
   profileWait.className='study-next-dialog';
