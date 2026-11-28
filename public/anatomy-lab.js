@@ -143,10 +143,6 @@
  }
  if(e.target.id==='heartHighlight'){showHighlight=e.target.checked;paintSelection()}
  if(e.target.dataset.wallToggle)document.querySelector('[data-wall-band="'+e.target.dataset.wallToggle+'"]').style.visibility=e.target.checked?'visible':'hidden';if(e.target.id==='heartView')viewer?.setView(e.target.value);if(e.target.id==='heartModel'&&Object.hasOwn(models,e.target.value)){clearSelection();modelKind=e.target.value;run=null;clearInterval(timer);mode='explore';selected=activeParts()[0].id;const search=document.querySelector('#heartSearch');if(search)search.value='';document.querySelector('.heart-structure-list').innerHTML=activeParts().map(s=>'<button data-heart-structure="'+s.id+'">'+s.name+'</button>').join('');viewer?.setParts(visibleParts());viewer?.setView(models[modelKind].view);viewer?.setOpacity(1);document.querySelector('#heartOpacity').value=1;describe(selected);paintActivity()}});document.addEventListener('input',e=>{if(e.target.id==='heartOpacity')viewer?.setOpacity(Number(e.target.value));if(e.target.id==='heartSearch'){const q=e.target.value.toLowerCase();document.querySelectorAll('[data-heart-structure]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q))}});document.addEventListener('keydown',e=>{if(e.target.id==='heartLabelAnswer'&&e.key==='Enter'){e.preventDefault();document.querySelector('#heartCheckLabel')?.click()}});
- const oldReader=lessonReader;lessonReader=function(x,l,s){
-  const html=oldReader(x,l,s),[course,code]=x.id.split('-');
-  const matches=Object.entries(AnatomyAtlas.models).filter(([id,model])=>['REN','CVP'].includes(course)&&AnatomyAtlas.isRenal(id)===(course==='REN')&&model[3].split(' ').includes(code));
-  return matches.length?'<div class="heart-lesson-link">'+matches.map(([id,model])=>'<button type="button" data-atlas-model="'+id+'">'+icon+' '+model[0]+'</button>').join('')+'<small>Spatial identification · progress stays separate from MCQ mastery</small></div>'+html:html;
- };
+ // 3D models are reached from the Study menu, not from Learn lessons.
  if(location.hash==='#anatomy')view='anatomy';
 })();

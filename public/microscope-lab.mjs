@@ -117,7 +117,9 @@ export function microscopeCards(group){
   if(!specimens.has(key))specimens.set(key,[]);
   specimens.get(key).push(slide);
  }
- return '<h3>'+escape(group.title)+'</h3><div class="microscope-cards">'+[...specimens.values()].map(scans=>{
+ // The kidney capillaries slide is listed last in its group.
+ const ordered=[...specimens.entries()].sort(([a],[b])=>(/^capillaries-of-kidney/i.test(a)?1:0)-(/^capillaries-of-kidney/i.test(b)?1:0)).map(([,scans])=>scans);
+ return '<h3>'+escape(group.title)+'</h3><div class="microscope-cards">'+ordered.map(scans=>{
   const [first]=scans;
   const [primary,...otherScans]=scans.filter(slide=>!isLabelScan(slide));
   const title=first.specimen||first.name;

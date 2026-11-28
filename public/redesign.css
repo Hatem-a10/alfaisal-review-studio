@@ -594,6 +594,16 @@ html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-typ
 html:root body:not(.xp-exam-active) #content .countdown-card.countdown-featured[class*=stain-][data-assessment-type]{
  padding:clamp(16px,3vw,30px);border-inline-start:4px solid var(--dusk-border);
 }
+/* The soonest upcoming event gets its own gold accent, distinct from every category tint. */
+html:root body:not(.xp-exam-active) #content .countdown-priority .countdown-card.countdown-featured[class*=stain-][data-assessment-type]{
+ --count-accent:#f4c542;
+ background:radial-gradient(ellipse at 100% -12%,color-mix(in srgb,#f4c542 52%,#5b3d0f),transparent 72%),linear-gradient(140deg,#2a2113,#47321a);
+ border-color:#d8a93a;border-inline-start-color:#f4c542;
+ box-shadow:0 0 0 1px #f4c54240,0 14px 34px -16px #f4c54299;
+}
+html:root body:not(.xp-exam-active) #content .countdown-priority .countdown-featured[class*=stain-][data-assessment-type] .countdown-unit{background:#2f2718;border-color:#a8894c}
+html:root body:not(.xp-exam-active) #content .countdown-priority-label{color:#8a6100}
+html:root[data-theme=amoled] body:not(.xp-exam-active) #content .countdown-priority-label{color:#f4c542}
 html:root body:not(.xp-exam-active) #content .countdown-filters{
  display:flex;gap:4px;flex-wrap:wrap;width:fit-content;max-width:100%;
  padding:4px;border:1px solid var(--rs-line);border-radius:14px;background:var(--rs-sunken);
