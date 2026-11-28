@@ -27,7 +27,7 @@ function learningAreaTabs(selected){const icons={learning:navGlyph('book'),labs:
    return workspace.ui.render();
   }
   content.innerHTML=learningAreaTabs('ospe')+'<section class="panel" role="status">Opening OSPE preparation…</section>';
-  if(!workspace.pending&&!window.reviewAutoRetry?.pending('ospe-'+course))workspace.pending=import('/ospe.js?v=5').then(module=>module.mount(course)).then(ui=>{window.reviewAutoRetry?.ok('ospe-'+course);workspace.ui=ui})
+  if(!workspace.pending&&!window.reviewAutoRetry?.pending('ospe-'+course))workspace.pending=import('/ospe.js?v=6').then(module=>module.mount(course)).then(ui=>{window.reviewAutoRetry?.ok('ospe-'+course);workspace.ui=ui})
    .catch(error=>{console.error(error);window.reviewAutoRetry?.schedule('ospe-'+course,()=>{if(view==='ospe'&&ospeCourse()===course)render()})}).finally(()=>{
     workspace.pending=null;
     if(view==='ospe'&&ospeCourse()===course)render();
