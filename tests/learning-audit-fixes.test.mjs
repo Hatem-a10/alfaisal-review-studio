@@ -297,7 +297,10 @@ test('cardiac teaching figures are linked to their source pages and render on th
  const {learning,teaching}=assembledLearning();
  const context={rec:()=>({}),esc:String,sourceById:id=>learning.sources.find(s=>s.id===id),
   guideParagraphs:()=>'<p>Teaching text</p>',guideList:()=>'',conceptSourceDisclosure:()=>'',topicCardFacts:()=>[]};
- const source=load('learning-ui.js').split('\n')
+ const ui=load('learning-ui.js');
+ // sectionCard also renders objective concepts and transcript reviews; load the real helpers.
+ const helpers=ui.slice(ui.indexOf('function objectiveConcepts('),ui.indexOf('function sectionCard('));
+ const source=helpers+ui.split('\n')
   .filter(line=>/^function (guideFigure|sectionCard)\(/.test(line)).join('\n');
  const card=load('inline-topics.js').split('\n').find(line=>line.startsWith('function topicConceptCard('));
  const render=vm.runInNewContext(source+'\n'+card+';topicConceptCard',context);
