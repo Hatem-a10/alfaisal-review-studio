@@ -95,6 +95,12 @@ test('deferred papers retain valid saved question IDs before their protected ban
  assert.equal(matches('ren-18-tbl-1','ren-18-tbl-1-mcq-3'),true);
  assert.equal(matches('ren-14-tbl-2','ren-14-tbl-2-cs-1'),true);
  assert.equal(matches('ren-18-collection-ospe','ren-18-collection-ospe-20'),true);
+ assert.equal(matches('ren-12-final','ren-12-final-mcq-75'),true);
+ assert.equal(matches('ren-16-final','ren-16-final-mcq-17-p6-17'),true);
+ assert.equal(matches('ren-14-final-saq','ren-14-final-saq-2-3'),true);
+ assert.equal(matches('ren-17-final-ospe','ren-17-final-ospe-20'),true);
+ assert.equal(matches('ren-17-final','ren-17-final-ospe-20'),false);
+ assert.equal(matches('ren-14-final-saq','ren-12-final-saq-2-3'),false);
  assert.equal(matches('mol-18-final','mol-18-final-p2-item3'),true);
  assert.equal(matches('ren-18-tbl-1','ren-18-tbl-2-mcq-3'),false);
  assert.equal(matches('ren-18-collection-ospe','ren-18-collection-saq-2'),false);
