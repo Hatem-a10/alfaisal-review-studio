@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {rea
 const src=readFileSync(new URL('../public/dialog-focus-recovery.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../public/index.html',import.meta.url),'utf8');
 test('focus recovery is loaded before startup and restores the real opener',()=>{
- assert.ok(html.indexOf('dialog-focus-recovery.js?v=1')<html.indexOf('startup-ready.js?v=1'));
+ {const focus=html.indexOf('dialog-focus-recovery.js?v='),startup=html.indexOf('startup-ready.js?v=');assert.ok(focus>=0&&startup>focus)}
  assert.match(src,/document.addEventListener\('close',e=>/);
  assert.match(src,/returnTargets\.set\(dialog,opener\)/);
  assert.match(src,/queueMicrotask\(\(\)=>restore\(e\.target\)\)/);

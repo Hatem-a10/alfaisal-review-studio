@@ -49,11 +49,12 @@ function coursePacks({fresh=true,view='practice',archive=false,permitted=false,s
  return {run:()=>ctx.render(),setArchive:(active,allow,course)=>{win.reviewViewingArchive=()=>active;win.reviewArchiveEnabled=()=>allow;win.reviewCourseScope=course},host,scriptUrls,counts:()=>normal};
 }
 test('course pack loading respects archive flag before workspace initializes',()=>{
- for(const view of ['learning','practice','booklet','library']){
+ for(const view of ['learning','practice','library']){
   const a=coursePacks({fresh:true,view});
   a.run();assert.doesNotMatch(a.host.innerHTML,/CVP/i);
   assert.match(a.host.innerHTML,/MOL/);
  }
+ const booklet=coursePacks({fresh:true,view:'booklet'});booklet.run();assert.equal(booklet.host.innerHTML,'');assert.equal(booklet.counts(),1);
  const a=coursePacks({fresh:true,view:'practice',archive:true,permitted:true,scope:'CVP'});
  a.run();assert.match(a.host.innerHTML,/Opening CVP study content/);
  const denied=coursePacks({fresh:true,view:'practice',archive:true,permitted:false,scope:'CVP'});
