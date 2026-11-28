@@ -11,6 +11,7 @@ export function workspaceRoute(hash){
  if(rest.length||!entry)return null;
  const [course,config]=entry;
  if(config.archived&&view===undefined)return {course,view:'index'};
+ if(view==='anatomy')return config.archived?{course,view}:null;
  if(archiveViews.includes(view)&&!(view==='ospe'&&config.noOspe)||view==='dashboard'&&course==='REN')return {course,view};
  return null;
 }

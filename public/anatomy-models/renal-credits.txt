@@ -1,0 +1,26 @@
+Renal 123 3D Anatomy Lab
+
+Urinary tract and renal vessels
+BodyParts3D / Anatomography 4.3, © The Database Center for Life Science.
+Licensed under Creative Commons Attribution-ShareAlike 2.1 Japan.
+https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
+Source mirror: https://github.com/olivercase/body_parts_3d_api
+Dataset: https://doi.org/10.18908/lsdba.nbdc00837-000
+
+Review Studio selected and regrouped the original surfaces, aligned axes,
+scaled the complete scenes, assigned illustrative colors, and converted them
+to GLB. The derivative meshes and their preview renders share the same license.
+
+Urinary tract source meshes: FJ3129–3130, FJ3144–3149.
+Vascular source meshes: FJ3145, FJ3147, FJ3427, FJ3441, FJ3659,
+FJ3476–3477, FJ3576–3577. The descending aorta is supplied as a continuous mesh.
+Only the main renal arterial and venous trunks are shown.
+
+The organ surfaces show exterior relationships. They do not depict the
+internal collecting system, renal fascia or sex-specific variants.
+
+Nephron and collecting duct
+Original Review Studio teaching schematic. Segment order follows REN 123
+renal histology and nephron teaching; geometry and proportions are illustrative.
+The model omits microvascular and fine epithelial detail. One nephron connection
+is shown; a collecting duct receives flow from more than one nephron.

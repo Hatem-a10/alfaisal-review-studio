@@ -13,6 +13,16 @@ const AnatomyAtlas=(()=>{
   airway:['Trachea & bronchial tree','Pulmonary','Follow the trachea through the carina into the right and left bronchial trees.','A12 A16 A17 P16','#357989','lungs'],
   lungs:['Lungs & bronchopulmonary segments','Pulmonary','Isolate named segments and see how they surround the branching airway.','A16 A17 P16 P17 P23 P24','#4d6ca2'],
  };
+ const renalModels={
+  'renal-urinary':['Kidneys & urinary tract','Urinary anatomy','Trace both ureters from the kidneys to the bladder, then locate the urethra.','A3','#9d5869'],
+  'renal-vessels':['Renal vessels & hilum','Vascular anatomy','Compare renal arteries and veins against the aorta and inferior vena cava.','A1 A3','#695d94'],
+  'renal-nephron':['Nephron & collecting duct','Renal histology','Follow filtrate from the glomerular capsule through the nephron into the collecting duct.','A5 A6','#457e78'],
+ };
+ const isRenal=id=>Object.hasOwn(renalModels,id);
+ const galleryCourse=()=>globalThis.REVIEW_STUDIO_FRESH_ACCOUNTS&&!globalThis.reviewViewingArchive?.()?'REN':'CVP';
+ Object.assign(models,renalModels);
+ // The archived gallery retains only the original CVP inventory.
+ const galleryModels=()=>galleryCourse()==='REN'?Object.entries(renalModels):Object.entries(models).filter(([id])=>!isRenal(id));
  const airwayParts=['FMA7394','FMA26661','FMA26662'];
  const layers={
   ribcage:{'Ribs':/-rib$/,'Costal cartilage':/costal-cartilage/,'Sternum':/manubrium|sternum|xiphoid/,
@@ -33,7 +43,19 @@ const AnatomyAtlas=(()=>{
    'Right lower lobe segments':/^FMA736[2-6]$/,'Left upper lobe segments':/^FMA737[2-5]$/,
    'Left lower lobe segments':/^FMA73(76|78|79|80)$/,'Trachea & bronchial trees':/^FMA(7394|26661|26662)$/},
  };
+ layers['renal-urinary']={Kidneys:/-kidney$/, 'Ureters & bladder':/ureter|bladder|urethra/, 'Adrenal glands':/adrenal/};
+ layers['renal-vessels']={Kidneys:/-kidney$/, Arteries:/artery|aorta/, Veins:/vein|vena-cava/};
+ layers['renal-nephron']={'Renal corpuscle':/^glomerular/, 'Convoluted tubules':/tubule$/, 'Loop of Henle':/limb$/, 'Collecting duct':/^collecting/};
  const notes={
+  'right-kidney':'The right kidney usually lies lower than the left. Find the hilum along its medial border.',
+  'left-kidney':'Find the medial hilum, then compare its level with the right kidney.',
+  'right-ureter':'Trace the ureter from the kidney down to the bladder.',
+  'left-ureter':'Trace the ureter from the kidney down to the bladder.',
+  'left-renal-vein':'The left renal vein crosses anterior to the aorta to reach the inferior vena cava.',
+  'right-renal-artery':'Trace it posterior to the inferior vena cava toward the right kidney.',
+  'glomerular-capsule':'Filtrate enters the capsular space and then the proximal tubule.',
+  'ascending-limb':'Follow the ascending limb back toward the cortex.',
+  'collecting-duct':'The collecting duct receives fluid from multiple nephrons; the model depicts one connection.',
   atlas:'C1 supports the skull. Its ring lacks a vertebral body.',
   axis:'C2 bears the dens, the pivot for rotation of the atlas.',
   'seventh-cervical-vertebra':'C7 is the vertebra prominens and the usual level of a cervical rib.',
@@ -87,8 +109,9 @@ const AnatomyAtlas=(()=>{
  const back='<button type="button" class="atlas-back" data-atlas-back>← All models</button>';
  const codes=items=>items.split(' ').map(code=>'<span>'+code+'</span>').join('');
  function gallery(){
-  return intro('CVP 112 · spatial anatomy','3D Anatomy Lab','Choose a specimen to rotate, inspect and isolate structures.')+
-   '<section class="atlas-gallery" aria-label="Anatomy models">'+Object.entries(models).map(([id,[title,group,note,lessons,tone]],index)=>
+  const course=galleryCourse();
+  return intro((course==='REN'?'REN 123':'CVP 112 · Archive'),'3D Anatomy Lab','Choose a model to rotate, inspect and isolate structures.')+
+   '<section class="atlas-gallery" data-atlas-course="'+course+'" aria-label="Anatomy models">'+galleryModels().map(([id,[title,group,note,lessons,tone]],index)=>
    `<button class="atlas-card${id==='complete'?' atlas-featured':''}" type="button" style="--atlas-tone:${tone}" data-atlas-model="${id}">
     <span class="atlas-art"><span class="atlas-category">${group}</span><img src="${root+id}.webp?v=3" alt="" width="560" height="300" ${index>2?'loading="lazy"':''}></span>
     <span class="atlas-copy"><strong>${title}</strong><span class="atlas-description">${note}</span>
@@ -128,10 +151,13 @@ const AnatomyAtlas=(()=>{
  function page(id){
   const [title,group,note,lessons,,shared]=models[id];
   const asset=shared||id, official=['ribcage','mediastinum'].includes(asset);
-  const credit=official?'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International':
+  const credit=asset==='renal-nephron'?'Review Studio teaching schematic. Geometry and proportions are illustrative.':
+   isRenal(id)?'BodyParts3D / Anatomography 4.3, © The Database Center for Life Science · CC BY-SA 2.1 Japan':
+   official?'BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International':
    asset==='nose'?'Z-Anatomy and BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 4.0':
    'BodyParts3D / Anatomography, © DBCLS · adapted by OrganUI · CC BY-SA 2.1 Japan';
-  return back+intro('CVP 112 · '+group.toUpperCase(),title,note)+
+  const course=isRenal(id)?'REN':'CVP';
+  return back+intro((course==='REN'?'REN 123':'CVP 112')+' · '+group,title,note)+
    `<div id="atlasExplorer" class="anatomy-layout atlas-explorer">
     <section class="panel anatomy-intro atlas-summary" aria-label="Model identification progress">
      <div><span class="pill">${group}</span><h2>Understand the shape. Find the structure.</h2><p>${note}</p></div>
@@ -158,12 +184,12 @@ const AnatomyAtlas=(()=>{
       <div id="atlasDescription" hidden><h3 id="atlasPartName"></h3><p id="atlasNote" class="muted" hidden></p></div>
      </div>
      <div id="atlasQuizNotes" hidden><h3>Identify from the model</h3><p>Rotate the model and use the structure’s relationships. Use [ and ] to highlight a candidate and Enter to select it.</p></div>
-     <p class="atlas-lessons">${lessons.split(' ').map(code=>`<button type="button" data-lesson="CVP-${code}">${code} ↗</button>`).join(' ')}</p>
+     <p class="atlas-lessons">${lessons.split(' ').map(code=>`<button type="button" data-lesson="${course}-${code}">${code} ↗</button>`).join(' ')}</p>
      <details class="muted"><summary>Model credits &amp; limitations</summary>
       ${id==='complete'?'<p>Teaching composite assembled from independently prepared reference meshes. Registration is approximate, especially at the diaphragm and upper airway. Use the individual models and lecture images for fine relationships.</p><p>BodyParts3D, © The Database Center for Life Science (CC BY 4.0 and CC BY-SA 2.1 Japan); OrganUI adaptations; Z-Anatomy (CC BY-SA 4.0).</p>':'<p>'+credit+'</p>'}
       <p>Colors distinguish structures. These are selected teaching meshes with simplified boundaries.</p>
       ${asset==='nose'?'<p>The maxillary sinuses are illustrative reconstructions.</p>':''}
-      ${id==='complete'?'<a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">BodyParts3D license ↗</a> · <a href="https://organui.com/docs/licences" target="_blank" rel="noopener">OrganUI credits and licenses ↗</a>':`<a href="${official?'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html':root+asset+'-credits.txt'}" target="_blank" rel="noopener">Source and attribution ↗</a> ·
+      ${isRenal(id)?'<a href="'+root+'renal-credits.txt" target="_blank" rel="noopener">Model source and limitations ↗</a>':id==='complete'?'<a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html" target="_blank" rel="noopener">BodyParts3D license ↗</a> · <a href="https://organui.com/docs/licences" target="_blank" rel="noopener">OrganUI credits and licenses ↗</a>':`<a href="${official?'https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html':root+asset+'-credits.txt'}" target="_blank" rel="noopener">Source and attribution ↗</a> ·
       <a href="${official?'https://creativecommons.org/licenses/by/4.0/':asset==='nose'?'https://creativecommons.org/licenses/by-sa/4.0/':'https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en'}" target="_blank" rel="noopener">License ↗</a>`}</details>
     </aside>
    </div>`;
@@ -347,7 +373,7 @@ const AnatomyAtlas=(()=>{
   async function load(){
    try{
     const [response,module,layoutResponse]=await Promise.all([
-     fetch(root+'structures.json?v=3',{signal}),loadViewer(),
+     fetch(root+'structures.json?v=4',{signal}),loadViewer(),
      id==='complete'?fetch(root+'complete.json?v=1',{signal}):null
     ]);
     if(!response.ok)throw Error('The structure list could not be loaded.');
@@ -452,5 +478,5 @@ const AnatomyAtlas=(()=>{
   load();
   return ()=>{clearInterval(timer);request.abort();viewer?.dispose();};
  }
- return {models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures,progress,toggleHidden,paintHideButton};
+ return {isRenal,galleryCourse,models,back,gallery,page,mount,groupParts,matchesLabel,exploreControls,structureSearch,gestures,progress,toggleHidden,paintHideButton};
 })();

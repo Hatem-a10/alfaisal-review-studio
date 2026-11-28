@@ -145,7 +145,11 @@ function cards(entries) {
  }
  return row;
 }
+function ensureStyles(){
+ if(!document.querySelector('link[href="'+css+'"]'))document.head.append(node('link',null,{rel:'stylesheet',href:css}));
+}
 function openForm(title, fields, submitLabel='Save', submit) {
+ ensureStyles();
  return new Promise(resolve=>{
   const dialog=node('dialog',null,{class:'acc-dialog acc-dialog-small','aria-label':title});
   const form=node('form');
@@ -178,11 +182,24 @@ function confirm(title, wording) {return openForm(title,[node('p',wording)],'Con
 const publicFlags = {readOnly:'Read-only maintenance',sharedUploads:'Shared uploads',reports:'Question reporting',resourceLibrary:'Shared resource library',archiveCvp:'Enable Archive for all users',newUserWalkthrough:'Enable walkthrough for new users'};
 
 let active;
+function confirmOwner(){
+ return openForm('Confirm owner access',[field('phrase','Admin phrase',{type:'password',required:true})],'Verify',values=>request('challenge',json(values)));
+}
+export async function saveScheduleDefaultColors(colors){
+ const options=json(colors);
+ try{return await request('site/schedule-colors',options);}
+ catch(error){
+  if(error.status!==428)throw error;
+  const verified=await confirmOwner();
+  return verified?request('site/schedule-colors',options):null;
+ }
+}
+
 export async function openAdminCenter(){
  if(active?.open)return;
  const access=await request('access');
  if(access.role==='owner'&&!access.unlocked)throw new Error('Unlock Admin Settings first.');
- if(!document.querySelector('link[href="'+css+'"]'))document.head.append(node('link',null,{rel:'stylesheet',href:css}));
+ ensureStyles();
  const dialog=node('dialog',null,{class:'acc-dialog acc-center','aria-labelledby':'acc-title'});
  active=dialog;
  const header=node('header',null,{class:'acc-head'});
@@ -214,9 +231,6 @@ export async function openAdminCenter(){
   bar.firstElementChild.disabled=page===0;
   bar.lastElementChild.disabled=!more;
   panel.append(bar);
- }
- function confirmOwner(){
-  return openForm('Confirm owner access',[field('phrase','Admin phrase',{type:'password',required:true})],'Verify',values=>request('challenge',json(values)));
  }
  async function mutation(path,payload) {
   const options=payload instanceof FormData?{method:'POST',body:payload}:json(payload);

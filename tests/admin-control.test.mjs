@@ -369,3 +369,19 @@ test('the new-user walkthrough defaults off and only the owner can enable it',as
  assert.equal((await h.call('site/save',owner,{...fields,newUserWalkthrough:false})).status,200);
  assert.equal(await enabled(),false);
 });
+
+test('schedule defaults are validated, owner-only and independent of other site settings',async t=>{
+ const h=harness();t.after(()=>h.sqlite.close());
+ const colors=Object.fromEntries(['anatomy','physiology','mol','lab','assessment','break','other','english'].map(kind=>[kind,'#aabbcc']));
+ assert.equal((await h.call('site/schedule-colors',student,colors)).status,403);
+ assert.equal((await h.call('site/schedule-colors',editor,colors)).status,403);
+ assert.equal((await h.call('site/schedule-colors',owner,colors)).status,428);
+ assert.equal((await h.challenge()).status,200);
+ assert.equal((await h.call('site/schedule-colors',owner,{...colors,lab:'red'})).status,400);
+ assert.deepEqual(await (await h.call('site/schedule-colors',owner,colors)).json(),{colors});
+ const flags={readOnly:false,sharedUploads:true,reports:true,resourceLibrary:true,maintenance:'Test notice'};
+ assert.equal((await h.call('site/save',owner,flags)).status,200);
+ const {flags:current}=await (await h.call('student/status',student)).json();
+ assert.deepEqual(current.scheduleColors,colors);
+ assert.equal(current.maintenance,flags.maintenance);
+});

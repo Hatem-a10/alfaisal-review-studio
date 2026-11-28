@@ -51,8 +51,8 @@
   },
   {
     "path": "materials/ren123/interactive-assessments.json",
-    "size": 1061104,
-    "sha": "26ae80b7dea47dbcb0426e7552a33e796b03c0540f73b23bb92197203a083aa5"
+    "size": 3543305,
+    "sha": "d0ca93b519c90d917981d9d17c99e457e0c2e6642c42dd91b48038ec2a001c7b"
   },
   {
     "path": "materials/ren123/assessments/anzhelika/06ad3834add5afa9244cff09f6cb1ea7b82b614b18023dfcb19ebf5293855e8f.png",
@@ -143,5 +143,25 @@
     "path": "materials/ren123/assessments/anzhelika/0cc4acea6aba255743b7517062f482ef06c2318724cddb66f4121ddf0dbaea5c.png",
     "size": 99364,
     "sha": "0cc4acea6aba255743b7517062f482ef06c2318724cddb66f4121ddf0dbaea5c"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-12-final.pdf",
+    "size": 4802766,
+    "sha": "edc2f67acc9f680f206d5ddb824dbea5963ad8b7ad5e38d2d9394bbe2216963f"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-14-final.pdf",
+    "size": 12860558,
+    "sha": "aa33b157f20c2636307b7d49e521d041d17bc9ae8c861dc53aac17c6a31ef117"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-16-final.pdf",
+    "size": 309850,
+    "sha": "b3846bed38128d2a28be48777d07c1b83a2dbd2c71e4424a11dde1ab2ee77890"
+  },
+  {
+    "path": "materials/ren123/assessments/ren-17-final.pdf",
+    "size": 20579707,
+    "sha": "bcc55f69db2b6d7105d3ae6da0a7a872e99ab41ab34aa5eeff01c424450efc64"
   }
 ]

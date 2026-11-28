@@ -113,14 +113,17 @@
  }
  function openAtlas(id){
   resetAtlas();atlasModel=id;
-  if(view==='anatomy')renderAtlas();else go('anatomy');
+  if(id&&!AnatomyAtlas.isRenal(id)&&window.REVIEW_STUDIO_FRESH_ACCOUNTS&&!window.reviewViewingArchive?.()&&window.reviewArchiveEnabled?.()){
+   window.reviewOpenCourse('CVP','anatomy');
+  }else if(view==='anatomy')renderAtlas();else go('anatomy');
   const target=document.querySelector(id?'[data-atlas-back]':'.atlas-card');
   target?.focus({preventScroll:true});
   window.scrollTo(0,0);
  }
- const previousRender=render;render=function(){if(view==='anatomy'){if(!document.querySelector('.atlas-gallery,#atlasExplorer,#heartStage'))renderAtlas();return}return previousRender()};
+ const previousRender=render;render=function(){if(view==='anatomy'){const gallery=document.querySelector('.atlas-gallery');
+  if(gallery?gallery.dataset.atlasCourse!==AnatomyAtlas.galleryCourse():!document.querySelector('#atlasExplorer,#heartStage'))renderAtlas();return}return previousRender()};
  const previousGo=go;go=function(v){if(view==='anatomy'&&v!=='anatomy'){resetAtlas();atlasModel=null;}if(v==='anatomy'){view=v;if(location.hash!=='#anatomy')history.pushState(null,'','#anatomy');render();document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view==='anatomy'));return}return previousGo(v)};
- window.addEventListener('popstate',()=>{if(location.hash==='#anatomy'){view='anatomy';render()}else {resetAtlas();atlasModel=null;}});
+ window.addEventListener('popstate',()=>{if(location.hash==='#anatomy'){view='anatomy';resetAtlas();atlasModel=null;render()}else {resetAtlas();atlasModel=null;}});
  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.hasAttribute('data-atlas-back')){openAtlas(null);return}
  if(Object.hasOwn(AnatomyAtlas.models,b.dataset.atlasModel)){
@@ -141,9 +144,9 @@
  if(e.target.id==='heartHighlight'){showHighlight=e.target.checked;paintSelection()}
  if(e.target.dataset.wallToggle)document.querySelector('[data-wall-band="'+e.target.dataset.wallToggle+'"]').style.visibility=e.target.checked?'visible':'hidden';if(e.target.id==='heartView')viewer?.setView(e.target.value);if(e.target.id==='heartModel'&&Object.hasOwn(models,e.target.value)){clearSelection();modelKind=e.target.value;run=null;clearInterval(timer);mode='explore';selected=activeParts()[0].id;const search=document.querySelector('#heartSearch');if(search)search.value='';document.querySelector('.heart-structure-list').innerHTML=activeParts().map(s=>'<button data-heart-structure="'+s.id+'">'+s.name+'</button>').join('');viewer?.setParts(visibleParts());viewer?.setView(models[modelKind].view);viewer?.setOpacity(1);document.querySelector('#heartOpacity').value=1;describe(selected);paintActivity()}});document.addEventListener('input',e=>{if(e.target.id==='heartOpacity')viewer?.setOpacity(Number(e.target.value));if(e.target.id==='heartSearch'){const q=e.target.value.toLowerCase();document.querySelectorAll('[data-heart-structure]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q))}});document.addEventListener('keydown',e=>{if(e.target.id==='heartLabelAnswer'&&e.key==='Enter'){e.preventDefault();document.querySelector('#heartCheckLabel')?.click()}});
  const oldReader=lessonReader;lessonReader=function(x,l,s){
-  const html=oldReader(x,l,s),code=x.id.replace(/^CVP-/,'');
-  const matches=Object.entries(AnatomyAtlas.models).filter(([,model])=>model[3].split(' ').includes(code));
-  return x.id.startsWith('CVP-')&&matches.length?'<div class="heart-lesson-link">'+matches.map(([id,model])=>'<button type="button" data-atlas-model="'+id+'">'+icon+' '+model[0]+'</button>').join('')+'<small>Spatial identification · progress stays separate from MCQ mastery</small></div>'+html:html;
+  const html=oldReader(x,l,s),[course,code]=x.id.split('-');
+  const matches=Object.entries(AnatomyAtlas.models).filter(([id,model])=>['REN','CVP'].includes(course)&&AnatomyAtlas.isRenal(id)===(course==='REN')&&model[3].split(' ').includes(code));
+  return matches.length?'<div class="heart-lesson-link">'+matches.map(([id,model])=>'<button type="button" data-atlas-model="'+id+'">'+icon+' '+model[0]+'</button>').join('')+'<small>Spatial identification · progress stays separate from MCQ mastery</small></div>'+html:html;
  };
  if(location.hash==='#anatomy')view='anatomy';
 })();

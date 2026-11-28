@@ -6,19 +6,24 @@ import test from 'node:test';
 
 const read=path=>readFileSync(new URL('../'+path,import.meta.url));
 const readModel=path=>read('public/anatomy-models/'+path);
-const atlas=runInNewContext(read('public/anatomy-atlas.js').toString()+'\nAnatomyAtlas',{intro:()=>''});
+const app={intro:()=>'',REVIEW_STUDIO_FRESH_ACCOUNTS:true};
+const atlas=runInNewContext(read('public/anatomy-atlas.js').toString()+'\nAnatomyAtlas',app);
 const labels=JSON.parse(readModel('structures.json'));
 
 test('every gallery card has a thumbnail, lesson mapping and a deferred model',()=>{
- const gallery=atlas.gallery();
- assert.equal(Object.keys(atlas.models).length,10);
+ const renal=atlas.gallery();
+ app.reviewViewingArchive=()=>true;
+ const archive=atlas.gallery();
+ app.reviewViewingArchive=undefined;
  for(const [id,model] of Object.entries(atlas.models)){
-  assert.match(gallery,new RegExp('data-atlas-model="'+id+'"'));
+  const pattern=new RegExp('data-atlas-model="'+id+'"');
+  assert.match(atlas.isRenal(id)?renal:archive,pattern);
+  assert.doesNotMatch(atlas.isRenal(id)?archive:renal,pattern);
   assert.match(model[3],/^[AP]\d+( [AP]\d+)*$/);
   assert.equal(readModel(id+'.webp').toString('ascii',8,12),'WEBP');
   if(id!=='heart'&&id!=='complete')assert.ok(labels[model[5]||id]);
  }
- assert.doesNotMatch(gallery,/\.glb|heart-viewer/);
+ assert.doesNotMatch(renal+archive,/\.glb|heart-viewer/);
  assert.equal(atlas.models.airway[5],'lungs');
 });
 
@@ -91,7 +96,7 @@ test('hiding selected structures keeps independent hidden structures until resto
 
 test('complete model registers every specimen once and groups the combined structures',()=>{
  const layout=JSON.parse(readModel('complete.json'));
- assert.deepEqual(Object.keys(layout).sort(),[...Object.keys(labels),'heart'].sort());
+ assert.deepEqual(Object.keys(layout).sort(),[...Object.keys(labels).filter(id=>!atlas.isRenal(id)),'heart'].sort());
  const composite=[];
  for(const [key,placement] of Object.entries(layout)){
   assert.ok(placement.scale>0);
