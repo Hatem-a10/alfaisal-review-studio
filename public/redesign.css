@@ -630,10 +630,10 @@ html:root body:not(.xp-exam-active) .learning-main .question-kind-foot{
 }
 html:root body:not(.xp-exam-active) .learning-layout .lesson-catalog{box-shadow:none;height:auto;max-height:none;position:sticky;top:16px;align-self:start}
 html:root body:not(.xp-exam-active) #lessonCatalogControls{
- display:grid;grid-template-rows:auto minmax(0,1fr);max-height:calc(100vh - 42px);max-height:calc(100dvh - 42px)
+ display:grid;grid-template-rows:auto minmax(0,1fr);max-height:calc(100vh / var(--studio-zoom,1) - 6rem);max-height:calc(100dvh / var(--studio-zoom,1) - 6rem)
 }
 html:root body:not(.xp-exam-active) #lessonCatalogControls .catalog-list{
- min-height:0;height:auto;max-height:none;overflow-y:auto;overscroll-behavior-y:contain
+ min-height:0;height:auto;max-height:none;overflow-y:auto
 }
 html:root body:not(.xp-exam-active) .learning-layout :is(.complete-guide,.guide-section,.teaching-card){background-color:var(--rs-surface)}
 html:root body:not(.xp-exam-active) .learning-layout :is(.complete-guide,.teaching-card) :is(mark,code){background:var(--rs-accent-tint);color:var(--rs-ink);border-radius:.18em}
@@ -864,6 +864,6 @@ html:root body:not(.xp-exam-active) #content .document-library :is([data-documen
 
 /* Keep touch layouts at their existing scale and match the desktop 110% view. */
 @media (min-width: 1050px) {
- html:root body:not(.xp-exam-active) { zoom: 1.1; }
+ html:root body:not(.xp-exam-active) { --studio-zoom: 1.1; zoom: var(--studio-zoom); }
  html:root body:not(.xp-exam-active) #mainSidebar { max-height: 100%; }
 }
