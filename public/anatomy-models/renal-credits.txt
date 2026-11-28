@@ -24,3 +24,20 @@ Original Review Studio teaching schematic. Segment order follows REN 123
 renal histology and nephron teaching; geometry and proportions are illustrative.
 The model omits microvascular and fine epithelial detail. One nephron connection
 is shown; a collecting duct receives flow from more than one nephron.
+
+Additional REN 123 models
+- Posterior abdominal wall: FJ3145, FJ3147, FJ1422/1422M, FJ1431/1431M,
+  FJ3157, FJ3159, FJ3162, FJ3165, FJ3168, FJ3227 and FJ3332.
+- Lumbar landmarks: those five lumbar vertebrae and twelfth ribs, plus the
+  sacrum (FJ3393).
+- Male lower urinary tract: distal crops of FJ3144 and FJ3146, FJ3137, FJ3139, FJ3143, FJ3148–3149, FJ2571, FJ3152, FJ3288 and FJ3393.
+- Native iliac fossa: FJ3464–3466, FJ3468, FJ3484, FJ3565–3569,
+  FJ1422/1422M, FJ3149, FJ3152, FJ3288 and FJ3393. The scene shows the native
+  iliac landmarks. It does not display a graft or a particular operative technique.
+- Kidney section: original Review Studio schematic based on the REN 123 kidney
+  deck (pp. 19–22). The illustration uses selected pyramids and calyces to show
+  the connections. It is not a patient scan, and the geometry is not to scale.
+
+The additional BodyParts3D model and preview derivatives share the license above.
+Meshes were assembled in the source coordinate system. Some dense surfaces were
+simplified and the pelvic ureter display focuses on the distal segments.

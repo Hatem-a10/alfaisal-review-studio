@@ -148,5 +148,25 @@
     "path": "materials/ren123/kidney-histology-1-p23.jpg",
     "size": 108929,
     "sha": "925bc71152f4eade72a78f5658e1f6c362ae629559c2b706249e5826796ccebd"
+  },
+  {
+    "path": "materials/ren123/kidneys-p19.jpg",
+    "size": 89575,
+    "sha": "46572968003117f0835d3cb2b4c2c4cb10c3afaa191792ba44d8a36e82d47318"
+  },
+  {
+    "path": "materials/ren123/kidneys-p26.jpg",
+    "size": 144819,
+    "sha": "a1b776395d4904ebe4e5f3ad6efb9863b30983c51ed9c6328091069bdf9b2883"
+  },
+  {
+    "path": "materials/ren123/kidneys-p28.jpg",
+    "size": 107936,
+    "sha": "f614d09da02bbb6104547965c340391db5a8b4453e21655a68adcfa6d1180731"
+  },
+  {
+    "path": "materials/ren123/kidneys-p31.jpg",
+    "size": 71111,
+    "sha": "0b574a643fa01acf06dd76a4ea11fb062d34a67390e646f45c295b9f824b2b47"
   }
 ]

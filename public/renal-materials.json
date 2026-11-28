@@ -68,7 +68,8 @@
     "title": "Kidneys · Dr. Olena",
     "kind": "lecture",
     "sessions": [
-      "A3"
+      "A3",
+      "A4"
     ],
     "units": 34,
     "path": "materials/ren123/kidneys.pdf",
@@ -298,5 +299,30 @@
     "path": "materials/ren123/glomerular-filtration-class-review.txt",
     "size": 36851,
     "sha": "614d5df992aab76fbcf81b7082d18087bb4d34deb13ad7461553c4129c0fbc17"
+  },
+  {
+    "id": "kidney-anatomy-1-transcript",
+    "title": "Anatomy of the Kidney I · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A3"
+    ],
+    "units": 1290,
+    "path": "materials/ren123/kidney-anatomy-1-transcript.txt",
+    "size": 57240,
+    "sha": "5a703c38c0ed9aab10412bf3aebf294b174b14216cd61b540f4f9a0558a5da27"
+  },
+  {
+    "id": "kidney-anatomy-2-transcript",
+    "title": "Anatomy of the Kidney II · transcript",
+    "kind": "lecture",
+    "sessions": [
+      "A3",
+      "A4"
+    ],
+    "units": 697,
+    "path": "materials/ren123/kidney-anatomy-2-transcript.txt",
+    "size": 31417,
+    "sha": "49a641b816fad6f2aef6399ad151f32cf5bdaf22bc987bde1efa519d8f0880c3"
   }
 ]

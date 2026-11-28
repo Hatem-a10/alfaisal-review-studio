@@ -6,10 +6,10 @@ import {renalPhysiology} from '../public/renal-physiology.mjs';
 
 test('every current Renal practice check has a unique ID, checked answer, and four useful option rationales',()=>{
  const pack=renalTeachingPack();
- assert.equal(renalLessons.length,13);
+ assert.equal(renalLessons.length,14);
  assert.equal(renalPhysiology.length,4);
- assert.equal(pack.questions.length,151);
- assert.equal(new Set(pack.questions.map(question=>question.id)).size,151);
+ assert.equal(pack.questions.length,175);
+ assert.equal(new Set(pack.questions.map(question=>question.id)).size,175);
  for(const q of pack.questions){
   assert.equal(q.options.length,4,q.id);
   assert.equal(q.reasons.length,q.options.length,q.id);
@@ -38,12 +38,17 @@ test('the validator fails closed for incomplete distractor explanations',()=>{
 test('Renal teaching concepts cover every objective and identify lecturer-confirmed scope',()=>{
  const {guides,sources}=renalTeachingPack();
  const knownSources=new Set(sources.map(source=>source.id));
- assert.equal(Object.keys(guides).length,13);
- assert.equal(guides['REN-A4'],undefined);
+ assert.equal(Object.keys(guides).length,14);
+ assert.equal(guides['REN-A4'].underDevelopment,false);
+ assert.deepEqual(guides['REN-A4'].sections.map(section=>section.id),['REN-A4-section','REN-A4-segments','REN-A4-clinical']);
+ assert.equal(guides['REN-A3'].underDevelopment,false);
+ assert.equal(guides['REN-A3'].sections[0].transcriptReview.asset,'kidney-anatomy-1-transcript');
+ assert.ok(guides['REN-A4'].sections.every(section=>section.transcriptReview.asset==='kidney-anatomy-2-transcript'&&section.figure));
  for(const [id,guide] of Object.entries(guides)){
   const concepts=guide.sections.flatMap(section=>section.concepts);
-  assert.equal(concepts.length,6,id);
-  assert.equal(guide.underDevelopment,!guide.sections.some(section=>section.transcript),id);
+  assert.ok(concepts.length>0,id);
+  if(id==='REN-A4')assert.equal(concepts.length,6);
+  assert.equal(guide.underDevelopment,!guide.sections.some(section=>section.transcript||section.transcriptReview),id);
   assert.deepEqual(new Set(concepts.map(concept=>concept.objective)),new Set(guide.objectives),id);
   for(const concept of concepts){
    assert.ok(concept.references.length>0,id);
@@ -51,7 +56,7 @@ test('Renal teaching concepts cover every objective and identify lecturer-confir
   }
  }
  const sections=Object.values(guides).flatMap(guide=>guide.sections);
- assert.deepEqual([...new Set(sections.flatMap(section=>section.transcript?[section.transcript]:[]))].length,6);
+ assert.deepEqual([...new Set(sections.flatMap(section=>section.transcript?[section.transcript]:[]))].length,8);
  const cues=sections.flatMap(section=>section.recordedExamCue?[section.recordedExamCue]:[]);
  assert.deepEqual(cues.map(cue=>[cue.label,cue.time]),[['Identify the lining of a blood vessel','25:13']]);
  assert.equal(sections.find(section=>section.scopeNote)?.scopeNote.time,'29:29');

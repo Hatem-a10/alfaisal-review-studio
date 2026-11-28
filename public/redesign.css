@@ -493,12 +493,7 @@ html:root body:not(.xp-exam-active) #siteAdmin .site-settings-close:hover{backgr
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav{gap:8px}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button{min-height:clamp(56px,7.8vh,68px);padding:13px 16px;gap:15px;font-size:1.1rem;font-weight:600;border-radius:var(--rs-r-item,12px)}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button .nav-icon{width:26px;height:26px;flex:none}
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns]{color:var(--rs-ink-2)}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns] .nav-icon{width:22px;height:22px;margin-inline:2px}
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns].active{
-  background:var(--rs-sunken)!important;color:var(--rs-ink);box-shadow:inset 0 0 0 1px var(--rs-line);
- }
- html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar nav.simple-desktop-nav>button[data-view=countdowns].active .nav-icon{color:var(--accent-text)}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar .brand{gap:14px}
  html[data-ui=modern] body:not(.xp-exam-active) #mainSidebar #syncWidget>summary{min-height:64px}
  /* Semi-closed rail: icons only, centred, and the sync card shrinks to a square with its dot. */
@@ -568,15 +563,15 @@ html:root body:not(.xp-exam-active) .booklet-toolbar .workspace-course-select{or
 .renal-concept p,.reader-concept-count{margin-top:0}
 .coverage-development{margin-inline-start:.55rem;color:var(--muted);font-size:.78rem;font-weight:600}
 /* Countdown cards use category tints around neutral timer cells and subject tags. */
-.countdown-card[data-assessment-type="exams"]{--count-accent:#c93858}
-.countdown-card[data-assessment-type="tbls"]{--count-accent:#198d84}
-.countdown-card[data-assessment-type="ospe"]{--count-accent:#bd7626}
-.countdown-card[data-assessment-type="starts"]{--count-accent:#8058bd}
-.countdown-card[data-assessment-type="other"]{--count-accent:#5475a8}
+.countdown-card[data-assessment-type="exams"]{--count-accent:#ed3e70}
+.countdown-card[data-assessment-type="tbls"]{--count-accent:#03b6a3}
+.countdown-card[data-assessment-type="ospe"]{--count-accent:#e69235}
+.countdown-card[data-assessment-type="starts"]{--count-accent:#9c6be8}
+.countdown-card[data-assessment-type="other"]{--count-accent:#5b8ee4}
 html:root body:not(.xp-exam-active) #content .countdown-card[class*=stain-][data-assessment-type]{
- --dusk-light:color-mix(in srgb,var(--count-accent) 42%,#3e2d54);
+ --dusk-light:color-mix(in srgb,var(--count-accent) 54%,#4a246f);
  --dusk-border:color-mix(in srgb,var(--count-accent) 48%,#9c89b4);
- background:radial-gradient(ellipse at 101% -25%,var(--dusk-light),transparent 73%),linear-gradient(140deg,#29233c,#39304d);
+ background:radial-gradient(ellipse at 101% -15%,var(--dusk-light),transparent 73%),linear-gradient(140deg,#2b1f47,#452861);
  position:relative;overflow:hidden;border:1px solid var(--dusk-border);outline:0;color:#f8f5ff;
 }
 html:root body:not(.xp-exam-active) #content .countdown-card[data-assessment-type]::before{content:none}

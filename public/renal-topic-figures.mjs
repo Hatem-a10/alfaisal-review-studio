@@ -54,6 +54,21 @@ export const renalTopicFigures={
     "path": "kidneys-p22.jpg",
     "caption": "Renal papillae, calyces and the renal pelvis"
   },
+  "A4-section": {
+    "page": 19,
+    "path": "kidneys-p19.jpg",
+    "caption": "Longitudinal specimen showing the cortex (1) and medulla (2)"
+  },
+  "A4-segments": {
+    "page": 26,
+    "path": "kidneys-p26.jpg",
+    "caption": "Anterior and posterior views of the five renal arterial territories"
+  },
+  "A4-clinical": {
+    "page": 31,
+    "path": "kidneys-p31.jpg",
+    "caption": "Renal graft in the iliac fossa with iliac vascular and bladder connections"
+  },
   "P1-organization": {
     "page": 8,
     "path": "kidney-functions-p8.jpg",
