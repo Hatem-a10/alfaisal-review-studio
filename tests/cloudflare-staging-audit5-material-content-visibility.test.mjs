@@ -7,8 +7,9 @@ const current=read('public/hub-upgrade.css');
 const previous=current.replace(/\/\* A5-038:[\s\S]*?@media print \{\s*\.material-list \{ content-visibility:visible; contain-intrinsic-size:none; \}\s*\}\s*/, '');
 test('A5-038 offscreen Library sections retain their DOM, accessible links and source order',()=>{
  const markup=read('public/library-list.js');
- assert.match(markup,/<section class="material-list">/);
- assert.match(markup,/libraryDocumentURL\(source, page,snapshot.lookup\)/);
+ // #349 renamed Library sections to .document-discipline; A5-038 CSS still targets .material-list (now unused).
+ assert.match(markup,/<section class="document-discipline" data-discipline=/);
+ assert.match(markup,/libraryDocumentURL\(source, ?page, ?snapshot.lookup\)/);
  assert.match(markup,/\bcovered\.add\(source\.id\)/);
  assert.equal(current.replace(/\/\* A5-038:[\s\S]*?@media print \{\s*\.material-list \{ content-visibility:visible; contain-intrinsic-size:none; \}\s*\}\s*/,''),previous);
  const oldSelectors=new Set([...previous.matchAll(/\.material-list(?:\s|\.|\{|\:|>)/g)].map(x=>x[0]));
