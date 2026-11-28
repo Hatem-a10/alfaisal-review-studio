@@ -53,7 +53,6 @@ function paperCard(set) {
   <div class="assessment-paper-copy">
    <div class="assessment-paper-meta"><span class="assessment-batch">${esc(batch)}</span><span class="pill">${questionCount} ${set.adapted?'practice':'original'} question${questionCount===1?'':'s'}</span></div>
    <h3>${esc(displayTitle)}</h3>
-   ${renamed?`<small>Source: ${esc(displayPaperTitle(set.title))}</small>`:''}
   </div>
   <div class="assessment-paper-actions">
    ${set.sourceLedger?`<a href="${esc(set.sourceLedger)}" target="_blank" rel="noopener noreferrer">Corrected booklet question ledger ↗</a>`:''}

@@ -4,7 +4,15 @@ const c=vm.createContext({});vm.runInContext(fs.readFileSync('public/exam-engine
 test('five original MCQ sets preserve all 325 recovered items and batch assignments',()=>{for(const [batch,count] of [[14,30],[15,52],[16,72],[17,89],[18,82]]){const set=papers.sets.find(s=>s.id===`cvp-final-b${batch}-mcq`);assert.equal(set.batch,batch);assert.equal(set.ids.length,count);assert.equal(new Set(set.ids).size,count)}assert.equal(new Set(papers.questions.map(q=>q.id)).size,papers.questions.length)});
 test('original registration is idempotent and preserves existing questions and progress IDs',()=>{const existing={id:'old-question',answer:3},t={sources:[],questions:[existing],sets:[]};registerCvpPapers(t);registerCvpPapers(t);assert.equal(t.questions.length,papers.questions.length+1);assert.equal(t.questions[0],existing)});
 test('all original questions have source citations, valid keys and local figure assets',()=>{for(const q of papers.questions){assert.ok(q.question.trim(),q.id);assert.ok(q.sourceRefs,q.id);assert.equal(q.options.length,q.letters.length,q.id);if(q.answer!==null)assert.ok(q.answer>=0&&q.answer<q.options.length,q.id);const src=papers.sources.find(s=>s.id===q.source);assert.ok(q.page>0&&q.page<=src.pages,q.id);for(const f of q.figures){assert.ok(fs.existsSync('public'+f.image),q.id);if(f.revealedImage)assert.ok(fs.existsSync('public'+f.revealedImage))}}});
-test('uncertain, double-keyed and deleted items cannot become false wrong answers',()=>{for(const id of ['cvp-final-b16-mcq-3','cvp-final-b16-mcq-14','cvp-final-b18-mcq-66'])assert.equal(papers.questions.find(q=>q.id===id).answer,null)});
+test('reviewed questions preserve printed provenance, accepted alternatives and original cancellation',()=>{
+ const get=id=>papers.questions.find(q=>q.id===id);
+ const double=get('cvp-final-b16-mcq-3'),deleted=get('cvp-final-b16-mcq-14'),altitude=get('cvp-final-b18-mcq-66');
+ assert.ok(E.isCorrect(double,0)&&E.isCorrect(double,1));
+ assert.equal(deleted.cancelled,true);
+ assert.equal(altitude.options[altitude.answer],'14');
+ assert.equal(altitude.printedAnswer,'A');
+ assert.ok([double,deleted,altitude].every(q=>q.editorialKey&&q.question.endsWith(' *')));
+});
 test('split tables and neighbouring ECGs stay with their own question',()=>{const get=id=>papers.questions.find(q=>q.id===id);assert.equal(get('cvp-final-b16-mcq-28').options[2],'dec / dec / dec');assert.equal(get('cvp-final-b17-mcq-67').options.length,5);assert.equal(get('cvp-final-b15-mcq-14').figures.length,0);assert.equal(get('cvp-final-b15-mcq-15').figures.length,1);assert.equal(get('cvp-final-b17-mcq-41').figures.length,1)});
 test('written cases and all recovered OSPE stations remain accessible',()=>{assert.equal(papers.sets.filter(s=>s.id.endsWith('saq')).length,5);assert.deepEqual(papers.sets.filter(s=>s.id.endsWith('ospe')).map(s=>s.ids.length).sort(),[16,19,20,20]);assert.ok(papers.questions.find(q=>q.id==='cvp-final-b18-ospe-15').question.includes('stabbed'))});
 const extra=Array.from({length:650},(_,i)=>({id:'extra-'+i,source:'cvp19-corrected',image:i%5===0?'/test/figure-'+i+'.webp':undefined,examCategory:'K.'+String(i%13+1).padStart(2,'0'),lectureIds:['CVP-'+['A16','A17','A22','P6','P20'][i%5]],question:'Independent application '+i,options:['a','b','c','d'],answer:i%4,explanation:'Explanation '+i,reasons:['a','b','c','d']}));
