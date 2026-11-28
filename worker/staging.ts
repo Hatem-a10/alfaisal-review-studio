@@ -22,7 +22,7 @@ import {managedDashboardLanding} from '../lib/managed-login-landing.mjs';
 async function controlHandlers(student:boolean,section:string){
  if(!student){
   if(section==='academics')return [(await import('../lib/admin-academics.mjs')).academicAdmin];
-  if(section==='resources')return [(await import('../lib/admin-resources.mjs')).resourceAdmin];
+  if(section==='resources'||section==='storage')return [(await import('../lib/admin-resources.mjs')).resourceAdmin];
   if(section==='reports'||section==='announcements')return [(await import('../lib/admin-content.mjs')).contentAdmin];
   return [];
  }

@@ -43,3 +43,8 @@ test('A5-043 lazy loading returns identical ordered Student and Admin handlers a
  assert.deepEqual(loads,[]);
  console.log(JSON.stringify({label:'A5-042 selective Admin module import',startupAdminImports:0,builtinAdminRouteImports:0,featureRouteImports:1,studentRouteImports:3}));
 });
+test('Storage & Backups loads the resource handler that serves storage/summary',()=>{
+ const worker=readFileSync(new URL('../worker/staging.ts',import.meta.url),'utf8');
+ assert.match(worker,/if\(section==='resources'\|\|section==='storage'\)return \[\(await import\('\.\.\/lib\/admin-resources\.mjs'\)\)\.resourceAdmin\]/);
+ assert.match(readFileSync(new URL('../lib/admin-resources.mjs',import.meta.url),'utf8'),/if \(!\['resources','storage'\]\.includes\(section\)\) return null;/);
+});
