@@ -65,3 +65,9 @@ test('tissue framing ignores black borders and isolated bright specks',()=>{
  assert.ok(frame.x+frame.width>.8&&frame.x+frame.width<.86);
  assert.ok(frame.y+frame.height>.7&&frame.y+frame.height<.76);
 });
+test('kidney capillaries slide is listed last in its group',async()=>{
+ const {microscopeCards}=await import('../public/microscope-lab.mjs');
+ const slide=id=>({id:id+'-scan-2',sourceSlide:id,name:id,cover:'/c.jpg'});
+ const html=microscopeCards({title:'Kidney',slides:['capillaries-of-kidney-40x','kidney-2','kidney-22'].map(slide)});
+ assert.ok(html.indexOf('capillaries-of-kidney-40x')>html.indexOf('kidney-22-scan-2'));
+});
